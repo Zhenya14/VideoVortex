@@ -5,11 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VideoVortex</title>
     <style>
-        header {
-            width: 100%;
-            height: 30%;
-            background-color: aqua;
-        }
+        body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+.hero {
+    background-color: #6DBE45;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.hero .btn {
+    background-color: white;
+    color: #4CAF50;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.hero .btn:hover {
+    background-color: #e0e0e0;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #4CAF50;
+}
+
+input[type="text"],
+input[type="file"],
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.video-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Підключаємо іконки Font Awesome -->
 </head>
 <body>
     <header>
@@ -26,12 +121,13 @@
     </header>
 
     <main>
-        <section id="home">
+        <section id="home" class="hero">
             <h2>Ласкаво просимо до VideoVortex!</h2>
             <p>Найкраще місце для перегляду та завантаження відео.</p>
+            <a href="#upload" class="btn">Завантажити відео</a>
         </section>
 
-        <section id="upload">
+        <section id="upload" class="card">
             <h2>Завантажити відео</h2>
             <form>
                 <label for="video-title">Назва відео:</label>
@@ -40,14 +136,13 @@
                 <label for="video-file">Виберіть файл:</label>
                 <input type="file" id="video-file" name="video-file" accept="video/*" required>
                 
-                <button type="submit">Завантажити</button>
+                <button type="submit" class="btn">Завантажити</button>
             </form>
         </section>
 
         <section id="videos">
             <h2>Відео</h2>
             <div class="video-gallery">
-                <!-- Тут можна додати відео, наприклад, за допомогою <video> або <iframe> -->
                 <video width="320" height="240" controls>
                     <source src="video.mp4" type="video/mp4">
                     Ваш браузер не підтримує відео тег.
@@ -55,14 +150,14 @@
             </div>
         </section>
 
-        <section id="about">
+        <section id="about" class="card">
             <h2>Про нас</h2>
             <p>VideoVortex - це платформа, де ви можете ділитися своїми відео з усього світу.</p>
         </section>
 
-        <section id="contact">
+        <section id="contact" class="card">
             <h2>Контакти</h2>
-            <p>Зв'яжіться з нами через електронну пошту: <a href="mailto:zhuzhun2008@gmail.com">info@videovortex.com</a></p>
+            <p>Зв'яжіться з нами через електронну пошту: <a href="mailto:info@videovortex.com">info@videovortex.com</a></p>
         </section>
     </main>
 
