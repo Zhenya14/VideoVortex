@@ -4,110 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VideoVortex</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Підключаємо іконки Font Awesome -->
     <style>
         body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(45deg, #ff6f61, #6a5acd, #88b04b);
-    color: #333;
-}
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #74ebd5, #acb6e5); /* Задній градієнт */
+            color: #333;
+        }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px;
-    margin: 20px;
-    text-align: center;
-    border-radius: 10px 10px 0px 0px
-}
+        header {
+            background-color: rgba(76, 175, 80, 0.8); /* Прозорий зелений */
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
 
-nav ul {
-    list-style-type: none;
-    padding: 0;
-}
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
-nav ul li {
-    display: inline;
-    margin: 0 15px;
-}
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
 
-nav a {
-    color: white;
-    text-decoration: none;
-}
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
 
-.hero {
-    background-color: #6DBE45;
-    color: white;
-    text-align: center;
-    padding: 50px 20px;
-}
+        .hero {
+            background: linear-gradient(to bottom, rgba(109, 190, 69, 0.7), rgba(255, 255, 255, 0.1)); /* Задній градієнт з прозорістю */
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
 
-.hero .btn {
-    background-color: white;
-    color: #4CAF50;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
+        .hero .btn {
+            background-color: white;
+            color: #4CAF50;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
 
-.hero .btn:hover {
-    background-color: #e0e0e0;
-}
+        .hero .btn:hover {
+            background-color: #e0e0e0;
+        }
 
-.card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
-h2 {
-    color: #4CAF50;
-}
+        h2 {
+            color: #4CAF50;
+        }
 
-input[type="text"],
-input[type="file"],
-button {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+        input[type="text"],
+        input[type="file"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
 
-button:hover {
-    background-color: #45a049;
-}
+        button:hover {
+            background-color: #45a049;
+        }
 
-.video-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
+        .video-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    border-radius: 0px 0px 10px 10px
-    background-color: #4CAF50;
-    color: white;
-}
-
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Підключаємо іконки Font Awesome -->
 </head>
 <body>
     <header>
@@ -132,7 +128,7 @@ footer {
 
         <section id="upload" class="card">
             <h2>Завантажити відео</h2>
-            <form>
+            <form id="upload-form">
                 <label for="video-title">Назва відео:</label>
                 <input type="text" id="video-title" name="video-title" required>
                 
@@ -145,12 +141,7 @@ footer {
 
         <section id="videos">
             <h2>Відео</h2>
-            <div class="video-gallery">
-                <video width="320" height="240" controls>
-                    <source src="video.mp4" type="video/mp4">
-                    Ваш браузер не підтримує відео тег.
-                </video>
-            </div>
+            <div class="video-gallery" id="video-gallery"></div>
         </section>
 
         <section id="about" class="card">
@@ -167,66 +158,89 @@ footer {
     <footer>
         <p>&copy; 2024 VideoVortex. Всі права захищені.</p>
     </footer>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
     <script>
+        // Конфігурація Firebase
         const firebaseConfig = {
-   apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-  authDomain: "videovortex-235cd.firebaseapp.com",
-  projectId: "videovortex-235cd",
-  storageBucket: "videovortex-235cd.appspot.com",
-  messagingSenderId: "681594250269",
-  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
-  measurementId: "G-PHRT9C7GVP"
-};
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-// Ініціалізація Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
-const db = firebase.firestore();
+        // Ініціалізація Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+        const db = firebase.firestore();
 
-        document.querySelector('form').addEventListener('submit', async (event) => {
-        event.preventDefault();
+        // Завантаження відео
+        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-        const title = document.getElementById('video-title').value;
-        const file = document.getElementById('video-file').files[0];
+            const title = document.getElementById('video-title').value;
+            const file = document.getElementById('video-file').files[0];
 
-        if (!file) {
-            alert("Будь ласка, виберіть файл.");
-            return;
+            if (!file) {
+                alert("Будь ласка, виберіть файл.");
+                return;
+            }
+
+            // Завантаження відео до Firebase Storage
+            const storageRef = storage.ref(`videos/${file.name}`);
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log(`Завантаження: ${progress}%`);
+                }, 
+                (error) => {
+                    console.error("Помилка при завантаженні: ", error);
+                }, 
+                async () => {
+                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+
+                    // Збереження інформації про відео в Firestore
+                    await db.collection('videos').add({
+                        title: title,
+                        url: downloadURL,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    alert("Відео успішно завантажено!");
+                    document.getElementById('video-title').value = '';
+                    document.getElementById('video-file').value = '';
+
+                    // Оновлення відеогалереї
+                    loadVideos();
+                }
+            );
+        });
+
+        // Функція для завантаження відео з Firestore
+        async function loadVideos() {
+            const videoGallery = document.getElementById('video-gallery');
+            videoGallery.innerHTML = '';
+
+            const snapshot = await db.collection('videos').orderBy('createdAt', 'desc').get();
+            snapshot.forEach((doc) => {
+                const videoData = doc.data();
+                const videoElement = document.createElement('video');
+                videoElement.src = videoData.url;
+                videoElement.controls = true;
+                videoElement.width = 320;
+                videoElement.height = 240;
+                videoGallery.appendChild(videoElement);
+            });
         }
 
-        // Завантаження відео до Firebase Storage
-        const storageRef = storage.ref(`videos/${file.name}`);
-        const uploadTask = storageRef.put(file);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(`Завантаження: ${progress}%`);
-            }, 
-            (error) => {
-                console.error("Помилка при завантаженні: ", error);
-            }, 
-            async () => {
-                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-
-                // Збереження інформації про відео в Firestore
-                await db.collection('videos').add({
-                    title: title,
-                    url: downloadURL,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                alert("Відео успішно завантажено!");
-                document.getElementById('video-title').value = '';
-                document.getElementById('video-file').value = '';
-            }
-        );
-    });
-</script>
+        // Завантажити відео при завантаженні сторінки
+        window.onload = loadVideos;
     </script>
 </body>
 </html>
