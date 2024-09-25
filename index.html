@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoVortex</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Підключіть CSS файл для стилізації -->
+</head>
+<body>
+    <header>
+        <h1>VideoVortex</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Головна</a></li>
+                <li><a href="#upload">Завантажити</a></li>
+                <li><a href="#videos">Відео</a></li>
+                <li><a href="#about">Про нас</a></li>
+                <li><a href="#contact">Контакти</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <h2>Ласкаво просимо до VideoVortex!</h2>
+            <p>Найкраще місце для перегляду та завантаження відео.</p>
+        </section>
+
+        <section id="upload">
+            <h2>Завантажити відео</h2>
+            <form>
+                <label for="video-title">Назва відео:</label>
+                <input type="text" id="video-title" name="video-title" required>
+                
+                <label for="video-file">Виберіть файл:</label>
+                <input type="file" id="video-file" name="video-file" accept="video/*" required>
+                
+                <button type="submit">Завантажити</button>
+            </form>
+        </section>
+
+        <section id="videos">
+            <h2>Відео</h2>
+            <div class="video-gallery">
+                <!-- Тут можна додати відео, наприклад, за допомогою <video> або <iframe> -->
+                <video width="320" height="240" controls>
+                    <source src="video.mp4" type="video/mp4">
+                    Ваш браузер не підтримує відео тег.
+                </video>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>Про нас</h2>
+            <p>VideoVortex - це платформа, де ви можете ділитися своїми відео з усього світу.</p>
+        </section>
+
+        <section id="contact">
+            <h2>Контакти</h2>
+            <p>Зв'яжіться з нами через електронну пошту: <a href="mailto:info@videovortex.com">info@videovortex.com</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 VideoVortex. Всі права захищені.</p>
+    </footer>
+</body>
+</html>
