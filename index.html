@@ -9,7 +9,7 @@
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background: linear-gradient(45deg, #ff6f61, #6a5acd, #88b04b);
     color: #333;
 }
 
@@ -164,5 +164,65 @@ footer {
     <footer>
         <p>&copy; 2024 VideoVortex. Всі права захищені.</p>
     </footer>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Ініціалізація Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const storage = firebase.storage();
+const db = firebase.firestore();
+
+        document.querySelector('form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('video-title').value;
+        const file = document.getElementById('video-file').files[0];
+
+        if (!file) {
+            alert("Будь ласка, виберіть файл.");
+            return;
+        }
+
+        // Завантаження відео до Firebase Storage
+        const storageRef = storage.ref(`videos/${file.name}`);
+        const uploadTask = storageRef.put(file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log(`Завантаження: ${progress}%`);
+            }, 
+            (error) => {
+                console.error("Помилка при завантаженні: ", error);
+            }, 
+            async () => {
+                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+
+                // Збереження інформації про відео в Firestore
+                await db.collection('videos').add({
+                    title: title,
+                    url: downloadURL,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("Відео успішно завантажено!");
+                document.getElementById('video-title').value = '';
+                document.getElementById('video-file').value = '';
+            }
+        );
+    });
+</script>
+    </script>
 </body>
 </html>
