@@ -216,28 +216,40 @@
         });
 
         // Завантажити відео
-        function loadVideos() {
-            const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = '';
-            database.ref('videos').once('value', function(snapshot) {
-                snapshot.forEach(function(childSnapshot) {
-                    const videoData = childSnapshot.val();
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videoData.url;
-                    videoElement.controls = true;
-                    const titleElement = document.createElement('h3');
-                    titleElement.innerText = videoData.title;
+        // Завантажити відео
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = '';
+    
+    database.ref('videos').once('value')
+        .then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                const videoData = childSnapshot.val();
+                console.log("Loading video:", videoData); // Debugging line
+                
+                const videoElement = document.createElement('video');
+                videoElement.src = videoData.url;
+                videoElement.controls = true;
+                
+                const titleElement = document.createElement('h3');
+                titleElement.innerText = videoData.title;
 
-                    // Check privacy and whitelist
-                    if (videoData.privacy === 'public' || (videoData.privacy === 'private' && videoData.whitelistedEmails.includes(auth.currentUser.email))) {
-                        videoGallery.appendChild(titleElement);
-                        videoGallery.appendChild(videoElement);
-                    }
-                });
-            }).catch((error) => {
-                console.error("Помилка при завантаженні відео:", error);
+                // Check privacy and whitelist
+                const userEmail = auth.currentUser ? auth.currentUser.email : null; // Get the current user's email
+                const isWhitelisted = videoData.whitelistedEmails.includes(userEmail);
+                
+                if (videoData.privacy === 'public' || (videoData.privacy === 'private' && isWhitelisted)) {
+                    videoGallery.appendChild(titleElement);
+                    videoGallery.appendChild(videoElement);
+                } else {
+                    console.log("Video is private and user is not whitelisted:", videoData.title);
+                }
             });
-        }
+        })
+        .catch(function(error) {
+            console.error("Error loading videos:", error);
+        });
+}
     </script>
 </body>
 </html>
