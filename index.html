@@ -159,34 +159,34 @@
         <p>&copy; 2024 VideoVortex. Всі права захищені.</p>
     </footer>
 
-    <!-- Підключаємо Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+    <!-- Підключаємо Firebase 8.x.x -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
         // Конфігурація Firebase
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
-           databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-           projectId: "videovortex-235cd",
-           storageBucket: "videovortex-235cd.appspot.com",
-           messagingSenderId: "681594250269",
-           appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
-           measurementId: "G-PHRT9C7GVP" // Додано для Realtime Database
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "videovortex-235cd",
+            storageBucket: "videovortex-235cd.appspot.com",
+            messagingSenderId: "681594250269",
+            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
+            measurementId: "G-PHRT9C7GVP"
         };
 
         // Ініціалізація Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
-        const database = firebase.database();
+        firebase.initializeApp(firebaseConfig);
+        var storage = firebase.storage();
+        var database = firebase.database();
 
         // Завантаження відео
-        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+        document.getElementById('upload-form').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            const title = document.getElementById('video-title').value;
-            const file = document.getElementById('video-file').files[0];
+            var title = document.getElementById('video-title').value;
+            var file = document.getElementById('video-file').files[0];
 
             if (!file) {
                 alert("Будь ласка, виберіть файл.");
@@ -194,22 +194,22 @@
             }
 
             // Завантаження відео до Firebase Storage
-            const storageRef = storage.ref(`videos/${file.name}`);
-            const uploadTask = storageRef.put(file);
+            var storageRef = storage.ref('videos/' + file.name);
+            var uploadTask = storageRef.put(file);
 
             uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log(`Завантаження: ${progress}%`);
+                function(snapshot) {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Завантаження: ' + progress + '%');
                 }, 
-                (error) => {
+                function(error) {
                     console.error("Помилка при завантаженні: ", error);
                 }, 
-                async () => {
-                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                async function() {
+                    var downloadURL = await storageRef.getDownloadURL();
 
                     // Збереження інформації про відео в Realtime Database
-                    const videoData = {
+                    var videoData = {
                         title: title,
                         url: downloadURL,
                         createdAt: Date.now()
@@ -228,23 +228,24 @@
 
         // Функція для завантаження відео з Realtime Database
         async function loadVideos() {
-            const videoGallery = document.getElementById('video-gallery');
+            var videoGallery = document.getElementById('video-gallery');
             videoGallery.innerHTML = '';
 
-            const snapshot = await database.ref('videos').once('value');
-            snapshot.forEach((childSnapshot) => {
-                const videoData = childSnapshot.val();
-                const videoElement = document.createElement('video');
+            var snapshot = await database.ref('videos').once('value');
+            snapshot.forEach(function(childSnapshot) {
+                var videoData = childSnapshot.val();
+                var videoElement = document.createElement('video');
                 videoElement.src = videoData.url;
                 videoElement.controls = true;
-                videoElement.width = 320;
-                videoElement.height = 240;
+                videoElement.style.width = '300px';
                 videoGallery.appendChild(videoElement);
             });
         }
 
-        // Завантажити відео при завантаженні сторінки
-        window.onload = loadVideos;
+        // Завантажити всі відео при завантаженні сторінки
+        window.onload = function() {
+            loadVideos();
+        };
     </script>
 </body>
 </html>
