@@ -103,8 +103,7 @@
                 document.getElementById("whitelist-container").style.display = 'block'; // Show whitelist management
                 loadVideos(); // Завантажити відео після входу
             }).catch((error) => {
-                alert('Невірний логін або пароль.');
-                console.error("Аутентифікація не вдалася:", error);
+                alert('Невірний логін або пароль: ' + error.message);
             });
         });
 
@@ -137,14 +136,16 @@
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 document.getElementById('progress').innerText = 'Завантаження: ' + progress.toFixed(2) + '%';
             }, function(error) {
-                console.error('Помилка завантаження:', error);
+                alert('Помилка завантаження: ' + error.message);
             }, function() {
                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    const user = auth.currentUser;
                     database.ref('videos').push({
                         title: title,
                         url: downloadURL,
                         privacy: privacy,
-                        whitelistedEmails: [] // Initial empty whitelist
+                        whitelistedEmails: [], // Initial empty whitelist
+                        uploadedBy: user.email // Save the uploader's email
                     });
                     alert("Відео успішно завантажено!");
                     loadVideos(); // Оновити список відео після завантаження
@@ -161,24 +162,25 @@
                 return;
             }
 
-            // Get the current video data
             const user = auth.currentUser;
-            const videoRef = database.ref('videos'); // Adjust as necessary for specific video management
+            const videoRef = database.ref('videos');
 
             videoRef.once('value').then(snapshot => {
+                let found = false;
                 snapshot.forEach(childSnapshot => {
                     const videoData = childSnapshot.val();
-                    if (user.email) {
-                        // Only allow adding to whitelist if user is the one who uploaded the video
-                        if (videoData.whitelistedEmails.includes(user.email)) {
-                            const updatedEmails = [...videoData.whitelistedEmails, emailToAdd];
-                            childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
-                            document.getElementById("whitelist-message").innerText = "Електронну адресу додано до білого списку.";
-                        } else {
-                            document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
-                        }
+                    if (videoData.uploadedBy === user.email) {
+                        found = true;
+                        const updatedEmails = [...videoData.whitelistedEmails, emailToAdd];
+                        childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
+                        document.getElementById("whitelist-message").innerText = "Електронну адресу додано до білого списку.";
                     }
                 });
+                if (!found) {
+                    document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
+                }
+            }).catch((error) => {
+                alert('Помилка: ' + error.message);
             });
         });
 
@@ -191,24 +193,25 @@
                 return;
             }
 
-            // Get the current video data
             const user = auth.currentUser;
-            const videoRef = database.ref('videos'); // Adjust as necessary for specific video management
+            const videoRef = database.ref('videos');
 
             videoRef.once('value').then(snapshot => {
+                let found = false;
                 snapshot.forEach(childSnapshot => {
                     const videoData = childSnapshot.val();
-                    if (user.email) {
-                        // Only allow removing from whitelist if user is the one who uploaded the video
-                        if (videoData.whitelistedEmails.includes(user.email)) {
-                            const updatedEmails = videoData.whitelistedEmails.filter(email => email !== emailToRemove);
-                            childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
-                            document.getElementById("whitelist-message").innerText = "Електронну адресу видалено з білого списку.";
-                        } else {
-                            document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
-                        }
+                    if (videoData.uploadedBy === user.email) {
+                        found = true;
+                        const updatedEmails = videoData.whitelistedEmails.filter(email => email !== emailToRemove);
+                        childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
+                        document.getElementById("whitelist-message").innerText = "Електронну адресу видалено з білого списку.";
                     }
                 });
+                if (!found) {
+                    document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
+                }
+            }).catch((error) => {
+                alert('Помилка: ' + error.message);
             });
         });
 
@@ -231,6 +234,8 @@
                         videoGallery.appendChild(videoElement);
                     }
                 });
+            }).catch((error) => {
+                console.error("Помилка при завантаженні відео:", error);
             });
         }
     </script>
