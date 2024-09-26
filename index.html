@@ -41,6 +41,9 @@
             margin: 10px auto;
             width: 100%;
         }
+        .whitelist-container {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -57,9 +60,21 @@
 
         <input type="text" id="video-title" placeholder="Назва відео">
         <input type="file" id="video-file" accept="video/*">
+        <select id="video-privacy">
+            <option value="public">Публічне</option>
+            <option value="private">Приватне</option>
+        </select>
         <button id="upload-video">Завантажити відео</button>
         <p id="progress"></p>
         <div class="video-container" id="video-gallery"></div>
+
+        <div class="whitelist-container" id="whitelist-container" style="display:none;">
+            <h2>Білий список</h2>
+            <input type="email" id="whitelist-email" placeholder="Email для білого списку">
+            <button id="add-email">Додати до білого списку</button>
+            <button id="remove-email">Видалити з білого списку</button>
+            <p id="whitelist-message"></p>
+        </div>
     </div>
 
     <script>
@@ -85,6 +100,7 @@
 
             auth.signInWithEmailAndPassword(email, password).then(() => {
                 document.getElementById("logout").style.display = 'inline';
+                document.getElementById("whitelist-container").style.display = 'block'; // Show whitelist management
                 loadVideos(); // Завантажити відео після входу
             }).catch((error) => {
                 alert('Невірний логін або пароль.');
@@ -95,6 +111,7 @@
         document.getElementById("logout").addEventListener("click", function() {
             auth.signOut().then(() => {
                 document.getElementById("logout").style.display = 'none';
+                document.getElementById("whitelist-container").style.display = 'none'; // Hide whitelist management
                 alert("Вийшли з системи!");
             }).catch((error) => {
                 console.error("Вихід не вдався:", error);
@@ -106,6 +123,7 @@
             const title = document.getElementById("video-title").value;
             const fileInput = document.getElementById("video-file");
             const file = fileInput.files[0];
+            const privacy = document.getElementById("video-privacy").value;
 
             if (!title || !file) {
                 alert("Будь ласка, введіть назву відео та виберіть файл.");
@@ -124,7 +142,9 @@
                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
                     database.ref('videos').push({
                         title: title,
-                        url: downloadURL
+                        url: downloadURL,
+                        privacy: privacy,
+                        whitelistedEmails: [] // Initial empty whitelist
                     });
                     alert("Відео успішно завантажено!");
                     loadVideos(); // Оновити список відео після завантаження
@@ -132,44 +152,87 @@
             });
         });
 
-        // Завантаження та відображення всіх відео
+        // Додавання електронної адреси до білого списку
+        document.getElementById("add-email").addEventListener("click", function() {
+            const emailToAdd = document.getElementById("whitelist-email").value;
+
+            if (!emailToAdd) {
+                alert("Будь ласка, введіть електронну адресу.");
+                return;
+            }
+
+            // Get the current video data
+            const user = auth.currentUser;
+            const videoRef = database.ref('videos'); // Adjust as necessary for specific video management
+
+            videoRef.once('value').then(snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    const videoData = childSnapshot.val();
+                    if (user.email) {
+                        // Only allow adding to whitelist if user is the one who uploaded the video
+                        if (videoData.whitelistedEmails.includes(user.email)) {
+                            const updatedEmails = [...videoData.whitelistedEmails, emailToAdd];
+                            childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
+                            document.getElementById("whitelist-message").innerText = "Електронну адресу додано до білого списку.";
+                        } else {
+                            document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
+                        }
+                    }
+                });
+            });
+        });
+
+        // Видалення електронної адреси з білого списку
+        document.getElementById("remove-email").addEventListener("click", function() {
+            const emailToRemove = document.getElementById("whitelist-email").value;
+
+            if (!emailToRemove) {
+                alert("Будь ласка, введіть електронну адресу.");
+                return;
+            }
+
+            // Get the current video data
+            const user = auth.currentUser;
+            const videoRef = database.ref('videos'); // Adjust as necessary for specific video management
+
+            videoRef.once('value').then(snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    const videoData = childSnapshot.val();
+                    if (user.email) {
+                        // Only allow removing from whitelist if user is the one who uploaded the video
+                        if (videoData.whitelistedEmails.includes(user.email)) {
+                            const updatedEmails = videoData.whitelistedEmails.filter(email => email !== emailToRemove);
+                            childSnapshot.ref.update({ whitelistedEmails: updatedEmails });
+                            document.getElementById("whitelist-message").innerText = "Електронну адресу видалено з білого списку.";
+                        } else {
+                            document.getElementById("whitelist-message").innerText = "Ви не можете редагувати цей білого списку.";
+                        }
+                    }
+                });
+            });
+        });
+
+        // Завантажити відео
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = ''; // Очищуємо галерею
-
+            videoGallery.innerHTML = '';
             database.ref('videos').once('value', function(snapshot) {
-                if (!snapshot.exists()) {
-                    console.log("Відео не знайдено.");
-                    return;
-                }
-
                 snapshot.forEach(function(childSnapshot) {
                     const videoData = childSnapshot.val();
                     const videoElement = document.createElement('video');
-                    const titleElement = document.createElement('p');
-
-                    titleElement.textContent = videoData.title;
                     videoElement.src = videoData.url;
                     videoElement.controls = true;
+                    const titleElement = document.createElement('h3');
+                    titleElement.innerText = videoData.title;
 
-                    videoGallery.appendChild(titleElement);
-                    videoGallery.appendChild(videoElement);
+                    // Check privacy and whitelist
+                    if (videoData.privacy === 'public' || (videoData.privacy === 'private' && videoData.whitelistedEmails.includes(auth.currentUser.email))) {
+                        videoGallery.appendChild(titleElement);
+                        videoGallery.appendChild(videoElement);
+                    }
                 });
-            }).catch(function(error) {
-                console.error("Помилка при отриманні відео: ", error);
             });
         }
-
-        // Завантажити всі відео при завантаженні сторінки
-        window.onload = function() {
-            auth.onAuthStateChanged(function(user) {
-                if (user) {
-                    loadVideos();
-                } else {
-                    loadVideos(); // Завантажити відео без аутентифікації
-                }
-            });
-        };
     </script>
 </body>
 </html>
