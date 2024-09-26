@@ -73,7 +73,7 @@
             <option value="public">Публічне</option>
             <option value="private">Приватне</option>
         </select>
-        <input type="text" id="whitelist-emails" placeholder="Введіть дозволені email-и через кому">
+        <input type="text" id="whitelist-emails" placeholder="Електронні адреси для приватного відео (через кому)">
         <button id="upload-video">Завантажити відео</button>
         <p id="progress"></p>
         <div class="video-container" id="video-gallery"></div>
@@ -125,8 +125,8 @@
             var fileInput = document.getElementById("video-file");
             var file = fileInput.files[0];
             var privacy = document.getElementById("video-privacy").value;
-            var whitelistEmails = document.getElementById("whitelist-emails").value.split(",").map(email => email.trim());
-            var userEmail = auth.currentUser ? auth.currentUser.email : null;
+            var userId = auth.currentUser ? auth.currentUser.uid : null;
+            var whitelistEmails = document.getElementById("whitelist-emails").value.split(',').map(email => email.trim());
 
             if (!title || !file) {
                 alert("Будь ласка, введіть назву відео та виберіть файл.");
@@ -155,7 +155,7 @@
                         title: title,
                         url: downloadURL,
                         privacy: privacy,
-                        allowedEmails: privacy === "private" ? whitelistEmails : [] // Додаємо електронні адреси, якщо відео приватне
+                        allowedEmails: privacy === "private" ? whitelistEmails : [] // Додаємо електронні адреси до білого списку, якщо відео приватне
                     });
                     alert("Відео успішно завантажено!");
                     loadVideos(); // Оновити список відео після завантаження
@@ -169,17 +169,10 @@
             videoGallery.innerHTML = ''; // Очищуємо галерею
 
             database.ref('videos').once('value', function(snapshot) {
-                if (!snapshot.exists()) {
-                    console.log("Немає жодних відео.");
-                    return;
-                }
-
                 snapshot.forEach(function(childSnapshot) {
                     var videoData = childSnapshot.val();
                     var userEmail = auth.currentUser ? auth.currentUser.email : null;
                     var canView = videoData.privacy === "public" || (videoData.privacy === "private" && videoData.allowedEmails.includes(userEmail));
-
-                    console.log("Перевіряємо відео: ", videoData.title, "Користувач може бачити:", canView);
 
                     if (canView) {
                         var videoElement = document.createElement('video');
@@ -196,13 +189,10 @@
             });
         }
 
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                loadVideos(); // Завантажити відео при вході в систему
-            } else {
-                console.log("Користувач не увійшов у систему.");
-            }
-        });
+        // Завантажити всі відео при завантаженні сторінки
+        window.onload = function() {
+            loadVideos();
+        };
     </script>
 </body>
 </html>
