@@ -184,6 +184,8 @@
 
                         videoGallery.appendChild(titleElement);
                         videoGallery.appendChild(videoElement);
+                    } else {
+                        console.log("Не має доступу до приватного відео");
                     }
                 });
             });
@@ -191,7 +193,11 @@
 
         // Завантажити всі відео при завантаженні сторінки
         window.onload = function() {
-            loadVideos();
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    loadVideos();
+                }
+            });
         };
     </script>
 </body>
