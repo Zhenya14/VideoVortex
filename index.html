@@ -94,9 +94,9 @@
             var uploadTask = storageRef.put(file);
 
             uploadTask.on('state_changed', function(snapshot) {
-                const progress = document.getElementById('progress");
+                const progress2 = document.getElementById('progress");
                 var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                progress.innerHTML = 'Завантаження: ' + progress + '%';
+                progress2.innerHTML = 'Завантаження: ' + progress + '%';
             }, function(error) {
                 console.error('Помилка завантаження:', error);
             }, function() {
