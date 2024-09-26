@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +21,7 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        input[type="text"], input[type="file"] {
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"] {
             margin: 10px 0;
             padding: 10px;
             width: 100%;
@@ -47,13 +48,25 @@
         video {
             display: block;
             margin: 10px auto;
-            width: 100%; /* Робимо відео адаптивним */
+            width: 100%;
+        }
+        .auth-container {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>VideoVortex</h1>
+
+        <div class="auth-container">
+            <h2>Аутентифікація</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Пароль">
+            <button id="login">Увійти</button>
+            <button id="logout" style="display:none;">Вихід</button>
+        </div>
+
         <input type="text" id="video-title" placeholder="Назва відео">
         <input type="file" id="video-file" accept="video/*">
         <select id="video-privacy">
@@ -69,17 +82,41 @@
         // Firebase налаштування
         var firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-  authDomain: "videovortex-235cd.firebaseapp.com",
-  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "videovortex-235cd",
-  storageBucket: "videovortex-235cd.appspot.com",
-  messagingSenderId: "681594250269",
-  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
-  measurementId: "G-PHRT9C7GVP"
+            authDomain: "videovortex-235cd.firebaseapp.com",
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "videovortex-235cd",
+            storageBucket: "videovortex-235cd.appspot.com",
+            messagingSenderId: "681594250269",
+            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
+            measurementId: "G-PHRT9C7GVP"
         };
         firebase.initializeApp(firebaseConfig);
         var storage = firebase.storage();
         var database = firebase.database();
+        var auth = firebase.auth();
+
+        // Аутентифікація
+        document.getElementById("login").addEventListener("click", function() {
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            auth.signInWithEmailAndPassword(email, password).then(() => {
+                document.getElementById("login").style.display = 'none';
+                document.getElementById("logout").style.display = 'inline';
+                alert("Увійшли в систему!");
+                loadVideos(); // Завантажити відео після входу
+            }).catch((error) => {
+                alert(error.message);
+            });
+        });
+
+        document.getElementById("logout").addEventListener("click", function() {
+            auth.signOut().then(() => {
+                document.getElementById("logout").style.display = 'none';
+                document.getElementById("login").style.display = 'inline';
+                alert("Вийшли з системи!");
+            });
+        });
 
         // Завантаження відео
         document.getElementById("upload-video").addEventListener("click", function() {
@@ -87,6 +124,7 @@
             var fileInput = document.getElementById("video-file");
             var file = fileInput.files[0];
             var privacy = document.getElementById("video-privacy").value;
+            var userId = auth.currentUser ? auth.currentUser.uid : null;
 
             if (!title || !file) {
                 alert("Будь ласка, введіть назву відео та виберіть файл.");
@@ -94,9 +132,9 @@
             }
 
             // Перевірка формату файлу
-            var validFormats = ["video/mp4", "video/webm", "video/ogg"];
+            var validFormats = ["video/mp4", "video/webm", "video/ogg", "video/x-msvideo"];
             if (!validFormats.includes(file.type)) {
-                alert("Неправильний формат відео. Завантажте відео у форматі MP4, WEBM або OGG.");
+                alert("Неправильний формат відео. Завантажте відео у форматі MP4, WEBM, OGG або AVI.");
                 return;
             }
 
@@ -114,7 +152,8 @@
                     database.ref('videos').push({
                         title: title,
                         url: downloadURL,
-                        privacy: privacy
+                        privacy: privacy,
+                        allowedUsers: privacy === "private" ? [userId] : [] // Додаємо ID користувача, якщо відео приватне
                     });
                     alert("Відео успішно завантажено!");
                     loadVideos(); // Оновити список відео після завантаження
@@ -130,7 +169,10 @@
             database.ref('videos').once('value', function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
                     var videoData = childSnapshot.val();
-                    if (videoData.privacy === "public") { // Показуємо лише публічні відео
+                    var userId = auth.currentUser ? auth.currentUser.uid : null;
+                    var canView = videoData.privacy === "public" || (videoData.privacy === "private" && videoData.allowedUsers.includes(userId));
+
+                    if (canView) {
                         var videoElement = document.createElement('video');
                         var titleElement = document.createElement('p');
 
