@@ -73,7 +73,7 @@
             <option value="public">Публічне</option>
             <option value="private">Приватне</option>
         </select>
-        <input type="text" id="allowed-emails" placeholder="Дозволені електронні адреси (через кому)" style="display:none;">
+        <input type="text" id="whitelist-emails" placeholder="Введіть дозволені email-и через кому">
         <button id="upload-video">Завантажити відео</button>
         <p id="progress"></p>
         <div class="video-container" id="video-gallery"></div>
@@ -119,23 +119,14 @@
             });
         });
 
-        // Показати поле для введення електронних адрес, якщо вибрано "Приватне" відео
-        document.getElementById('video-privacy').addEventListener('change', function() {
-            if (this.value === 'private') {
-                document.getElementById('allowed-emails').style.display = 'block';
-            } else {
-                document.getElementById('allowed-emails').style.display = 'none';
-            }
-        });
-
         // Завантаження відео
         document.getElementById("upload-video").addEventListener("click", function() {
             var title = document.getElementById("video-title").value;
             var fileInput = document.getElementById("video-file");
             var file = fileInput.files[0];
             var privacy = document.getElementById("video-privacy").value;
-            var allowedEmails = document.getElementById("allowed-emails").value.split(",").map(email => email.trim());
-            var userId = auth.currentUser ? auth.currentUser.uid : null;
+            var whitelistEmails = document.getElementById("whitelist-emails").value.split(",").map(email => email.trim());
+            var userEmail = auth.currentUser ? auth.currentUser.email : null;
 
             if (!title || !file) {
                 alert("Будь ласка, введіть назву відео та виберіть файл.");
@@ -164,7 +155,7 @@
                         title: title,
                         url: downloadURL,
                         privacy: privacy,
-                        allowedEmails: privacy === "private" ? allowedEmails : [] // Додаємо електронні адреси, якщо відео приватне
+                        allowedEmails: privacy === "private" ? whitelistEmails : [] // Додаємо електронні адреси, якщо відео приватне
                     });
                     alert("Відео успішно завантажено!");
                     loadVideos(); // Оновити список відео після завантаження
@@ -181,8 +172,7 @@
                 snapshot.forEach(function(childSnapshot) {
                     var videoData = childSnapshot.val();
                     var userEmail = auth.currentUser ? auth.currentUser.email : null;
-                    var canView = videoData.privacy === "public" || 
-                                  (videoData.privacy === "private" && videoData.allowedEmails.includes(userEmail));
+                    var canView = videoData.privacy === "public" || (videoData.privacy === "private" && videoData.allowedEmails.includes(userEmail));
 
                     if (canView) {
                         var videoElement = document.createElement('video');
