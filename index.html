@@ -153,6 +153,8 @@
                     return;
                 }
 
+                const userEmail = auth.currentUser ? auth.currentUser.email : null; // Отримати email користувача
+
                 snapshot.forEach(function(childSnapshot) {
                     const videoData = childSnapshot.val();
                     const videoElement = document.createElement('video');
@@ -163,9 +165,9 @@
                     videoElement.controls = true;
 
                     // Перевірка на приватність та білого списку
-                    const userEmail = auth.currentUser ? auth.currentUser.email : null;
                     const isWhitelisted = videoData.whitelistedEmails.includes(userEmail);
 
+                    // Відображення відео для публічних та приватних (для авторизованих користувачів у білому списку)
                     if (videoData.privacy === 'public' || (videoData.privacy === 'private' && isWhitelisted)) {
                         videoGallery.appendChild(titleElement);
                         videoGallery.appendChild(videoElement);
@@ -178,8 +180,9 @@
 
         // Завантажити всі відео при завантаженні сторінки
         window.onload = function() {
+            loadVideos(); // Завантажити відео одразу
             auth.onAuthStateChanged(function(user) {
-                loadVideos();
+                // Можна оновити інтерфейс користувача або показати інформацію про авторизацію
             });
         };
     </script>
