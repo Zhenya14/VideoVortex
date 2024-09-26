@@ -42,6 +42,7 @@
         video {
             display: block;
             margin: 10px auto;
+            width: 100%; /* Робимо відео адаптивним */
         }
     </style>
 </head>
@@ -59,7 +60,7 @@
         var firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app", 
             projectId: "videovortex-235cd",
             storageBucket: "videovortex-235cd.appspot.com",
             messagingSenderId: "681594250269",
@@ -123,7 +124,6 @@
                     titleElement.textContent = videoData.title;
                     videoElement.src = videoData.url;
                     videoElement.controls = true;
-                    videoElement.style.width = '300px';
 
                     videoGallery.appendChild(titleElement);
                     videoGallery.appendChild(videoElement);
