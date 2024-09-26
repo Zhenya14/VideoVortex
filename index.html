@@ -149,7 +149,7 @@
 
     database.ref('videos/').once('value').then(function(snapshot) {
         console.log("Loading videos...");
-        
+
         if (!snapshot.exists()) {
             console.log("Відео не знайдено.");
             return;
@@ -160,8 +160,8 @@
 
         snapshot.forEach(function(childSnapshot) {
             const videoData = childSnapshot.val();
-            console.log("Video Data:", videoData);  // Log video data
-            
+            console.log("Video Data:", videoData); // Log video data
+
             // Check if videoData is defined and has expected properties
             if (videoData && videoData.title && videoData.url && videoData.privacy !== undefined) {
                 const videoElement = document.createElement('video');
@@ -171,10 +171,10 @@
                 videoElement.src = videoData.url;
                 videoElement.controls = true;
 
-                // Check if the video is public or if the user is whitelisted for private videos
-                const isWhitelisted = videoData.whitelistedEmails ? videoData.whitelistedEmails.includes(userEmail) : false;
-                
-                if (videoData.privacy === 'public' || (videoData.privacy === 'private' && isWhitelisted)) {
+                // Check if the video is public or if the user is the uploader for private videos
+                const isOwner = videoData.uploadedBy === userEmail; // Check if the current user is the uploader
+
+                if (videoData.privacy === 'public' || (videoData.privacy === 'private' && isOwner)) {
                     videoGallery.appendChild(titleElement);
                     videoGallery.appendChild(videoElement);
                 }
