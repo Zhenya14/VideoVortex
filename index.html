@@ -52,6 +52,7 @@
         <input type="text" id="video-title" placeholder="Назва відео">
         <input type="file" id="video-file" accept="video/*">
         <button id="upload-video">Завантажити відео</button>
+        <p id="progress"></p>
         <div class="video-container" id="video-gallery"></div>
     </div>
 
@@ -93,8 +94,9 @@
             var uploadTask = storageRef.put(file);
 
             uploadTask.on('state_changed', function(snapshot) {
+                const progress = document.getElementById('progress");
                 var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Завантаження: ' + progress + '%');
+                progress.innerHTML = 'Завантаження: ' + progress + '%';
             }, function(error) {
                 console.error('Помилка завантаження:', error);
             }, function() {
