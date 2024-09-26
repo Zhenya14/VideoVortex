@@ -168,6 +168,11 @@
             videoGallery.innerHTML = ''; // Очищуємо галерею
 
             database.ref('videos').once('value', function(snapshot) {
+                if (!snapshot.exists()) {
+                    console.log("Відео не знайдено.");
+                    return;
+                }
+                
                 snapshot.forEach(function(childSnapshot) {
                     var videoData = childSnapshot.val();
                     var userEmail = auth.currentUser ? auth.currentUser.email : null;
@@ -206,6 +211,7 @@
                     loadVideos();
                 } else {
                     console.log("Користувач не авторизований");
+                    loadVideos(); // Завантажити відео без аутентифікації
                 }
             });
         };
