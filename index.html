@@ -156,6 +156,7 @@
                     videoElement.innerHTML = `
                         <video src="${videoData.url}" controls></video>
                         <div class="video-info">
+                            <p>Автор: ${authorInitials}</p>
                             <p>Перегляди: ${videoData.views}</p>
                             <p>Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}</p>
                         </div>
@@ -165,17 +166,6 @@
                     videoGallery.appendChild(videoElement);
                 });
             });
-        }
-
-        // Display video info
-        function displayVideoInfo(videoData) {
-            const authorInitials = videoData.authorName.charAt(0).toUpperCase();
-            alert(`
-                Назва: ${videoData.title}
-                Автор: ${authorInitials}
-                Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}
-                Перегляди: ${videoData.views}
-            `);
         }
 
         // Upload video function
