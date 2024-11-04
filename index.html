@@ -20,6 +20,16 @@
             max-width: 600px;
             margin: 0 auto;
         }
+        nav {
+            background: #00f2fe;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+        }
         input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
             margin: 10px 0;
             padding: 10px;
@@ -44,6 +54,12 @@
     </style>
 </head>
 <body>
+    <nav>
+        <a href="#" id="home-link">Головна</a>
+        <a href="#" id="upload-link">Завантажити відео</a>
+        <a href="#" id="auth-link">Аутентифікація</a>
+    </nav>
+
     <div class="container">
         <h1>VideoVortex</h1>
 
@@ -52,18 +68,23 @@
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Пароль">
             <button id="login">Увійти</button>
+            <button id="register">Реєстрація</button>
             <button id="logout" style="display:none;">Вихід</button>
         </div>
 
-        <input type="text" id="video-title" placeholder="Назва відео">
-        <input type="file" id="video-file" accept="video/*">
-        <select id="privacy">
-            <option value="public">Публічне</option>
-            <option value="private">Приватне</option>
-        </select>
-        <input type="text" id="whitelist-emails" placeholder="Електронні адреси, через кому (для приватних відео)">
-        <button id="upload-video">Завантажити відео</button>
-        <p id="progress"></p>
+        <div id="upload-container" style="display:none;">
+            <h2>Завантажити відео</h2>
+            <input type="text" id="video-title" placeholder="Назва відео">
+            <input type="file" id="video-file" accept="video/*">
+            <select id="privacy">
+                <option value="public">Публічне</option>
+                <option value="private">Приватне</option>
+            </select>
+            <input type="text" id="whitelist-emails" placeholder="Електронні адреси, через кому (для приватних відео)">
+            <button id="upload-video">Завантажити відео</button>
+            <p id="progress"></p>
+        </div>
+
         <div class="video-container" id="video-gallery"></div>
     </div>
 
@@ -90,6 +111,7 @@
 
             auth.signInWithEmailAndPassword(email, password).then(() => {
                 document.getElementById("logout").style.display = 'inline';
+                document.getElementById("upload-container").style.display = 'block';
                 loadVideos(); // Завантажити відео після входу
             }).catch((error) => {
                 alert('Невірний логін або пароль.');
@@ -97,9 +119,22 @@
             });
         });
 
+        document.getElementById("register").addEventListener("click", function() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            auth.createUserWithEmailAndPassword(email, password).then(() => {
+                alert('Реєстрація успішна! Ви можете увійти.');
+            }).catch((error) => {
+                alert('Помилка реєстрації: ' + error.message);
+                console.error("Реєстрація не вдалася:", error);
+            });
+        });
+
         document.getElementById("logout").addEventListener("click", function() {
             auth.signOut().then(() => {
                 document.getElementById("logout").style.display = 'none';
+                document.getElementById("upload-container").style.display = 'none';
                 alert("Вийшли з системи!");
             }).catch((error) => {
                 console.error("Вихід не вдався:", error);
@@ -144,56 +179,52 @@
 
         // Завантаження та відображення всіх відео
         function loadVideos() {
-    const videoGallery = document.getElementById("video-gallery");
-    videoGallery.innerHTML = ''; // Clear the gallery
+            const videoGallery = document.getElementById("video-gallery");
+            videoGallery.innerHTML = ''; // Очищення галереї
 
-    database.ref('videos/').once('value').then(function(snapshot) {
-        console.log("Loading videos...");
-
-        if (!snapshot.exists()) {
-            console.log("Відео не знайдено.");
-            return;
-        }
-
-        const userEmail = auth.currentUser ? auth.currentUser.email : null; // Get user email
-        console.log("User Email:", userEmail);
-
-        snapshot.forEach(function(childSnapshot) {
-            const videoData = childSnapshot.val();
-            console.log("Video Data:", videoData); // Log video data
-
-            // Check if videoData is defined and has expected properties
-            if (videoData && videoData.title && videoData.url && videoData.privacy !== undefined) {
-                const videoElement = document.createElement('video');
-                const titleElement = document.createElement('p');
-
-                titleElement.textContent = videoData.title;
-                videoElement.src = videoData.url;
-                videoElement.controls = true;
-
-                // Check if the video is public or if the user is the uploader for private videos
-                const isOwner = videoData.uploadedBy === userEmail; // Check if the current user is the uploader
-
-                if (videoData.privacy === 'public' || (videoData.privacy === 'private' && isOwner)) {
-                    videoGallery.appendChild(titleElement);
-                    videoGallery.appendChild(videoElement);
+            database.ref('videos/').once('value').then(function(snapshot) {
+                if (!snapshot.exists()) {
+                    console.log("Відео не знайдено.");
+                    return;
                 }
-            } else {
-                console.error("Invalid video data:", videoData);
-            }
-        });
-    }).catch(function(error) {
-        console.error("Помилка при отриманні відео: ", error.message || error);
-    });
-}
 
-        // Завантажити всі відео при завантаженні сторінки
-        window.onload = function() {
-            loadVideos(); // Завантажити відео одразу
-            auth.onAuthStateChanged(function(user) {
-                // Можна оновити інтерфейс користувача або показати інформацію про авторизацію
+                const userEmail = auth.currentUser ? auth.currentUser.email : null; // Отримати email користувача
+
+                snapshot.forEach(function(childSnapshot) {
+                    const videoData = childSnapshot.val();
+
+                    if (videoData && videoData.title && videoData.url && videoData.privacy !== undefined) {
+                        const videoElement = document.createElement('video');
+                        const titleElement = document.createElement('p');
+                        const editButton = document.createElement('button');
+
+                        titleElement.textContent = videoData.title;
+                        videoElement.src = videoData.url;
+                        videoElement.controls = true;
+
+                        const isOwner = videoData.uploadedBy === userEmail; // Перевірка, чи є користувач автором
+
+                        if (videoData.privacy === 'public' || (videoData.privacy === 'private' && videoData.whitelistedEmails.includes(userEmail))) {
+                            videoGallery.appendChild(titleElement);
+                            videoGallery.appendChild(videoElement);
+
+                            if (isOwner) {
+                                editButton.textContent = 'Редагувати назву';
+                                editButton.addEventListener('click', function() {
+                                    const newTitle = prompt("Введіть нову назву для відео:", videoData.title);
+                                    if (newTitle) {
+                                        database.ref('videos/' + childSnapshot.key).update({ title: newTitle });
+                                        alert("Назву відео успішно оновлено!");
+                                        loadVideos(); // Оновити список відео
+                                    }
+                                });
+                                videoGallery.appendChild(editButton);
+                            }
+                        }
+                    }
+                });
             });
-        };
+        }
     </script>
 </body>
 </html>
