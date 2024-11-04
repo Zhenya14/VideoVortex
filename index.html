@@ -57,14 +57,14 @@
             text-align: left;
             margin: 10px auto;
         }
-        .auth-form {
+        .auth-form, .upload-form {
             display: none;
             background-color: #333;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
         }
-        .auth-form input, .auth-form button {
+        .auth-form input, .auth-form button, .upload-form input, .upload-form button {
             width: calc(100% - 20px);
             margin: 10px;
             padding: 10px;
@@ -89,6 +89,14 @@
             <button onclick="signIn()">Увійти</button>
         </div>
 
+        <!-- Форма завантаження відео -->
+        <div class="upload-form" id="upload-form">
+            <h2>Завантажити відео</h2>
+            <input type="text" id="video-title" placeholder="Назва відео">
+            <input type="file" id="video-file" accept="video/*">
+            <button onclick="uploadVideo()">Завантажити</button>
+        </div>
+
         <div class="video-container" id="video-gallery"></div>
     </div>
 
@@ -107,13 +115,19 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Показати/приховати форму аутентифікації
+        // Toggle authentication form
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
         };
+        
+        // Toggle upload form
+        document.getElementById("upload-link").onclick = function() {
+            const uploadForm = document.getElementById("upload-form");
+            uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+        };
 
-        // Функція для входу користувача
+        // Sign-in function
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
@@ -129,7 +143,7 @@
                 });
         }
 
-        // Функція для завантаження відео з Firebase Database
+        // Load videos from Firebase
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
             videoGallery.innerHTML = "";
@@ -147,14 +161,13 @@
                         </div>
                     `;
 
-                    // Подія кліку для відображення інформації про відео
                     videoElement.querySelector("video").onclick = () => displayVideoInfo(videoData);
                     videoGallery.appendChild(videoElement);
                 });
             });
         }
 
-        // Функція для показу додаткової інформації про відео
+        // Display video info
         function displayVideoInfo(videoData) {
             const authorInitials = videoData.authorName.charAt(0).toUpperCase();
             alert(`
@@ -165,7 +178,39 @@
             `);
         }
 
-        // Завантажити відео при завантаженні сторінки
+        // Upload video function
+        function uploadVideo() {
+            const videoTitle = document.getElementById("video-title").value;
+            const videoFile = document.getElementById("video-file").files[0];
+
+            if (videoTitle && videoFile) {
+                const timestamp = Date.now();
+                const videoRef = storage.ref().child(`videos/${videoFile.name}`);
+
+                videoRef.put(videoFile).then((snapshot) => {
+                    snapshot.ref.getDownloadURL().then((url) => {
+                        const videoData = {
+                            title: videoTitle,
+                            url: url,
+                            timestamp: timestamp,
+                            views: 0,
+                            authorName: auth.currentUser.displayName || "Anonymous"
+                        };
+                        
+                        database.ref("videos").push(videoData);
+                        alert("Відео успішно завантажено!");
+                        loadVideos();
+                        document.getElementById("upload-form").style.display = "none";
+                    });
+                }).catch((error) => {
+                    alert("Помилка завантаження відео: " + error.message);
+                });
+            } else {
+                alert("Будь ласка, введіть назву відео та виберіть файл.");
+            }
+        }
+
+        // Load videos on page load
         window.onload = loadVideos;
     </script>
 </body>
