@@ -50,6 +50,31 @@
             display: block;
             margin: 10px auto;
             width: 100%;
+            cursor: pointer;
+        }
+        .video-info {
+            color: #ddd;
+            font-size: 14px;
+        }
+        .author-info {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0077b6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -63,33 +88,10 @@
     <div class="container">
         <h1>VideoVortex</h1>
 
-        <div id="auth-container">
-            <h2>Аутентифікація</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Пароль">
-            <button id="login">Увійти</button>
-            <button id="register">Реєстрація</button>
-            <button id="logout" style="display:none;">Вихід</button>
-        </div>
-
-        <div id="upload-container" style="display:none;">
-            <h2>Завантажити відео</h2>
-            <input type="text" id="video-title" placeholder="Назва відео">
-            <input type="file" id="video-file" accept="video/*">
-            <select id="privacy">
-                <option value="public">Публічне</option>
-                <option value="private">Приватне</option>
-            </select>
-            <input type="text" id="whitelist-emails" placeholder="Електронні адреси, через кому (для приватних відео)">
-            <button id="upload-video">Завантажити відео</button>
-            <p id="progress"></p>
-        </div>
-
         <div class="video-container" id="video-gallery"></div>
     </div>
 
     <script>
-        // Firebase налаштування
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -104,78 +106,7 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        // Аутентифікація
-        document.getElementById("login").addEventListener("click", function() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            auth.signInWithEmailAndPassword(email, password).then(() => {
-                document.getElementById("logout").style.display = 'inline';
-                document.getElementById("upload-container").style.display = 'block';
-                loadVideos(); // Завантажити відео після входу
-            }).catch((error) => {
-                alert('Невірний логін або пароль.');
-                console.error("Аутентифікація не вдалася:", error);
-            });
-        });
-
-        document.getElementById("register").addEventListener("click", function() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            auth.createUserWithEmailAndPassword(email, password).then(() => {
-                alert('Реєстрація успішна! Ви можете увійти.');
-            }).catch((error) => {
-                alert('Помилка реєстрації: ' + error.message);
-                console.error("Реєстрація не вдалася:", error);
-            });
-        });
-
-        document.getElementById("logout").addEventListener("click", function() {
-            auth.signOut().then(() => {
-                document.getElementById("logout").style.display = 'none';
-                document.getElementById("upload-container").style.display = 'none';
-                alert("Вийшли з системи!");
-            }).catch((error) => {
-                console.error("Вихід не вдався:", error);
-            });
-        });
-
-        // Завантаження відео
-        document.getElementById("upload-video").addEventListener("click", function() {
-            const title = document.getElementById("video-title").value;
-            const fileInput = document.getElementById("video-file");
-            const file = fileInput.files[0];
-            const privacy = document.getElementById("privacy").value;
-            const whitelistEmails = document.getElementById("whitelist-emails").value.split(',').map(email => email.trim());
-
-            if (!title || !file) {
-                alert("Будь ласка, введіть назву відео та виберіть файл.");
-                return;
-            }
-
-            const storageRef = storage.ref('videos/' + file.name);
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on('state_changed', function(snapshot) {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById('progress').innerText = 'Завантаження: ' + progress.toFixed(2) + '%';
-            }, function(error) {
-                console.error('Помилка завантаження:', error);
-            }, function() {
-                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                    database.ref('videos').push({
-                        title: title,
-                        url: downloadURL,
-                        privacy: privacy,
-                        whitelistedEmails: whitelistEmails,
-                        uploadedBy: auth.currentUser ? auth.currentUser.email : null
-                    });
-                    alert("Відео успішно завантажено!");
-                    loadVideos(); // Оновити список відео після завантаження
-                });
-            });
-        });
+        window.onload = loadVideos;
 
         // Завантаження та відображення всіх відео
         function loadVideos() {
@@ -188,42 +119,53 @@
                     return;
                 }
 
-                const userEmail = auth.currentUser ? auth.currentUser.email : null; // Отримати email користувача
-
                 snapshot.forEach(function(childSnapshot) {
                     const videoData = childSnapshot.val();
 
-                    if (videoData && videoData.title && videoData.url && videoData.privacy !== undefined) {
+                    if (videoData && videoData.title && videoData.url) {
                         const videoElement = document.createElement('video');
                         const titleElement = document.createElement('p');
-                        const editButton = document.createElement('button');
+                        const viewsElement = document.createElement('p');
+                        const dateElement = document.createElement('p');
+                        const authorElement = document.createElement('div');
 
                         titleElement.textContent = videoData.title;
                         videoElement.src = videoData.url;
                         videoElement.controls = true;
+                        videoElement.addEventListener('click', () => displayVideoInfo(childSnapshot.key, videoData));
 
-                        const isOwner = videoData.uploadedBy === userEmail; // Перевірка, чи є користувач автором
+                        viewsElement.className = 'video-info';
+                        viewsElement.textContent = `Переглядів: ${videoData.views || 0}`;
+                        dateElement.className = 'video-info';
+                        dateElement.textContent = `Дата публікації: ${videoData.date || "Не вказано"}`;
 
-                        if (videoData.privacy === 'public' || (videoData.privacy === 'private' && videoData.whitelistedEmails.includes(userEmail))) {
-                            videoGallery.appendChild(titleElement);
-                            videoGallery.appendChild(videoElement);
-
-                            if (isOwner) {
-                                editButton.textContent = 'Редагувати назву';
-                                editButton.addEventListener('click', function() {
-                                    const newTitle = prompt("Введіть нову назву для відео:", videoData.title);
-                                    if (newTitle) {
-                                        database.ref('videos/' + childSnapshot.key).update({ title: newTitle });
-                                        alert("Назву відео успішно оновлено!");
-                                        loadVideos(); // Оновити список відео
-                                    }
-                                });
-                                videoGallery.appendChild(editButton);
-                            }
-                        }
+                        videoGallery.appendChild(titleElement);
+                        videoGallery.appendChild(videoElement);
+                        videoGallery.appendChild(viewsElement);
+                        videoGallery.appendChild(dateElement);
                     }
                 });
             });
+        }
+
+        // Відображення інформації про відео після натискання
+        function displayVideoInfo(videoId, videoData) {
+            const userEmail = videoData.uploadedBy || "Анонімний автор";
+            const userName = userEmail.split('@')[0];  // Ім'я з email
+            const authorAvatar = document.createElement('div');
+            authorAvatar.className = 'avatar';
+            authorAvatar.textContent = userName.charAt(0).toUpperCase(); // Аватар з ініціалами
+            
+            const authorInfo = document.createElement('div');
+            authorInfo.className = 'author-info';
+            authorInfo.innerHTML = `<div class="avatar">${authorAvatar.textContent}</div><span>${userName}</span>`;
+
+            // Додати кількість переглядів
+            const views = videoData.views || 0;
+            database.ref(`videos/${videoId}/views`).set(views + 1); // Збільшення переглядів
+
+            const videoElement = document.querySelector(`video[src="${videoData.url}"]`);
+            videoElement.parentElement.appendChild(authorInfo); // Додаємо під відео
         }
     </script>
 </body>
