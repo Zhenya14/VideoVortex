@@ -29,6 +29,7 @@
             color: white;
             margin: 0 15px;
             text-decoration: none;
+            cursor: pointer;
         }
         input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
             margin: 10px 0;
@@ -52,29 +53,17 @@
             width: 100%;
             cursor: pointer;
         }
-        .video-info {
-            color: #ddd;
-            font-size: 14px;
+        .auth-form {
+            display: none;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
         }
-        .author-info {
-            margin-top: 10px;
-            font-size: 16px;
-            color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #0077b6;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-right: 10px;
+        .auth-form input, .auth-form button {
+            width: calc(100% - 20px);
+            margin: 10px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -87,6 +76,14 @@
 
     <div class="container">
         <h1>VideoVortex</h1>
+
+        <!-- Форма аутентифікації -->
+        <div class="auth-form" id="auth-form">
+            <h2>Увійти</h2>
+            <input type="email" id="auth-email" placeholder="Електронна пошта">
+            <input type="password" id="auth-password" placeholder="Пароль">
+            <button onclick="signIn()">Увійти</button>
+        </div>
 
         <div class="video-container" id="video-gallery"></div>
     </div>
@@ -102,70 +99,27 @@
             appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
         };
         firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
-        const database = firebase.database();
         const auth = firebase.auth();
 
-        window.onload = loadVideos;
+        // Показати/приховати форму аутентифікації
+        document.getElementById("auth-link").onclick = function() {
+            const authForm = document.getElementById("auth-form");
+            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+        };
 
-        // Завантаження та відображення всіх відео
-        function loadVideos() {
-            const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = ''; // Очищення галереї
+        // Функція для входу користувача
+        function signIn() {
+            const email = document.getElementById("auth-email").value;
+            const password = document.getElementById("auth-password").value;
 
-            database.ref('videos/').once('value').then(function(snapshot) {
-                if (!snapshot.exists()) {
-                    console.log("Відео не знайдено.");
-                    return;
-                }
-
-                snapshot.forEach(function(childSnapshot) {
-                    const videoData = childSnapshot.val();
-
-                    if (videoData && videoData.title && videoData.url) {
-                        const videoElement = document.createElement('video');
-                        const titleElement = document.createElement('p');
-                        const viewsElement = document.createElement('p');
-                        const dateElement = document.createElement('p');
-                        const authorElement = document.createElement('div');
-
-                        titleElement.textContent = videoData.title;
-                        videoElement.src = videoData.url;
-                        videoElement.controls = true;
-                        videoElement.addEventListener('click', () => displayVideoInfo(childSnapshot.key, videoData));
-
-                        viewsElement.className = 'video-info';
-                        viewsElement.textContent = `Переглядів: ${videoData.views || 0}`;
-                        dateElement.className = 'video-info';
-                        dateElement.textContent = `Дата публікації: ${videoData.date || "Не вказано"}`;
-
-                        videoGallery.appendChild(titleElement);
-                        videoGallery.appendChild(videoElement);
-                        videoGallery.appendChild(viewsElement);
-                        videoGallery.appendChild(dateElement);
-                    }
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert("Вхід успішний!");
+                    document.getElementById("auth-form").style.display = "none";
+                })
+                .catch((error) => {
+                    alert("Помилка входу: " + error.message);
                 });
-            });
-        }
-
-        // Відображення інформації про відео після натискання
-        function displayVideoInfo(videoId, videoData) {
-            const userEmail = videoData.uploadedBy || "Анонімний автор";
-            const userName = userEmail.split('@')[0];  // Ім'я з email
-            const authorAvatar = document.createElement('div');
-            authorAvatar.className = 'avatar';
-            authorAvatar.textContent = userName.charAt(0).toUpperCase(); // Аватар з ініціалами
-            
-            const authorInfo = document.createElement('div');
-            authorInfo.className = 'author-info';
-            authorInfo.innerHTML = `<div class="avatar">${authorAvatar.textContent}</div><span>${userName}</span>`;
-
-            // Додати кількість переглядів
-            const views = videoData.views || 0;
-            database.ref(`videos/${videoId}/views`).set(views + 1); // Збільшення переглядів
-
-            const videoElement = document.querySelector(`video[src="${videoData.url}"]`);
-            videoElement.parentElement.appendChild(authorInfo); // Додаємо під відео
         }
     </script>
 </body>
