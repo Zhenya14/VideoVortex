@@ -9,7 +9,66 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        /* CSS code remains unchanged */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        nav {
+            background: #00f2fe;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            background-color: #00f2fe;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .video-container {
+            margin-top: 20px;
+        }
+        video {
+            display: block;
+            margin: 10px auto;
+            width: 100%;
+            cursor: pointer;
+        }
+        .video-info {
+            text-align: left;
+            margin: 10px auto;
+        }
+        .auth-form, .upload-form {
+            display: none;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .auth-form input, .auth-form button, .upload-form input, .upload-form button {
+            width: calc(100% - 20px);
+            margin: 10px;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
