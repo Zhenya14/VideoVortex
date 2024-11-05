@@ -196,6 +196,7 @@
 
         // Load videos with click event to update views
         // Load videos and update views on click
+// Load videos with play event to update views
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
@@ -209,8 +210,10 @@ function loadVideos() {
             videoElement.src = videoData.url;
             videoElement.controls = true;
             videoElement.classList.add("video-item");
-            videoElement.onclick = () => {
-                updateViews(videoKey, videoData.views + 1); // Update views on click
+
+            // Update views on play
+            videoElement.onplay = () => {
+                updateViews(videoKey, videoData.views + 1); // Update views on play
             };
 
             const infoElement = document.createElement("div");
@@ -240,6 +243,7 @@ function loadVideos() {
         });
     });
 }
+
 
 // Update views without authentication check
 function updateViews(videoKey, views) {
