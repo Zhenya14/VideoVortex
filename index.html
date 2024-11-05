@@ -195,57 +195,52 @@
         }
 
         // Load videos from Firebase
-        function loadVideos() {
-            const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = "";
+        // Load videos from Firebase
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoKey = childSnapshot.key; // Key for updating view count
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key; // Key for updating view count
 
-                    const videoElement = document.createElement("video");
-                    videoElement.src = videoData.url;
-                    videoElement.controls = true;
-                    videoElement.classList.add("video-item");
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.controls = true;
+            videoElement.classList.add("video-item");
 
-                    // Update views when the video is played
-                    videoElement.addEventListener("play", () => {
-                        if (videoData.views === undefined) {
-                            videoData.views = 0; // Ensure views is defined
-                        }
-                        updateViews(videoKey, videoData.views + 1); // Increment views by 1
-                    });
-
-                    const avatar = document.createElement("div");
-                    avatar.classList.add("avatar");
-                    avatar.textContent = videoData.author.charAt(0).toUpperCase(); // First letter of author's name
-
-                    const videoInfo = document.createElement("div");
-                    videoInfo.classList.add("video-info");
-                    videoInfo.innerHTML = `
-                        <div class="video-details">
-                            ${avatar.outerHTML}
-                            <strong>${videoData.title}</strong> <br>
-                            Автор: ${videoData.author} <br>
-                            Перегляди: <span class="view-count">${videoData.views || 0}</span>
-                        </div>
-                    `;
-
-                    const videoContainer = document.createElement("div");
-                    videoContainer.classList.add("video-container");
-                    videoContainer.appendChild(videoElement);
-                    videoContainer.appendChild(videoInfo);
-                    videoGallery.appendChild(videoContainer);
-                });
+            // Update views when the video is played
+            videoElement.addEventListener("play", () => {
+                if (videoData.views === undefined) {
+                    videoData.views = 0; // Ensure views is defined
+                }
+                updateViews(videoKey, videoData.views + 1); // Increment views by 1
             });
-        }
 
-        // Update views in the database
-        function updateViews(videoKey, views) {
-            database.ref(`videos/${videoKey}`).update({ views: views });
-            document.querySelector(`.video-info .view-count`).textContent = views; // Update view count display
-        }
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.textContent = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"; // First letter of author's name or "?"
+
+            const videoInfo = document.createElement("div");
+            videoInfo.classList.add("video-info");
+            videoInfo.innerHTML = `
+                <div class="video-details">
+                    ${avatar.outerHTML}
+                    <strong>${videoData.title}</strong> <br>
+                    Автор: ${videoData.author || "Невідомий"} <br>
+                    Перегляди: <span class="view-count">${videoData.views || 0}</span>
+                </div>
+            `;
+
+            const videoContainer = document.createElement("div");
+            videoContainer.classList.add("video-container");
+            videoContainer.appendChild(videoElement);
+            videoContainer.appendChild(videoInfo);
+            videoGallery.appendChild(videoContainer);
+        });
+    });
+}
 
         // Upload video function
         function uploadVideo() {
