@@ -185,7 +185,7 @@
                     document.getElementById("logout-link").style.display = "block"; // Show logout button
                 })
                 .catch((error) => {
-                    alert("Помилка входу: " + error.message);
+                    alert("Невірний логін або пароль.");
                 });
         }
 
@@ -263,7 +263,7 @@
                     });
                 });
             }).catch((error) => {
-                alert("Помилка при завантаженні: " + error.message);
+                alert("Виникла помилка при завантаженні!");
             });
         }
 
