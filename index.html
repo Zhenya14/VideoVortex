@@ -135,6 +135,10 @@
             <input type="text" id="video-title" placeholder="Назва відео">
             <input type="text" id="video-author" placeholder="Ім'я автора">
             <input type="file" id="video-file" accept="video/*">
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+        <progress id="upload-progress" value="0" max="100"></progress>
+        <span id="progress-text">0%</span>
+            </div>
             <button onclick="uploadVideo()">Завантажити</button>
         </div>
 
@@ -244,41 +248,60 @@ function updateViews(videoKey, views) {
 
 
         // Upload video function
-        function uploadVideo() {
-            const title = document.getElementById("video-title").value;
-            const author = document.getElementById("video-author").value;
-            const file = document.getElementById("video-file").files[0];
+        // Upload video function with progress tracking
+function uploadVideo() {
+    const title = document.getElementById("video-title").value;
+    const author = document.getElementById("video-author").value;
+    const file = document.getElementById("video-file").files[0];
 
-            if (!title || !author || !file) {
-                alert("Будь ласка, заповніть всі поля!");
-                return;
-            }
+    if (!title || !author || !file) {
+        alert("Будь ласка, заповніть всі поля!");
+        return;
+    }
 
-            const storageRef = storage.ref("videos/" + file.name);
-            storageRef.put(file).then((snapshot) => {
-                snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const videoData = {
-                        title: title,
-                        author: author,
-                        url: downloadURL,
-                        date: new Date().toISOString(),
-                        views: 0
-                    };
-                    database.ref("videos").push(videoData).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos();
-                    });
+    // Show progress container
+    const progressContainer = document.getElementById("progress-container");
+    const uploadProgress = document.getElementById("upload-progress");
+    const progressText = document.getElementById("progress-text");
+    progressContainer.style.display = "block";
+
+    const storageRef = storage.ref("videos/" + file.name);
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on("state_changed",
+        (snapshot) => {
+            // Track upload progress
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadProgress.value = progress;
+            progressText.textContent = Math.floor(progress) + "%";
+        },
+        (error) => {
+            // Handle errors
+            alert("Виникла помилка при завантаженні!");
+            console.error("Upload failed:", error);
+            progressContainer.style.display = "none";
+        },
+        () => {
+            // Upload completed successfully
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                const videoData = {
+                    title: title,
+                    author: author,
+                    url: downloadURL,
+                    date: new Date().toISOString(),
+                    views: 0
+                };
+                database.ref("videos").push(videoData).then(() => {
+                    alert("Відео завантажено!");
+                    loadVideos();
+                    progressContainer.style.display = "none"; // Hide progress container
+                    uploadProgress.value = 0; // Reset progress bar
+                    progressText.textContent = "0%";
                 });
-            }).catch((error) => {
-                alert("Виникла помилка при завантаженні!");
             });
         }
-
-        // Update views function
-        function updateViews(videoKey, views) {
-            database.ref("videos/" + videoKey).update({ views: views });
+    );
         }
-
         // Log out function
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
