@@ -22,26 +22,30 @@
         align-items: center;
         justify-content: center;
     }
-     nav { 
-        display: flex; /* Встановлює flex-контейнер */
-        justify-content: center; /* Вирівнює елементи по центру */
-        gap: 15px; /* Відступи між елементами */
-        background: #1c1e22; 
-        padding: 10px 20px; 
-        margin-bottom: 20px; 
-        border-radius: 8px; 
-    }
+    nav { 
+    display: flex; /* Встановлює flex-контейнер */
+    justify-content: center; /* Вирівнює елементи по центру */
+    gap: 15px; /* Відступи між елементами */
+    background: #1c1e22; 
+    padding: 10px 20px; 
+    margin-bottom: 20px; 
+    border-radius: 8px; 
+}
 
-    nav a { 
-        color: #ffffff; 
-        text-decoration: none; 
-        font-weight: bold; 
-        transition: color 0.3s ease; 
-    }
+nav a { 
+    color: #ffffff; 
+    text-decoration: none; 
+    font-weight: bold; 
+    padding: 8px 15px; /* Додає відступи для вигляду кнопки */
+    border-radius: 5px; /* Округляє кути для кнопкового ефекту */
+    transition: color 0.3s ease, background 0.3s ease;
+}
 
-    nav a:hover { 
-        color: #4facfe; 
-    }
+nav a:hover { 
+    background-color: #4facfe; /* Додає фон при наведенні */
+    color: #1c1e22; /* Змінює колір тексту при наведенні */
+}
+
     .container { 
         max-width: 800px; 
         margin: 0 auto; 
