@@ -9,67 +9,96 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            text-align: center;
-            padding: 50px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        nav {
-            background: #00f2fe;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-        }
-        button {
-            padding: 10px;
-            background-color: #00f2fe;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .video-container {
-            margin-top: 20px;
-        }
-        video {
-            display: block;
-            margin: 10px auto;
-            width: 100%;
-            cursor: pointer;
-        }
-        .video-info {
-            text-align: left;
-            margin: 10px auto;
-        }
-        .auth-form, .upload-form {
-            display: none;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .auth-form input, .auth-form button, .upload-form input, .upload-form button {
-            width: calc(100% - 20px);
-            margin: 10px;
-            padding: 10px;
-        }
-    </style>
+    body { 
+        font-family: Arial, sans-serif; 
+        background: linear-gradient(to bottom right, #0d324d, #7f5a83); /* Градієнтний фон */
+        color: #ffffff; 
+        text-align: center; 
+        padding: 20px; 
+        margin: 0;
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container { 
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 20px; 
+        background: rgba(0, 0, 0, 0.7); /* Напівпрозорий фон для контейнера */
+        border-radius: 10px; 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    nav { 
+        background: #1c1e22; /* Темний колір фону навігації */
+        padding: 10px 20px; 
+        margin-bottom: 20px; 
+        border-radius: 8px; 
+    }
+
+    nav a { 
+        color: #ffffff; 
+        margin: 0 10px; 
+        text-decoration: none; 
+        font-weight: bold; 
+        transition: color 0.3s ease; 
+    }
+
+    nav a:hover { 
+        color: #4facfe; /* Ефект при наведенні */
+    }
+
+    .form, .upload-form, .auth-form { 
+        display: none; 
+        background: rgba(255, 255, 255, 0.1); /* Напівпрозорий світлий фон для форм */
+        padding: 20px; 
+        border-radius: 10px; 
+        margin-top: 20px;
+    }
+
+    input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
+        width: 100%; 
+        padding: 10px; 
+        margin: 10px 0; 
+        border-radius: 8px; 
+        border: none; 
+        outline: none;
+        font-size: 1em;
+    }
+
+    button { 
+        background: #4facfe; 
+        color: white; 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: background 0.3s ease;
+    }
+
+    button:hover { 
+        background: #00f2fe;
+    }
+
+    .video-container { 
+        margin-top: 20px; 
+    }
+
+    video { 
+        width: 100%; 
+        margin: 10px auto; 
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .video-info { 
+        text-align: left; 
+        color: #b0bec5; /* Світліший сірий для тексту опису */
+        padding: 5px;
+    }
+</style>
+
 </head>
 <body>
     <nav>
