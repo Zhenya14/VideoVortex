@@ -283,10 +283,10 @@ function updateViews(videoKey, views) {
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з системи!");
-                document.getElementById("auth-link").style.display = "block";
+                document.getElementById("auth-link").style.display = "flex";
                 document.getElementById("upload-link").style.display = "none";
                 document.getElementById("logout-link").style.display = "none"; // Hide logout button
-                document.getElementById("auth-form").style.display = "block"; // Show auth form
+                document.getElementById("auth-form").style.display = "flex"; // Show auth form
             });
             window.location.reload();
         };
