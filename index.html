@@ -192,50 +192,52 @@
 
         // Load videos with click event to update views
         function loadVideos() {
-            const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = "";
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoKey = childSnapshot.key; // ключ для оновлення кількості переглядів
-                    const videoElement = document.createElement("video");
-                    videoElement.src = videoData.url;
-                    videoElement.controls = true;
-                    videoElement.classList.add("video-item");
-                    videoElement.onclick = () => updateViews(videoKey, videoData.views + 1); // Оновити перегляди
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key; // ключ для оновлення кількості переглядів
 
-                    const infoElement = document.createElement("div");
-                    infoElement.classList.add("video-info");
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.controls = true;
+            videoElement.classList.add("video-item");
 
-                    // Create avatar
-                    const avatar = document.createElement("div");
-                    avatar.classList.add("avatar");
-                    avatar.style.backgroundColor = getRandomColor();
-
-                    // Handle author
-                    if (videoData.author) {
-                        const initials = videoData.author.charAt(0).toUpperCase();
-                        avatar.textContent = initials;
-                    } else {
-                        avatar.textContent = "?"; // Default for missing author
-                    }
-
-                    // Video details
-                    const videoDetails = document.createElement("div");
-                    videoDetails.classList.add("video-details");
-                    const date = new Date(videoData.date).toLocaleDateString();
-                    videoDetails.innerHTML = `${videoData.author}<br><strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
-
-                    // Append avatar and details
-                    infoElement.appendChild(avatar);
-                    infoElement.appendChild(videoDetails);
-
-                    videoGallery.appendChild(infoElement);
-                    videoGallery.appendChild(videoElement);
-                });
+            // Add 'play' event listener to update views
+            videoElement.addEventListener("play", () => {
+                updateViews(videoKey, videoData.views + 1);
+                videoData.views += 1; // Update locally to reflect changes in real-time
             });
-        }
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
+
+            // Create avatar
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.style.backgroundColor = getRandomColor();
+
+            // Handle author
+            avatar.textContent = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+
+            // Video details
+            const videoDetails = document.createElement("div");
+            videoDetails.classList.add("video-details");
+            const date = new Date(videoData.date).toLocaleDateString();
+            videoDetails.innerHTML = `${videoData.author}<br><strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
+
+            // Append avatar and details
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(videoDetails);
+
+            videoGallery.appendChild(infoElement);
+            videoGallery.appendChild(videoElement);
+        });
+    });
+}
+
 
         // Upload video function
         function uploadVideo() {
