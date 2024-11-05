@@ -201,27 +201,34 @@
                     videoElement.src = videoData.url;
                     videoElement.controls = true;
                     videoElement.classList.add("video-item");
-
-                    // Update views when video is clicked
-                    videoElement.onclick = () => {
-                        updateViews(videoKey, videoData.views + 1); // Оновити перегляди
-                        videoElement.play(); // Автоматичне відтворення відео
-                    };
+                    videoElement.onclick = () => updateViews(videoKey, videoData.views + 1); // Оновити перегляди
 
                     const infoElement = document.createElement("div");
                     infoElement.classList.add("video-info");
-                    infoElement.innerHTML = `<strong>${videoData.title}</strong><br>${videoData.author}<br>Переглядів: ${videoData.views}`;
 
-                    const videoContainer = document.createElement("div");
-                    videoContainer.classList.add("video-container");
-                    videoContainer.appendChild(videoElement);
-                    videoContainer.appendChild(infoElement);
-                    videoGallery.appendChild(videoContainer);
+                    // Create author's avatar
+                    const avatar = document.createElement("div");
+                    avatar.classList.add("avatar");
+                    avatar.style.backgroundColor = getRandomColor(); // Random color for avatar
+                    const initials = videoData.author.charAt(0).toUpperCase();
+                    avatar.textContent = initials;
+
+                    const videoDetails = document.createElement("div");
+                    videoDetails.classList.add("video-details");
+                    const date = new Date(videoData.date).toLocaleDateString(); // Форматування дати
+                    videoDetails.innerHTML = `<strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
+                    
+                    // Append avatar and details
+                    infoElement.appendChild(avatar);
+                    infoElement.appendChild(videoDetails);
+
+                    videoGallery.appendChild(infoElement);
+                    videoGallery.appendChild(videoElement);
                 });
             });
         }
 
-        // Upload video function
+        // Function to upload video
         function uploadVideo() {
             const videoTitle = document.getElementById("video-title").value;
             const authorName = document.getElementById("author-name").value;
@@ -231,49 +238,41 @@
                 const storageRef = storage.ref(`videos/${videoFile.name}`);
                 storageRef.put(videoFile).then(() => {
                     storageRef.getDownloadURL().then((url) => {
-                        const newVideoRef = database.ref("videos").push();
-                        newVideoRef.set({
+                        const videoData = {
                             title: videoTitle,
-                            author: authorName,
                             url: url,
-                            views: 0 // Ініціалізація переглядів
-                        }).then(() => {
-                            alert("Відео успішно завантажено!");
-                            document.getElementById("video-title").value = "";
-                            document.getElementById("author-name").value = "";
-                            loadVideos(); // Оновлення списку відео
-                        });
+                            author: authorName,
+                            date: new Date().toISOString(),
+                            views: 0
+                        };
+                        database.ref("videos").push(videoData);
+                        alert("Відео завантажено!");
+                        loadVideos();
                     });
                 });
-            } else {
-                alert("Будь ласка, виберіть відео для завантаження.");
             }
         }
 
-        // Update views function
-        function updateViews(videoKey, newViewCount) {
-            database.ref(`videos/${videoKey}`).update({ views: newViewCount })
-                .then(() => {
-                    console.log("Кількість переглядів оновлено:", newViewCount);
-                    loadVideos(); // Оновити список відео для відображення нових переглядів
-                })
-                .catch((error) => {
-                    console.error("Помилка оновлення переглядів:", error);
-                });
+        // Function to update views in Firebase
+        function updateViews(videoKey, newViews) {
+            database.ref(`videos/${videoKey}`).update({ views: newViews });
+            loadVideos(); // Reload videos to reflect new view count
         }
 
-        // Logout function
-        document.getElementById("logout-link").onclick = function() {
-            auth.signOut().then(() => {
-                alert("Ви вийшли!");
-                document.getElementById("logout-link").style.display = "none"; // Сховати кнопку "Вихід"
-                document.getElementById("upload-link").style.display = "none"; // Сховати кнопку "Завантажити"
-                document.getElementById("auth-link").style.display = "block"; // Показати кнопку "Увійти"
-            });
-        };
+        // Function to get a random color for the avatar
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
 
         // Load videos on page load
-        window.onload = loadVideos;
+        window.onload = function() {
+            loadVideos();
+        };
     </script>
 </body>
 </html>
