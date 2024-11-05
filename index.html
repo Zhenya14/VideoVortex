@@ -9,13 +9,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
+        /* Ваші стилі */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
         }
-
         nav {
             background-color: #333;
             color: white;
@@ -23,17 +23,14 @@
             display: flex;
             justify-content: space-between;
         }
-
         nav a {
             color: white;
             text-decoration: none;
             margin-left: 15px;
         }
-
         .container {
             padding: 20px;
         }
-
         .auth-form, .upload-form {
             background: white;
             padding: 20px;
@@ -41,7 +38,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         input {
             display: block;
             width: 100%;
@@ -50,7 +46,6 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
         button {
             padding: 10px 15px;
             background-color: #28a745;
@@ -59,11 +54,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #218838;
         }
-
         .video-item {
             width: 100%;
             max-width: 640px;
@@ -72,25 +65,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             background-color: white;
         }
-
-        .video-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: white;
-        }
-
         #progress-container {
             display: none;
             width: 100%;
@@ -98,7 +72,6 @@
             margin-top: 10px;
             border-radius: 4px;
         }
-
         #progress-bar {
             width: 0;
             height: 10px;
@@ -142,36 +115,48 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-            authDomain: "videovortex-235cd.firebaseapp.com",
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "videovortex-235cd",
-            storageBucket: "videovortex-235cd.appspot.com",
-            messagingSenderId: "681594250269",
-            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+            apiKey: "AIzaSyCbk-8Z1msxjBkC-ystVwvXig26bsSHolE",
+
+
+  authDomain: "photo-gallery-20dd5.firebaseapp.com",
+
+
+  databaseURL: "https://photo-gallery-20dd5-default-rtdb.europe-west1.firebasedatabase.app",
+
+
+  projectId: "photo-gallery-20dd5",
+
+
+  storageBucket: "photo-gallery-20dd5.appspot.com",
+
+
+  messagingSenderId: "565100326977",
+
+
+  appId: "1:565100326977:web:c7c02d0082ee24b4ca56c0",
+
+
+  measurementId: "G-H5QHS9YQK4"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Toggle authentication form
         document.getElementById("auth-link").onclick = function() {
-            const authForm = document.getElementById("auth-form");
-            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+            document.getElementById("auth-form").style.display = "block";
         };
 
-        // Toggle upload form
-        document.getElementById("upload-link").onclick = function() {
-            if (auth.currentUser) {
-                const uploadForm = document.getElementById("upload-form");
-                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
-            } else {
-                alert("Будь ласка, увійдіть, щоб завантажити відео.");
-            }
+        document.getElementById("logout-link").onclick = function() {
+            auth.signOut().then(() => {
+                alert("Ви вийшли!");
+                document.getElementById("auth-link").style.display = "block";
+                document.getElementById("upload-link").style.display = "none";
+                document.getElementById("logout-link").style.display = "none";
+                document.getElementById("video-gallery").innerHTML = ""; 
+            });
         };
 
-        // Sign in function
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
@@ -180,78 +165,60 @@
                 .then(() => {
                     alert("Вхід успішний!");
                     document.getElementById("auth-form").style.display = "none";
-                    document.getElementById("auth-link").style.display = "none";
-                    document.getElementById("upload-link").style.display = "flex";
-                    document.getElementById("logout-link").style.display = "flex"; // Show logout button
-                    loadVideos(); // Load videos after successful login
+                    document.getElementById("upload-link").style.display = "block";
+                    document.getElementById("logout-link").style.display = "block";
+                    loadVideos(); 
                 })
                 .catch((error) => {
-                    alert("Невірний логін або пароль.");
+                    alert("Невірний логін або пароль: " + error.message);
                 });
         }
 
-        // Load videos and update views on click
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
             videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoKey = childSnapshot.key; // Key for updating view count
+            database.ref("videos").once("value")
+                .then((snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const videoData = childSnapshot.val();
+                        const videoKey = childSnapshot.key;
 
-                    const videoElement = document.createElement("video");
-                    videoElement.src = videoData.url;
-                    videoElement.controls = true;
-                    videoElement.classList.add("video-item");
-                    videoElement.onclick = () => {
-                        updateViews(videoKey); // Update views on click
-                    };
+                        const videoElement = document.createElement("video");
+                        videoElement.src = videoData.url;
+                        videoElement.controls = true;
+                        videoElement.classList.add("video-item");
+                        videoElement.onclick = () => {
+                            updateViews(videoKey);
+                        };
 
-                    const infoElement = document.createElement("div");
-                    infoElement.classList.add("video-info");
-
-                    // Avatar
-                    const avatar = document.createElement("div");
-                    avatar.classList.add("avatar");
-                    avatar.style.backgroundColor = getRandomColor();
-                    const initials = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
-                    avatar.textContent = initials;
-
-                    // Video details
-                    const videoDetails = document.createElement("div");
-                    videoDetails.classList.add("video-details");
-                    const date = new Date(videoData.date).toLocaleDateString();
-                    videoDetails.innerHTML = `
-                        ${videoData.author}<br>
-                        <strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}
-                    `;
-
-                    // Append avatar and details
-                    infoElement.appendChild(avatar);
-                    infoElement.appendChild(videoDetails);
-                    videoGallery.appendChild(infoElement);
-                    videoGallery.appendChild(videoElement);
-                });
-            });
-        }
-
-        // Update views function
-        function updateViews(videoKey) {
-            // Retrieve the current view count before incrementing
-            database.ref("videos/" + videoKey).once("value").then((snapshot) => {
-                const currentViews = snapshot.val().views || 0; // Get current views, default to 0
-                const newViews = currentViews + 1; // Increment view count
-
-                // Update the view count in the database
-                database.ref("videos/" + videoKey).update({ views: newViews })
-                    .then(() => {
-                        loadVideos(); // Reload videos to show updated views
+                        const videoInfo = document.createElement("div");
+                        videoInfo.innerHTML = `<strong>${videoData.title}</strong> (${videoData.views} переглядів)`;
+                        videoGallery.appendChild(videoInfo);
+                        videoGallery.appendChild(videoElement);
                     });
-            });
+                })
+                .catch((error) => {
+                    console.error("Error loading videos:", error);
+                });
         }
 
-        // Upload video function
+        function updateViews(videoKey) {
+            database.ref("videos/" + videoKey).once("value")
+                .then((snapshot) => {
+                    const currentViews = snapshot.val().views || 0;
+                    const newViews = currentViews + 1;
+
+                    database.ref("videos/" + videoKey).update({ views: newViews })
+                        .then(() => {
+                            loadVideos(); 
+                        })
+                        .catch((error) => {
+                            console.error("Error updating views:", error);
+                        });
+                });
+        }
+
         function uploadVideo() {
             const title = document.getElementById("video-title").value;
             const author = document.getElementById("video-author").value;
@@ -276,12 +243,16 @@
                             date: new Date().toISOString(),
                             views: 0
                         };
-                        database.ref("videos").push(videoData).then(() => {
-                            alert("Відео завантажено!");
-                            document.getElementById("upload-form").reset();
-                            document.getElementById("progress-container").style.display = "none";
-                            loadVideos(); // Reload videos
-                        });
+                        database.ref("videos").push(videoData)
+                            .then(() => {
+                                alert("Відео завантажено!");
+                                document.getElementById("upload-form").reset();
+                                document.getElementById("progress-container").style.display = "none";
+                                loadVideos();
+                            })
+                            .catch((error) => {
+                                console.error("Error uploading video data:", error);
+                            });
                     });
                 });
             } else {
@@ -289,28 +260,6 @@
             }
         }
 
-        // Log out function
-        document.getElementById("logout-link").onclick = function() {
-            auth.signOut().then(() => {
-                alert("Вихід успішний!");
-                document.getElementById("auth-link").style.display = "flex"; // Show login link
-                document.getElementById("upload-link").style.display = "none"; // Hide upload link
-                document.getElementById("logout-link").style.display = "none"; // Hide logout link
-                document.getElementById("video-gallery").innerHTML = ""; // Clear video gallery
-            });
-        };
-
-        // Get a random color for the avatar
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        // Load videos on page load
         window.onload = function() {
             loadVideos();
         };
