@@ -22,8 +22,25 @@
         align-items: center;
         justify-content: center;
     }
-    nav {
-        display: inline;
+     nav { 
+        display: flex; /* Встановлює flex-контейнер */
+        justify-content: center; /* Вирівнює елементи по центру */
+        gap: 15px; /* Відступи між елементами */
+        background: #1c1e22; 
+        padding: 10px 20px; 
+        margin-bottom: 20px; 
+        border-radius: 8px; 
+    }
+
+    nav a { 
+        color: #ffffff; 
+        text-decoration: none; 
+        font-weight: bold; 
+        transition: color 0.3s ease; 
+    }
+
+    nav a:hover { 
+        color: #4facfe; 
     }
     .container { 
         max-width: 800px; 
