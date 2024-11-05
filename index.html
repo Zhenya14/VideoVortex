@@ -8,77 +8,213 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <style>
-        /* Ваші стилі */
-        body {
-            font-family: Arial, sans-serif;
+     <style>
+
+        body { 
+
+            font-family: Arial, sans-serif; 
+
+            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
+
+            color: #ffffff; 
+
+            text-align: center; 
+
+            padding: 20px; 
+
             margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
+
+            min-height: 100vh; 
+
+            display: flex; 
+
+            flex-direction: column; 
+
+            align-items: center;
+
+            
+
         }
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 15px;
+
+        nav { 
+
             display: flex;
+
             justify-content: space-between;
+
+            width: 100%;
+
+            gap: 15px; 
+
+            background: #1c1e22; 
+
+            padding: 10px 20px; 
+
+            margin-bottom: 20px; 
+
+            border-radius: 8px; 
+
         }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
+
+        nav a { 
+
+            color: #ffffff; 
+
+            text-decoration: none; 
+
+            font-weight: bold; 
+
+            padding: 8px 15px; 
+
+            border-radius: 5px; 
+
+            transition: color 0.3s ease, background 0.3s ease
+
+            display: flex; 
+
+            align-items: center; 
+
+            justify-content: center; 
+
         }
-        .container {
-            padding: 20px;
+
+        nav a:hover { 
+
+            background-color: #4facfe; 
+
+            color: #1c1e22; 
+
         }
-        .auth-form, .upload-form {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
+
+        .container { 
+
+            max-width: 800px; 
+
+            margin: 0 auto; 
+
+            padding: 20px; 
+
+            background: rgba(0, 0, 0, 0.7); 
+
+            border-radius: 10px; 
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+        }
+
+        .form, .upload-form, .auth-form { 
+
+            display: none; 
+
+            background: rgba(255, 255, 255, 0.1); 
+
+            padding: 20px; 
+
+            border-radius: 10px; 
+
+            margin-top: 20px;
+
+        }
+
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
+
+            width: 100%; 
+
+            padding: 10px; 
+
+            margin: 10px 0; 
+
+            border-radius: 8px; 
+
+            border: none; 
+
+            outline: none;
+
+            font-size: 1em;
+
+        }
+
+        button { 
+
+            background: #4facfe; 
+
+            color: white; 
+
+            cursor: pointer; 
+
+            font-weight: bold; 
+
+            transition: background 0.3s ease;
+
+        }
+
+        button:hover { 
+
+            background: #00f2fe;
+
+        }
+
+        .video-container { 
+
+            margin-top: 20px; 
+
+        }
+
+        video { 
+
+            width: 100%; 
+
+            margin: 10px auto; 
+
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
         }
-        input {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+
+        .video-info { 
+
+            text-align: left; 
+
+            color: #b0bec5; 
+
+            padding: 5px;
+
         }
-        button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+
+        .avatar {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 50%;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-right: 10px;
+
+            font-weight: bold;
+
+            color: #ffffff;
+
         }
-        button:hover {
-            background-color: #218838;
+
+        .video-details {
+
+            display: inline-block;
+
+            vertical-align: top;
+
+            text-align: left;
+
         }
-        .video-item {
-            width: 100%;
-            max-width: 640px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: white;
-        }
-        #progress-container {
-            display: none;
-            width: 100%;
-            background-color: #f3f3f3;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-        #progress-bar {
-            width: 0;
-            height: 10px;
-            background-color: #4caf50;
-            border-radius: 4px;
-        }
-    </style>
+
+     </style>
 </head>
 <body>
     <nav>
@@ -115,28 +251,28 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCbk-8Z1msxjBkC-ystVwvXig26bsSHolE",
+            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
 
 
-  authDomain: "photo-gallery-20dd5.firebaseapp.com",
+  authDomain: "videovortex-235cd.firebaseapp.com",
 
 
-  databaseURL: "https://photo-gallery-20dd5-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
 
 
-  projectId: "photo-gallery-20dd5",
+  projectId: "videovortex-235cd",
 
 
-  storageBucket: "photo-gallery-20dd5.appspot.com",
+  storageBucket: "videovortex-235cd.appspot.com",
 
 
-  messagingSenderId: "565100326977",
+  messagingSenderId: "681594250269",
 
 
-  appId: "1:565100326977:web:c7c02d0082ee24b4ca56c0",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4",
 
 
-  measurementId: "G-H5QHS9YQK4"
+  measurementId: "G-PHRT9C7GVP"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
