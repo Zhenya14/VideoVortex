@@ -104,7 +104,7 @@
             margin-right: 10px;
             font-weight: bold;
             color: #ffffff;
-            background-color: #4facfe; /* Background color for avatar */
+            background-color: #4facfe; /* Avatar background color */
         }
         .video-details {
             display: inline-block;
@@ -133,7 +133,7 @@
         <div class="upload-form" id="upload-form">
             <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
-            <input type="text" id="video-login" placeholder="Логін автора">
+            <input type="text" id="video-author" placeholder="Ім'я автора">
             <input type="file" id="video-file" accept="video/*">
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
@@ -188,7 +188,6 @@
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex"; // Show logout button
-                    loadVideos(); // Load videos after signing in
                 })
                 .catch((error) => {
                     alert("Невірний логін або пароль.");
@@ -210,83 +209,103 @@
                     videoElement.controls = true;
                     videoElement.classList.add("video-item");
 
-                    // Create avatar with the first letter of the author's login
+                    // Update views when the video is played
+                    videoElement.addEventListener("play", () => {
+                        if (videoData.views === undefined) {
+                            videoData.views = 0; // Ensure views is defined
+                        }
+                        updateViews(videoKey, videoData.views + 1); // Increment views by 1
+                    });
+
                     const avatar = document.createElement("div");
                     avatar.classList.add("avatar");
-                    avatar.textContent = videoData.login.charAt(0).toUpperCase(); // Get first letter of login
+                    avatar.textContent = videoData.author.charAt(0).toUpperCase(); // First letter of author's name
 
                     const videoInfo = document.createElement("div");
                     videoInfo.classList.add("video-info");
+                    videoInfo.innerHTML = `
+                        <div class="video-details">
+                            ${avatar.outerHTML}
+                            <strong>${videoData.title}</strong> <br>
+                            Автор: ${videoData.author} <br>
+                            Перегляди: <span class="view-count">${videoData.views || 0}</span>
+                        </div>
+                    `;
 
-                    // Update view count when the video is played
-                    videoElement.addEventListener("play", () => {
-                        const viewsRef = database.ref("videos/" + videoKey + "/views");
-                        viewsRef.transaction((views) => (views || 0) + 1);
-                    });
-
-                    videoInfo.innerHTML = `<div class="video-details">${avatar.outerHTML} ${videoData.login} <strong>${videoData.title}</strong> (${videoData.views || 0} переглядів)</div>`;
-                    videoGallery.appendChild(videoInfo);
-                    videoGallery.appendChild(videoElement);
+                    const videoContainer = document.createElement("div");
+                    videoContainer.classList.add("video-container");
+                    videoContainer.appendChild(videoElement);
+                    videoContainer.appendChild(videoInfo);
+                    videoGallery.appendChild(videoContainer);
                 });
             });
         }
 
+        // Update views in the database
+        function updateViews(videoKey, views) {
+            database.ref(`videos/${videoKey}`).update({ views: views });
+            document.querySelector(`.video-info .view-count`).textContent = views; // Update view count display
+        }
+
         // Upload video function
         function uploadVideo() {
-            const videoTitle = document.getElementById("video-title").value;
-            const videoLogin = document.getElementById("video-login").value;
-            const videoFile = document.getElementById("video-file").files[0];
+            const title = document.getElementById("video-title").value;
+            const author = document.getElementById("video-author").value;
+            const file = document.getElementById("video-file").files[0];
+            const storageRef = storage.ref(`videos/${file.name}`);
+            const uploadTask = storageRef.put(file);
 
-            if (!videoTitle || !videoLogin || !videoFile) {
-                alert("Будь ласка, заповніть всі поля.");
-                return;
-            }
-
-            const storageRef = storage.ref("videos/" + videoFile.name);
-            const uploadTask = storageRef.put(videoFile);
-
-            document.getElementById("progress-container").style.display = "block";
             uploadTask.on("state_changed", 
                 (snapshot) => {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById("progress-container").style.display = "block";
                     document.getElementById("upload-progress").value = progress;
-                    document.getElementById("progress-text").textContent = Math.round(progress) + "%";
+                    document.getElementById("progress-text").innerText = Math.round(progress) + "%";
                 }, 
                 (error) => {
-                    alert("Помилка завантаження: " + error.message);
+                    alert("Error uploading video: " + error.message);
                 }, 
                 () => {
                     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        const newVideoRef = database.ref("videos").push();
-                        newVideoRef.set({
-                            title: videoTitle,
-                            login: videoLogin,
+                        database.ref("videos").push({
+                            title: title,
+                            author: author,
                             url: downloadURL,
                             views: 0
                         });
-                        document.getElementById("upload-form").reset();
+                        document.getElementById("video-title").value = "";
+                        document.getElementById("video-author").value = "";
+                        document.getElementById("video-file").value = "";
                         document.getElementById("progress-container").style.display = "none";
-                        alert("Відео успішно завантажено!");
-                        loadVideos(); // Reload videos after upload
+                        loadVideos(); // Reload videos after uploading
                     });
                 }
             );
         }
 
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById("upload-link").style.display = "flex";
+                document.getElementById("logout-link").style.display = "flex";
+                document.getElementById("auth-link").style.display = "none";
+                loadVideos(); // Load videos when user is authenticated
+            } else {
+                document.getElementById("upload-link").style.display = "none";
+                document.getElementById("logout-link").style.display = "none";
+                document.getElementById("auth-link").style.display = "flex";
+            }
+        });
+
         // Logout function
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
-                alert("Ви вийшли з системи.");
-                document.getElementById("upload-link").style.display = "none";
-                document.getElementById("logout-link").style.display = "none";
-                loadVideos(); // Reload videos after logout
+                alert("Ви вийшли.");
             });
         };
 
         // Load videos on page load
-        window.onload = function() {
-            loadVideos();
-        };
+        window.onload = loadVideos;
     </script>
 </body>
 </html>
