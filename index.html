@@ -198,17 +198,21 @@
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
-            const videoKey = childSnapshot.key; // ключ для оновлення кількості переглядів
+            const videoKey = childSnapshot.key;
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.controls = true;
             videoElement.classList.add("video-item");
 
-            // Add 'play' event listener to update views
+            // Log to check if play event listener is added
+            console.log(`Adding play listener to video: ${videoData.title}`);
+            
             videoElement.addEventListener("play", () => {
-                updateViews(videoKey, videoData.views + 1);
-                videoData.views += 1; // Update locally to reflect changes in real-time
+                console.log(`Video played: ${videoData.title}`); // Log when video starts
+                const newViews = videoData.views + 1;
+                updateViews(videoKey, newViews); 
+                videoData.views = newViews; // Update view count locally
             });
 
             const infoElement = document.createElement("div");
@@ -218,8 +222,6 @@
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.style.backgroundColor = getRandomColor();
-
-            // Handle author
             avatar.textContent = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
 
             // Video details
@@ -228,14 +230,26 @@
             const date = new Date(videoData.date).toLocaleDateString();
             videoDetails.innerHTML = `${videoData.author}<br><strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
 
-            // Append avatar and details
             infoElement.appendChild(avatar);
             infoElement.appendChild(videoDetails);
 
             videoGallery.appendChild(infoElement);
             videoGallery.appendChild(videoElement);
         });
+    }).catch((error) => {
+        console.error("Error loading videos:", error);
     });
+}
+
+function updateViews(videoKey, views) {
+    console.log(`Updating views for ${videoKey} to ${views}`); // Log update attempt
+    database.ref("videos/" + videoKey).update({ views: views })
+        .then(() => {
+            console.log("Views updated successfully");
+        })
+        .catch((error) => {
+            console.error("Error updating views:", error);
+        });
 }
 
 
