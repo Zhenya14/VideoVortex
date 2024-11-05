@@ -116,7 +116,7 @@
     <nav>
         <h1>VideoVortex</h1>
         <a href="#" id="home-link">Головна</a>
-        <a href="#" id="upload-link">Завантажити відео</a>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
         <a href="#" id="auth-link">Аутентифікація</a>
         <a href="#" id="logout-link" style="display: none;">Вихід</a>
     </nav>
@@ -224,7 +224,7 @@
                     const videoDetails = document.createElement("div");
                     videoDetails.classList.add("video-details");
                     const date = new Date(videoData.date).toLocaleDateString();
-                    videoDetails.innerHTML = `<strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
+                    videoDetails.innerHTML = `${videoData.author}<br><strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
 
                     // Append avatar and details
                     infoElement.appendChild(avatar);
