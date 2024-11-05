@@ -196,6 +196,7 @@
 
         // Load videos with click event to update views
         // Load videos and update views on click
+// Load videos and update views on click
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
@@ -209,8 +210,14 @@ function loadVideos() {
             videoElement.src = videoData.url;
             videoElement.controls = true;
             videoElement.classList.add("video-item");
+
+            // Handle click event to update views and play the video
             videoElement.onclick = () => {
-                updateViews(videoKey, videoData.views + 1); // Update views on click
+                // Update views only if the video is clicked from a mobile device
+                if (isMobileDevice()) {
+                    updateViews(videoKey, videoData.views + 1); // Update views on click
+                }
+                videoElement.play(); // Play the video
             };
 
             const infoElement = document.createElement("div");
@@ -241,7 +248,12 @@ function loadVideos() {
     });
 }
 
-// Update views without authentication check
+// Check if the user is on a mobile device
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
+// Update views function
 function updateViews(videoKey, views) {
     database.ref("videos/" + videoKey).update({ views: views });
 }
