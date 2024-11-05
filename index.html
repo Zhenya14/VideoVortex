@@ -1,4 +1,197 @@
-// Load videos and update views on click
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoVortex</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
+            color: #ffffff; 
+            text-align: center; 
+            padding: 20px; 
+            margin: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+        }
+        nav { 
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 15px; 
+            background: #1c1e22; 
+            padding: 10px 20px; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+        }
+        nav a { 
+            color: #ffffff; 
+            text-decoration: none; 
+            font-weight: bold; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            transition: color 0.3s ease, background 0.3s ease
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        nav a:hover { 
+            background-color: #4facfe; 
+            color: #1c1e22; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .form, .upload-form, .auth-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+        button { 
+            background: #4facfe; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+        button:hover { 
+            background: #00f2fe;
+        }
+        .video-container { 
+            margin-top: 20px; 
+        }
+        video { 
+            width: 100%; 
+            margin: 10px auto; 
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>VideoVortex</h1>
+        <a href="#" id="home-link">Головна</a>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
+        <a href="#" id="auth-link">Увійти</a>
+        <a href="#" id="logout-link" style="display: none;">Вийти</a>
+    </nav>
+
+    <div class="container">
+        <div class="auth-form" id="auth-form">
+            <h2>Увійти</h2>
+            <input type="email" id="auth-email" placeholder="Електронна пошта">
+            <input type="password" id="auth-password" placeholder="Пароль">
+            <button onclick="signIn()">Увійти</button>
+        </div>
+
+        <div class="upload-form" id="upload-form">
+            <h2>Завантажити відео</h2>
+            <input type="text" id="video-title" placeholder="Назва відео">
+            <input type="text" id="video-author" placeholder="Ім'я автора">
+            <input type="file" id="video-file" accept="video/*">
+            <button onclick="uploadVideo()">Завантажити</button>
+        </div>
+
+        <div class="video-container" id="video-gallery"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+            authDomain: "videovortex-235cd.firebaseapp.com",
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "videovortex-235cd",
+            storageBucket: "videovortex-235cd.appspot.com",
+            messagingSenderId: "681594250269",
+            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Toggle authentication form
+        document.getElementById("auth-link").onclick = function() {
+            const authForm = document.getElementById("auth-form");
+            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+        };
+
+        // Toggle upload form, only show if user is authenticated
+        document.getElementById("upload-link").onclick = function() {
+            if (auth.currentUser) {
+                const uploadForm = document.getElementById("upload-form");
+                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
+            }
+        };
+
+        // Sign in function
+        function signIn() {
+            const email = document.getElementById("auth-email").value;
+            const password = document.getElementById("auth-password").value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert("Вхід успішний!");
+                    document.getElementById("auth-form").style.display = "none";
+                    document.getElementById("auth-link").style.display = "none";
+                    document.getElementById("upload-link").style.display = "flex";
+                    document.getElementById("logout-link").style.display = "flex"; // Show logout button
+                })
+                .catch((error) => {
+                    alert("Невірний логін або пароль.");
+                });
+        }
+
+        // Load videos with click event to update views
+        // Load videos and update views on click
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
@@ -49,7 +242,68 @@ function updateViews(videoKey, views) {
     database.ref("videos/" + videoKey).update({ views: views });
 }
 
-// Load videos on page load
-window.onload = function() {
-    loadVideos();
-};
+
+        // Upload video function
+        function uploadVideo() {
+            const title = document.getElementById("video-title").value;
+            const author = document.getElementById("video-author").value;
+            const file = document.getElementById("video-file").files[0];
+
+            if (!title || !author || !file) {
+                alert("Будь ласка, заповніть всі поля!");
+                return;
+            }
+
+            const storageRef = storage.ref("videos/" + file.name);
+            storageRef.put(file).then((snapshot) => {
+                snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    const videoData = {
+                        title: title,
+                        author: author,
+                        url: downloadURL,
+                        date: new Date().toISOString(),
+                        views: 0
+                    };
+                    database.ref("videos").push(videoData).then(() => {
+                        alert("Відео завантажено!");
+                        loadVideos();
+                    });
+                });
+            }).catch((error) => {
+                alert("Виникла помилка при завантаженні!");
+            });
+        }
+
+        // Update views function
+        function updateViews(videoKey, views) {
+            database.ref("videos/" + videoKey).update({ views: views });
+        }
+
+        // Log out function
+        document.getElementById("logout-link").onclick = function() {
+            auth.signOut().then(() => {
+                alert("Ви вийшли з системи!");
+                document.getElementById("auth-link").style.display = "block";
+                document.getElementById("upload-link").style.display = "none";
+                document.getElementById("logout-link").style.display = "none"; // Hide logout button
+                document.getElementById("auth-form").style.display = "block"; // Show auth form
+            });
+        };
+
+        // Get random color for avatar
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Load videos on page load
+        window.onload = function() {
+            loadVideos();
+        };
+    </script>
+</body>
+</html>
