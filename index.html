@@ -149,80 +149,84 @@
         }
 
         // Load videos with click event to update views
-        function loadVideos() {
-            const videoGallery = document.getElementById("video-gallery");
-            videoGallery.innerHTML = "";
+        // Додаємо прослуховувач події на кожне відео після завантаження галереї
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoElement = document.createElement("div");
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key; // ключ для оновлення кількості переглядів
+            const videoElement = document.createElement("div");
 
-                    videoElement.innerHTML = `
-                        <video src="${videoData.url}" controls></video>
-                        <div class="video-info">
-                            <p>Перегляди: ${videoData.views}</p>
-                            <p>Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}</p>
-                            <p>Назва: ${videoData.title}</p>
-                            <p>Автор: ${videoData.authorName ? videoData.authorName : "Невідомий автор"}</p>
-                        </div>
-                    `;
+            videoElement.innerHTML = `
+                <video src="${videoData.url}" controls onclick="increaseViews('${videoKey}')"></video>
+                <div class="video-info">
+                    <p>Перегляди: ${videoData.views}</p>
+                    <p>Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}</p>
+                    <p>Назва: ${videoData.title}</p>
+                    <p>Автор: ${videoData.authorName ? videoData.authorName.charAt(0).toUpperCase() : "Невідомий автор"}</p>
+                </div>
+            `;
 
-                    // Update views on video play
-                    const videoTag = videoElement.querySelector("video");
-                    videoTag.onclick = function() {
-                        database.ref("videos/" + childSnapshot.key).update({
-                            views: (videoData.views || 0) + 1
-                        });
-                    };
+            videoGallery.appendChild(videoElement);
+        });
+    });
+}
 
-                    videoGallery.appendChild(videoElement);
-                });
-            });
-        }
+// Функція для збільшення кількості переглядів
+function increaseViews(videoKey) {
+    const videoRef = database.ref("videos/" + videoKey + "/views");
+    videoRef.transaction((currentViews) => {
+        return (currentViews || 0) + 1;
+    });
+}
+
 
         // Video upload function, restricted to authenticated users
-        function uploadVideo() {
-            if (!auth.currentUser) {
-                alert("Ви повинні бути авторизовані, щоб завантажити відео.");
-                return;
-            }
+        // Перевірка авторизації перед завантаженням відео
+function uploadVideo() {
+    if (!auth.currentUser) {
+        alert("Тільки авторизовані користувачі можуть завантажувати відео.");
+        return;
+    }
 
-            const title = document.getElementById("video-title").value;
-            const videoFile = document.getElementById("video-file").files[0];
+    const title = document.getElementById("video-title").value;
+    const videoFile = document.getElementById("video-file").files[0];
 
-            if (!title || !videoFile) {
-                alert("Будь ласка, введіть назву відео та виберіть файл.");
-                return;
-            }
+    if (!title || !videoFile) {
+        alert("Будь ласка, введіть назву відео та виберіть файл.");
+        return;
+    }
 
-            const storageRef = storage.ref(`videos/${videoFile.name}`);
-            const uploadTask = storageRef.put(videoFile);
+    const storageRef = storage.ref(`videos/${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(`Завантаження: ${progress}%`);
-            }, (error) => {
-                alert("Помилка завантаження: " + error.message);
-            }, () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const videoData = {
-                        title: title,
-                        url: downloadURL,
-                        views: 0,
-                        timestamp: Date.now(),
-                        authorName: auth.currentUser.email
-                    };
+    uploadTask.on('state_changed', (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Завантаження: ${progress}%`);
+    }, (error) => {
+        alert("Помилка завантаження: " + error.message);
+    }, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            const videoData = {
+                title: title,
+                url: downloadURL,
+                views: 0,
+                timestamp: Date.now(),
+                authorName: auth.currentUser ? auth.currentUser.email : "Невідомий автор"
+            };
 
-                    database.ref("videos").push(videoData).then(() => {
-                        alert("Відео успішно завантажено!");
-                        loadVideos();
-                        document.getElementById("upload-form").reset();
-                        document.getElementById("upload-form").style.display = "none";
-                    });
-                });
+            database.ref("videos").push(videoData).then(() => {
+                alert("Відео успішно завантажено!");
+                loadVideos();
+                document.getElementById("upload-form").reset();
+                document.getElementById("upload-form").style.display = "none";
             });
-        }
+        });
+    });
+}
 
         // Load videos when page loads
         window.onload = loadVideos;
