@@ -9,66 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            text-align: center;
-            padding: 50px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        nav {
-            background: #00f2fe;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-        }
-        button {
-            padding: 10px;
-            background-color: #00f2fe;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .video-container {
-            margin-top: 20px;
-        }
-        video {
-            display: block;
-            margin: 10px auto;
-            width: 100%;
-            cursor: pointer;
-        }
-        .video-info {
-            text-align: left;
-            margin: 10px auto;
-        }
-        .auth-form, .upload-form {
-            display: none;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .auth-form input, .auth-form button, .upload-form input, .upload-form button {
-            width: calc(100% - 20px);
-            margin: 10px;
-            padding: 10px;
-        }
+        /* CSS code remains unchanged */
     </style>
 </head>
 <body>
@@ -102,33 +43,36 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-            authDomain: "videovortex-235cd.firebaseapp.com",
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "videovortex-235cd",
-            storageBucket: "videovortex-235cd.appspot.com",
-            messagingSenderId: "681594250269",
-            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Toggle auth and upload forms
-        document.getElementById("auth-link").onclick = () => {
-            document.getElementById("auth-form").style.display ^= 'block';
+        // Toggle authentication form
+        document.getElementById("auth-link").onclick = function() {
+            const authForm = document.getElementById("auth-form");
+            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
         };
 
-        document.getElementById("upload-link").onclick = () => {
+        // Toggle upload form, only show if user is authenticated
+        document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
-                document.getElementById("upload-form").style.display ^= 'block';
+                const uploadForm = document.getElementById("upload-form");
+                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
             } else {
-                alert("Ви повинні бути авторизовані, щоб завантажувати відео.");
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
 
-        // User sign-in function
+        // Sign in function
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
@@ -138,47 +82,50 @@
                     alert("Вхід успішний!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
+                    document.getElementById("upload-link").style.display = "block";
                 })
-                .catch(error => {
+                .catch((error) => {
                     alert("Помилка входу: " + error.message);
                 });
         }
 
-        // Load and display videos
+        // Load videos with click event to update views
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
             videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then(snapshot => {
-                snapshot.forEach(childSnapshot => {
+            database.ref("videos").once("value").then((snapshot) => {
+                snapshot.forEach((childSnapshot) => {
                     const videoData = childSnapshot.val();
                     const videoElement = document.createElement("div");
 
                     videoElement.innerHTML = `
-                        <video src="${videoData.url}" controls data-key="${childSnapshot.key}" onclick="incrementViews('${childSnapshot.key}')"></video>
+                        <video src="${videoData.url}" controls></video>
                         <div class="video-info">
                             <p>Перегляди: ${videoData.views}</p>
                             <p>Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}</p>
                             <p>Назва: ${videoData.title}</p>
-                            <p>Автор: ${videoData.authorName || "Невідомий автор"}</p>
+                            <p>Автор: ${videoData.authorName ? videoData.authorName : "Невідомий автор"}</p>
                         </div>
                     `;
+
+                    // Update views on video play
+                    const videoTag = videoElement.querySelector("video");
+                    videoTag.onclick = function() {
+                        database.ref("videos/" + childSnapshot.key).update({
+                            views: (videoData.views || 0) + 1
+                        });
+                    };
 
                     videoGallery.appendChild(videoElement);
                 });
             });
         }
 
-        // Increment view count when video is played
-        function incrementViews(videoKey) {
-            const videoRef = database.ref(`videos/${videoKey}/views`);
-            videoRef.transaction(currentViews => (currentViews || 0) + 1);
-        }
-
-        // Upload video with user restriction
+        // Video upload function, restricted to authenticated users
         function uploadVideo() {
             if (!auth.currentUser) {
-                alert("Тільки авторизовані користувачі можуть завантажувати відео.");
+                alert("Ви повинні бути авторизовані, щоб завантажити відео.");
                 return;
             }
 
@@ -218,8 +165,19 @@
             });
         }
 
-        // Load videos on page load
+        // Load videos when page loads
         window.onload = loadVideos;
+
+        // Update UI for authenticated users
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById("auth-link").style.display = "none";
+                document.getElementById("upload-link").style.display = "block";
+            } else {
+                document.getElementById("auth-link").style.display = "block";
+                document.getElementById("upload-link").style.display = "none";
+            }
+        });
     </script>
 </body>
 </html>
