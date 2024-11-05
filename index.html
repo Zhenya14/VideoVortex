@@ -181,8 +181,8 @@
                     alert("Вхід успішний!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
-                    document.getElementById("upload-link").style.display = "block";
-                    document.getElementById("logout-link").style.display = "block"; // Show logout button
+                    document.getElementById("upload-link").style.display = "flex";
+                    document.getElementById("logout-link").style.display = "flex"; // Show logout button
                 })
                 .catch((error) => {
                     alert("Невірний логін або пароль.");
