@@ -133,7 +133,7 @@
             <input type="text" id="video-title" placeholder="Назва відео">
             <input type="text" id="author-name" placeholder="Ваше ім'я">
             <input type="file" id="video-file" accept="video/*">
-            <button onclick="uploadVideo()">Завантажити</button>
+            <button id="upload-button" onclick="uploadVideo()" disabled>Завантажити</button> <!-- Disabled by default -->
         </div>
 
         <div class="video-container" id="video-gallery"></div>
@@ -165,6 +165,7 @@
             if (auth.currentUser) {
                 const uploadForm = document.getElementById("upload-form");
                 uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                document.getElementById("upload-button").disabled = false; // Enable upload button if authenticated
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
@@ -182,6 +183,7 @@
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "block";
                     document.getElementById("logout-link").style.display = "block"; // Показати кнопку "Вихід"
+                    document.getElementById("upload-button").disabled = false; // Enable upload button
                 })
                 .catch((error) => {
                     alert("Помилка входу: " + error.message);
@@ -203,76 +205,91 @@
                     videoElement.classList.add("video-item");
                     videoElement.onclick = () => updateViews(videoKey, videoData.views + 1); // Оновити перегляди
 
-                    const infoElement = document.createElement("div");
-                    infoElement.classList.add("video-info");
-
-                    // Create author's avatar
-                    const avatar = document.createElement("div");
-                    avatar.classList.add("avatar");
-                    avatar.style.backgroundColor = getRandomColor(); // Random color for avatar
-                    const initials = videoData.author.charAt(0).toUpperCase();
-                    avatar.textContent = initials;
-
-                    const videoDetails = document.createElement("div");
-                    videoDetails.classList.add("video-details");
-                    const date = new Date(videoData.date).toLocaleDateString(); // Форматування дати
-                    videoDetails.innerHTML = `<strong>${videoData.title}</strong> <span>(${videoData.views} переглядів)</span><br>${date}`;
+                    const videoInfo = document.createElement("div");
+                    videoInfo.className = "video-info";
+                    videoInfo.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author} | Перегляди: ${videoData.views}`;
                     
-                    // Append avatar and details
-                    infoElement.appendChild(avatar);
-                    infoElement.appendChild(videoDetails);
-
-                    videoGallery.appendChild(infoElement);
-                    videoGallery.appendChild(videoElement);
+                    const videoDetails = document.createElement("div");
+                    videoDetails.className = "video-details";
+                    videoDetails.appendChild(videoInfo);
+                    videoDetails.appendChild(videoElement);
+                    
+                    videoGallery.appendChild(videoDetails);
                 });
             });
         }
 
-        // Function to upload video
+        // Upload video function
         function uploadVideo() {
-            const videoTitle = document.getElementById("video-title").value;
-            const authorName = document.getElementById("author-name").value;
-            const videoFile = document.getElementById("video-file").files[0];
+            const title = document.getElementById("video-title").value;
+            const author = document.getElementById("author-name").value;
+            const file = document.getElementById("video-file").files[0];
+            const storageRef = storage.ref(`videos/${file.name}`);
+            const uploadTask = storageRef.put(file);
 
-            if (videoFile) {
-                const storageRef = storage.ref(`videos/${videoFile.name}`);
-                storageRef.put(videoFile).then(() => {
-                    storageRef.getDownloadURL().then((url) => {
+            uploadTask.on("state_changed", 
+                (snapshot) => {},
+                (error) => {
+                    console.error("Помилка завантаження:", error);
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         const videoData = {
-                            title: videoTitle,
-                            url: url,
-                            author: authorName,
-                            date: new Date().toISOString(),
-                            views: 0
+                            title: title,
+                            author: author,
+                            url: downloadURL,
+                            views: 0,
                         };
-                        database.ref("videos").push(videoData);
-                        alert("Відео завантажено!");
-                        loadVideos();
+                        database.ref("videos").push(videoData)
+                            .then(() => {
+                                alert("Відео успішно завантажено!");
+                                loadVideos();
+                            })
+                            .catch((error) => {
+                                console.error("Помилка збереження відео:", error);
+                            });
                     });
+                }
+            );
+        }
+
+        // Update views count
+        function updateViews(videoKey, newViewsCount) {
+            database.ref(`videos/${videoKey}`).update({ views: newViewsCount })
+                .then(() => {
+                    console.log("Кількість переглядів оновлена:", newViewsCount);
+                })
+                .catch((error) => {
+                    console.error("Помилка оновлення кількості переглядів:", error);
                 });
-            }
         }
 
-        // Function to update views in Firebase
-        function updateViews(videoKey, newViews) {
-            database.ref(`videos/${videoKey}`).update({ views: newViews });
-            loadVideos(); // Reload videos to reflect new view count
-        }
+        // Logout function
+        document.getElementById("logout-link").onclick = function() {
+            auth.signOut().then(() => {
+                alert("Ви вийшли!");
+                document.getElementById("logout-link").style.display = "none"; // Сховати кнопку "Вихід"
+                document.getElementById("upload-link").style.display = "none"; // Сховати посилання "Завантажити відео"
+                document.getElementById("upload-form").style.display = "none"; // Сховати форму завантаження
+                document.getElementById("upload-button").disabled = true; // Disable upload button
+            });
+        };
 
-        // Function to get a random color for the avatar
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
+        // Observe authentication state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("Користувач увійшов:", user);
+                document.getElementById("upload-button").disabled = false; // Enable upload button
+                document.getElementById("logout-link").style.display = "block"; // Показати кнопку "Вихід"
+            } else {
+                console.log("Користувач не увійшов");
+                document.getElementById("upload-button").disabled = true; // Disable upload button
+                document.getElementById("logout-link").style.display = "none"; // Сховати кнопку "Вихід"
             }
-            return color;
-        }
+        });
 
         // Load videos on page load
-        window.onload = function() {
-            loadVideos();
-        };
+        window.onload = loadVideos;
     </script>
 </body>
 </html>
