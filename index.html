@@ -9,220 +9,113 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-
-        body { 
-
-            font-family: Arial, sans-serif; 
-
-            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
-
-            color: #ffffff; 
-
-            text-align: center; 
-
-            padding: 20px; 
-
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
-
-            min-height: 100vh; 
-
-            display: flex; 
-
-            flex-direction: column; 
-
-            align-items: center;
-
-            
-
+            padding: 0;
+            background-color: #f0f0f0;
         }
 
-        nav { 
-
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px;
             display: flex;
-
             justify-content: space-between;
-
-            width: 100%;
-
-            gap: 15px; 
-
-            background: #1c1e22; 
-
-            padding: 10px 20px; 
-
-            margin-bottom: 20px; 
-
-            border-radius: 8px; 
-
         }
 
-        nav a { 
-
-            color: #ffffff; 
-
-            text-decoration: none; 
-
-            font-weight: bold; 
-
-            padding: 8px 15px; 
-
-            border-radius: 5px; 
-
-            transition: color 0.3s ease, background 0.3s ease
-
-            display: flex; 
-
-            align-items: center; 
-
-            justify-content: center; 
-
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
         }
 
-        nav a:hover { 
-
-            background-color: #4facfe; 
-
-            color: #1c1e22; 
-
+        .container {
+            padding: 20px;
         }
 
-        .container { 
-
-            max-width: 800px; 
-
-            margin: 0 auto; 
-
-            padding: 20px; 
-
-            background: rgba(0, 0, 0, 0.7); 
-
-            border-radius: 10px; 
-
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-        }
-
-        .form, .upload-form, .auth-form { 
-
-            display: none; 
-
-            background: rgba(255, 255, 255, 0.1); 
-
-            padding: 20px; 
-
-            border-radius: 10px; 
-
-            margin-top: 20px;
-
-        }
-
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
-
-            width: 100%; 
-
-            padding: 10px; 
-
-            margin: 10px 0; 
-
-            border-radius: 8px; 
-
-            border: none; 
-
-            outline: none;
-
-            font-size: 1em;
-
-        }
-
-        button { 
-
-            background: #4facfe; 
-
-            color: white; 
-
-            cursor: pointer; 
-
-            font-weight: bold; 
-
-            transition: background 0.3s ease;
-
-        }
-
-        button:hover { 
-
-            background: #00f2fe;
-
-        }
-
-        .video-container { 
-
-            margin-top: 20px; 
-
-        }
-
-        video { 
-
-            width: 100%; 
-
-            margin: 10px auto; 
-
+        .auth-form, .upload-form {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
             border-radius: 8px;
-
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .video-info { 
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-            text-align: left; 
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-            color: #b0bec5; 
+        button:hover {
+            background-color: #218838;
+        }
 
-            padding: 5px;
+        .video-item {
+            width: 100%;
+            max-width: 640px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
 
+        .video-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .avatar {
-
             width: 40px;
-
             height: 40px;
-
             border-radius: 50%;
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
             margin-right: 10px;
-
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-weight: bold;
-
-            color: #ffffff;
-
+            color: white;
         }
 
-        .video-details {
-
-            display: inline-block;
-
-            vertical-align: top;
-
-            text-align: left;
-
+        #progress-container {
+            display: none;
+            width: 100%;
+            background-color: #f3f3f3;
+            margin-top: 10px;
+            border-radius: 4px;
         }
 
-                             </style>
+        #progress-bar {
+            width: 0;
+            height: 10px;
+            background-color: #4caf50;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <nav>
         <h1>VideoVortex</h1>
-        <a href="#" id="home-link">Головна</a>
-        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link">Увійти</a>
-        <a href="#" id="logout-link" style="display: none;">Вийти</a>
+        <div>
+            <a href="#" id="home-link">Головна</a>
+            <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
+            <a href="#" id="auth-link">Увійти</a>
+            <a href="#" id="logout-link" style="display: none;">Вийти</a>
+        </div>
     </nav>
 
     <div class="container">
@@ -239,6 +132,9 @@
             <input type="text" id="video-author" placeholder="Ім'я автора">
             <input type="file" id="video-file" accept="video/*">
             <button onclick="uploadVideo()">Завантажити</button>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
         </div>
 
         <div class="video-container" id="video-gallery"></div>
@@ -287,6 +183,7 @@
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex"; // Show logout button
+                    loadVideos(); // Load videos after successful login
                 })
                 .catch((error) => {
                     alert("Невірний логін або пароль.");
@@ -347,7 +244,10 @@
                 const newViews = currentViews + 1; // Increment view count
 
                 // Update the view count in the database
-                database.ref("videos/" + videoKey).update({ views: newViews });
+                database.ref("videos/" + videoKey).update({ views: newViews })
+                    .then(() => {
+                        loadVideos(); // Reload videos to show updated views
+                    });
             });
         }
 
@@ -357,44 +257,50 @@
             const author = document.getElementById("video-author").value;
             const file = document.getElementById("video-file").files[0];
 
-            if (!title || !author || !file) {
-                alert("Будь ласка, заповніть всі поля!");
-                return;
-            }
+            if (file) {
+                const storageRef = storage.ref("videos/" + file.name);
+                const uploadTask = storageRef.put(file);
 
-            const storageRef = storage.ref("videos/" + file.name);
-            storageRef.put(file).then((snapshot) => {
-                snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const videoData = {
-                        title: title,
-                        author: author,
-                        url: downloadURL,
-                        date: new Date().toISOString(),
-                        views: 0
-                    };
-                    database.ref("videos").push(videoData).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos();
+                uploadTask.on("state_changed", (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById("progress-container").style.display = "block";
+                    document.getElementById("progress-bar").style.width = progress + "%";
+                }, (error) => {
+                    console.error("Upload failed:", error);
+                }, () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        const videoData = {
+                            title: title,
+                            author: author,
+                            url: downloadURL,
+                            date: new Date().toISOString(),
+                            views: 0
+                        };
+                        database.ref("videos").push(videoData).then(() => {
+                            alert("Відео завантажено!");
+                            document.getElementById("upload-form").reset();
+                            document.getElementById("progress-container").style.display = "none";
+                            loadVideos(); // Reload videos
+                        });
                     });
                 });
-            }).catch((error) => {
-                alert("Виникла помилка при завантаженні!");
-            });
+            } else {
+                alert("Будь ласка, виберіть файл відео.");
+            }
         }
 
         // Log out function
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
-                alert("Ви вийшли з системи!");
-                document.getElementById("auth-link").style.display = "flex";
-                document.getElementById("upload-link").style.display = "none";
-                document.getElementById("logout-link").style.display = "none"; // Hide logout button
-                document.getElementById("auth-form").style.display = "flex"; // Show auth form
+                alert("Вихід успішний!");
+                document.getElementById("auth-link").style.display = "flex"; // Show login link
+                document.getElementById("upload-link").style.display = "none"; // Hide upload link
+                document.getElementById("logout-link").style.display = "none"; // Hide logout link
+                document.getElementById("video-gallery").innerHTML = ""; // Clear video gallery
             });
-            window.location.reload();
         };
 
-        // Get random color for avatar
+        // Get a random color for the avatar
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
