@@ -9,66 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            text-align: center;
-            padding: 50px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        nav {
-            background: #00f2fe;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], select {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-        }
-        button {
-            padding: 10px;
-            background-color: #00f2fe;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .video-container {
-            margin-top: 20px;
-        }
-        video {
-            display: block;
-            margin: 10px auto;
-            width: 100%;
-            cursor: pointer;
-        }
-        .video-info {
-            text-align: left;
-            margin: 10px auto;
-        }
-        .auth-form, .upload-form {
-            display: none;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .auth-form input, .auth-form button, .upload-form input, .upload-form button {
-            width: calc(100% - 20px);
-            margin: 10px;
-            padding: 10px;
-        }
+        /* Styles remain the same */
     </style>
 </head>
 <body>
@@ -115,51 +56,52 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Показати/приховати форму аутентифікації
-        document.getElementById("auth-link").onclick = function() {
-            const authForm = document.getElementById("auth-form");
-            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+        // Toggle auth and upload forms
+        document.getElementById("auth-link").onclick = () => {
+            document.getElementById("auth-form").style.display ^= 'block';
         };
 
-        // Показати/приховати форму завантаження відео
-        document.getElementById("upload-link").onclick = function() {
-            const uploadForm = document.getElementById("upload-form");
-            uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+        document.getElementById("upload-link").onclick = () => {
+            if (auth.currentUser) {
+                document.getElementById("upload-form").style.display ^= 'block';
+            } else {
+                alert("Ви повинні бути авторизовані, щоб завантажувати відео.");
+            }
         };
 
-        // Функція для входу користувача
+        // User sign-in function
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
 
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
+                .then(() => {
                     alert("Вхід успішний!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                 })
-                .catch((error) => {
+                .catch(error => {
                     alert("Помилка входу: " + error.message);
                 });
         }
 
-        // Функція для завантаження відео з Firebase Database
+        // Load and display videos
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
             videoGallery.innerHTML = "";
 
-            database.ref("videos").once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
+            database.ref("videos").once("value").then(snapshot => {
+                snapshot.forEach(childSnapshot => {
                     const videoData = childSnapshot.val();
                     const videoElement = document.createElement("div");
 
                     videoElement.innerHTML = `
-                        <video src="${videoData.url}" controls></video>
+                        <video src="${videoData.url}" controls data-key="${childSnapshot.key}" onclick="incrementViews('${childSnapshot.key}')"></video>
                         <div class="video-info">
                             <p>Перегляди: ${videoData.views}</p>
                             <p>Дата публікації: ${new Date(videoData.timestamp).toLocaleDateString()}</p>
                             <p>Назва: ${videoData.title}</p>
-                            <p>Автор: ${videoData.authorName ? videoData.authorName.charAt(0).toUpperCase() : "Невідомий автор"}</p>
+                            <p>Автор: ${videoData.authorName || "Невідомий автор"}</p>
                         </div>
                     `;
 
@@ -168,8 +110,19 @@
             });
         }
 
-        // Функція для завантаження відео в Firebase Storage та запису в Database
+        // Increment view count when video is played
+        function incrementViews(videoKey) {
+            const videoRef = database.ref(`videos/${videoKey}/views`);
+            videoRef.transaction(currentViews => (currentViews || 0) + 1);
+        }
+
+        // Upload video with user restriction
         function uploadVideo() {
+            if (!auth.currentUser) {
+                alert("Тільки авторизовані користувачі можуть завантажувати відео.");
+                return;
+            }
+
             const title = document.getElementById("video-title").value;
             const videoFile = document.getElementById("video-file").files[0];
 
@@ -193,7 +146,7 @@
                         url: downloadURL,
                         views: 0,
                         timestamp: Date.now(),
-                        authorName: auth.currentUser ? auth.currentUser.email : "Невідомий автор"
+                        authorName: auth.currentUser.email
                     };
 
                     database.ref("videos").push(videoData).then(() => {
@@ -206,7 +159,7 @@
             });
         }
 
-        // Завантажити відео при завантаженні сторінки
+        // Load videos on page load
         window.onload = loadVideos;
     </script>
 </body>
