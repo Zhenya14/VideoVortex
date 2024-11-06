@@ -212,7 +212,10 @@
 function signUp() {
             const email = document.getElementById("register-email").value;
             const password = document.getElementById("register-password").value;
-
+if (email === "" || password === "") {
+        alert("Поля не повинні бути порожніми.");
+        return; // Exit the function if fields are empty
+    }
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
@@ -221,9 +224,6 @@ function signUp() {
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
-        }) else {
-            alert("Поля не повинні бути порожніми.");
-            }
                 });
         }
         // Load videos from Firebase
