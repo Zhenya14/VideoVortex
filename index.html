@@ -123,6 +123,7 @@
 
         /* Sidebar Styles */
         .sidebar {
+            display: none;
             position: fixed;
             top: 0;
             left: -250px;
@@ -162,16 +163,16 @@
                 font-size: 24px;
                 cursor: pointer;
             }
-            .sidebar {
+            #sidebar {
                 left: 0;
             }
-            .sidebar a {
+            #sidebar a {
                 margin: 15px 0;
             }
             .container {
                 margin-left: 0;
             }
-            .sidebar-link {
+            #sidebar-link {
                 display: block;
             }
             #upload-link, #auth-link, #register-link, #logout-link {
@@ -181,11 +182,13 @@
 
         /* Desktop styles */
         @media (min-width: 769px) {
-            .sidebar {
+            #sidebar {
                 display: none;
             }
             .desktop {
-                display: inline;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
             }
             #upload-link, #auth-link, #register-link, #logout-link {
                 display: block;
@@ -205,8 +208,8 @@
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="register-link">Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
-            <span class="sidebar-button" id="sidebar-toggle">&#9776;</span>
         </div>
+        <span class="sidebar-button" onclick="document.getElementById('sidebar').style.display = 'block'">&#9776;</span>
     </nav>
     <div class="sidebar">
         <a href="#" id="upload-link-sidebar" style="display: none;">Завантажити відео</a>
