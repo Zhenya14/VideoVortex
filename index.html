@@ -136,7 +136,12 @@
             <input type="password" id="auth-password" placeholder="Пароль">
             <button onclick="signIn()">Увійти</button>
         </div>
-
+<div class="register-form" id="register-form">
+            <h2>Реєстрація</h2>
+            <input type="email" id="register-email" placeholder="Електронна пошта">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <button onclick="signUp()">Зареєструватися</button>
+        </div>
         <div class="upload-form" id="upload-form">
             <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
@@ -173,7 +178,11 @@
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
         };
-
+        
+        document.getElementById("register-link").onclick = function() {
+            const registerForm = document.getElementById("register-form");
+            registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
+        };
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
                 const uploadForm = document.getElementById("upload-form");
@@ -192,6 +201,7 @@
                     alert("Вхід успішний!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
+                    document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
@@ -199,7 +209,20 @@
                     alert("Невірний логін або пароль.");
                 });
         }
+function signUp() {
+            const email = document.getElementById("register-email").value;
+            const password = document.getElementById("register-password").value;
 
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert("Ви успішно зареєструвалися!");
+                    document.getElementById("auth-form").style.display = "none";
+                    document.getElementById("auth-link").style.display = "none";
+                    document.getElementById("register-link").style.display = "none";
+                    document.getElementById("upload-link").style.display = "flex";
+                    document.getElementById("logout-link").style.display = "flex";
+                });
+        }
         // Load videos from Firebase
 // Load videos from Firebase
 function loadVideos() {
@@ -310,10 +333,12 @@ function uploadVideo() {
        auth.onAuthStateChanged((user) => {
     if (user) {
         document.getElementById("auth-link").style.display = "none";
+        document.getElementById("register-link").style.display = "none";
         document.getElementById("upload-link").style.display = "flex";
         document.getElementById("logout-link").style.display = "flex";
     } else {
         document.getElementById("auth-link").style.display = "flex";
+        document.getElementById("register-link").style.display = "flex";
         document.getElementById("upload-link").style.display = "none";
         document.getElementById("logout-link").style.display = "none";
     }
