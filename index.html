@@ -251,7 +251,8 @@ function loadVideos() {
             // Оновлення переглядів при запуску відтворення відео
             videoElement.addEventListener("play", () => {
                 const newViewCount = (videoData.views || 0) + 1;
-                database.ref("videos/" + videoKey).update({ views: newViewCount });
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
 
             const infoElement = document.createElement("div");
@@ -278,17 +279,6 @@ function loadVideos() {
         });
     });
         }
-
-// Update views for a video
-function updateViews(videoKey, newViewsCount) {
-    database.ref("videos/" + videoKey).update({
-        views: newViewsCount
-    }).then(() => {
-        console.log("Views updated to " + newViewsCount);
-    }).catch((error) => {
-        console.error("Error updating views:", error);
-    });
-}
 
 // Upload video and save info
 function uploadVideo() {
