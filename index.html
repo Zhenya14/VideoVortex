@@ -282,8 +282,9 @@ function loadVideos() {
         }
 
 // Upload video and save info
-        const forbiddenWords = ["porn", "xxx", "sex", "adult", "uncensored"];
+        
 function uploadVideo() {
+    const forbiddenWords = ["porn", "xxx", "sex", "adult", "uncensored"];
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
     const videoFile = document.getElementById("video-file").files[0];
