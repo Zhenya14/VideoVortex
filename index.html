@@ -4,172 +4,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VideoVortex</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        /* Основні стилі */
-        body {
-            font-family: Arial, sans-serif;
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
+        }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
+            color: #ffffff; 
+            text-align: center; 
+            padding: 20px; 
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        nav { 
             display: flex;
-        }
-
-        /* Стилі для бокового меню */
-        .side-menu {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: -250px;
-            background-color: #333;
-            overflow-x: hidden;
-            transition: 0.3s;
-            padding-top: 60px;
-        }
-
-        .side-menu a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 22px;
-            color: white;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .side-menu a:hover {
-            background-color: #575757;
-        }
-
-        .open-btn {
-            font-size: 30px;
-            cursor: pointer;
-            color: white;
-            background-color: #333;
-            border: none;
-            padding: 10px;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-        }
-
-        .main-content {
-            margin-left: 0;
-            transition: margin-left 0.3s;
-            padding: 20px;
+            justify-content: space-between;
             width: 100%;
+            gap: 15px; 
+            background: #1c1e22; 
+            padding: 10px 20px; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
         }
-
-        /* Стилі для мобільних версій */
-        @media (max-width: 768px) {
-            /* Мобільна версія: показуємо бокове меню */
-            .side-menu {
-                left: -250px;
-            }
-
-            .side-menu.open {
-                left: 0;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .open-btn {
-                display: block;
-            }
+        nav a { 
+            color: #ffffff; 
+            text-decoration: none; 
+            font-weight: bold; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            transition: color 0.3s ease, background 0.3s ease;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
         }
-
-        @media (min-width: 769px) {
-            /* Для ПК та планшетів */
-            .side-menu {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
+        nav a:hover { 
+            background-color: #4facfe; 
+            color: #1c1e22; 
         }
-
-        /* Стилі для кнопок */
-        .button-container {
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .form, .upload-form, .auth-form, .register-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+        button { 
+            background: #4facfe; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+        button:hover { 
+            background: #00f2fe;
+        }
+        .video-container {
             display: flex;
-            flex-wrap: wrap;
+    margin-top: 20px;
+    flex-direction: column-reverse; 
+        }
+        video { 
+            width: 100%; 
+            margin: 10px auto; 
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background-color: blue;
             justify-content: center;
-            gap: 10px;
-            margin: 20px;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
         }
-
-        .button-container a {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .button-container a:hover {
-            background-color: #45a049;
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <!-- Бокове меню для мобільної версії -->
-    <div id="side-menu" class="side-menu">
+    <nav>
+        <img src="IMG_20241106_131800_017.jpg">
+        <h1 style="padding-left: 5px;">VideoVortex</h1>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="register-link">Реєстрація</a>
-        <a href="#" id="upload-link" class="hidden">Завантажити відео</a>
-        <a href="#" id="logout-link" class="hidden">Вийти</a>
-    </div>
-
-    <!-- Кнопка для відкриття меню на мобільних -->
-    <button class="open-btn" onclick="toggleMenu()">&#9776;</button>
-
-    <!-- Основний контент -->
-    <div class="main-content">
-        <div class="button-container">
-            <a href="#" id="auth-link-pc">Увійти</a>
-            <a href="#" id="register-link-pc">Реєстрація</a>
-            <a href="#" id="upload-link-pc" class="hidden">Завантажити відео</a>
-            <a href="#" id="logout-link-pc" class="hidden">Вийти</a>
-        </div>
-
-        <div id="auth-form" class="hidden">
-            <h3>Увійти</h3>
-            <input type="email" id="auth-email" placeholder="Email">
+        <a href="#" id="logout-link" style="display: none;">Вийти</a>
+    </nav>
+<div class="auth-form" id="auth-form">
+            <h2>Увійти</h2>
+            <input type="email" id="auth-email" placeholder="Електронна пошта">
             <input type="password" id="auth-password" placeholder="Пароль">
             <button onclick="signIn()">Увійти</button>
         </div>
-
-        <div id="register-form" class="hidden">
-            <h3>Реєстрація</h3>
-            <input type="email" id="register-email" placeholder="Email">
+<div class="register-form" id="register-form">
+            <h2>Реєстрація</h2>
+            <input type="email" id="register-email" placeholder="Електронна пошта">
             <input type="password" id="register-password" placeholder="Пароль">
             <button onclick="signUp()">Зареєструватися</button>
         </div>
-
-        <div id="upload-form" class="hidden">
-            <h3>Завантажити відео</h3>
+        <div class="upload-form" id="upload-form">
+            <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
-            <input type="text" id="video-author" placeholder="Автор відео">
-            <input type="file" id="video-file">
-            <progress id="upload-progress" value="0" max="100"></progress>
-            <p id="progress-text">0%</p>
-            <button onclick="uploadVideo()">Завантажити відео</button>
+            <input type="text" id="video-author" placeholder="Ім'я автора">
+            <input type="file" id="video-file" accept="video/*">
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>
+            <button onclick="uploadVideo()">Завантажити</button>
         </div>
 
-        <div id="video-gallery">
-            <!-- Відео буде додаватися сюди -->
-        </div>
+    <div class="container">
+        
+        <div class="video-container" id="video-gallery"></div>
     </div>
 
     <script>
-        function toggleMenu() {
-            const menu = document.getElementById("side-menu");
-            menu.classList.toggle("open");
-        }
-
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -179,23 +169,20 @@
             messagingSenderId: "681594250269",
             appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Показати/сховати форми
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
         };
-
+        
         document.getElementById("register-link").onclick = function() {
             const registerForm = document.getElementById("register-form");
             registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
         };
-
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
                 const uploadForm = document.getElementById("upload-form");
@@ -205,7 +192,6 @@
             }
         };
 
-        // Функція для входу
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
@@ -223,84 +209,150 @@
                     alert("Невірний логін або пароль.");
                 });
         }
-
-        // Функція для реєстрації
         function signUp() {
             const email = document.getElementById("register-email").value.trim();
             const password = document.getElementById("register-password").value.trim();
 
             if (!email || !password) {
-                alert("Поля не повинні бути порожніми.");
-                return;
+        alert("Поля не повинні бути порожніми.");
+        return;
             }
-
+            
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("register-form").style.display = "none";
+                    document.getElementById("auth-link").style.display = "none";
+                    document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
-                .catch((error) => {
-                    alert("Помилка реєстрації: " + error.message);
-                });
+            .catch((error) => {
+                    alert("Цей акаунт вже існує.");
+             });
+        }
+        // Load videos from Firebase
+// Load videos from Firebase
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
+
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key;
+
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.controls = true;
+            videoElement.classList.add("video-item");
+
+            // Оновлення переглядів при запуску відтворення відео
+            videoElement.addEventListener("play", () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                .catch(error => console.error("Помилка оновлення переглядів:", error));
+            });
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
+
+            // Аватар
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+            
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("video-details");
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+
+            const container = document.createElement("div");
+            container.classList.add("video-container");
+            container.appendChild(videoElement);
+            container.appendChild(infoElement);
+            
+            videoGallery.appendChild(container);
+        });
+    });
         }
 
-        // Завантаження відео
-        function uploadVideo() {
-            const videoTitle = document.getElementById("video-title").value.trim();
-            const videoAuthor = document.getElementById("video-author").value.trim();
-            const videoFile = document.getElementById("video-file").files[0];
+// Upload video and save info
+function uploadVideo() {
+    const videoTitle = document.getElementById("video-title").value;
+    const videoAuthor = document.getElementById("video-author").value;
+    const videoFile = document.getElementById("video-file").files[0];
+    const uploadProgress = document.getElementById("upload-progress");
+    const progressText = document.getElementById("progress-text");
+    const progressContainer = document.getElementById("progress-container");
 
-            if (!videoFile || !videoTitle || !videoAuthor) {
-                alert("Будь ласка, заповніть всі поля.");
-                return;
-            }
+    if (videoFile) {
+        const storageRef = storage.ref(`videos/${videoFile.name}`);
+        const uploadTask = storageRef.put(videoFile);
 
-            const videoRef = storage.ref("videos/" + videoFile.name);
-            const uploadTask = videoRef.put(videoFile);
-
-            uploadTask.on('state_changed', (snapshot) => {
+        uploadTask.on('state_changed', 
+            (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById("upload-progress").value = progress;
-                document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
-            }, (error) => {
-                alert("Помилка завантаження: " + error.message);
-            }, () => {
+                uploadProgress.value = progress;
+                progressText.innerText = `${Math.round(progress)}%`;
+                progressContainer.style.display = "block";
+            }, 
+            (error) => {
+                alert("Сталася помилка при завантаженні відео.");
+            }, 
+            () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const videoData = {
+                    // Get current date
+                    const currentDate = new Date().toLocaleDateString();
+
+                    // Save video info to database
+                    database.ref("videos").push({
                         title: videoTitle,
                         author: videoAuthor,
                         url: downloadURL,
                         views: 0,
-                        publishDate: new Date().toISOString()
-                    };
-
-                    database.ref("videos").push(videoData)
-                        .then(() => {
-                            alert("Відео завантажено!");
-                            loadVideos();
-                        })
-                        .catch((error) => {
-                            alert("Помилка завантаження відео: " + error.message);
-                        });
+                        publishDate: currentDate // Save the publish date
+                    }).then(() => {
+                        alert("Відео завантажено!");
+                        loadVideos(); // Reload videos
+                        document.getElementById("upload-form").reset();
+                        progressContainer.style.display = "none"; // Hide progress
+                    });
                 });
-            });
-        }
+            }
+        );
+    } else {
+        alert("Будь ласка, виберіть відео для завантаження.");
+    }
+}
 
-        // Вихід
+
+       auth.onAuthStateChanged((user) => {
+    if (user) {
+        document.getElementById("auth-link").style.display = "none";
+        document.getElementById("register-link").style.display = "none";
+        document.getElementById("upload-link").style.display = "flex";
+        document.getElementById("logout-link").style.display = "flex";
+    } else {
+        document.getElementById("auth-link").style.display = "flex";
+        document.getElementById("register-link").style.display = "flex";
+        document.getElementById("upload-link").style.display = "none";
+        document.getElementById("logout-link").style.display = "none";
+    }
+});
+
+
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
-                document.getElementById("upload-link").style.display = "none";
-                document.getElementById("logout-link").style.display = "none";
-                document.getElementById("auth-link").style.display = "flex";
-                document.getElementById("register-link").style.display = "flex";
-                alert("Вихід успішний.");
-            }).catch((error) => {
-                alert("Помилка виходу: " + error.message);
+                alert("Ви вийшли з аккаунта.");
+                location.reload();
             });
         };
+
+        window.onload = loadVideos;
     </script>
 </body>
-</html>
+</html> зроби щоб кнопки увійти і Реєстрація були в боковому меню в мобільній версії і адаптуй сайт під мобільні пристрої
