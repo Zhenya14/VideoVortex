@@ -283,10 +283,7 @@
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли!");
-                document.getElementById("upload-link").style.display = "none";
-                document.getElementById("logout-link").style.display = "none";
-                document.getElementById("auth-link").style.display = "flex";
-                loadVideos();
+                window.location.reload();
             });
         };
 
