@@ -192,6 +192,7 @@
         }
 
         // Load videos from Firebase
+// Load videos from Firebase
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
@@ -236,8 +237,19 @@ function loadVideos() {
     });
 }
 
+// Update views for a video
+function updateViews(videoKey, newViewsCount) {
+    database.ref("videos/" + videoKey).update({
+        views: newViewsCount
+    }).then(() => {
+        console.log("Views updated to " + newViewsCount);
+    }).catch((error) => {
+        console.error("Error updating views:", error);
+    });
+}
 
-        function uploadVideo() {
+// Upload video and save info
+function uploadVideo() {
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
     const videoFile = document.getElementById("video-file").files[0];
