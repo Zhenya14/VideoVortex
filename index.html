@@ -209,14 +209,10 @@
                     alert("Невірний логін або пароль.");
                 });
         }
-function signUp() {
+        function signUp() {
             const email = document.getElementById("register-email").value;
             const password = document.getElementById("register-password").value;
     
-if (email === "" || password === "") {
-        alert("Поля не повинні бути порожніми.");
-        return; // Exit the function if fields are empty
-    }
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
@@ -227,6 +223,11 @@ if (email === "" || password === "") {
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 });
+            
+            if (email === "" || password === "") {
+        alert("Поля не повинні бути порожніми.");
+        return; // Exit the function if fields are empty
+            }
         }
         // Load videos from Firebase
 // Load videos from Firebase
