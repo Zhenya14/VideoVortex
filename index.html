@@ -158,14 +158,14 @@
     .desktop {
         display: none; /* Hide desktop links on mobile */
     }
-    .auth-form {
-        display: block;
+    #auth-form {
+        display: none;
     }
-    .register-form {
-        display: block;
+    #register-form {
+        display: none;
     }
-    .upload-form {
-        display: block;
+    #upload-form {
+        display: none;
     }
     .sidebar-button {
         display: block;
@@ -226,9 +226,9 @@
         </div>
     </nav>
     <div id="sidebar">
-        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link">Увійти</a>
-        <a href="#" id="register-link">Реєстрація</a>
+        <a href="#" id="upload-link" onclick="document.getElementById("upload-form").style.display = 'block';" style="display: none;">Завантажити відео</a>
+        <a href="#" id="auth-link" onclick="document.getElementById("auth-form").style.display = 'block';">Увійти</a>
+        <a href="#" id="register-link" onclick="document.getElementById("register-form").style.display = 'block';">Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
     </div>
     
