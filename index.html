@@ -212,9 +212,10 @@
                     const infoElement = document.createElement("div");
                     infoElement.classList.add("video-info");
 
-                    const avatar = document.createElement("div");
-                    avatar.classList.add("avatar");
-                    avatar.innerText = videoData.author.charAt(0).toUpperCase();
+                   const avatar = document.createElement("div");
+avatar.classList.add("avatar");
+avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+
                     
                     const detailsElement = document.createElement("div");
                     detailsElement.classList.add("video-details");
