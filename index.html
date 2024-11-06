@@ -222,12 +222,10 @@
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
-                });
-            
-            if (email === "" || password === "") {
-        alert("Поля не повинні бути порожніми.");
-        return; // Exit the function if fields are empty
-            }
+                })
+            .catch((error) => {
+                    alert("Поля не повинні бути порожніми.");
+             });
         }
         // Load videos from Firebase
 // Load videos from Firebase
