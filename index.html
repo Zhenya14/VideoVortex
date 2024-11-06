@@ -123,11 +123,10 @@
 
         /* Sidebar Styles */
         /* Бічна панель (Sidebar) */
-/* Sidebar Styles */
 #sidebar {
     position: fixed;
     top: 0;
-    left: -350px; /* Start off-screen */
+    left: -350px; /* Початкове приховане положення */
     width: 250px;
     height: 100%;
     background-color: #1c1e22;
@@ -135,8 +134,8 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
-    transition: left 0.3s ease; /* Smooth transition for opening */
-    z-index: 1000; /* Ensure it's on top of other content */
+    transition: left 0.3s ease; /* Анімація відкриття */
+    z-index: 1000; /* Забезпечує правильне накладання на інший контент */
 }
 
 #sidebar a {
@@ -153,20 +152,12 @@
     background-color: #4facfe;
 }
 
-/* Mobile Styles */
+/* Мобільні стилі */
 @media (max-width: 768px) {
     .desktop {
-        display: none; /* Hide desktop links on mobile */
+        display: none; /* Приховуємо меню для десктопу */
     }
-    #auth-form {
-        display: none;
-    }
-    #register-form {
-        display: none;
-    }
-    #upload-form {
-        display: none;
-    }
+
     .sidebar-button {
         display: block;
         position: absolute;
@@ -175,26 +166,27 @@
         color: white;
         font-size: 24px;
         cursor: pointer;
-        z-index: 1500; /* Ensure it's on top of other elements */
+        z-index: 1500; /* Кнопка з більш високим пріоритетом */
     }
 
     #sidebar {
-        left: -350px; /* Initial position off-screen */
+        left: -350px; /* Початкове приховане положення */
     }
 
+    /* Коли sidebar активований */
     #sidebar.active {
-        left: 0; /* Move sidebar in when active */
+        left: 0; /* Переміщаємо sidebar вліво, коли він активований */
     }
 
     #sidebar a {
-        margin: 15px 0; /* Increase margin for better spacing */
+        margin: 15px 0; /* Збільшуємо відстань між елементами для кращого вигляду */
     }
 }
 
-/* Desktop Styles */
+/* Десктопні стилі */
 @media (min-width: 769px) {
     #sidebar {
-        display: none; /* Hide sidebar on desktop */
+        display: none; /* Приховуємо sidebar на десктопах */
     }
 
     .desktop {
@@ -204,32 +196,33 @@
     }
 
     .sidebar-button {
-        display: none; /* Hide button on desktop */
+        display: none; /* Приховуємо кнопку для десктопу */
     }
 
     #upload-link, #auth-link, #register-link, #logout-link {
-        display: block; /* Show links on desktop */
+        display: block; /* Показуємо лінки для десктопу */
     }
 }
+
     </style>
 </head>
 <body>
     <nav>
         <span class="sidebar-button">&#9776;</span>
         <img src="IMG_20241106_131800_017.jpg">
-        <h1 style="padding-left: 5px;">VideoVortex<sup>beta</sup></h1>
+        <h1 style="padding-left: 5px;">VideoVortex</h1>
         <div class="desktop">
-        <a href="#" id="upload-link"  style="display: none;" onclick="toggleUploadForm()">Завантажити відео</a>
-        <a href="#" id="auth-link" onclick="toggleAuthForm()">Увійти</a>
-        <a href="#" id="register-link" onclick="toggleRegisterForm()">Реєстрація</a>
-        <a href="#" id="logout-link"   style="display: none;" onclick="logout()">Вийти</a>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
+        <a href="#" id="auth-link">Увійти</a>
+        <a href="#" id="register-link">Реєстрація</a>
+        <a href="#" id="logout-link" style="display: none;">Вийти</a>
         </div>
     </nav>
     <div id="sidebar">
-        <a href="#" id="upload-link"  style="display: none;" onclick="toggleUploadForm()">Завантажити відео</a>
-        <a href="#" id="auth-link" onclick="toggleAuthForm()">Увійти</a>
-        <a href="#" id="register-link" onclick="toggleRegisterForm()">Реєстрація</a>
-        <a href="#" id="logout-link"   style="display: none;" onclick="logout()">Вийти</a>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
+        <a href="#" id="auth-link">Увійти</a>
+        <a href="#" id="register-link">Реєстрація</a>
+        <a href="#" id="logout-link" style="display: none;">Вийти</a>
     </div>
     
 <div class="auth-form" id="auth-form">
@@ -263,23 +256,10 @@
 
     <script>
         // Додаємо подію для кнопки відкриття/закриття бічної панелі
-// Add event listener for sidebar toggle button
 document.querySelector('.sidebar-button').addEventListener('click', function() {
     const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active'); // Toggle 'active' class to show/hide sidebar
+    sidebar.classList.toggle('active'); // Додаємо або видаляємо клас active для анімації
 });
-
-// Optionally, close sidebar if clicked outside (optional feature)
-document.addEventListener('click', function(event) {
-    const sidebar = document.getElementById('sidebar');
-    const sidebarButton = document.querySelector('.sidebar-button');
-    
-    // Close sidebar if clicking outside the sidebar or button
-    if (!sidebar.contains(event.target) && !sidebarButton.contains(event.target)) {
-        sidebar.classList.remove('active');
-    }
-});
-
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
@@ -295,32 +275,23 @@ document.addEventListener('click', function(event) {
         const database = firebase.database();
         const storage = firebase.storage();
 
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("active");
-        }
-
-        // Function to toggle the authentication form
-        function toggleAuthForm() {
-            document.getElementById("auth-form").style.display = 'block';
-            document.getElementById("register-form").style.display = 'none';
-            document.getElementById("upload-form").style.display = 'none';
-        }
-
-        // Function to toggle the register form
-        function toggleRegisterForm() {
-            document.getElementById("register-form").style.display = 'block';
-            document.getElementById("auth-form").style.display = 'none';
-            document.getElementById("upload-form").style.display = 'none';
-        }
-
-        // Function to toggle the upload form
-        function toggleUploadForm() {
-            document.getElementById("upload-form").style.display = 'block';
-            document.getElementById("auth-form").style.display = 'none';
-            document.getElementById("register-form").style.display = 'none';
-        } else {
-            alert("Будь ласка увійдіть, щоб завантажити відео.");
-                  }
+        document.getElementById("auth-link").onclick = function() {
+            const authForm = document.getElementById("auth-form");
+            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+        };
+        
+        document.getElementById("register-link").onclick = function() {
+            const registerForm = document.getElementById("register-form");
+            registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
+        };
+        document.getElementById("upload-link").onclick = function() {
+            if (auth.currentUser) {
+                const uploadForm = document.getElementById("upload-form");
+                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
+            }
+        };
 
         function signIn() {
             const email = document.getElementById("auth-email").value;
@@ -395,7 +366,7 @@ function loadVideos() {
             
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
             
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
@@ -420,14 +391,14 @@ function uploadVideo() {
     const progressContainer = document.getElementById("progress-container");
 
     if (videoFile) {
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
+        const storageRef = storage.ref(videos/${videoFile.name});
         const uploadTask = storageRef.put(videoFile);
 
         uploadTask.on('state_changed', 
             (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 uploadProgress.value = progress;
-                progressText.innerText = `${Math.round(progress)}%`;
+                progressText.innerText = ${Math.round(progress)}%;
                 progressContainer.style.display = "block";
             }, 
             (error) => {
@@ -475,18 +446,13 @@ function uploadVideo() {
 });
 
 
-        function logout() {
-            firebase.auth().signOut()
-                .then(() => {
-                    alert("Ви вийшли з аккаунту.");
-                    document.getElementById("upload-link").style.display = 'none';
-                    document.getElementById("logout-link").style.display = 'none';
-                    document.getElementById("auth-link").style.display = 'block';
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        }
+        document.getElementById("logout-link").onclick = function() {
+            auth.signOut().then(() => {
+                alert("Ви вийшли з аккаунта.");
+                location.reload();
+            });
+        };
+
         window.onload = loadVideos;
     </script>
 </body>
