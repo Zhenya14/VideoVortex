@@ -123,10 +123,11 @@
 
         /* Sidebar Styles */
         /* Бічна панель (Sidebar) */
+/* Sidebar Styles */
 #sidebar {
     position: fixed;
     top: 0;
-    left: -350px; /* Початкове приховане положення */
+    left: -350px; /* Start off-screen */
     width: 250px;
     height: 100%;
     background-color: #1c1e22;
@@ -134,8 +135,8 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
-    transition: left 0.3s ease; /* Анімація відкриття */
-    z-index: 1000; /* Забезпечує правильне накладання на інший контент */
+    transition: left 0.3s ease; /* Smooth transition for opening */
+    z-index: 1000; /* Ensure it's on top of other content */
 }
 
 #sidebar a {
@@ -152,10 +153,10 @@
     background-color: #4facfe;
 }
 
-/* Мобільні стилі */
+/* Mobile Styles */
 @media (max-width: 768px) {
     .desktop {
-        display: none; /* Приховуємо меню для десктопу */
+        display: none; /* Hide desktop links on mobile */
     }
 
     .sidebar-button {
@@ -166,27 +167,26 @@
         color: white;
         font-size: 24px;
         cursor: pointer;
-        z-index: 1500; /* Кнопка з більш високим пріоритетом */
+        z-index: 1500; /* Ensure it's on top of other elements */
     }
 
     #sidebar {
-        left: -350px; /* Початкове приховане положення */
+        left: -350px; /* Initial position off-screen */
     }
 
-    /* Коли sidebar активований */
     #sidebar.active {
-        left: 0; /* Переміщаємо sidebar вліво, коли він активований */
+        left: 0; /* Move sidebar in when active */
     }
 
     #sidebar a {
-        margin: 15px 0; /* Збільшуємо відстань між елементами для кращого вигляду */
+        margin: 15px 0; /* Increase margin for better spacing */
     }
 }
 
-/* Десктопні стилі */
+/* Desktop Styles */
 @media (min-width: 769px) {
     #sidebar {
-        display: none; /* Приховуємо sidebar на десктопах */
+        display: none; /* Hide sidebar on desktop */
     }
 
     .desktop {
@@ -196,14 +196,13 @@
     }
 
     .sidebar-button {
-        display: none; /* Приховуємо кнопку для десктопу */
+        display: none; /* Hide button on desktop */
     }
 
     #upload-link, #auth-link, #register-link, #logout-link {
-        display: block; /* Показуємо лінки для десктопу */
+        display: block; /* Show links on desktop */
     }
 }
-
     </style>
 </head>
 <body>
@@ -256,10 +255,23 @@
 
     <script>
         // Додаємо подію для кнопки відкриття/закриття бічної панелі
+// Add event listener for sidebar toggle button
 document.querySelector('.sidebar-button').addEventListener('click', function() {
     const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active'); // Додаємо або видаляємо клас active для анімації
+    sidebar.classList.toggle('active'); // Toggle 'active' class to show/hide sidebar
 });
+
+// Optionally, close sidebar if clicked outside (optional feature)
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarButton = document.querySelector('.sidebar-button');
+    
+    // Close sidebar if clicking outside the sidebar or button
+    if (!sidebar.contains(event.target) && !sidebarButton.contains(event.target)) {
+        sidebar.classList.remove('active');
+    }
+});
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
