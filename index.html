@@ -271,7 +271,7 @@ function uploadVideo() {
                 progressContainer.style.display = "block";
             }, 
             (error) => {
-                console.error("Error uploading video:", error);
+                alert("Сталася помилка при завантаженні відео.");
             }, 
             () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
