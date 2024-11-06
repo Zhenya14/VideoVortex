@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         img {
     padding: 0px 0px 0px 0px;
@@ -281,6 +282,7 @@ function loadVideos() {
         }
 
 // Upload video and save info
+        const forbiddenWords = ["porn", "xxx", "sex", "adult", "uncensored"];
 function uploadVideo() {
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
@@ -289,6 +291,12 @@ function uploadVideo() {
     const progressText = document.getElementById("progress-text");
     const progressContainer = document.getElementById("progress-container");
 
+    if (containsForbiddenWords(videoTitle) || containsForbiddenWords(videoFile.name)) {
+        alert("Це відео містить заборонений контент. Завантаження неможливе.");
+        document.getElementById("upload-button").disabled = true;
+        return;
+    }
+    
     if (videoFile) {
         const storageRef = storage.ref(`videos/${videoFile.name}`);
         const uploadTask = storageRef.put(videoFile);
