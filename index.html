@@ -219,17 +219,17 @@
         <img src="IMG_20241106_131800_017.jpg">
         <h1 style="padding-left: 5px;">VideoVortex<sup>beta</sup></h1>
         <div class="desktop">
-        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link">Увійти</a>
-        <a href="#" id="register-link">Реєстрація</a>
-        <a href="#" id="logout-link" style="display: none;">Вийти</a>
+        <a href="#" id="upload-link"  style="display: none;" onclick="toggleUploadForm()">Завантажити відео</a>
+        <a href="#" id="auth-link" onclick="toggleAuthForm()">Увійти</a>
+        <a href="#" id="register-link" onclick="toggleRegisterForm()">Реєстрація</a>
+        <a href="#" id="logout-link"   style="display: none;" onclick="logout()">Вийти</a>
         </div>
     </nav>
     <div id="sidebar">
         <a href="#" id="upload-link"  style="display: none;" onclick="toggleUploadForm()">Завантажити відео</a>
         <a href="#" id="auth-link" onclick="toggleAuthForm()">Увійти</a>
         <a href="#" id="register-link" onclick="toggleRegisterForm()">Реєстрація</a>
-        <a href="#" id="logout-link" onclick="logout()">Вийти</a>
+        <a href="#" id="logout-link"   style="display: none;" onclick="logout()">Вийти</a>
     </div>
     
 <div class="auth-form" id="auth-form">
