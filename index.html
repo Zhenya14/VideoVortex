@@ -284,17 +284,12 @@ function loadVideos() {
 // Upload video and save info
         
 function uploadVideo() {
-    const forbiddenWords = ["porn", "xxx", "sex", "adult", "uncensored"];
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
     const videoFile = document.getElementById("video-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
     const progressContainer = document.getElementById("progress-container");
-
-    if (containsForbiddenWords(videoTitle) || containsForbiddenWords(videoFile.name)) {
-        alert("Це відео містить заборонений контент. Завантаження неможливе.");
-    }
     
     if (videoFile) {
         const storageRef = storage.ref(`videos/${videoFile.name}`);
@@ -351,15 +346,6 @@ function uploadVideo() {
     }
 });
         
-function containsForbiddenWords(text) {
-    for (let word of forbiddenWords) {
-        if (text.toLowerCase().includes(word)) {
-            return true;
-        }
-    }
-    return false;
-}
-
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з аккаунта.");
