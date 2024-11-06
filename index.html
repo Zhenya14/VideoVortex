@@ -28,16 +28,15 @@
             flex-direction: column; 
             align-items: center; 
         }
-        nav { 
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            gap: 15px; 
-            background: #1c1e22; 
-            padding: 10px 20px; 
-            margin-bottom: 20px; 
-            border-radius: 8px; 
-        }
+       nav { 
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #1c1e22;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
         nav a { 
             color: #ffffff; 
             text-decoration: none; 
@@ -124,12 +123,16 @@
 </head>
 <body>
     <nav>
+         <div style="display: flex; align-items: center;">
         <img src="IMG_20241106_131800_017.jpg">
-        <h1 style="padding-left: 5px;">VideoVortex</h1><sup>beta</sup>
+        <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
+             </div>
+        <div style="display: flex; gap: 15px; margin-left: auto;">
         <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="register-link">Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
+            </div>
     </nav>
 <div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
