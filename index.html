@@ -182,11 +182,13 @@
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
+            document.getElementById("register-form").style.display = "none";
         };
         
         document.getElementById("register-link").onclick = function() {
             const registerForm = document.getElementById("register-form");
             registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
+            document.getElementById("auth-form").style.display = "none";
         };
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
