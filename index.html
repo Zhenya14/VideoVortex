@@ -226,10 +226,10 @@
         </div>
     </nav>
     <div id="sidebar">
-        <a href="#" id="upload-link" onclick="document.getElementById("upload-form").style.display = 'block';" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link" onclick="document.getElementById("auth-form").style.display = 'block';">Увійти</a>
-        <a href="#" id="register-link" onclick="document.getElementById("register-form").style.display = 'block';">Реєстрація</a>
-        <a href="#" id="logout-link" style="display: none;">Вийти</a>
+        <a href="#" id="upload-link"  style="display: none;" onclick="toggleUploadForm()">Завантажити відео</a>
+        <a href="#" id="auth-link" onclick="toggleAuthForm()">Увійти</a>
+        <a href="#" id="register-link" onclick="toggleRegisterForm()">Реєстрація</a>
+        <a href="#" id="logout-link" onclick="logout()">Вийти</a>
     </div>
     
 <div class="auth-form" id="auth-form">
@@ -295,23 +295,32 @@ document.addEventListener('click', function(event) {
         const database = firebase.database();
         const storage = firebase.storage();
 
-        document.getElementById("auth-link").onclick = function() {
-            const authForm = document.getElementById("auth-form");
-            authForm.style.display = authForm.style.display === "none" ? "block" : "none";
-        };
-        
-        document.getElementById("register-link").onclick = function() {
-            const registerForm = document.getElementById("register-form");
-            registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
-        };
-        document.getElementById("upload-link").onclick = function() {
-            if (auth.currentUser) {
-                const uploadForm = document.getElementById("upload-form");
-                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
-            } else {
-                alert("Будь ласка, увійдіть, щоб завантажити відео.");
-            }
-        };
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+
+        // Function to toggle the authentication form
+        function toggleAuthForm() {
+            document.getElementById("auth-form").style.display = 'block';
+            document.getElementById("register-form").style.display = 'none';
+            document.getElementById("upload-form").style.display = 'none';
+        }
+
+        // Function to toggle the register form
+        function toggleRegisterForm() {
+            document.getElementById("register-form").style.display = 'block';
+            document.getElementById("auth-form").style.display = 'none';
+            document.getElementById("upload-form").style.display = 'none';
+        }
+
+        // Function to toggle the upload form
+        function toggleUploadForm() {
+            document.getElementById("upload-form").style.display = 'block';
+            document.getElementById("auth-form").style.display = 'none';
+            document.getElementById("register-form").style.display = 'none';
+        } else {
+            alert("Будь ласка увійдіть, щоб завантажити відео.");
+                  }
 
         function signIn() {
             const email = document.getElementById("auth-email").value;
@@ -466,13 +475,18 @@ function uploadVideo() {
 });
 
 
-        document.getElementById("logout-link").onclick = function() {
-            auth.signOut().then(() => {
-                alert("Ви вийшли з аккаунта.");
-                location.reload();
-            });
-        };
-
+        function logout() {
+            firebase.auth().signOut()
+                .then(() => {
+                    alert("Ви вийшли з аккаунту.");
+                    document.getElementById("upload-link").style.display = 'none';
+                    document.getElementById("logout-link").style.display = 'none';
+                    document.getElementById("auth-link").style.display = 'block';
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
         window.onload = loadVideos;
     </script>
 </body>
