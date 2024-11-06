@@ -104,7 +104,7 @@
             justify-content: center;
             margin-right: 10px;
             font-weight: bold;
-            color: white;
+            color: #ffffff;
         }
         .video-details {
             display: inline-block;
@@ -186,7 +186,9 @@
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
-                .catch(() => alert("Невірний логін або пароль."));
+                .catch((error) => {
+                    alert("Невірний логін або пароль.");
+                });
         }
 
         function loadVideos() {
@@ -194,8 +196,6 @@
             videoGallery.innerHTML = "";
 
             database.ref("videos").once("value").then((snapshot) => {
-                if (!snapshot.exists()) return; // Check if data exists
-
                 snapshot.forEach((childSnapshot) => {
                     const videoData = childSnapshot.val();
                     const videoKey = childSnapshot.key;
@@ -206,7 +206,7 @@
                     videoElement.classList.add("video-item");
 
                     videoElement.addEventListener("play", () => {
-                        updateViews(videoKey, (videoData.views || 0) + 1);
+                        updateViews(videoKey, videoData.views + 1);
                     });
 
                     const infoElement = document.createElement("div");
@@ -214,76 +214,93 @@
 
                     const avatar = document.createElement("div");
                     avatar.classList.add("avatar");
-                    avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
-
+                    avatar.innerText = videoData.author.charAt(0).toUpperCase();
+                    
                     const detailsElement = document.createElement("div");
                     detailsElement.classList.add("video-details");
-                    detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author || "Невідомий"}<br>Переглядів: ${videoData.views || 0}`;
+                    detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}`;
 
                     infoElement.appendChild(avatar);
                     infoElement.appendChild(detailsElement);
 
-                    const container = document.createElement("div");
-                    container.classList.add("video-container");
-                    container.appendChild(videoElement);
-                    container.appendChild(infoElement);
-
-                    videoGallery.appendChild(container);
+                    videoGallery.appendChild(videoElement);
+                    videoGallery.appendChild(infoElement);
                 });
             });
         }
 
-        function updateViews(videoKey, newViewCount) {
-            database.ref(`videos/${videoKey}`).update({ views: newViewCount });
+        function updateViews(videoKey, newViews) {
+            database.ref("videos/" + videoKey).update({
+                views: newViews
+            });
         }
 
         function uploadVideo() {
-            const videoTitle = document.getElementById("video-title").value;
-            const videoAuthor = document.getElementById("video-author").value;
-            const videoFile = document.getElementById("video-file").files[0];
+            const fileInput = document.getElementById("video-file");
+            const file = fileInput.files[0];
+
+            if (!file) return alert("Оберіть відео для завантаження.");
+
+            const title = document.getElementById("video-title").value;
+            const author = document.getElementById("video-author").value || auth.currentUser.email;
+            const storageRef = storage.ref("videos/" + file.name);
+
+            const progressContainer = document.getElementById("progress-container");
+            progressContainer.style.display = "block";
             const uploadProgress = document.getElementById("upload-progress");
             const progressText = document.getElementById("progress-text");
-            const progressContainer = document.getElementById("progress-container");
 
-            if (videoFile) {
-                const storageRef = storage.ref(`videos/${videoFile.name}`);
-                const uploadTask = storageRef.put(videoFile);
+            storageRef.put(file).on("state_changed",
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploadProgress.value = progress;
+                    progressText.innerText = Math.floor(progress) + "%";
+                },
+                (error) => {
+                    alert("Помилка при завантаженні: " + error.message);
+                },
+                () => {
+                    storageRef.getDownloadURL().then((url) => {
+                        const videoData = {
+                            title,
+                            author,
+                            url,
+                            views: 0
+                        };
 
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        uploadProgress.value = progress;
-                        progressText.innerText = `${Math.round(progress)}%`;
-                        progressContainer.style.display = "block";
-                    },
-                    (error) => console.error("Error uploading video:", error),
-                    () => {
-                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                            database.ref("videos").push({
-                                title: videoTitle,
-                                author: videoAuthor,
-                                url: downloadURL,
-                                views: 0
-                            }).then(() => {
-                                alert("Відео завантажено!");
-                                loadVideos();
-                                document.getElementById("video-title").value = "";
-                                document.getElementById("video-author").value = "";
-                                document.getElementById("video-file").value = "";
+                        database.ref("videos").push(videoData)
+                            .then(() => {
+                                alert("Відео успішно завантажено!");
+                                fileInput.value = "";
                                 progressContainer.style.display = "none";
+                                loadVideos();
+                            })
+                            .catch((error) => {
+                                alert("Помилка при збереженні відео: " + error.message);
                             });
-                        });
-                    }
-                );
-            } else {
-                alert("Будь ласка, виберіть відео для завантаження.");
-            }
+                    });
+                }
+            );
         }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById("auth-link").style.display = "none";
+                document.getElementById("upload-link").style.display = "flex";
+                document.getElementById("logout-link").style.display = "flex";
+                loadVideos();
+            } else {
+                document.getElementById("auth-link").style.display = "flex";
+                document.getElementById("upload-link").style.display = "none";
+                document.getElementById("logout-link").style.display = "none";
+                loadVideos();
+            }
+        });
 
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
-                alert("Ви вийшли!");
-                window.location.reload();
+                alert("Ви вийшли з аккаунта.");
+                location.reload();
             });
         };
 
