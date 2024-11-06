@@ -50,7 +50,6 @@
             max-width: 800px; 
             margin: 0 auto; 
             padding: 20px; 
-            display: inline-block;
             background: rgba(0, 0, 0, 0.7); 
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -112,6 +111,13 @@
             display: inline-block;
             vertical-align: top;
             text-align: left;
+        }
+        #video-container {
+            display: flex;
+    flex-wrap: wrap;  /* Allow videos to wrap onto the next line if necessary */
+    justify-content: space-around;  /* Space videos evenly across the width */
+    gap: 20px;  /* Add space between videos */
+    margin: 20px;
         }
     </style>
 </head>
