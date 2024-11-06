@@ -224,7 +224,7 @@
                     document.getElementById("logout-link").style.display = "flex";
                 })
             .catch((error) => {
-                    alert("Поля не повинні бути порожніми.");
+                    alert("Помилка реєстрації: " + error.message);
              });
         }
         // Load videos from Firebase
