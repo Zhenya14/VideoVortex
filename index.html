@@ -50,6 +50,7 @@
             max-width: 800px; 
             margin: 0 auto; 
             padding: 20px; 
+            display: inline-block;
             background: rgba(0, 0, 0, 0.7); 
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -81,7 +82,7 @@
             background: #00f2fe;
         }
         .video-container {
-            display: inline-block;
+            
             margin-top: 20px; 
         }
         video { 
@@ -122,9 +123,7 @@
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
     </nav>
-
-    <div class="container">
-        <div class="auth-form" id="auth-form">
+<div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
             <input type="email" id="auth-email" placeholder="Електронна пошта">
             <input type="password" id="auth-password" placeholder="Пароль">
@@ -143,6 +142,8 @@
             <button onclick="uploadVideo()">Завантажити</button>
         </div>
 
+    <div class="container">
+        
         <div class="video-container" id="video-gallery"></div>
     </div>
 
