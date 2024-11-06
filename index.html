@@ -294,7 +294,6 @@ function uploadVideo() {
 
     if (containsForbiddenWords(videoTitle) || containsForbiddenWords(videoFile.name)) {
         alert("Це відео містить заборонений контент. Завантаження неможливе.");
-        document.getElementById("upload-button").disabled = true;
         return;
     }
     
