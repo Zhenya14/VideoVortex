@@ -220,6 +220,7 @@ if (email === "" || password === "") {
                 .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
                     document.getElementById("auth-form").style.display = "none";
+                    document.getElementById("register-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
