@@ -152,7 +152,7 @@
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
             </div>
-            <button onclick="uploadVideo()">Завантажити</button>
+            <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
         </div>
 
     <div class="container">
@@ -351,7 +351,15 @@ function uploadVideo() {
         document.getElementById("logout-link").style.display = "none";
     }
 });
-
+        
+function containsForbiddenWords(text) {
+    for (let word of forbiddenWords) {
+        if (text.toLowerCase().includes(word)) {
+            return true;
+        }
+    }
+    return false;
+}
 
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
