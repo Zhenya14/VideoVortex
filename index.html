@@ -212,7 +212,12 @@
         function signUp() {
             const email = document.getElementById("register-email").value.trim();
             const password = document.getElementById("register-password").value.trim();
-    
+
+            if (!email || !password) {
+        alert("Поля не повинні бути порожніми.");
+        return;
+            }
+            
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
@@ -224,7 +229,7 @@
                     document.getElementById("logout-link").style.display = "flex";
                 })
             .catch((error) => {
-                    alert("Помилка реєстрації: " + error.message);
+                    alert("Цей акаунт вже існує.");
              });
         }
         // Load videos from Firebase
