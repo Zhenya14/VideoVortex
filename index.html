@@ -126,7 +126,7 @@
 #sidebar {
     position: fixed;
     top: 0;
-    left: -250px; /* Початкове приховане положення */
+    left: -350px; /* Початкове приховане положення */
     width: 250px;
     height: 100%;
     background-color: #1c1e22;
@@ -208,21 +208,21 @@
 </head>
 <body>
     <nav>
+        <span class="sidebar-button">&#9776;</span>
         <img src="IMG_20241106_131800_017.jpg">
-        <div class="desktop">
         <h1 style="padding-left: 5px;">VideoVortex</h1>
+        <div class="desktop">
         <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="register-link">Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
         </div>
-        <span class="sidebar-button" onclick="document.getElementById('sidebar').style.display = 'block'">&#9776;</span>
     </nav>
     <div id="sidebar">
-        <a href="#" id="upload-link-sidebar" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link-sidebar">Увійти</a>
-        <a href="#" id="register-link-sidebar">Реєстрація</a>
-        <a href="#" id="logout-link-sidebar" style="display: none;">Вийти</a>
+        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
+        <a href="#" id="auth-link">Увійти</a>
+        <a href="#" id="register-link">Реєстрація</a>
+        <a href="#" id="logout-link" style="display: none;">Вийти</a>
     </div>
     
 <div class="auth-form" id="auth-form">
