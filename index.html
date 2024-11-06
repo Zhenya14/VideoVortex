@@ -214,13 +214,16 @@ function signUp() {
             const password = document.getElementById("register-password").value;
 
             auth.createUserWithEmailAndPassword(email, password)
-                .then(() => {
+                .then((userCredential) => {
                     alert("Ви успішно зареєструвалися!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
+        } else {
+            alert("Поля не повинні бути порожніми.");
+            }
                 });
         }
         // Load videos from Firebase
