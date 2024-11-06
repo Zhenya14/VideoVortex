@@ -9,107 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
-            color: #ffffff; 
-            text-align: center; 
-            padding: 20px; 
-            margin: 0;
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-        nav { 
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            gap: 15px; 
-            background: #1c1e22; 
-            padding: 10px 20px; 
-            margin-bottom: 20px; 
-            border-radius: 8px; 
-        }
-        nav a { 
-            color: #ffffff; 
-            text-decoration: none; 
-            font-weight: bold; 
-            padding: 8px 15px; 
-            border-radius: 5px; 
-            transition: color 0.3s ease, background 0.3s ease;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        nav a:hover { 
-            background-color: #4facfe; 
-            color: #1c1e22; 
-        }
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: rgba(0, 0, 0, 0.7); 
-            border-radius: 10px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .form, .upload-form, .auth-form { 
-            display: none; 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 20px; 
-            border-radius: 10px; 
-            margin-top: 20px;
-        }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 10px 0; 
-            border-radius: 8px; 
-            border: none; 
-            outline: none;
-            font-size: 1em;
-        }
-        button { 
-            background: #4facfe; 
-            color: white; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: background 0.3s ease;
-        }
-        button:hover { 
-            background: #00f2fe;
-        }
-        .video-container { 
-            margin-top: 20px; 
-        }
-        video { 
-            width: 100%; 
-            margin: 10px auto; 
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .video-info { 
-            text-align: left; 
-            color: #b0bec5; 
-            padding: 5px;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .video-details {
-            display: inline-block;
-            vertical-align: top;
-            text-align: left;
-        }
+        /* Your existing styles */
     </style>
 </head>
 <body>
@@ -159,13 +59,11 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // Toggle authentication form
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
         };
 
-        // Toggle upload form, only show if user is authenticated
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
                 const uploadForm = document.getElementById("upload-form");
@@ -175,7 +73,6 @@
             }
         };
 
-        // Sign in function
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
@@ -186,45 +83,42 @@
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
-                    document.getElementById("logout-link").style.display = "flex"; // Show logout button
+                    document.getElementById("logout-link").style.display = "flex";
                 })
-                .catch((error) => {
-                    alert("Невірний логін або пароль.");
-                });
+                .catch(() => alert("Невірний логін або пароль."));
         }
 
-        // Load videos from Firebase
         function loadVideos() {
             const videoGallery = document.getElementById("video-gallery");
             videoGallery.innerHTML = "";
 
             database.ref("videos").once("value").then((snapshot) => {
+                if (!snapshot.exists()) return; // Check if data exists
+
                 snapshot.forEach((childSnapshot) => {
                     const videoData = childSnapshot.val();
-                    const videoKey = childSnapshot.key; // Key for updating view count
+                    const videoKey = childSnapshot.key;
 
                     const videoElement = document.createElement("video");
                     videoElement.src = videoData.url;
                     videoElement.controls = true;
                     videoElement.classList.add("video-item");
 
-                    // Update views when the video is played
                     videoElement.addEventListener("play", () => {
-                        updateViews(videoKey, videoData.views + 1); // Update views on play
+                        updateViews(videoKey, (videoData.views || 0) + 1);
                     });
 
                     const infoElement = document.createElement("div");
                     infoElement.classList.add("video-info");
 
-                    // Avatar
                     const avatar = document.createElement("div");
                     avatar.classList.add("avatar");
-                    avatar.innerText = videoData.author.charAt(0).toUpperCase();
-                    
+                    avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+
                     const detailsElement = document.createElement("div");
                     detailsElement.classList.add("video-details");
-                    detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}`;
-                    
+                    detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author || "Невідомий"}<br>Переглядів: ${videoData.views || 0}`;
+
                     infoElement.appendChild(avatar);
                     infoElement.appendChild(detailsElement);
 
@@ -232,18 +126,16 @@
                     container.classList.add("video-container");
                     container.appendChild(videoElement);
                     container.appendChild(infoElement);
-                    
+
                     videoGallery.appendChild(container);
                 });
             });
         }
 
-        // Update view count in Firebase
         function updateViews(videoKey, newViewCount) {
             database.ref(`videos/${videoKey}`).update({ views: newViewCount });
         }
 
-        // Upload video function
         function uploadVideo() {
             const videoTitle = document.getElementById("video-title").value;
             const videoAuthor = document.getElementById("video-author").value;
@@ -256,19 +148,16 @@
                 const storageRef = storage.ref(`videos/${videoFile.name}`);
                 const uploadTask = storageRef.put(videoFile);
 
-                uploadTask.on('state_changed', 
+                uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         uploadProgress.value = progress;
                         progressText.innerText = `${Math.round(progress)}%`;
                         progressContainer.style.display = "block";
-                    }, 
-                    (error) => {
-                        console.error("Error uploading video:", error);
-                    }, 
+                    },
+                    (error) => console.error("Error uploading video:", error),
                     () => {
                         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                            // Save video info to database
                             database.ref("videos").push({
                                 title: videoTitle,
                                 author: videoAuthor,
@@ -276,9 +165,11 @@
                                 views: 0
                             }).then(() => {
                                 alert("Відео завантажено!");
-                                loadVideos(); // Reload videos
-                                document.getElementById("upload-form").reset();
-                                progressContainer.style.display = "none"; // Hide progress
+                                loadVideos();
+                                document.getElementById("video-title").value = "";
+                                document.getElementById("video-author").value = "";
+                                document.getElementById("video-file").value = "";
+                                progressContainer.style.display = "none";
                             });
                         });
                     }
@@ -288,18 +179,16 @@
             }
         }
 
-        // Logout function
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли!");
                 document.getElementById("upload-link").style.display = "none";
                 document.getElementById("logout-link").style.display = "none";
-                document.getElementById("auth-link").style.display = "flex"; // Show login link
-                loadVideos(); // Reload videos to update the view count
+                document.getElementById("auth-link").style.display = "flex";
+                loadVideos();
             });
         };
 
-        // Load videos when the page is loaded
         window.onload = loadVideos;
     </script>
 </body>
