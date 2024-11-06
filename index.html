@@ -241,22 +241,23 @@ function loadVideos() {
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
-            const videoKey = childSnapshot.key; // Key for updating view count
+            const videoKey = childSnapshot.key;
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.controls = true;
             videoElement.classList.add("video-item");
 
-            // Update views when the video is played
+            // Оновлення переглядів при запуску відтворення відео
             videoElement.addEventListener("play", () => {
-                updateViews(videoKey, videoData.views + 1); // Update views on play
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount });
             });
 
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
-            // Avatar
+            // Аватар
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
@@ -276,7 +277,7 @@ function loadVideos() {
             videoGallery.appendChild(container);
         });
     });
-}
+        }
 
 // Update views for a video
 function updateViews(videoKey, newViewsCount) {
