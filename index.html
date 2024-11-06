@@ -9,12 +9,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
-        /* Базові стилі */
         img {
-            padding: 0px 0px 0px 0px;
-            height: 50px;
-            width: 50px;
-            border-radius: 80px;
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
         }
         body { 
             font-family: Arial, sans-serif; 
@@ -89,8 +88,8 @@
         }
         .video-container {
             display: flex;
-            margin-top: 20px;
-            flex-direction: column-reverse; 
+    margin-top: 20px;
+    flex-direction: column-reverse; 
         }
         video { 
             width: 100%; 
@@ -120,111 +119,17 @@
             vertical-align: top;
             text-align: left;
         }
-
-        /* Sidebar Styles */
-        /* Бічна панель (Sidebar) */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -350px; /* Початкове приховане положення */
-    width: 250px;
-    height: 100%;
-    background-color: #1c1e22;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    transition: left 0.3s ease; /* Анімація відкриття */
-    z-index: 1000; /* Забезпечує правильне накладання на інший контент */
-}
-
-#sidebar a {
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-#sidebar a:hover {
-    background-color: #4facfe;
-}
-
-/* Мобільні стилі */
-@media (max-width: 768px) {
-    .desktop {
-        display: none; /* Приховуємо меню для десктопу */
-    }
-
-    .sidebar-button {
-        display: block;
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 1500; /* Кнопка з більш високим пріоритетом */
-    }
-
-    #sidebar {
-        left: -350px; /* Початкове приховане положення */
-    }
-
-    /* Коли sidebar активований */
-    #sidebar.active {
-        left: 0; /* Переміщаємо sidebar вліво, коли він активований */
-    }
-
-    #sidebar a {
-        margin: 15px 0; /* Збільшуємо відстань між елементами для кращого вигляду */
-    }
-}
-
-/* Десктопні стилі */
-@media (min-width: 769px) {
-    #sidebar {
-        display: none; /* Приховуємо sidebar на десктопах */
-    }
-
-    .desktop {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-    }
-
-    .sidebar-button {
-        display: none; /* Приховуємо кнопку для десктопу */
-    }
-
-    #upload-link, #auth-link, #register-link, #logout-link {
-        display: block; /* Показуємо лінки для десктопу */
-    }
-}
-
     </style>
 </head>
 <body>
     <nav>
-        <span class="sidebar-button">&#9776;</span>
         <img src="IMG_20241106_131800_017.jpg">
         <h1 style="padding-left: 5px;">VideoVortex</h1><sup>beta</sup>
-        <div class="desktop">
         <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
         <a href="#" id="auth-link">Увійти</a>
         <a href="#" id="register-link">Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;">Вийти</a>
-        </div>
     </nav>
-    <div id="sidebar">
-        <a href="#" id="upload-link" style="display: none;">Завантажити відео</a>
-        <a href="#" id="auth-link">Увійти</a>
-        <a href="#" id="register-link">Реєстрація</a>
-        <a href="#" id="logout-link" style="display: none;">Вийти</a>
-    </div>
-    
 <div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
             <input type="email" id="auth-email" placeholder="Електронна пошта">
@@ -255,12 +160,6 @@
     </div>
 
     <script>
-        // Додаємо подію для кнопки відкриття/закриття бічної панелі
-document.querySelector('.sidebar-button').addEventListener('click', function() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active'); // Додаємо або видаляємо клас active для анімації
-});
-
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -366,7 +265,7 @@ function loadVideos() {
             
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
             
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
@@ -391,14 +290,14 @@ function uploadVideo() {
     const progressContainer = document.getElementById("progress-container");
 
     if (videoFile) {
-        const storageRef = storage.ref(videos/${videoFile.name});
+        const storageRef = storage.ref(`videos/${videoFile.name}`);
         const uploadTask = storageRef.put(videoFile);
 
         uploadTask.on('state_changed', 
             (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 uploadProgress.value = progress;
-                progressText.innerText = ${Math.round(progress)}%;
+                progressText.innerText = `${Math.round(progress)}%`;
                 progressContainer.style.display = "block";
             }, 
             (error) => {
