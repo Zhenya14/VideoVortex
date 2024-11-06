@@ -308,15 +308,6 @@ function uploadVideo() {
         document.getElementById("upload-link").style.display = "none";
         document.getElementById("logout-link").style.display = "none";
     }
-    // Load videos only when the auth state is updated (after login/logout)
-    loadVideos();
-});
-
-// Ensure videos are only loaded once after page load and auth state is checked
-document.addEventListener("DOMContentLoaded", function() {
-    if (!firebase.auth().currentUser) {
-        loadVideos();
-    }
 });
 
 
