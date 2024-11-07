@@ -309,6 +309,7 @@ function loadVideos() {
 // Upload video and save info
         
 function uploadVideo() {
+    const Email = document.getElementById("auth-email").value;
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
     const videoFile = document.getElementById("video-file").files[0];
@@ -339,6 +340,7 @@ function uploadVideo() {
                     database.ref("videos").push({
                         title: videoTitle,
                         author: videoAuthor,
+                        email: Email,
                         url: downloadURL,
                         views: 0,
                         publishDate: currentDate // Save the publish date
