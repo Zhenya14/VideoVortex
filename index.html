@@ -184,6 +184,7 @@ nav {
     </div>
 
     <script>
+    let currentUserEmail = null;
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -217,14 +218,16 @@ nav {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
-
+        
+ 
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
 
             auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
+                .then((userCredential) => {
                     alert("Вхід успішний!");
+                    currentUserEmail = userCredential.user.email;
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
@@ -340,7 +343,7 @@ function uploadVideo() {
                     database.ref("videos").push({
                         title: videoTitle,
                         author: videoAuthor,
-                        email: Email,
+                        email: currentUserEmail,
                         url: downloadURL,
                         views: 0,
                         publishDate: currentDate // Save the publish date
@@ -360,18 +363,20 @@ function uploadVideo() {
 
 
        auth.onAuthStateChanged((user) => {
-    if (user) {
-        document.getElementById("auth-link").style.display = "none";
-        document.getElementById("register-link").style.display = "none";
-        document.getElementById("upload-link").style.display = "flex";
-        document.getElementById("logout-link").style.display = "flex";
-    } else {
-        document.getElementById("auth-link").style.display = "flex";
-        document.getElementById("register-link").style.display = "flex";
-        document.getElementById("upload-link").style.display = "none";
-        document.getElementById("logout-link").style.display = "none";
-    }
-});
+        if (user) {
+            currentUserEmail = user.email; // Зберігаємо email, якщо користувач уже ввійшов
+            document.getElementById("auth-link").style.display = "none";
+            document.getElementById("register-link").style.display = "none";
+            document.getElementById("upload-link").style.display = "flex";
+            document.getElementById("logout-link").style.display = "flex";
+        } else {
+            currentUserEmail = null;
+            document.getElementById("auth-link").style.display = "flex";
+            document.getElementById("register-link").style.display = "flex";
+            document.getElementById("upload-link").style.display = "none";
+            document.getElementById("logout-link").style.display = "none";
+        }
+    });
         
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
