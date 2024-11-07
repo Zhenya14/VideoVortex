@@ -121,42 +121,55 @@
             vertical-align: top;
             text-align: left;
         }
-        @media (max-width: 768px) {
-            .desktop {
-                display: none;
-                }
-           #sidebar-button {
-               display: block;
-            #sidebar {
-                display: none;
-            }
-        }
-        
+       @media (max-width: 768px) {
+    .desktop {
+        display: none;
+    }
+    #sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 100%;
+        background: #1c1e22;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    }
+    #sidebar-button {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    #sidebar-button, #sidebar {
+        display: none;
+    }
+}
     </style>
 </head>
 <body>
     <nav>
-         <div style="display: flex; align-items: center;">
-        <img src="VideoVortex_logo.ico">
+    <div style="display: flex; align-items: center;">
+        <img src="VideoVortex_logo.ico" alt="Logo">
         <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
-             <button id="sidebar-button" onclick="document.getElementById('sidebar').style.display= 'block'">☰</button>
-             </div>
-        <div class="desktop" style="display: flex; gap: 15px; margin-left: auto;">
-        <div style="display: flex; gap: 15px; margin-left: auto;">
-        <a href="#" id="upload-link" style="display: none;"><i class="material-icons">upload</i>Завантажити відео</a>
-        <a href="#" id="auth-link"><i class="material-icons">login</i>Увійти</a>
-        <a href="#" id="register-link"><i class="material-icons">person_add</i>Реєстрація</a>
-        <a href="#" id="logout-link" style="display: none;"><i class="material-icons">logout</i>Вийти</a>
-            </div>
-        </div>
-    </nav>
-    <div id="sidebar" style="display: flex; gap: 15px; margin-left: auto;">
-        <button id="close-button onclick="document.getElementById('sidebar').style.display= 'none'"><i class="material-icons">close</i></button>
+        <button id="sidebar-button" onclick="toggleSidebar()">☰</button>
+    </div>
+    <div class="desktop" style="display: flex; gap: 15px; margin-left: auto;">
         <a href="#" id="upload-link" style="display: none;"><i class="material-icons">upload</i>Завантажити відео</a>
         <a href="#" id="auth-link"><i class="material-icons">login</i>Увійти</a>
         <a href="#" id="register-link"><i class="material-icons">person_add</i>Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;"><i class="material-icons">logout</i>Вийти</a>
     </div>
+</nav>
+
+<div id="sidebar">
+    <button onclick="toggleSidebar()">Закрити ×</button>
+    <a href="#" id="sidebar-upload-link" style="display: none;"><i class="material-icons">upload</i>Завантажити відео</a>
+    <a href="#" id="sidebar-auth-link"><i class="material-icons">login</i>Увійти</a>
+    <a href="#" id="sidebar-register-link"><i class="material-icons">person_add</i>Реєстрація</a>
+    <a href="#" id="sidebar-logout-link" style="display: none;"><i class="material-icons">logout</i>Вийти</a>
+</div>
 <div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
             <input type="email" id="auth-email" placeholder="Електронна пошта">
@@ -373,7 +386,39 @@ function uploadVideo() {
         document.getElementById("logout-link").style.display = "none";
     }
 });
-        
+        function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+}
+
+function updateNavButtons(user) {
+    if (user) {
+        document.getElementById("auth-link").style.display = "none";
+        document.getElementById("register-link").style.display = "none";
+        document.getElementById("upload-link").style.display = "flex";
+        document.getElementById("logout-link").style.display = "flex";
+
+        document.getElementById("sidebar-auth-link").style.display = "none";
+        document.getElementById("sidebar-register-link").style.display = "none";
+        document.getElementById("sidebar-upload-link").style.display = "flex";
+        document.getElementById("sidebar-logout-link").style.display = "flex";
+    } else {
+        document.getElementById("auth-link").style.display = "flex";
+        document.getElementById("register-link").style.display = "flex";
+        document.getElementById("upload-link").style.display = "none";
+        document.getElementById("logout-link").style.display = "none";
+
+        document.getElementById("sidebar-auth-link").style.display = "flex";
+        document.getElementById("sidebar-register-link").style.display = "flex";
+        document.getElementById("sidebar-upload-link").style.display = "none";
+        document.getElementById("sidebar-logout-link").style.display = "none";
+    }
+}
+
+// Оновлюємо кнопки при зміні стану авторизації
+firebase.auth().onAuthStateChanged(user => {
+    updateNavButtons(user);
+});
         document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з аккаунта.");
