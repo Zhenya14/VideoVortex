@@ -121,6 +121,17 @@
             vertical-align: top;
             text-align: left;
         }
+        @(media-width: 768px) {
+            .desktop {
+                display: none;
+                }
+           #sidebar-button {
+               display: block;
+            #sidebar {
+                display: none;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -128,14 +139,26 @@
          <div style="display: flex; align-items: center;">
         <img src="VideoVortex_logo.ico">
         <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
+             <button id="sidebar-button" onclick="document.getElementById('sidebar').style.display= 'block'">☰</button>button>
              </div>
+        <div class="desktop">
         <div style="display: flex; gap: 15px; margin-left: auto;">
         <a href="#" id="upload-link" style="display: none;"><i class="material-icons">upload</i>Завантажити відео</a>
         <a href="#" id="auth-link"><i class="material-icons">login</i>Увійти</a>
         <a href="#" id="register-link"><i class="material-icons">person_add</i>Реєстрація</a>
         <a href="#" id="logout-link" style="display: none;"><i class="material-icons">logout</i>Вийти</a>
             </div>
+        </div>
     </nav>
+    <div id="sidebar" style="display: flex;">
+        <div style="display: flex; gap: 15px; margin-left: auto;">
+            <button id="close-button onclick="document.getElementById('sidebar').style.display= 'none'"><i class="material-icons">close</i></button>
+        <a href="#" id="upload-link" style="display: none;"><i class="material-icons">upload</i>Завантажити відео</a>
+        <a href="#" id="auth-link"><i class="material-icons">login</i>Увійти</a>
+        <a href="#" id="register-link"><i class="material-icons">person_add</i>Реєстрація</a>
+        <a href="#" id="logout-link" style="display: none;"><i class="material-icons">logout</i>Вийти</a>
+        </div>
+    </div>
 <div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
             <input type="email" id="auth-email" placeholder="Електронна пошта">
