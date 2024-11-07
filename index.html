@@ -121,7 +121,7 @@
             vertical-align: top;
             text-align: left;
         }
-        @media (max-width: 768px) {
+        @(media-width: 768px) {
             .desktop {
                 display: none;
                 }
@@ -294,7 +294,7 @@ function loadVideos() {
             
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
             
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
@@ -320,14 +320,14 @@ function uploadVideo() {
     const progressContainer = document.getElementById("progress-container");
     
     if (videoFile) {
-        const storageRef = storage.ref(videos/${videoFile.name});
+        const storageRef = storage.ref(`videos/${videoFile.name}`);
         const uploadTask = storageRef.put(videoFile);
 
         uploadTask.on('state_changed', 
             (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 uploadProgress.value = progress;
-                progressText.innerText = ${Math.round(progress)}%;
+                progressText.innerText = `${Math.round(progress)}%`;
                 progressContainer.style.display = "block";
             }, 
             (error) => {
