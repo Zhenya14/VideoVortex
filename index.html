@@ -219,7 +219,13 @@ nav {
             }
         };
         
- 
+ document.getElementById("auth-form").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Зупинити стандартну дію
+                signIn(); // Виклик функції входу
+            }
+        });
+        
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
