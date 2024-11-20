@@ -143,7 +143,6 @@ nav {
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
         </div>
         <div style="display: flex; gap: 15px; margin-left: auto;">
-            <a href="#"><button id="install-button">Встановити додаток</button></a>
             <a href="#" id="upload-link" style="display: none;">
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
             </a>
@@ -270,34 +269,7 @@ nav {
                     alert("Цей акаунт вже існує.");
              });
         }
-        
-       if ('serviceWorker' in navigator && window.matchMedia('(display-mode: standalone)').matches) {
-    const installButton = document.createElement("button");
-    installButton.innerText = "Встановити додаток";
-    installButton.onclick = () => installApp();
-    document.body.appendChild(installButton);
-}
-
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();  // Не показувати стандартне вікно
-    deferredPrompt = e;  // Зберігаємо подію для використання пізніше
-});
-
-function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt(); // Показуємо діалог
-        deferredPrompt.userChoice.then((result) => {
-            if (result.outcome === 'accepted') {
-                console.log('Користувач встановив додаток');
-            } else {
-                console.log('Користувач відмовився від установки');
-            }
-            deferredPrompt = null; // Скидаємо
-        });
-    }
-}
+    
 // Load videos from Firebase
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
