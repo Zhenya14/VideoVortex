@@ -37,23 +37,27 @@
             background: rgba(0, 0, 0, 0.7); 
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
+        } 
         .snowflake {
-            position: fixed;
-            top: -10px;
-            color: #ffffff;
-            font-size: 20px;
-            pointer-events: none;
-            animation: fall linear infinite;
-        }
+    position: fixed;
+    top: -10px;
+    color: #fff;
+    font-size: 1em;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 1000;
+}
 
-        /* Àí³ìàö³ÿ ïàä³ííÿ ñí³æèíîê */
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
         .form, .upload-form, .auth-form, .register-form, .account-form { 
             display: none; 
             background: rgba(255, 255, 255, 0.1); 
@@ -242,7 +246,26 @@ nav {
         <div class="video-container" id="video-gallery"></div>
          
     </div>
+<script>
+    // Генерація сніжинок
+    function createSnowflake() {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.textContent = '❄';
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+        snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+        snowflake.style.setProperty('--x', Math.random());
+        document.body.appendChild(snowflake);
 
+        setTimeout(() => {
+            snowflake.remove();
+        }, 5000);
+    }
+
+    // Додавання сніжинок кожні 100 мс
+    setInterval(createSnowflake, 100);
+</script>
     <script>
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
