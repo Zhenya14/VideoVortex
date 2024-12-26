@@ -414,7 +414,7 @@ function loadVideos() {
             
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}<br>Опис:${videoData.description || "Не вказано"}`;
             
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
