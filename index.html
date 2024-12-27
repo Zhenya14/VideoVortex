@@ -220,13 +220,9 @@ nav {
     </div>
         </div>
 <div class="register-form" id="register-form">
-            <h2>Реєстрація</h2>
+            <h2>?a?no?ao?y</h2>
             <input type="email" id="register-email" placeholder="Електронна адреса">
-            <input type="password" id="register-password" placeholder="Пароль">         
-<select id="register-gender">
-    <option value="male">Чоловік</option>
-    <option value="female">Жінка</option>
-</select>
+            <input type="password" id="register-password" placeholder="Пароль">
             <button onclick="signUp()">Зареєструватися</button>
         </div>
         <div class="upload-form" id="upload-form">
@@ -236,11 +232,6 @@ nav {
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
 <div id="NSFW" style="display: none;">    
-    <select id="video-target-gender">
-    <option value="male">Чоловіки</option>
-    <option value="female">Жінки</option>
-    <option value="all">Для всіх</option>
-    </select>
            <label for="nsfw-checkbox" ><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 
 </div>
@@ -363,7 +354,7 @@ function deleteAccount() {
         function signUp() {
             const email = document.getElementById("register-email").value.trim();
             const password = document.getElementById("register-password").value.trim();
-            const gender = document.getElementById("register-gender").value;
+
             if (!email || !password) {
         alert("Поля не повинні бути порожніми.");
         return;
@@ -371,11 +362,6 @@ function deleteAccount() {
             
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    const userId = userCredential.user.uid;
-            // Зберігаємо стать користувача в базі даних
-            database.ref("users/" + userId).set({
-                email: email,
-                gender: gender
                     alert("Ви успішно зареєструвалися!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("register-form").style.display = "none";
@@ -400,14 +386,7 @@ alert("Сталася помилка при увімкненні функції 
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
-const currentUser = auth.currentUser;
-    if (!currentUser) return;
 
-    database.ref("users/" + currentUser.uid).once("value").then((userSnapshot) => {
-        const userGender = userSnapshot.val().gender;
-        if (videoData.targetGender === userGender) {
-            return;
-        }
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
@@ -454,7 +433,6 @@ const currentUser = auth.currentUser;
 
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadVideo() {
-    const targetGender = document.getElementById("video-target-gender").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoTitle = document.getElementById("video-title").value;
     const videoAuthor = document.getElementById("video-author").value;
@@ -496,7 +474,6 @@ function uploadVideo() {
                         url: downloadURL,
                         description: videoDescription,
                         views: 0,
-                        targetGender: targetGender, // Додаємо цільову стать
                         nsfw: isNSFW,
                         publishDate: currentDate // Save the publish date
                     }).then(() => {
@@ -552,5 +529,5 @@ function updateNsfwShow() {
 document.getElementById("NSFW").style.display = "block";
 }
     </script>
-</body>
+</body>                                                          
 </html>
