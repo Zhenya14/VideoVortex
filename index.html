@@ -370,6 +370,7 @@ const firebaseConfig = {
                 const uploadVideoForm = document.getElementById("upload-form");
                 uploadVideoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
                 document.getElementById("account-form").style.display = "none";
+                document.getElementById("upload-photo-form").style.display = "none";
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
@@ -384,7 +385,8 @@ const firebaseConfig = {
             if (auth.currentUser) {
                 const uploadPhotoForm = document.getElementById("upload-photo-form");
                 uploadPhotoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
-                document.getElementById("upload-photo-form").style.display = "none";
+                document.getElementById("upload-form").style.display = "none";
+                document.getElementById("account-form").style.display = "none";
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
             }
