@@ -606,7 +606,7 @@ function loadPhotos() {
             const photoData = childSnapshot.val();
             const photoKey = childSnapshot.key;
 
-            const photoElement = document.createElement("photo");
+            const photoElement = document.createElement("img");
             photoElement.src = photoData.url;
             photoElement.controls = true;
             photoElement.classList.add("photo-item");
@@ -641,6 +641,7 @@ function loadPhotos() {
             photoGallery.appendChild(Photocontainer);
         });
     });
+ }
         }
 
 
