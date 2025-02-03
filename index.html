@@ -367,8 +367,8 @@ const firebaseConfig = {
         };
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
-                const uploadForm = document.getElementById("upload-form");
-                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                const uploadVideoForm = document.getElementById("upload-form");
+                uploadVideoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
                 document.getElementById("account-form").style.display = "none";
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
@@ -382,8 +382,8 @@ const firebaseConfig = {
 
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
-                const uploadphotoForm = document.getElementById("upload-photo-form");
-                uploadphotoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                const uploadPhotoForm = document.getElementById("upload-photo-form");
+                uploadPhotoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
                 document.getElementById("upload-photo-form").style.display = "none";
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
@@ -597,14 +597,14 @@ document.getElementById("logout-link").onclick = function() {
         };
 function loadPhotos() {
     const photoGallery = document.getElementById("photo-gallery");
-    videoGallery.innerHTML = "";
+    photoGallery.innerHTML = "";
 
     database.ref("photos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const photoData = childSnapshot.val();
             const photoKey = childSnapshot.key;
 
-            const videoElement = document.createElement("photo");
+            const photoElement = document.createElement("photo");
             photoElement.src = photoData.url;
             photoElement.controls = true;
             photoElement.classList.add("photo-item");
@@ -644,7 +644,7 @@ function loadPhotos() {
 
 
     // Example of how video data might be stored with an 'nsfw' attribute
-function uploadVideo() {
+function uploadPhoto() {
     const videoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
     const photoAuthor = document.getElementById("photo-author").value;
@@ -658,7 +658,7 @@ function uploadVideo() {
         return;
     }
 
-    if (videoFile) {
+    if (PhotoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
 
