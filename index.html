@@ -292,7 +292,7 @@ nav {
             <input type="text" id="photo-title" placeholder="Назва Фото">
             <input type="text" id="photo-author" placeholder="Ім'я автора">
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
-            <input type="file" id="photo-file" accept="photo/*"> 
+            <input type="file" id="photo-file" accept="video/*"> 
             
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
@@ -660,7 +660,7 @@ function uploadPhoto() {
         return;
     }
 
-    if (PhotoFile) {
+    if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
 
