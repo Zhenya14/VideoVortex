@@ -368,7 +368,7 @@ const firebaseConfig = {
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
                 const uploadVideoForm = document.getElementById("upload-form");
-                uploadVideoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                uploadVideoForm.style.display = uploadVideoForm.style.display === "none" ? "block" : "none";
                 document.getElementById("account-form").style.display = "none";
                 document.getElementById("upload-photo-form").style.display = "none";
             } else {
@@ -384,7 +384,7 @@ const firebaseConfig = {
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
                 const uploadPhotoForm = document.getElementById("upload-photo-form");
-                uploadPhotoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                uploadPhotoForm.style.display = uploadPhotoForm.style.display === "none" ? "block" : "none";
                 document.getElementById("upload-form").style.display = "none";
                 document.getElementById("account-form").style.display = "none";
             } else {
