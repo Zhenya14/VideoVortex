@@ -71,7 +71,7 @@ height: 10px;
         opacity: 0;
     }
 }
-        .form, .upload-form, .auth-form, .register-form, .account-form { 
+        .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
             display: none; 
             background: rgba(255, 255, 255, 0.1); 
             padding: 20px; 
@@ -204,6 +204,14 @@ nav {
             <a href="#" id="upload-link" style="display: none;">
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
             </a>
+            <div style="display: flex; gap: 15px; margin-left: auto;">
+            <a href="#" id="upload-link-photo" style="display: none;">
+                <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
+            </a>
+                <div style="display: flex; gap: 15px; margin-left: auto;">
+            <a href="#" id="post">
+                <i class="material-icons">photo</i><span class="icon-text">Дописи</span>
+            </a>
             <a href="#" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
@@ -234,7 +242,7 @@ nav {
     </div>
         </div>
 <div class="register-form" id="register-form">
-            <h2>?a?no?ao?y</h2>
+            <h2>Рестрація/h2>
             <input type="email" id="register-email" placeholder="Електронна адреса">
             <input type="password" id="register-password" placeholder="Пароль">
             <button onclick="signUp()">Зареєструватися</button>
@@ -255,9 +263,25 @@ nav {
             </div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
         </div>
-
+        <div class="upload-photo-form" id="upload-photo-form">
+            <h2>Завантажити фото</h2>
+            <input type="text" id="photo-title" placeholder="Назва Фото">
+            <input type="text" id="photo-author" placeholder="Ім'я автора">
+            <textarea id="photo-description" placeholder="Опис Фото"></textarea>
+            <input type="file" id="photo-file" accept="photo/*"> 
+            
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>
+            <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
+        </div>
     <div class="container">
         <div class="video-container" id="video-gallery"></div>
+         
+    </div>
+    <div class="photo-container">
+        <div class="photo-container" id="photo-gallery"></div>
          
     </div>
 <!-- <script>
@@ -326,7 +350,15 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
-        
+        document.getElementById("upload-link-photo").onclick = function() {
+            if (auth.currentUser) {
+                const uploadForm = document.getElementById("upload-form");
+                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                document.getElementById("upload-photo-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити фото.");
+            }
+        };
 
 function deleteAccount() {
             const user = auth.currentUser;
@@ -529,8 +561,114 @@ document.getElementById("logout-link").onclick = function() {
                 location.reload();
             });
         };
+function loadPhotos() {
+    const photoGallery = document.getElementById("photo-gallery");
+    videoGallery.innerHTML = "";
+
+    database.ref("photos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const photoData = childSnapshot.val();
+            const photoKey = childSnapshot.key;
+
+            const videoElement = document.createElement("photo");
+            photoElement.src = photoData.url;
+            photoElement.controls = true;
+            photoElement.classList.add("photo-item");
+
+            // Оновлення переглядів при запуску відтворення відео
+            photoElement.addEventListener("play", () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                .catch(error => console.error("Помилка оновлення переглядів:", error));
+            });
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("photo-info");
+
+            // Аватар
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = photoData.author ? photoData.author.charAt(0).toUpperCase() : "?";
+            
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("photo-details");
+            detailsElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Переглядів: ${photoData.views || 0}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
+            
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+
+            const container = document.createElement("div");
+            container.classList.add("photo-container");
+            container.appendChild(photoElement);
+            container.appendChild(infoElement);
+            
+            videoGallery.appendChild(container);
+        });
+    });
+        }
+
+
+
+    // Example of how video data might be stored with an 'nsfw' attribute
+function uploadVideo() {
+    const videoDescription = document.getElementById("photo-description").value;
+    const photoTitle = document.getElementById("photo-title").value;
+    const photoAuthor = document.getElementById("photo-author").value;
+    const photoFile = document.getElementById("photo-file").files[0];
+    const uploadProgress = document.getElementById("upload-progress");
+    const progressText = document.getElementById("progress-text");
+    const progressContainer = document.getElementById("progress-container");
+
+    if (!photoTitle || !photoAuthor || !photoFile) {
+        alert("Будь ласка, заповніть всі поля!");
+        return;
+    }
+
+    if (videoFile) {
+        const storageRef = storage.ref(`photos/${photoFile.name}`);
+        const uploadTask = storageRef.put(photoFile);
+
+    uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                uploadProgress.value = progress;
+                progressText.innerText = `${Math.round(progress)}%`;
+                progressContainer.style.display = "block";
+            }, 
+            (error) => {
+                alert("Сталася помилка при завантаженні фото.");
+            }, 
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    // Get current date
+                    const currentDate = new Date().toLocaleDateString();
+
+                    // Save video info to database
+                    database.ref("photos").push({
+                        title: photoTitle,
+                        author: photoAuthor,
+                        email: currentUserEmail,
+                        url: downloadURL,
+                        description: photoDescription,
+                        views: 0,
+                        publishDate: currentDate // Save the publish date
+                    }).then(() => {
+                        alert("Фото завантажено!");
+                        loadPhotos(); // Reload videos
+                        document.getElementById("upload-form").reset();
+                        progressContainer.style.display = "none"; // Hide progress
+                    });
+                });
+            }
+        );
+    } else {
+        alert("Будь ласка, виберіть фото для завантаження.");
+    }
+}
+
 window.onload = function() {
-        loadVideos(); // Initial load of videos
+        loadVideos();
+        loadPhotos();// Initial load of videos
     };
 function openNsfwShow() {
 if (auth.currentUser) {
