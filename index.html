@@ -633,12 +633,12 @@ function loadPhotos() {
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
 
-            const container = document.createElement("div");
-            container.classList.add("photo-container");
-            container.appendChild(photoElement);
-            container.appendChild(infoElement);
+            const Photocontainer = document.createElement("div");
+            Photocontainer.classList.add("photo-container");
+            Photocontainer.appendChild(photoElement);
+            Photocontainer.appendChild(infoElement);
             
-            videoGallery.appendChild(container);
+            videoGallery.appendChild(Photocontainer);
         });
     });
         }
@@ -647,7 +647,7 @@ function loadPhotos() {
 
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadPhoto() {
-    const videoDescription = document.getElementById("photo-description").value;
+    const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
     const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
