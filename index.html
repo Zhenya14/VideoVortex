@@ -113,6 +113,22 @@ height: 10px;
             color: #b0bec5; 
             padding: 5px;
         }
+        .photo-container {
+            display: flex;
+            margin-top: 20px;
+           flex-direction: column-reverse; 
+        }
+        photo { 
+            width: 100%; 
+            margin: 10px auto; 
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
         .avatar {
             width: 40px;
             height: 40px;
@@ -209,7 +225,7 @@ nav {
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
             </a>
                 <div style="display: flex; gap: 15px; margin-left: auto;">
-            <a href="#" id="post">
+            <a href="#" id="post" onclick="post()">
                 <i class="material-icons">photo</i><span class="icon-text">Дописи</span>
             </a>
             <a href="#" id="auth-link">
@@ -276,11 +292,11 @@ nav {
             </div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
         </div>
-    <div class="container">
+    <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
          
     </div>
-    <div class="photo-container">
+    <div class="photo-container" id="photo-container">
         <div class="photo-container" id="photo-gallery"></div>
          
     </div>
@@ -350,6 +366,12 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
+        document.getElementById("post").onclick = function() {
+           document.getElementById("container").style.display = 'none';
+        document.getElementById("photo-container").style.display = 'block';
+        }
+            
+
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
                 const uploadForm = document.getElementById("upload-form");
@@ -390,6 +412,7 @@ function deleteAccount() {
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
+                    document.getElementById("upload-link-photo").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                     document.getElementById("account-link").style.display = "flex";
                 })
