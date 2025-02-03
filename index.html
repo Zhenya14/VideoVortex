@@ -618,25 +618,25 @@ function loadPhotos() {
                 .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
 
-            const infoElement = document.createElement("div");
-            infoElement.classList.add("photo-info");
+            const infophotoElement = document.createElement("div");
+            infophotoElement.classList.add("photo-info");
 
             // Аватар
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = photoData.author ? photoData.author.charAt(0).toUpperCase() : "?";
             
-            const detailsElement = document.createElement("div");
-            detailsElement.classList.add("photo-details");
-            detailsElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Переглядів: ${photoData.views || 0}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
+            const detailsphotoElement = document.createElement("div");
+            detailsphotoElement.classList.add("photo-details");
+            detailsphotoElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Переглядів: ${photoData.views || 0}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
             
-            infoElement.appendChild(avatar);
-            infoElement.appendChild(detailsElement);
+            infophotoElement.appendChild(avatar);
+            infophotoElement.appendChild(detailsphotoElement);
 
             const Photocontainer = document.createElement("div");
             Photocontainer.classList.add("photo-container");
             Photocontainer.appendChild(photoElement);
-            Photocontainer.appendChild(infoElement);
+            Photocontainer.appendChild(infophotoElement);
             
             photoGallery.appendChild(Photocontainer);
         });
