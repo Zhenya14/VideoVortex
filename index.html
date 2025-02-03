@@ -304,7 +304,7 @@ nav {
         <div class="video-container" id="video-gallery"></div>
          
     </div>
-    <div class="photo-container-title" id="photo-container">
+    <div class="photo-container-title" id="photo-container" style="display: none;">
         <div class="photo-container" id="photo-gallery"></div>
          
     </div>
@@ -382,8 +382,8 @@ const firebaseConfig = {
 
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
-                const uploadForm = document.getElementById("upload-photo-form");
-                uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+                const uploadphotoForm = document.getElementById("upload-photo-form");
+                uploadphotoForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
                 document.getElementById("upload-photo-form").style.display = "none";
             } else {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
