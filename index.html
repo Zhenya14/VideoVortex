@@ -672,7 +672,7 @@ function uploadPhoto() {
                 progressContainer.style.display = "block";
             }, 
             (error) => {
-                alert("Сталася помилка при завантаженні фото.");
+                alert("Сталася помилка при завантаженні фото." + error);
             }, 
             () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
