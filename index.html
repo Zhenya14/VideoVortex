@@ -608,7 +608,7 @@ function loadPhotos() {
 
             const photoElement = document.createElement("img");
             photoElement.src = photoData.url;
-            photoElement.controls = true;
+            photoElement.alt = photoData.title || "Фото";
             photoElement.classList.add("photo-item");
 
             // Оновлення переглядів при запуску відтворення відео
