@@ -38,6 +38,14 @@
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         } 
+        .photo-container-title { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
         .snowflake {
     position: fixed;
     top: -10px;
@@ -296,7 +304,7 @@ nav {
         <div class="video-container" id="video-gallery"></div>
          
     </div>
-    <div class="photo-container" id="photo-container">
+    <div class="photo-container-title" id="photo-container">
         <div class="photo-container" id="photo-gallery"></div>
          
     </div>
@@ -437,6 +445,7 @@ function deleteAccount() {
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
+                    document.getElementById("upload-link-photo").style.display = "flex";
                     document.getElementById("account-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
@@ -567,6 +576,7 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("auth-link").style.display = "none";
             document.getElementById("register-link").style.display = "none";
             document.getElementById("upload-link").style.display = "flex";
+            document.getElementById("upload-link-photo").style.display = "flex";
             document.getElementById("logout-link").style.display = "flex";
              document.getElementById("account-link").style.display = "flex";
         } else {
@@ -574,6 +584,7 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("auth-link").style.display = "flex";
             document.getElementById("register-link").style.display = "flex";
             document.getElementById("upload-link").style.display = "none";
+            document.getElementById("upload-link-photo").style.display = "flex";
             document.getElementById("logout-link").style.display = "none";
              document.getElementById("account-link").style.display = "none";
         }
