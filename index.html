@@ -376,7 +376,7 @@ const firebaseConfig = {
         };
         document.getElementById("post").onclick = function() {
            document.getElementById("container").style.display = 'none';
-        document.getElementById("photo-container").style.display = 'block';
+        document.getElementById("photo-container").style.display = 'flex';
         }
             
 
@@ -477,7 +477,7 @@ function loadVideos() {
 
             // Оновлення переглядів при запуску відтворення відео
             videoElement.addEventListener("play", () => {
-                const newViewCount = (videoData.views || 0) + 1;
+                const newViewCount = (photoData.views || 0) + 1;
                 database.ref("videos/" + videoKey).update({ views: newViewCount })
                 .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
@@ -611,8 +611,8 @@ function loadPhotos() {
 
             // Оновлення переглядів при запуску відтворення відео
             photoElement.addEventListener("play", () => {
-                const newViewCount = (videoData.views || 0) + 1;
-                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                const newViewCount = (photoData.views || 0) + 1;
+                database.ref("photos/" + photoKey).update({ views: newViewCount })
                 .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
 
@@ -689,7 +689,7 @@ function uploadPhoto() {
                     }).then(() => {
                         alert("Фото завантажено!");
                         loadPhotos(); // Reload videos
-                        document.getElementById("upload-form").reset();
+                        document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
                     });
                 });
