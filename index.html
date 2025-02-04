@@ -395,22 +395,27 @@ const firebaseConfig = {
         };
 
 function deleteAccount() {
-            const user = auth.currentUser;
+    const user = auth.currentUser;
 
-            if (user) {
-                if (confirm("Ви впевнені, що хочете видалити акаунт? Цю дію не можна скасувати.")) {
-                    user.delete()
-                        .then(() => {
-                            alert("Акаунт успішно видалено.");
-                            location.reload();
-                        })
-                        .catch((error) => {
-                            alert("Сталася помилка при видаленні акаунту.");
-                        });
-                }
-            } else {
-                alert("Спочатку увійдіть у свій акаунт.");
-            }
+    if (user) {
+        if (confirm("Ви впевнені, що хочете видалити акаунт? Цю дію не можна скасувати.")) {
+            user.delete()
+                .then(() => {
+                    alert("Акаунт успішно видалено.");
+                    location.reload();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/requires-recent-login') {
+                        alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
+                        auth.signOut();
+                    } else {
+                        alert("Сталася помилка при видаленні акаунту: " + error.message);
+                    }
+                });
+        }
+    } else {
+        alert("Спочатку увійдіть у свій акаунт.");
+    }
         }
         function signIn() {
             const email = document.getElementById("auth-email").value;
@@ -479,9 +484,8 @@ function loadVideos() {
             videoElement.controls = true;
             videoElement.classList.add("video-item");
 
-            // Оновлення переглядів при запуску відтворення відео
             videoElement.addEventListener("play", () => {
-                const newViewCount = (photoData.views || 0) + 1;
+                const newViewCount = (videoData.views || 0) + 1;
                 database.ref("videos/" + videoKey).update({ views: newViewCount })
                 .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
@@ -489,7 +493,6 @@ function loadVideos() {
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
-            // Аватар
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
@@ -509,7 +512,7 @@ function loadVideos() {
             videoGallery.appendChild(container);
         });
     });
-        }
+                }
 
 
 
