@@ -268,7 +268,7 @@ nav {
     </div>
         </div>
 <div class="register-form" id="register-form">
-            <h2>Рестрація/h2>
+            <h2>Рестрація</h2>
             <input type="email" id="register-email" placeholder="Електронна адреса">
             <input type="password" id="register-password" placeholder="Пароль">
             <button onclick="signUp()">Зареєструватися</button>
@@ -588,7 +588,7 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("auth-link").style.display = "flex";
             document.getElementById("register-link").style.display = "flex";
             document.getElementById("upload-link").style.display = "none";
-            document.getElementById("upload-link-photo").style.display = "flex";
+            document.getElementById("upload-link-photo").style.display = "none";
             document.getElementById("logout-link").style.display = "none";
              document.getElementById("account-link").style.display = "none";
         }
