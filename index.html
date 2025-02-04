@@ -560,7 +560,7 @@ function uploadVideo() {
 
 auth.onAuthStateChanged((user) => { 
     if (user) { 
-        сurrentUserEmail = user.email; 
+        currentUserEmail = userCredential.user.email;
                document.getElementById("email").textContent = ${user.email}; 
                document.getElementById("user-info").textContent = Ви увійшли як: ${user.email}; // Перевіряємо, чи є дані для імені та прізвища в базі даних 
                const userRef = database.ref(users/${user.uid}); 
