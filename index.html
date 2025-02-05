@@ -179,7 +179,48 @@ img.photo-item {
     margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
     display: inline-block;
 }
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #1c1e22;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
 
+.menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: #4facfe;
+}
+
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
 
 nav {
             display: flex;
@@ -222,6 +263,11 @@ nav {
 <body> 
 
  <nav>
+     <div style="display: flex; align-items: center;">
+            <div style="display: flex; align-items: center;">
+           <a href="#" id="open-menu" onclick="toggleSidebar()" style="display: flex;">
+    <i class="material-icons">menu</i>
+</a>
         <div style="display: flex; align-items: center;">
             <img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
@@ -302,6 +348,17 @@ nav {
             </div>
             <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
+                <div class="menu" style="align-items: center;">
+    <a href="#" id="close-menu" onclick="closeSidebar()">
+        <i class="material-icons">close</i>
+    </a>
+    <a href="#" id="post" onclick="post()">
+        <i class="material-icons">photo</i><span style="margin-left: 5px">Дописи</span>
+    </a>
+    <a href="#" id="video" onclick="video()">
+        <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
+    </a>
+</div>
     <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
          
@@ -330,6 +387,30 @@ nav {
     // Додавання сніжинок кожні 100 мс
     setInterval(createSnowflake, 100);
 </script> -->
+                <script>
+function toggleSidebar() {
+    var sidebar = document.querySelector('.menu');
+    var content = document.querySelector('.content');
+
+    if (sidebar.style.width === "240px") {
+        sidebar.style.width = "0";
+        content.style.marginLeft = "0";
+    } else {
+        sidebar.style.width = "240px";
+        content.style.marginLeft = "240px";
+    }
+}
+
+// Закриття меню
+function closeSidebar() {
+    var sidebar = document.querySelector('.menu');
+    var content = document.querySelector('.content');
+
+    sidebar.style.width = "0";
+    content.style.marginLeft = "0";
+}
+
+  </script>
     <script>
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -381,7 +462,10 @@ const firebaseConfig = {
            document.getElementById("container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
         }
-            
+            document.getElementById("video").onclick = function() {
+           document.getElementById("container").style.display = 'flex';
+        document.getElementById("photo-container").style.display = 'none';
+        }
 
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
