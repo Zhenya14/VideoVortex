@@ -336,7 +336,7 @@ nav {
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
             <input type="file" id="photo-file" accept="image/*"> 
             
-            <div id="progress-container" style="display: none; margin-top: 10px;">
+            <div id="progress-photo-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
             </div>
@@ -711,7 +711,7 @@ function loadPhotos() {
             
             const detailsphotoElement = document.createElement("div");
             detailsphotoElement.classList.add("photo-details");
-            detailsphotoElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Переглядів: ${photoData.views || 0}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
+            detailsphotoElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
             
             infophotoElement.appendChild(avatar);
             infophotoElement.appendChild(detailsphotoElement);
@@ -736,7 +736,7 @@ function uploadPhoto() {
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
-    const progressContainer = document.getElementById("progress-container");
+    const progressContainer = document.getElementById("progress-photo-container");
 
     if (!photoTitle || !photoAuthor || !photoFile) {
         alert("Будь ласка, заповніть всі поля!");
@@ -769,7 +769,6 @@ function uploadPhoto() {
                         email: currentUserEmail,
                         url: downloadURL,
                         description: photoDescription,
-                        views: 0,
                         publishDate: currentDate // Save the publish date
                     }).then(() => {
                         alert("Фото завантажено!");
