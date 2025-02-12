@@ -573,7 +573,16 @@ function loadVideos() {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Email: ${videoData.email}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+
+            // Правильне формування innerHTML
+            detailsElement.innerHTML = `
+                <strong>${videoData.title}</strong><br>
+                Автор: ${videoData.author}<br>
+                Email: ${videoData.email}<br>
+                Переглядів: ${videoData.views || 0}<br>
+                Дата публікації: ${videoData.publishDate || "Не вказана"}
+            `;
+
             // Додавання кнопки видалення
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
@@ -604,7 +613,7 @@ function deleteVideo(videoKey, videoURL) {
         const storageRef = storage.refFromURL(videoURL);
         storageRef.delete().then(() => {
             // Видалення запису з бази даних
-            database.ref(videos/${videoKey}).remove().then(() => {
+            database.ref(`videos/${videoKey}`).remove().then(() => {
                 alert("Відео успішно видалено.");
                 loadVideos(); // Оновлюємо список відео
             }).catch((error) => {
@@ -614,7 +623,7 @@ function deleteVideo(videoKey, videoURL) {
             alert("Помилка при видаленні відео зі сховища: " + error.message);
         });
     }
-}
+        }
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
