@@ -549,57 +549,72 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-function loadVideos() { 
-    const videoGallery = document.getElementById("video-gallery"); 
-    videoGallery.innerHTML = ""; database.ref("videos").once("value").then((snapshot) => { 
-        snapshot.forEach((childSnapshot) => { 
-            const videoData = childSnapshot.val(); 
-            const videoKey = childSnapshot.key; 
-            const videoElement = document.createElement("video"); 
-            videoElement.src = videoData.url; videoElement.controls = true; 
-            videoElement.classList.add("video-item"); 
-            const infoElement = document.createElement("div"); 
-            infoElement.classList.add("video-info"); // Аватар 
-            const avatar = document.createElement("div"); 
-            avatar.classList.add("avatar"); avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
-            const detailsElement = document.createElement("div"); 
-            detailsElement.classList.add("video-details"); 
-            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}; 
-                        
-            if (currentUserEmail === videoData.email) { 
-                // Перевірка відповідності email 
-                const deleteButton = document.createElement("button"); 
-                deleteButton.innerText = "Видалити"; deleteButton.style.backgroundColor = "red"; 
-                deleteButton.style.color = "white"; deleteButton.style.marginTop = "10px"; 
-                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url); 
-                detailsElement.appendChild(deleteButton); 
-        }
-            infoElement.appendChild(avatar); 
-            infoElement.appendChild(detailsElement); 
-        const container = document.createElement("div"); 
-        container.classList.add("video-container"); 
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
+
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key;
+
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.controls = true;
+            videoElement.classList.add("video-item");
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
+
+            // Аватар
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("video-details");
+            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
+
+            // Кнопка видалення для автора
+            if (currentUserEmail === videoData.email) {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Видалити";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                detailsElement.appendChild(deleteButton);
+            }
+
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+
+            const container = document.createElement("div");
+            container.classList.add("video-container");
             container.appendChild(videoElement);
-            container.appendChild(infoElement); 
+            container.appendChild(infoElement);
+
             videoGallery.appendChild(container);
-        }); 
-    }); 
-} 
-function deleteVideo(videoKey, videoURL) { 
-    if (!confirm("Ви впевнені, що хочете видалити це відео?")) { 
-        return; 
-    } // Видалення файлу зі сховища 
-    const storageRef = storage.refFromURL(videoURL); storageRef.delete().then(() => { 
-        // Видалення запису з бази даних 
-        database.ref(videos/${videoKey}).remove().then(() => { 
-            alert("Відео успішно видалено."); 
-            loadVideos(); // Оновлюємо список відео
-        }).catch((error) => { 
-            alert("Помилка при видаленні відео з бази даних: " + error.message); 
         });
-    }).catch((error) => { 
-        alert("Помилка при видаленні відео зі сховища: " + error.message); 
-    }); 
-} 
+    });
+}
+function deleteVideo(videoKey, videoURL) {
+    if (confirm("Ви впевнені, що хочете видалити це відео?")) {
+        // Видалення файлу зі сховища
+        const storageRef = storage.refFromURL(videoURL);
+        storageRef.delete().then(() => {
+            // Видалення запису з бази даних
+            database.ref(videos/${videoKey}).remove().then(() => {
+                alert("Відео успішно видалено.");
+                loadVideos(); // Оновлюємо список відео
+            }).catch((error) => {
+                alert("Помилка при видаленні відео з бази даних: " + error.message);
+            });
+        }).catch((error) => {
+            alert("Помилка при видаленні відео зі сховища: " + error.message);
+        });
+    }
+}
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
