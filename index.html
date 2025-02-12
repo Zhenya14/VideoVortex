@@ -579,7 +579,8 @@ function loadVideos() {
                 <strong>${videoData.title}</strong><br>
                 Автор: ${videoData.author}<br>
                 Переглядів: ${videoData.views || 0}<br>
-                Дата публікації: ${videoData.publishDate || "Не вказана"}
+                Дата публікації: ${videoData.publishDate || "Не вказана"}<br>
+                Опис:${videoData.description || "Не вказано"}
             `;
 
             // Додавання кнопки видалення
@@ -749,7 +750,7 @@ function loadPhotos() {
                 deletePhotoButton.style.color = "white";
                 deletePhotoButton.style.marginTop = "10px";
                 deletePhotoButton.onclick = () => deletePhoto(photoKey, photoData.url);
-                infophotoElement.appendChild(deleteButton);
+                infophotoElement.appendChild(deletePhotoButton);
         }
             infophotoElement.appendChild(avatar);
             infophotoElement.appendChild(detailsphotoElement);
