@@ -575,8 +575,8 @@ function loadVideos() {
             detailsElement.classList.add("video-details");
             detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
 
-            // Кнопка видалення для автора
-            if (currentUserEmail === videoData.email) {
+            // Додавання кнопки видалення
+            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
                 deleteButton.style.backgroundColor = "red";
@@ -598,6 +598,7 @@ function loadVideos() {
         });
     });
 }
+
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
         // Видалення файлу зі сховища
