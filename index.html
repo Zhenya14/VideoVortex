@@ -578,7 +578,6 @@ function loadVideos() {
             detailsElement.innerHTML = `
                 <strong>${videoData.title}</strong><br>
                 Автор: ${videoData.author}<br>
-                Email: ${videoData.email}<br>
                 Переглядів: ${videoData.views || 0}<br>
                 Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
@@ -742,7 +741,16 @@ function loadPhotos() {
             const detailsphotoElement = document.createElement("div");
             detailsphotoElement.classList.add("photo-details");
             detailsphotoElement.innerHTML = `<strong>${photoData.title}</strong><br>Автор: ${photoData.author}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
-            
+
+             if (currentUserEmail === photoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+                const deletePhotoButton = document.createElement("button");
+                deletePhotoButton.innerText = "Видалити";
+                deletePhotoButton.style.backgroundColor = "red";
+                deletePhotoButton.style.color = "white";
+                deletePhotoButton.style.marginTop = "10px";
+                deletePhotoButton.onclick = () => deletePhoto(photoKey, photoData.url);
+                infophotoElement.appendChild(deleteButton);
+        }
             infophotoElement.appendChild(avatar);
             infophotoElement.appendChild(detailsphotoElement);
 
@@ -756,7 +764,23 @@ function loadPhotos() {
     });
         }
 
-
+function deletePhoto(photoKey, photoURL) {
+    if (confirm("Ви впевнені, що хочете видалити це фото?")) {
+        // Видалення файлу зі сховища
+        const storageRef = storage.refFromURL(photoURL);
+        storageRef.delete().then(() => {
+            // Видалення запису з бази даних
+            database.ref(`photos/${photoKey}`).remove().then(() => {
+                alert("Фото успішно видалено.");
+                loadPhotos(); // Оновлюємо список відео
+            }).catch((error) => {
+                alert("Помилка при видаленні фото з бази даних: " + error.message);
+            });
+        }).catch((error) => {
+            alert("Помилка при видаленні фото зі сховища: " + error.message);
+        });
+    }
+}
 
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadPhoto() {
