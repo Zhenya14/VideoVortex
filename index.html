@@ -383,6 +383,50 @@ nav {
     // Додавання сніжинок кожні 100 мс
     setInterval(createSnowflake, 100);
 </script> -->
+    <script>
+    function checkBrowserSupport() {
+        const ua = navigator.userAgent;
+
+        // Перевіряємо версію браузера
+        const isChrome = /Chrome\/([0-9]+)/.exec(ua);
+        const isFirefox = /Firefox\/([0-9]+)/.exec(ua);
+        const isEdge = /Edg\/([0-9]+)/.exec(ua);
+
+        const minVersion = {
+            Chrome: 90, // Мінімальна версія Chrome
+            Firefox: 88, // Мінімальна версія Firefox
+            Edge: 90 // Мінімальна версія Edge
+        };
+
+        if (isChrome && parseInt(isChrome[1]) < minVersion.Chrome) {
+            return false;
+        }
+        if (isFirefox && parseInt(isFirefox[1]) < minVersion.Firefox) {
+            return false;
+        }
+        if (isEdge && parseInt(isEdge[1]) < minVersion.Edge) {
+            return false;
+        }
+
+        // Якщо браузер не Chrome, Firefox або Edge - забороняємо доступ
+        if (!isChrome && !isFirefox && !isEdge) {
+            return false;
+        }
+
+        return true;
+    }
+
+    if (!checkBrowserSupport()) {
+        document.body.innerHTML = `
+            <div style="text-align: center; margin-top: 20%; font-family: Arial, sans-serif;">
+                <h1>Ваш браузер застарілий</h1>
+                <p>Будь ласка, оновіть браузер для доступу до цього сайту.</p>
+                <p>Ми підтримуємо останні версії <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>, 
+                <a href="https://www.mozilla.org/firefox/" target="_blank">Mozilla Firefox</a>, та <a href="https://www.microsoft.com/edge" target="_blank">Microsoft Edge</a>.</p>
+            </div>
+        `;
+    }
+    </script>
                 <script>
 function toggleSidebar() {
     var sidebar = document.querySelector('.menu');
