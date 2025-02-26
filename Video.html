@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перегляд відео</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #111;
+            margin: 0;
+        }
+        video {
+            max-width: 90%;
+            max-height: 90vh;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <video id="video-player" controls></video>
+
+    <script>
+        // Отримуємо параметр відео з URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoURL = urlParams.get("video");
+
+        // Відображаємо відео
+        if (videoURL) {
+            document.getElementById("video-player").src = videoURL;
+        } else {
+            document.body.innerHTML = "<h2 style='color:white;'>Відео не знайдено</h2>";
+        }
+    </script>
+</body>
+</html>
