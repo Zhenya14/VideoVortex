@@ -396,17 +396,15 @@ nav {
             <p><strong>Перегляди:</strong> ${views}</p>
             <p><strong>Опис:</strong> ${description}</p>
         `;
-        function incrementViews(videoKey) {
-    const videoRef = database.ref(`videos/${videoKey}/views`);
-
-    videoRef.transaction((currentViews) => {
-        return (currentViews || 0) + 1;
-    }).then(() => {
-        console.log("Перегляди оновлено!");
-    }).catch((error) => {
-        console.error("Помилка оновлення переглядів:", error);
-    });
-        }
+        const videoElement = document.getElementById("video-player");
+            videoElement.src = videoData.url;
+            videoElement.classList.add("video-item");
+		
+	        videoElement.addEventListener("play", () => {
+			const newViewCount = (videoData.views || 0) + 1;
+               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                });
     </script>
 </body>
 </html>
