@@ -300,7 +300,7 @@ nav {
         const views = urlParams.get("views");
         const avatar = urlParams.get("avatar");
 
-        const avatar = document.createElement("div");
+        urlParams.get("avatar") = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
 
