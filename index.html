@@ -657,62 +657,59 @@ alert("Сталася помилка при увімкненні функції 
 }
     });
 function loadVideos() {
-    const videoGallery = document.getElementById("video-gallery");
-    videoGallery.innerHTML = "";
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
 
-    database.ref("videos").once("value").then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            const videoData = childSnapshot.val();
-            const videoKey = childSnapshot.key;
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key;
 
-            const videoElement = document.createElement("video");
-            videoElement.src = videoData.url;
-            videoElement.controls = true;
-            videoElement.classList.add("video-item");
+            const container = document.createElement("div");
+            container.classList.add("video-container");
 
-            const infoElement = document.createElement("div");
-            infoElement.classList.add("video-info");
+            // Контейнер для відео
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.classList.add("video-item");
+            videoElement.controls = false; // Вимикаємо вбудоване керування
 
-            // Аватар
-            const avatar = document.createElement("div");
-            avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
+            // Відкриття відео в новій вкладці "Відео"
+            videoElement.onclick = () => {
+                window.open(video.html?video=${encodeURIComponent(videoData.url)}, "Відео");
+            };
 
-            const detailsElement = document.createElement("div");
-            detailsElement.classList.add("video-details");
+            // Контейнер з інформацією
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
 
-            // Правильне формування innerHTML
-            detailsElement.innerHTML = `
-                <strong>${videoData.title}</strong><br>
-                Автор: ${videoData.author || "Анонімний користувач"}<br>
-                Переглядів: ${videoData.views || 0}<br>
-                Дата публікації: ${videoData.publishDate || "Не вказана"}<br>
-                Опис:${videoData.description || "Не вказано"}
-            `;
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
 
-            // Додавання кнопки видалення
-            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-                const deleteButton = document.createElement("button");
-                deleteButton.innerText = "Видалити";
-                deleteButton.style.backgroundColor = "red";
-                deleteButton.style.color = "white";
-                deleteButton.style.marginTop = "10px";
-                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-                detailsElement.appendChild(deleteButton);
-            }
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("video-details");
+            detailsElement.innerHTML = <strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"};
 
-            infoElement.appendChild(avatar);
-            infoElement.appendChild(detailsElement);
+            // Перевіряємо, чи поточний користувач є власником відео
+            if (videoData.email === currentUserEmail) {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Видалити";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                detailsElement.appendChild(deleteButton);
+            }
 
-            const container = document.createElement("div");
-            container.classList.add("video-container");
-            container.appendChild(videoElement);
-            container.appendChild(infoElement);
-
-            videoGallery.appendChild(container);
-        });
-    });
-}
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+            container.appendChild(videoElement);
+            container.appendChild(infoElement);
+            videoGallery.appendChild(container);
+        });
+    });
+	    }
 
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
