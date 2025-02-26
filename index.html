@@ -668,7 +668,12 @@ function loadVideos() {
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-
+		
+	        videoElement.addEventListener("play", () => {
+			const newViewCount = (videoData.views || 0) + 1;
+               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                });
             // При кліку на відео відкриваємо `video.html`
             videoElement.onclick = () => {
                 const videoParams = new URLSearchParams({
@@ -689,18 +694,18 @@ function loadVideos() {
 
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
              if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
-                deleteButton.onclick = () => deletePhoto(photoKey, photoData.url);
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
                 infoElement.appendChild(deleteButton);
 	    }
             infoElement.appendChild(avatar);
