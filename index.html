@@ -667,7 +667,7 @@ function loadVideos() {
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
-            videoElement.controls = true;
+            videoElement.controls = false;
             videoElement.classList.add("video-item");
 
             // При кліку на відео відкриваємо `video.html`
