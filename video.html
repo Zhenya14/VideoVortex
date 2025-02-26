@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex - Перегляд відео</title>
-   <style>
+    <title id="title"></title>
 .btn-container {
     display: flex;
     flex-basis: auto;
@@ -304,7 +303,8 @@ nav {
         const description = urlParams.get("description");
         const views = urlParams.get("views");
         const avatar = urlParams.get("avatar");
-
+        
+        document.getElementById("title").innerText = title:
         document.getElementById("video-player").src = videoUrl;
         document.getElementById("avatar").innerText = avatar;
         document.getElementById("details").innerHTML = `
