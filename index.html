@@ -682,7 +682,7 @@ function loadVideos() {
                     views: videoData.views || 0,
                     avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
                 });
-                window.open(`video.html?${videoParams.toString()}`, "_blank");
+                window.open(`video.html?${videoParams.toString()}`);
             };
 
             const infoElement = document.createElement("div");
