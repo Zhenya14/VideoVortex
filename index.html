@@ -694,7 +694,15 @@ function loadVideos() {
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
             detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
-
+             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Видалити";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deletePhoto(photoKey, photoData.url);
+                infoElement.appendChild(deleteButton);
+	    }
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
 
