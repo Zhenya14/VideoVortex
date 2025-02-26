@@ -157,16 +157,31 @@ nav {
     <div class="container">
         <div id="video-container">
             <video id="video-player" controls autoplay></video>
-            <div class="video-info">
-                <h2 id="video-title"></h2>
-                <p id="video-author"></p>
-                <p id="video-views"></p>
-                <p id="video-date"></p>
+            <div class="details">
             </div>
         </div>
     </div>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoKey = urlParams.get("key");
+        const videoUrl = urlParams.get("url");
+        const title = urlParams.get("title");
+        const author = urlParams.get("author");
+        const publishDate = urlParams.get("publishDate");
+        const description = urlParams.get("description");
+        const views = urlParams.get("views");
+        const avatar = urlParams.get("avatar");
+
+        document.getElementById("video-player").src = videoUrl;
+        document.getElementById("avatar").innerText = avatar;
+        document.getElementById("details").innerHTML = `
+            <h2>${title}</h2>
+            <p><strong>Автор:</strong> ${author}</p>
+            <p><strong>Дата публікації:</strong> ${publishDate}</p>
+            <p><strong>Перегляди:</strong> ${views}</p>
+            <p><strong>Опис:</strong> ${description}</p>
+        `;
         const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
