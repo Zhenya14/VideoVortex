@@ -3,57 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перегляд відео</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <title>VideoVortex - Перегляд відео</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 </head>
 <body>
-    <div id="video-container">
-        <video id="video-player" controls></video>
-        <div id="video-info">
-            <div id="avatar"></div>
-            <div id="details"></div>
-            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="VideoVortex_logo.ico" alt="VideoVortex" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1>VideoVortex</h1>
+        </a>
+        <a href="index.html" class="back-button">← Назад</a>
+    </nav>
+
+    <div class="container">
+        <div id="video-container">
+            <video id="video-player" controls autoplay></video>
+            <div class="video-info">
+                <h2 id="video-title"></h2>
+                <p id="video-author"></p>
+                <p id="video-views"></p>
+                <p id="video-date"></p>
+            </div>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoKey = urlParams.get("key");
-        const videoUrl = urlParams.get("url");
-        const title = urlParams.get("title");
-        const author = urlParams.get("author");
-        const publishDate = urlParams.get("publishDate");
-        const description = urlParams.get("description");
-        const views = urlParams.get("views");
-        const avatar = urlParams.get("avatar");
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+            authDomain: "videovortex-235cd.firebaseapp.com",
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "videovortex-235cd",
+            storageBucket: "videovortex-235cd.appspot.com",
+            messagingSenderId: "681594250269",
+            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        document.getElementById("video-player").src = videoUrl;
-        document.getElementById("avatar").innerText = avatar;
-        document.getElementById("details").innerHTML = `
-            <h2>${title}</h2>
-            <p><strong>Автор:</strong> ${author}</p>
-            <p><strong>Дата публікації:</strong> ${publishDate}</p>
-            <p><strong>Перегляди:</strong> ${views}</p>
-            <p><strong>Опис:</strong> ${description}</p>
-        `;
+        // Отримання параметра з URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
-        // Перевіряємо, чи поточний користувач є автором
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user && user.email === author) {
-                document.getElementById("delete-button").style.display = "block";
-                document.getElementById("delete-button").onclick = () => deleteVideo(videoKey, videoUrl);
-            }
-        });
+        const videoKey = getQueryParam("id");
+        if (videoKey) {
+            database.ref("videos/" + videoKey).once("value").then((snapshot) => {
+                if (snapshot.exists()) {
+                    const videoData = snapshot.val();
+                    document.getElementById("video-player").src = videoData.url;
+                    document.getElementById("video-title").innerText = videoData.title;
+                    document.getElementById("video-author").innerText = "Автор: " + videoData.author;
+                    document.getElementById("video-views").innerText = "Переглядів: " + (videoData.views || 0);
+                    document.getElementById("video-date").innerText = "Дата публікації: " + videoData.publishDate;
 
-        function deleteVideo(videoKey, videoUrl) {
-            if (confirm("Ви впевнені, що хочете видалити це відео?")) {
-                firebase.database().ref(`videos/${videoKey}`).remove().then(() => {
-                    alert("Відео видалено.");
-                    window.close();
-                }).catch(error => alert("Помилка: " + error.message));
-            }
+                    // Оновлення кількості переглядів
+                    database.ref("videos/" + videoKey).update({ views: (videoData.views || 0) + 1 });
+                } else {
+                    alert("Відео не знайдено.");
+                    window.location.href = "index.html";
+                }
+            });
+        } else {
+            alert("Невірне посилання на відео.");
+            window.location.href = "index.html";
         }
     </script>
 </body>
