@@ -216,7 +216,16 @@ img.photo-item {
     transition: width 0.3s ease-in-out;
     padding-top: 10px;
 }
-
+.smart-menu {
+display: none;
+}
+.smart-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: grid;
+    transition: 0.3s;
+}
 .menu a {
     padding: 10px 15px;
     text-decoration: none;
@@ -274,6 +283,29 @@ nav {
             .icon-text {
                 display: none;
             }
+        #upload-link {
+display: none;
+}
+#upload-link-photo {
+display: none;
+}
+#smart-upload-link {
+display: none;
+}
+#smart-upload-link-photo {
+display: none;
+}
+.smart-menu {
+display: flex;
+  background: black;
+  text-decoration: none;
+  border-radius: 100px;
+position: fixed;
+  top: 85%;
+}
+#open-menu {
+display: none;
+}
         }
  #nsfw-toggle {
         display: none;
@@ -364,6 +396,21 @@ nav {
             </div>
             <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
+	<div  class="smart-menu">
+
+    <a href="#" id="post" onclick="post()">
+        <i class="material-icons">photo</i><span>Дописи</span>
+    </a>
+<a href="#" id="smart-upload-link">
+                <i class="material-icons">upload</i><span>Завантажити відео</span>
+            </a>
+<a href="#" id="smart-upload-link-photo">
+                <i class="material-icons">upload</i><span>Завантажити фото</span>
+            </a>
+    <a href="#" id="video" onclick="video()">
+        <i class="material-icons">movie</i><span>Відео</span>
+    </a>
+</div>
                 <div class="menu" style="align-items: center;">
     <a href="#" id="close-menu" onclick="closeSidebar()">
         <i class="material-icons">close</i>
@@ -554,6 +601,16 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
+	    document.getElementById("smart-upload-link").onclick = function() {
+            if (auth.currentUser) {
+                const uploadVideoForm = document.getElementById("upload-form");
+                uploadVideoForm.style.display = uploadVideoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("account-form").style.display = "none";
+                document.getElementById("upload-photo-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
+            }
+        };
         document.getElementById("post").onclick = function() {
            document.getElementById("container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
@@ -573,7 +630,16 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
             }
         };
-
+ document.getElementById("smart-upload-link-photo").onclick = function() {
+            if (auth.currentUser) {
+                const uploadPhotoForm = document.getElementById("upload-photo-form");
+                uploadPhotoForm.style.display = uploadPhotoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("upload-form").style.display = "none";
+                document.getElementById("account-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити фото.");
+            }
+        };
 function deleteAccount() {
     const user = auth.currentUser;
 
@@ -610,6 +676,8 @@ function deleteAccount() {
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("upload-link-photo").style.display = "flex";
+	            document.getElementById("smart-upload-link").style.display = "grid";
+                    document.getElementById("smart-upload-link-photo").style.display = "grid";
                     document.getElementById("logout-link").style.display = "flex";
                     document.getElementById("account-link").style.display = "flex";
                 })
@@ -636,6 +704,8 @@ auth.createUserWithEmailAndPassword(email, password)
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("upload-link-photo").style.display = "flex";
+		    document.getElementById("smart-upload-link").style.display = "grid";
+                    document.getElementById("smart-upload-link-photo").style.display = "grid";
                     document.getElementById("account-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
@@ -806,6 +876,8 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("register-link").style.display = "none";
             document.getElementById("upload-link").style.display = "flex";
             document.getElementById("upload-link-photo").style.display = "flex";
+	    document.getElementById("smart-upload-link").style.display = "grid";
+            document.getElementById("smart-upload-link-photo").style.display = "grid";
             document.getElementById("logout-link").style.display = "flex";
              document.getElementById("account-link").style.display = "flex";
         } else {
@@ -814,6 +886,8 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("register-link").style.display = "flex";
             document.getElementById("upload-link").style.display = "none";
             document.getElementById("upload-link-photo").style.display = "none";
+            document.getElementById("smart-upload-link").style.display = "none";
+            document.getElementById("smart-upload-link-photo").style.display = "none";
             document.getElementById("logout-link").style.display = "none";
              document.getElementById("account-link").style.display = "none";
         }
