@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="uk"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html lang="uk">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VideoVortex</title>
-    <link rel="icon" href="/VideoVortex_logo.ico">
-    <script src="VideoVortex_files/firebase-app.js"></script>
-    <script src="VideoVortex_files/firebase-storage.js"></script>
-    <script src="VideoVortex_files/firebase-database.js"></script>
+    <link rel="icon" href="VideoVortex_logo.ico">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="VideoVortex_files/firebase-auth.js"></script>
-    <script src="VideoVortex_files/api.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
 .btn-container {
     display: flex;
@@ -205,7 +205,6 @@ img.photo-item {
   width: 240px;
 }
 .menu {
-	display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -217,16 +216,7 @@ img.photo-item {
     transition: width 0.3s ease-in-out;
     padding-top: 10px;
 }
-.smart-menu {
-display: none;
-}
-.smart-menu a {
-    padding: 10px 15px;
-    text-decoration: none;
-    color: white;
-    display: grid;
-    transition: 0.3s;
-}
+
 .menu a {
     padding: 10px 15px;
     text-decoration: none;
@@ -279,42 +269,11 @@ nav {
         .icon-text {
             margin-left: 5px;
         }
-        #open-menu {
-display: flex;
-}
-#upload-link {
-display: none;
-}
-#upload-link-photo {
-display: none;
-}
+        
         @media (max-width: 600px) {
             .icon-text {
                 display: none;
             }
-#upload-link {
-display: none;
-}
-#upload-link-photo {
-display: none;
-}
-#smart-upload-link {
-display: none;
-}
-#smart-upload-link-photo {
-display: none;
-}
-.smart-menu {
-display: flex;
-  background: black;
-  text-decoration: none;
-  border-radius: 100px;
-position: fixed;
-  top: 85%;
-}
-#open-menu {
-display: none;
-}
         }
  #nsfw-toggle {
         display: none;
@@ -325,33 +284,33 @@ display: none;
 
  <nav>
         <div style="display: flex; align-items: center;">
-            <a href="#" id="open-menu" onclick="toggleSidebar()" >
+            <a href="#" id="open-menu" onclick="toggleSidebar()" style="display: flex;">
     <i class="material-icons">menu</i>
 </a>
-            <a href="https://zhenya14.github.io/VideoVortex/index.html"><img src="VideoVortex_files/VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
         </div>
         <div style="display: flex; gap: 15px; margin-left: auto;">
-            <a href="#" id="upload-link" >
+            <a href="#" id="upload-link" style="display: none;">
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
             </a>
             <div style="display: flex; gap: 15px; margin-left: auto;">
-            <a href="#" id="upload-link-photo">
+            <a href="#" id="upload-link-photo" style="display: none;">
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
             </a>
-            <a href="#" id="auth-link" style="display: none;">
+            <a href="#" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
-            <a href="#" id="register-link" style="display: none;">
+            <a href="#" id="register-link">
                 <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
             </a>
-            <a href="#" id="logout-link" style="display: flex;">
+            <a href="#" id="logout-link" style="display: none;">
                 <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
-            </a><a href="#" id="account-link" style="display: flex;">
-                <i class="material-icons">person</i><span class="icon-text" id="email">zhuzhun2008@gmail.com</span>
+            <a href="#" id="account-link" style="display: none;">
+                <i class="material-icons">person</i><span class="icon-text" id="email"></span>
             </a>
         </div>
-    </div></nav>
+    </nav>
 <div class="auth-form" id="auth-form">
             <h2>Увійти</h2>
             <input type="email" id="auth-email" placeholder="Електронна пошта">
@@ -361,7 +320,7 @@ display: none;
         </div>
 <div class="account-form" id="account-form">
             <h2>Інформація про</h2><h2 onclick="openNsfwShow()"> акаунт</h2>
-            <p id="user-info">Ви увійшли як: zhuzhun2008@gmail.com</p>
+            <p id="user-info"></p>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
 <div id="nsfw-toggle">
         <label>
@@ -383,7 +342,7 @@ display: none;
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
 <div id="NSFW" style="display: none;">    
-           <label for="nsfw-checkbox"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+           <label for="nsfw-checkbox" ><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 
 </div>
             <div id="progress-container" style="display: none; margin-top: 10px;">
@@ -392,22 +351,20 @@ display: none;
             </div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
         </div>
-       <div  class="smart-menu">
-
-    <a href="#" id="post" onclick="post()">
-        <i class="material-icons">photo</i><span>Дописи</span>
-    </a>
-<a href="#" id="smart-upload-link">
-                <i class="material-icons">upload</i><span>Завантажити відео</span>
-            </a>
-<a href="#" id="smart-upload-link-photo">
-                <i class="material-icons">upload</i><span>Завантажити фото</span>
-            </a>
-    <a href="#" id="video" onclick="video()">
-        <i class="material-icons">movie</i><span>Відео</span>
-    </a>
-<div></div><div></div></div>
-                <div class="menu" style="align-items: center; width: 240px;">
+        <div class="upload-photo-form" id="upload-photo-form">
+            <h2>Завантажити фото</h2>
+            <input type="text" id="photo-title" placeholder="Назва Фото">
+            <input type="text" id="photo-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
+            <textarea id="photo-description" placeholder="Опис Фото"></textarea>
+            <input type="file" id="photo-file" accept="image/*"> 
+            
+            <div id="progress-photo-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>
+            <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
+        </div>
+                <div class="menu" style="align-items: center;">
     <a href="#" id="close-menu" onclick="closeSidebar()">
         <i class="material-icons">close</i>
     </a>
@@ -417,11 +374,13 @@ display: none;
     <a href="#" id="video" onclick="video()">
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
-<div></div></div>
+</div>
     <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
+         
+    </div>
     <div class="photo-container-title" id="photo-container" style="display: none;">
-        </div>
+        <div class="photo-container" id="photo-gallery"></div>
          
     </div>
 <!-- <script>
@@ -595,16 +554,6 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити відео.");
             }
         };
-        document.getElementById("smart-upload-link").onclick = function() {
-            if (auth.currentUser) {
-                const uploadVideoForm = document.getElementById("upload-form");
-                uploadVideoForm.style.display = uploadVideoForm.style.display === "none" ? "block" : "none";
-                document.getElementById("account-form").style.display = "none";
-                document.getElementById("upload-photo-form").style.display = "none";
-            } else {
-                alert("Будь ласка, увійдіть, щоб завантажити відео.");
-            }
-        };
         document.getElementById("post").onclick = function() {
            document.getElementById("container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
@@ -624,16 +573,7 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
             }
         };
-        document.getElementById("smart-upload-link-photo").onclick = function() {
-            if (auth.currentUser) {
-                const uploadPhotoForm = document.getElementById("upload-photo-form");
-                uploadPhotoForm.style.display = uploadPhotoForm.style.display === "none" ? "block" : "none";
-                document.getElementById("upload-form").style.display = "none";
-                document.getElementById("account-form").style.display = "none";
-            } else {
-                alert("Будь ласка, увійдіть, щоб завантажити фото.");
-            }
-        };
+
 function deleteAccount() {
     const user = auth.currentUser;
 
@@ -670,8 +610,6 @@ function deleteAccount() {
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("upload-link-photo").style.display = "flex";
-                    document.getElementById("smart-upload-link").style.display = "grid";
-                    document.getElementById("smart-upload-link-photo").style.display = "grid";
                     document.getElementById("logout-link").style.display = "flex";
                     document.getElementById("account-link").style.display = "flex";
                 })
@@ -698,8 +636,6 @@ auth.createUserWithEmailAndPassword(email, password)
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
                     document.getElementById("upload-link-photo").style.display = "flex";
-                    document.getElementById("smart-upload-link").style.display = "grid";
-                    document.getElementById("smart-upload-link-photo").style.display = "grid";
                     document.getElementById("account-link").style.display = "flex";
                     document.getElementById("logout-link").style.display = "flex";
                 })
@@ -870,20 +806,16 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("register-link").style.display = "none";
             document.getElementById("upload-link").style.display = "flex";
             document.getElementById("upload-link-photo").style.display = "flex";
-            document.getElementById("smart-upload-link").style.display = "grid";
-            document.getElementById("smart-upload-link-photo").style.display = "grid";
             document.getElementById("logout-link").style.display = "flex";
-            document.getElementById("account-link").style.display = "flex";
+             document.getElementById("account-link").style.display = "flex";
         } else {
             currentUserEmail = null;
             document.getElementById("auth-link").style.display = "flex";
             document.getElementById("register-link").style.display = "flex";
             document.getElementById("upload-link").style.display = "none";
             document.getElementById("upload-link-photo").style.display = "none";
-            document.getElementById("smart-upload-link").style.display = "none";
-            document.getElementById("smart-upload-link-photo").style.display = "none";
             document.getElementById("logout-link").style.display = "none";
-            document.getElementById("account-link").style.display = "none";
+             document.getElementById("account-link").style.display = "none";
         }
     });
 document.getElementById("logout-link").onclick = function() {
@@ -1036,6 +968,5 @@ function updateNsfwShow() {
 document.getElementById("NSFW").style.display = "block";
 }
     </script>
-                                                          
-
-</body></html>
+</body>                                                          
+</html>
