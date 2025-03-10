@@ -400,7 +400,7 @@ display: none;
         </div>
 	<div  class="smart-menu">
 
-    <a href="#" id="post" onclick="post()">
+    <a href="#" id="smart-post" onclick="post()">
         <i class="material-icons">photo</i><span>Дописи</span>
     </a>
 <a href="#" id="smart-upload-link">
@@ -409,7 +409,7 @@ display: none;
 <a href="#" id="smart-upload-link-photo">
                 <i class="material-icons">upload</i><span>Завантажити фото</span>
             </a>
-    <a href="#" id="video" onclick="video()">
+    <a href="#" id="smart-video" onclick="video()">
         <i class="material-icons">movie</i><span>Відео</span>
     </a>
 </div>
@@ -621,7 +621,14 @@ const firebaseConfig = {
            document.getElementById("container").style.display = 'flex';
         document.getElementById("photo-container").style.display = 'none';
         }
-
+        document.getElementById("smart-post").onclick = function() {
+           document.getElementById("container").style.display = 'none';
+        document.getElementById("photo-container").style.display = 'flex';
+        }
+            document.getElementById("smart-video").onclick = function() {
+           document.getElementById("container").style.display = 'flex';
+        document.getElementById("photo-container").style.display = 'none';
+        }
         document.getElementById("upload-link-photo").onclick = function() {
             if (auth.currentUser) {
                 const uploadPhotoForm = document.getElementById("upload-photo-form");
