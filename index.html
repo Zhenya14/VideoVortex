@@ -763,7 +763,7 @@ function loadVideos() {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `<strong>${videoData.title}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
             // Додаємо кнопку видалення тільки для власника або модератора
@@ -986,7 +986,9 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-
+if (videoData.nsfw && !showNSFW) {
+	    return;
+	    }
     if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
