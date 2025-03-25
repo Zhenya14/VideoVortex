@@ -747,26 +747,12 @@ function loadVideos() {
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-		
-	        videoElement.addEventListener("play", () => {
-			const newViewCount = (videoData.views || 0) + 1;
-               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .catch(error => console.error("Помилка оновлення переглядів:", error));
-                });
-            // При кліку на відео відкриваємо `video.html`
-            videoElement.onclick = () => {
-                const videoParams = new URLSearchParams({
-                    key: videoKey,
-                    url: videoData.url,
-                    title: videoData.title,
-                    author: videoData.author,
-                    publishDate: videoData.publishDate,
-                    description: videoData.description || "Без опису",
-                    views: videoData.views || 0,
-                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
-                });
-                window.location.href = `video.html?${videoParams.toString()}`;
-            };
+
+            videoElement.addEventListener("play", () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                    .catch(error => console.error("Помилка оновлення переглядів:", error));
+            });
 
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
@@ -774,13 +760,14 @@ function loadVideos() {
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
-           
+
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-		const nfswLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `<strong>${videoData.title}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
-             
-		if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+
+            // Додаємо кнопку видалення тільки для власника або модератора
+            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
                 deleteButton.style.backgroundColor = "red";
@@ -788,7 +775,8 @@ function loadVideos() {
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
                 infoElement.appendChild(deleteButton);
-	    }
+            }
+
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
 
@@ -800,7 +788,7 @@ function loadVideos() {
             videoGallery.appendChild(container);
         });
     });
-	    }
+}
 
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
@@ -818,7 +806,7 @@ function deleteVideo(videoKey, videoURL) {
             alert("Помилка при видаленні відео зі сховища: " + error.message);
         });
     }
-        }
+}
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
