@@ -777,7 +777,7 @@ function loadVideos() {
            
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-		const nfswLabel = videoData.nsfw ? " <span style="color: red;"> NSFW</span>" : "";
+		const nfswLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `<strong>${videoData.title${nsfwLabel}}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
              
 		if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
