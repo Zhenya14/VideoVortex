@@ -739,7 +739,7 @@ function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
-    const showNSFW = document.getElementById("show-nsfw").checked; // Перевірка стану чекбоксу
+    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
 
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
