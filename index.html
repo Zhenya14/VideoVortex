@@ -765,6 +765,19 @@ function loadVideos() {
             if (videoData.nsfw) {
 		    videoElement.style.filter = 'blur(30px)';
 	    }
+		videoElement.onclick = () => {
+                const videoParams = new URLSearchParams({
+                    key: videoKey,
+                    url: videoData.url,
+                    title: videoData.title,
+                    author: videoData.author,
+                    publishDate: videoData.publishDate,
+                    description: videoData.description || "Без опису",
+                    views: videoData.views || 0,
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                });
+                window.location.href = `video.html?${videoParams.toString()}`;
+            };
             videoElement.addEventListener("play", () => {
                 const newViewCount = (videoData.views || 0) + 1;
                 database.ref("videos/" + videoKey).update({ views: newViewCount })
