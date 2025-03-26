@@ -301,12 +301,14 @@ nav {
         display: flex; /* Відображаємо панель smart-menu */
         background: black;
         text-decoration: none;
-        border-radius: 100px;
+        border-radius: 0; /* Без округлення кутів для рівного вигляду */
         position: fixed;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: 0; /* Фіксуємо панель внизу */
+        left: 0; /* Панель буде займати всю ширину */
+        width: 100%; /* Займає всю ширину екрану */
         padding: 10px;
+        justify-content: center; /* Вирівнювання вмісту по центру */
+        z-index: 1000; /* Для того, щоб панель була поверх інших елементів */
     }
 }
 #open-menu {
