@@ -986,9 +986,7 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-if (videoData.nsfw && !showNSFW) {
-	    return;
-	    }
+
     if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
