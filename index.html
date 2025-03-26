@@ -763,7 +763,7 @@ function loadVideos() {
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
             if (videoData.nsfw) {
-		    videoElement.style.filter = 'blur(10px)';
+		    videoElement.style.filter = 'blur(30px)';
 	    }
             videoElement.addEventListener("play", () => {
                 const newViewCount = (videoData.views || 0) + 1;
