@@ -741,6 +741,7 @@ function loadVideos() {
 
     const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
 
+	
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
@@ -754,7 +755,9 @@ function loadVideos() {
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-
+            if (videoData.nsfw) {
+		    videoElement.style..filter = 'blur(10px)';
+	    }
             videoElement.addEventListener("play", () => {
                 const newViewCount = (videoData.views || 0) + 1;
                 database.ref("videos/" + videoKey).update({ views: newViewCount })
