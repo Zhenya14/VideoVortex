@@ -739,10 +739,17 @@ function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
+    const showNSFW = document.getElementById("show-nsfw").checked; // Перевірка стану чекбоксу
+
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
+
+            // Перевірка чи можна показати NSFW відео
+            if (videoData.nsfw && !showNSFW) {
+                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
+            }
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
