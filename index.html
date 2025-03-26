@@ -286,24 +286,28 @@ nav {
                 display: none;
             }
         #upload-link {
-display: none;
-}
-#upload-link-photo {
-display: none;
-}
-#smart-upload-link {
-display: none;
-}
-#smart-upload-link-photo {
-display: none;
-}
-.smart-menu {
-display: flex;
-  background: black;
-  text-decoration: none;
-  border-radius: 100px;
-position: fixed;
-  top: 85%;
+        display: none;
+    }
+    #upload-link-photo {
+        display: none;
+    }
+    #smart-upload-link {
+        display: none;
+    }
+    #smart-upload-link-photo {
+        display: none;
+    }
+		.smart-menu {
+        display: flex; /* Відображаємо панель smart-menu */
+        background: black;
+        text-decoration: none;
+        border-radius: 100px;
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px;
+    }
 }
 #open-menu {
 display: none;
@@ -312,6 +316,7 @@ display: none;
  #nsfw-toggle {
         display: none;
 }
+	    }
     </style>
 </head>
 <body> 
