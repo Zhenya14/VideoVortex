@@ -745,33 +745,52 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
+// Підключаємо бібліотеку CryptoJS для шифрування
+// Додайте в HTML: <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+const secretKey = "zM8!p#hDq5$2wYtG@XvL1N^bK4&dJsZP"; // 🔐 БЕЗПЕЧНИЙ КЛЮЧ
+
+function encrypt(text) {
+    return CryptoJS.AES.encrypt(text, secretKey).toString();
+}
+
+function decrypt(text) {
+    return CryptoJS.AES.decrypt(text, secretKey).toString(CryptoJS.enc.Utf8);
+}
+
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
-    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
+    const showNSFW = document.getElementById("show-nsfw-videos").checked;
+    const userEmail = currentUserEmail || "";
 
-	
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // Перевірка чи можна показати NSFW відео
+            // 🔴 Фільтр приватних відео
+            if (videoData.private && videoData.email !== userEmail) {
+                return;
+            }
             if (videoData.nsfw && !showNSFW) {
-                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
+                return;
             }
 
+            // 🎥 Відео
             const videoElement = document.createElement("video");
-            videoElement.src = videoData.url;
+            videoElement.src = decrypt(videoData.encryptedUrl);
             videoElement.classList.add("video-item");
+
             if (videoData.nsfw) {
-		    videoElement.style.filter = 'blur(30px)';
-	    }
-		videoElement.onclick = () => {
+                videoElement.style.filter = 'blur(30px)';
+            }
+
+            videoElement.onclick = () => {
                 const videoParams = new URLSearchParams({
                     key: videoKey,
-                    url: videoData.url,
+                    url: encodeURIComponent(videoData.encryptedUrl), // 🔐 Передаємо зашифрований URL
                     title: videoData.title,
                     author: videoData.author,
                     publishDate: videoData.publishDate,
@@ -781,12 +800,14 @@ function loadVideos() {
                 });
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
+
             videoElement.addEventListener("play", () => {
                 const newViewCount = (videoData.views || 0) + 1;
                 database.ref("videos/" + videoKey).update({ views: newViewCount })
                     .catch(error => console.error("Помилка оновлення переглядів:", error));
             });
 
+            // 🔹 Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
@@ -796,18 +817,22 @@ function loadVideos() {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-	    const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
-            // Додаємо кнопку видалення тільки для власника або модератора
-            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'>NSFW</span>" : "";
+            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
+                                        Автор: ${videoData.author || "Анонімний користувач"}<br>
+                                        Переглядів: ${videoData.views || 0}<br>
+                                        Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+
+            // 🗑 Додаємо кнопку видалення
+            if (userEmail === videoData.email || userEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
-                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                deleteButton.onclick = () => deleteVideo(videoKey, decrypt(videoData.encryptedUrl));
                 infoElement.appendChild(deleteButton);
             }
 
@@ -826,13 +851,11 @@ function loadVideos() {
 
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
-        // Видалення файлу зі сховища
         const storageRef = storage.refFromURL(videoURL);
         storageRef.delete().then(() => {
-            // Видалення запису з бази даних
             database.ref(`videos/${videoKey}`).remove().then(() => {
                 alert("Відео успішно видалено.");
-                loadVideos(); // Оновлюємо список відео
+                loadVideos();
             }).catch((error) => {
                 alert("Помилка при видаленні відео з бази даних: " + error.message);
             });
@@ -841,7 +864,8 @@ function deleteVideo(videoKey, videoURL) {
         });
     }
 }
-    // Example of how video data might be stored with an 'nsfw' attribute
+
+// 🆕 Завантаження відео + Шифрування URL
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
     const videoTitle = document.getElementById("video-title").value;
@@ -857,54 +881,44 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-if (videoData.nsfw && !showNSFW) {
-	return;
-}
-	if (videoData.private && videoData.email !== currentUserEmail) {
-	return;
-}
-    if (videoFile) {
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
-        const uploadTask = storageRef.put(videoFile);
+
+    const storageRef = storage.ref(`videos/${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
     uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                uploadProgress.value = progress;
-                progressText.innerText = `${Math.round(progress)}%`;
-                progressContainer.style.display = "block";
-            }, 
-            (error) => {
-                alert("Сталася помилка при завантаженні відео.");
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    // Get current date
-                    const currentDate = new Date().toLocaleDateString();
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadProgress.value = progress;
+            progressText.innerText = `${Math.round(progress)}%`;
+            progressContainer.style.display = "block";
+        }, 
+        (error) => {
+            alert("Сталася помилка при завантаженні відео.");
+        }, 
+        () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                const encryptedUrl = encrypt(downloadURL); // 🔐 Шифруємо URL
+                const currentDate = new Date().toLocaleDateString();
 
-                    // Save video info to database
-                    database.ref("videos").push({
-                        title: videoTitle,
-                        author: videoAuthor,
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: videoDescription,
-                        views: 0,
-			private: privateVideo,
-                        nsfw: isNSFW,
-                        publishDate: currentDate // Save the publish date
-                    }).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos(); // Reload videos
-                        document.getElementById("upload-form").reset();
-                        progressContainer.style.display = "none"; // Hide progress
-                    });
+                database.ref("videos").push({
+                    title: videoTitle,
+                    author: videoAuthor,
+                    email: currentUserEmail,
+                    encryptedUrl: encryptedUrl, // ✅ Збереження зашифрованого URL
+                    description: videoDescription,
+                    views: 0,
+                    private: privateVideo,
+                    nsfw: isNSFW,
+                    publishDate: currentDate
+                }).then(() => {
+                    alert("Відео завантажено!");
+                    loadVideos();
+                    document.getElementById("upload-form").reset();
+                    progressContainer.style.display = "none";
                 });
-            }
-        );
-    } else {
-        alert("Будь ласка, виберіть відео для завантаження.");
-    }
+            });
+        }
+    );
 }
 
 auth.onAuthStateChanged((user) => {
