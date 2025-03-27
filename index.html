@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VideoVortex</title>
     <link rel="icon" href="VideoVortex_logo.ico">
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -745,8 +746,7 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-// Підключаємо бібліотеку CryptoJS для шифрування
-// Додайте в HTML: <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 
 const secretKey = "zM8!p#hDq5$2wYtG@XvL1N^bK4&dJsZP"; // 🔐 БЕЗПЕЧНИЙ КЛЮЧ
 
