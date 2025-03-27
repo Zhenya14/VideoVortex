@@ -746,8 +746,112 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
+function loadVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    videoGallery.innerHTML = "";
 
+    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
 
+    database.ref("videos").once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoKey = childSnapshot.key;
+
+            // Перевірка на NSFW
+            if (videoData.nsfw && !showNSFW) {
+                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
+            }
+
+            // Перевірка на приватність
+            if (videoData.private && videoData.email !== currentUserEmail) {
+                return; // Якщо відео приватне, пропускаємо його, якщо це не власник
+            }
+
+            const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
+            videoElement.classList.add("video-item");
+
+            // Додаємо розмиття для NSFW відео
+            if (videoData.nsfw) {
+                videoElement.style.filter = 'blur(30px)';
+            }
+
+            videoElement.onclick = () => {
+                const videoParams = new URLSearchParams({
+                    key: videoKey,
+                    url: videoData.url,
+                    title: videoData.title,
+                    author: videoData.author,
+                    publishDate: videoData.publishDate,
+                    description: videoData.description || "Без опису",
+                    views: videoData.views || 0,
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                });
+                window.location.href = `video.html?${videoParams.toString()}`;
+            };
+
+            videoElement.addEventListener("play", () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                    .catch(error => console.error("Помилка оновлення переглядів:", error));
+            });
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
+
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
+
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("video-details");
+
+            // Додаємо мітки приватного і NSFW відео
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
+            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+
+            // Додаємо кнопку видалення тільки для власника або модератора
+            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Видалити";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                infoElement.appendChild(deleteButton);
+            }
+
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+
+            const container = document.createElement("div");
+            container.classList.add("video-container");
+            container.appendChild(videoElement);
+            container.appendChild(infoElement);
+
+            videoGallery.appendChild(container);
+        });
+    });
+}
+
+function deleteVideo(videoKey, videoURL) {
+    if (confirm("Ви впевнені, що хочете видалити це відео?")) {
+        // Видалення файлу зі сховища
+        const storageRef = storage.refFromURL(videoURL);
+        storageRef.delete().then(() => {
+            // Видалення запису з бази даних
+            database.ref(videos/${videoKey}).remove().then(() => {
+                alert("Відео успішно видалено.");
+                loadVideos(); // Оновлюємо список відео
+            }).catch((error) => {
+                alert("Помилка при видаленні відео з бази даних: " + error.message);
+            });
+        }).catch((error) => {
+            alert("Помилка при видаленні відео зі сховища: " + error.message);
+        });
+    }
+}
 // Функція для генерації секретного ключа
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
