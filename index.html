@@ -362,14 +362,13 @@ display: none;
         </div>
 	</form>
 <div class="account-form" id="account-form">
-            <h2>Інформація про</h2><h2 onclick="openNsfwShow()"> акаунт</h2>
+            <h2>Інформація про акаунт</h2>
             <p id="user-info"></p>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
-<div id="nsfw-toggle">
         <label>
             <input type="checkbox" id="show-nsfw-videos">Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>
         </label>
-    </div>
+
         </div>
 	<form>
 <div class="register-form" id="register-form">
@@ -381,15 +380,15 @@ display: none;
         </div>
 	</form>
         <div class="upload-form" id="upload-form">
-            <h2>Завантажити</h2><h2 onclick="updateNsfwShow()"> відео</h2>
+            <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
             <input type="text" id="video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
-<div id="NSFW" style="display: none;">    
-           <label for="nsfw-checkbox" ><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+   <label for="private-checkbox"><input type="checkbox" id="private-checkbox">Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 
-</div>
+           <label for="nsfw-checkbox"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
@@ -797,8 +796,9 @@ function loadVideos() {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
+	    const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `<strong>${videoData.title}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
             // Додаємо кнопку видалення тільки для власника або модератора
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
@@ -848,6 +848,7 @@ function uploadVideo() {
     const videoAuthor = document.getElementById("video-author").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
+    const privateVideo = document.getElementById("private-checkbox").checked;
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
     const progressContainer = document.getElementById("progress-container");
@@ -857,6 +858,9 @@ function uploadVideo() {
         return;
     }
 if (videoData.nsfw && !showNSFW) {
+	return;
+}
+	if (videoData.private && videoData.email !== currentUserEmail) {
 	return;
 }
     if (videoFile) {
@@ -886,6 +890,7 @@ if (videoData.nsfw && !showNSFW) {
                         url: downloadURL,
                         description: videoDescription,
                         views: 0,
+			private: privateVideo,
                         nsfw: isNSFW,
                         publishDate: currentDate // Save the publish date
                     }).then(() => {
@@ -1066,16 +1071,6 @@ window.onload = function() {
         loadVideos();
         loadPhotos();// Initial load of videos
     };
-function openNsfwShow() {
-if (auth.currentUser) {
-document.getElementById("nsfw-toggle").style.display = "block";
-} else {
-alert("Сталася помилка.");
-}
-};
-function updateNsfwShow() {
-document.getElementById("NSFW").style.display = "block";
-}
     </script>
 </body>                                                          
 </html>
