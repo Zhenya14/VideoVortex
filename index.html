@@ -841,7 +841,7 @@ function deleteVideo(videoKey, videoURL) {
         const storageRef = storage.refFromURL(videoURL);
         storageRef.delete().then(() => {
             // Видалення запису з бази даних
-            database.ref(videos/${videoKey}).remove().then(() => {
+            database.ref(`videos/${videoKey}`).remove().then(() => {
                 alert("Відео успішно видалено.");
                 loadVideos(); // Оновлюємо список відео
             }).catch((error) => {
@@ -852,6 +852,7 @@ function deleteVideo(videoKey, videoURL) {
         });
     }
 }
+
 // Функція для генерації секретного ключа
 function uploadVideo() {
     const videoDescription = document.getElementById("video-description").value;
