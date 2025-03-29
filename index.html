@@ -386,10 +386,13 @@ display: none;
             <input type="text" id="video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
+		
    <label for="private-checkbox"><input type="checkbox" id="private-checkbox">Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 
            <label for="nsfw-checkbox"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
-
+<h3>Експериментальна функція</h3>
+		<label for="video-password">Пароль для відео(необов’язково)<sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>:</label>
+  <input type="text" id="video-password" />
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
@@ -775,8 +778,19 @@ function loadVideos() {
             if (videoData.nsfw) {
                 videoElement.style.filter = 'blur(30px)';
             }
+            if (videoData.password) {
+                videoElement.style.filter = 'blur(30px)';
+            }
 
             videoElement.onclick = () => {
+		    if (videoData.password) {
+          const userPassword = prompt("Це приватне відео. Введіть пароль:");
+
+          if (videoData.password !== userPassword) {
+            alert("Неправильний пароль!");
+            return;
+          }
+        }
                 const videoParams = new URLSearchParams({
                     key: videoKey,
                     url: videoData.url,
@@ -861,6 +875,7 @@ function uploadVideo() {
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
+    const videoPassword = document.getElementById("video-password").value.trim();
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
     const progressContainer = document.getElementById("progress-container");
@@ -896,6 +911,7 @@ function uploadVideo() {
                         email: currentUserEmail,
                         url: downloadURL,
                         description: videoDescription,
+			password: videoPassword || null,
                         views: 0,
                         private: privateVideo,
                         nsfw: isNSFW,
