@@ -787,7 +787,7 @@ function loadVideos() {
             }
 
             // Перевірка на приватність, якщо відео приватне, пропускаємо його для неавторизованих користувачів
-            if (videoData.private && videoData.email !== currentUserEmail) {
+            if (videoData.private && videoData.email !== currentUserEmail && !currentUser) {
                 return; // Якщо відео приватне і користувач не авторизований чи не є власником відео, пропускаємо його
             }
 
@@ -843,6 +843,17 @@ function loadVideos() {
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+
+            // Додаємо кнопку для надсилання запиту на перегляд відео (якщо воно приватне)
+            if (videoData.private && currentUserEmail && videoData.email !== currentUserEmail) {
+                const requestButton = document.createElement("button");
+                requestButton.innerText = "Надіслати запит на перегляд";
+                requestButton.style.backgroundColor = "#008CBA";
+                requestButton.style.color = "white";
+                requestButton.style.marginTop = "10px";
+                requestButton.onclick = () => sendAccessRequest(videoKey);
+                infoElement.appendChild(requestButton);
+            }
 
             // Додаємо кнопку видалення тільки для власника або модератора
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
@@ -946,19 +957,6 @@ function denyRequest(videoKey, requestIndex) {
     });
 }
 
-function deleteVideo(videoKey, videoUrl) {
-    const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-    // const videoRef = firebase.firestore().collection("videos").doc(videoKey); // Для Firestore
-
-    // Видалення відео
-    videoRef.remove().then(() => {
-        alert("Відео успішно видалено.");
-        // Можливо, вам потрібно також видалити відеофайл з сервера
-        // Як варіант, ви можете використовувати firebase.storage().ref('path/to/video').delete();
-    }).catch((error) => {
-        alert("Помилка при видаленні відео: " + error.message);
-    });
-}
 
 
 function deleteVideo(videoKey, videoURL) {
