@@ -890,7 +890,33 @@ function sendAccessRequest(videoKey) {
         });
     });
 }
+function loadAccessRequests(videoKey) {
+    const requestsContainer = document.getElementById("requests-container");
+    requestsContainer.innerHTML = "";
 
+    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests");
+    videoRef.once("value").then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const request = childSnapshot.val();
+            const requestId = childSnapshot.key;
+            
+            const requestElement = document.createElement("div");
+            requestElement.innerHTML = `<p>Запит від: ${request.email} - Статус: ${request.status}</p>`;
+            
+            const approveButton = document.createElement("button");
+            approveButton.innerText = "Схвалити";
+            approveButton.onclick = () => approveRequest(videoKey, requestId);
+            
+            const denyButton = document.createElement("button");
+            denyButton.innerText = "Відхилити";
+            denyButton.onclick = () => denyRequest(videoKey, requestId);
+            
+            requestElement.appendChild(approveButton);
+            requestElement.appendChild(denyButton);
+            requestsContainer.appendChild(requestElement);
+        });
+    });
+}
 function approveRequest(videoKey, requestId) {
     const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
     videoRef.update({ status: "approved" }).then(() => {
