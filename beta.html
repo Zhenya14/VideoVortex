@@ -892,14 +892,18 @@ function sendAccessRequest(videoKey) {
 
     videoRef.once("value").then((snapshot) => {
         const videoData = snapshot.val();
-        
+
+        if (!videoData.requests) {
+            videoData.requests = [];  // Якщо немає запитів, ініціалізуємо масив
+        }
+
         const request = {
             email: currentUserEmail,
             status: "pending" // Статус запиту: pending, approved, denied
         };
 
         videoRef.update({
-            requests: firebase.database.ServerValue.arrayUnion(request) // Для Realtime Database
+            requests: [...videoData.requests, request] // Додаємо новий запит до існуючих
         }).then(() => {
             alert("Запит на перегляд відео відправлений власнику.");
         }).catch((error) => {
@@ -956,8 +960,6 @@ function denyRequest(videoKey, requestIndex) {
         alert("Помилка при відхиленні запиту: " + error.message);
     });
 }
-
-
 
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
