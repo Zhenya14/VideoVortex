@@ -782,6 +782,12 @@ function loadVideos() {
             if (videoData.nsfw && !showNSFW) {
                 return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
             }
+if (videoData.password) {
+        const requestButton = document.createElement("button");
+        requestButton.innerText = "Надіслати запит на перегляд";
+        requestButton.onclick = () => sendAccessRequest(videoKey);
+        infoElement.appendChild(requestButton);
+      }
 
             // Перевірка на приватність
             if (videoData.private && videoData.email !== currentUserEmail) {
@@ -817,6 +823,7 @@ function loadVideos() {
                     publishDate: videoData.publishDate,
                     description: videoData.description || "Без опису",
                     views: videoData.views || 0,
+		    requests: [],
                     avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
                 });
                 window.location.href = `video.html?${videoParams.toString()}`;
@@ -865,6 +872,79 @@ function loadVideos() {
             videoGallery.appendChild(container);
         });
     });
+}
+function sendAccessRequest(videoKey) {
+  const videoRef = database.collection("videos").doc(videoKey);
+
+  videoRef.get().then((doc) => {
+    if (doc.exists) {
+      const videoData = doc.data();
+      const currentUserEmail = firebase.auth().currentUser.email;
+
+      // Додаємо запит на перегляд відео
+      const request = {
+        email: currentUserEmail,
+        status: "pending" // Статус запиту: pending, approved, denied
+      };
+
+      videoRef.update({
+        requests: firebase.firestore.FieldValue.arrayUnion(request)
+      }).then(() => {
+        alert("Запит на перегляд відео відправлений власнику.");
+      }).catch((error) => {
+        alert("Помилка при відправленні запиту: " + error.message);
+      });
+    }
+  });
+}
+function loadAccessRequests(videoKey) {
+  const videoRef = database.collection("videos").doc(videoKey);
+  videoRef.get().then((doc) => {
+    if (doc.exists) {
+      const videoData = doc.data();
+      const requestsContainer = document.getElementById("requests-container");
+
+      if (videoData.requests && videoData.requests.length > 0) {
+        videoData.requests.forEach((request, index) => {
+          const requestElement = document.createElement("div");
+          requestElement.innerHTML = `
+            <p>Запит від: ${request.email} - Статус: ${request.status}</p>
+            <button onclick="approveRequest('${videoKey}', ${index})">Схвалити</button>
+            <button onclick="denyRequest('${videoKey}', ${index})">Відхилити</button>
+          `;
+          requestsContainer.appendChild(requestElement);
+        });
+      } else {
+        requestsContainer.innerHTML = "<p>Немає запитів на перегляд відео.</p>";
+      }
+    }
+  });
+}
+
+function approveRequest(videoKey, requestIndex) {
+  const videoRef = database.collection("videos").doc(videoKey);
+
+  videoRef.update({
+    [`requests.${requestIndex}.status`]: "approved"
+  }).then(() => {
+    alert("Запит схвалено.");
+    loadAccessRequests(videoKey); // Перезавантажуємо запити
+  }).catch((error) => {
+    alert("Помилка при схваленні запиту: " + error.message);
+  });
+}
+
+function denyRequest(videoKey, requestIndex) {
+  const videoRef = database.collection("videos").doc(videoKey);
+
+  videoRef.update({
+    [`requests.${requestIndex}.status`]: "denied"
+  }).then(() => {
+    alert("Запит відхилено.");
+    loadAccessRequests(videoKey); // Перезавантажуємо запити
+  }).catch((error) => {
+    alert("Помилка при відхиленні запиту: " + error.message);
+  });
 }
 
 function deleteVideo(videoKey, videoURL) {
