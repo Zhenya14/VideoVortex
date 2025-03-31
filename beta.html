@@ -772,13 +772,6 @@ function loadVideos() {
     videoGallery.innerHTML = "";
 
     const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
-
-    // Перевірка на наявність користувача
-    const currentUser = firebase.auth().currentUser;
-    if (!currentUser) {
-        alert("Будь ласка, увійдіть в систему для перегляду відео.");
-        return;
-    }
     const currentUserEmail = currentUser.email;
 
     database.ref("videos").once("value").then((snapshot) => {
