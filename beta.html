@@ -773,6 +773,9 @@ function loadVideos() {
 
     const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
 
+    const currentUser = firebase.auth().currentUser;
+    const currentUserEmail = currentUser ? currentUser.email : null; // Якщо користувач не авторизований, email = null
+
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
@@ -783,9 +786,9 @@ function loadVideos() {
                 return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
             }
 
-            // Перевірка на приватність
+            // Перевірка на приватність, якщо відео приватне, пропускаємо його для неавторизованих користувачів
             if (videoData.private && videoData.email !== currentUserEmail) {
-                return; // Якщо відео приватне, пропускаємо його, якщо це не власник
+                return; // Якщо відео приватне і користувач не авторизований чи не є власником відео, пропускаємо його
             }
 
             const videoElement = document.createElement("video");
@@ -793,10 +796,7 @@ function loadVideos() {
             videoElement.classList.add("video-item");
 
             // Додаємо розмиття для NSFW відео
-            if (videoData.nsfw) {
-                videoElement.style.filter = 'blur(30px)';
-            }
-            if (videoData.password) {
+            if (videoData.nsfw || videoData.password) {
                 videoElement.style.filter = 'blur(30px)';
             }
 
@@ -878,7 +878,6 @@ function sendAccessRequest(videoKey) {
     const currentUserEmail = currentUser.email;
 
     const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-    // const videoRef = firebase.firestore().collection("videos").doc(videoKey); // Для Firestore
 
     videoRef.once("value").then((snapshot) => {
         const videoData = snapshot.val();
@@ -890,7 +889,6 @@ function sendAccessRequest(videoKey) {
 
         videoRef.update({
             requests: firebase.database.ServerValue.arrayUnion(request) // Для Realtime Database
-            // requests: firebase.firestore.FieldValue.arrayUnion(request) // Для Firestore
         }).then(() => {
             alert("Запит на перегляд відео відправлений власнику.");
         }).catch((error) => {
@@ -901,7 +899,6 @@ function sendAccessRequest(videoKey) {
 
 function loadAccessRequests(videoKey) {
     const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-    // const videoRef = firebase.firestore().collection("videos").doc(videoKey); // Для Firestore
 
     videoRef.once("value").then((snapshot) => {
         const videoData = snapshot.val();
@@ -925,7 +922,6 @@ function loadAccessRequests(videoKey) {
 
 function approveRequest(videoKey, requestIndex) {
     const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-    // const videoRef = firebase.firestore().collection("videos").doc(videoKey); // Для Firestore
 
     videoRef.update({
         [`requests/${requestIndex}/status`]: "approved"
@@ -939,7 +935,6 @@ function approveRequest(videoKey, requestIndex) {
 
 function denyRequest(videoKey, requestIndex) {
     const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-    // const videoRef = firebase.firestore().collection("videos").doc(videoKey); // Для Firestore
 
     videoRef.update({
         [`requests/${requestIndex}/status`]: "denied"
