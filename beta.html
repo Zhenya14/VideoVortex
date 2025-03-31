@@ -878,7 +878,6 @@ function sendAccessRequest(videoKey) {
     const videoRef = firebase.database().ref("videos/" + videoKey);
 
     videoRef.once("value").then((snapshot) => {
-        const videoData = snapshot.val();
         const request = {
             email: currentUserEmail,
             status: "pending"
