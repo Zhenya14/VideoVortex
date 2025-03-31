@@ -772,7 +772,6 @@ function loadVideos() {
     videoGallery.innerHTML = "";
 
     const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
-    const currentUserEmail = currentUser.email;
 
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
