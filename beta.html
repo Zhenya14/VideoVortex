@@ -803,24 +803,8 @@ function loadVideos() {
                         return;
                     }
                 }
-                const videoParams = new URLSearchParams({
-                    key: videoKey,
-                    url: videoData.url,
-                    title: videoData.title,
-                    author: videoData.author,
-                    publishDate: videoData.publishDate,
-                    description: videoData.description || "Без опису",
-                    views: videoData.views || 0,
-                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
-                });
-                window.location.href = `video.html?${videoParams.toString()}`;
+                window.location.href = `video.html?key=${videoKey}`;
             };
-
-            videoElement.addEventListener("play", () => {
-                const newViewCount = (videoData.views || 0) + 1;
-                database.ref("videos/" + videoKey).update({ views: newViewCount })
-                    .catch(error => console.error("Помилка оновлення переглядів:", error));
-            });
 
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
@@ -832,28 +816,13 @@ function loadVideos() {
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
-            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-                const deleteButton = document.createElement("button");
-                deleteButton.innerText = "Видалити";
-                deleteButton.style.backgroundColor = "red";
-                deleteButton.style.color = "white";
-                deleteButton.style.marginTop = "10px";
-                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-                infoElement.appendChild(deleteButton);
-            }
-
-            if (videoData.password && currentUserEmail && videoData.email !== currentUserEmail) {
-                const requestButton = document.createElement("button");
-                requestButton.innerText = "Надіслати запит на перегляд";
-                requestButton.style.backgroundColor = "#008CBA";
-                requestButton.style.color = "white";
-                requestButton.style.marginTop = "10px";
-                requestButton.onclick = () => sendAccessRequest(videoKey);
-                infoElement.appendChild(requestButton);
+            if (currentUserEmail === videoData.email) {
+                const requestList = document.createElement("div");
+                requestList.classList.add("request-list");
+                loadAccessRequests(videoKey, requestList);
+                infoElement.appendChild(requestList);
             }
 
             infoElement.appendChild(avatar);
@@ -869,55 +838,34 @@ function loadVideos() {
     });
 }
 
-function sendAccessRequest(videoKey) {
-    const currentUser = firebase.auth().currentUser;
-    if (!currentUser) {
-        alert("Будь ласка, увійдіть в систему для відправлення запиту.");
-        return;
-    }
-    const currentUserEmail = currentUser.email;
-    const videoRef = firebase.database().ref("videos/" + videoKey);
-
-    videoRef.once("value").then((snapshot) => {
-        const request = {
-            email: currentUserEmail,
-            status: "pending"
-        };
-
-        videoRef.child("requests").push(request).then(() => {
-            alert("Запит на перегляд відео відправлений власнику.");
-        }).catch((error) => {
-            alert("Помилка при відправленні запиту: " + error.message);
-        });
-    });
-}
-function loadAccessRequests(videoKey) {
-    const requestsContainer = document.getElementById("requests-container");
-    requestsContainer.innerHTML = "";
-
+function loadAccessRequests(videoKey, container) {
     const videoRef = firebase.database().ref("videos/" + videoKey + "/requests");
     videoRef.once("value").then((snapshot) => {
+        container.innerHTML = "<h4>Запити на перегляд:</h4>";
         snapshot.forEach((childSnapshot) => {
             const request = childSnapshot.val();
             const requestId = childSnapshot.key;
             
             const requestElement = document.createElement("div");
-            requestElement.innerHTML = `<p>Запит від: ${request.email} - Статус: ${request.status}</p>`;
+            requestElement.innerHTML = `<p>${request.email} - ${request.status}</p>`;
             
-            const approveButton = document.createElement("button");
-            approveButton.innerText = "Схвалити";
-            approveButton.onclick = () => approveRequest(videoKey, requestId);
-            
-            const denyButton = document.createElement("button");
-            denyButton.innerText = "Відхилити";
-            denyButton.onclick = () => denyRequest(videoKey, requestId);
-            
-            requestElement.appendChild(approveButton);
-            requestElement.appendChild(denyButton);
-            requestsContainer.appendChild(requestElement);
+            if (request.status === "pending") {
+                const approveButton = document.createElement("button");
+                approveButton.innerText = "Схвалити";
+                approveButton.onclick = () => approveRequest(videoKey, requestId);
+                
+                const denyButton = document.createElement("button");
+                denyButton.innerText = "Відхилити";
+                denyButton.onclick = () => denyRequest(videoKey, requestId);
+                
+                requestElement.appendChild(approveButton);
+                requestElement.appendChild(denyButton);
+            }
+            container.appendChild(requestElement);
         });
     });
 }
+
 function approveRequest(videoKey, requestId) {
     const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
     videoRef.update({ status: "approved" }).then(() => {
