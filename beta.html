@@ -823,6 +823,14 @@ function loadVideos() {
                 requestList.classList.add("request-list");
                 loadAccessRequests(videoKey, requestList);
                 infoElement.appendChild(requestList);
+            } else if (videoData.password) {
+                const requestButton = document.createElement("button");
+                requestButton.innerText = "Надіслати запит на перегляд";
+                requestButton.style.backgroundColor = "#008CBA";
+                requestButton.style.color = "white";
+                requestButton.style.marginTop = "10px";
+                requestButton.onclick = () => sendAccessRequest(videoKey);
+                infoElement.appendChild(requestButton);
             }
 
             infoElement.appendChild(avatar);
@@ -834,6 +842,29 @@ function loadVideos() {
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
+        });
+    });
+}
+
+function sendAccessRequest(videoKey) {
+    const currentUser = firebase.auth().currentUser;
+    if (!currentUser) {
+        alert("Будь ласка, увійдіть в систему для відправлення запиту.");
+        return;
+    }
+    const currentUserEmail = currentUser.email;
+    const videoRef = firebase.database().ref("videos/" + videoKey);
+
+    videoRef.once("value").then((snapshot) => {
+        const request = {
+            email: currentUserEmail,
+            status: "pending"
+        };
+
+        videoRef.child("requests").push(request).then(() => {
+            alert("Запит на перегляд відео відправлений власнику.");
+        }).catch((error) => {
+            alert("Помилка при відправленні запиту: " + error.message);
         });
     });
 }
