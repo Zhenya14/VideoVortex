@@ -771,31 +771,25 @@ function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
-    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
-
-    const currentUser = firebase.auth().currentUser;
-    const currentUserEmail = currentUser ? currentUser.email : null; // Якщо користувач не авторизований, email = null
+    const showNSFW = document.getElementById("show-nsfw-videos").checked;
 
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // Перевірка на NSFW
             if (videoData.nsfw && !showNSFW) {
-                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
+                return;
             }
 
-            // Перевірка на приватність, якщо відео приватне, пропускаємо його для неавторизованих користувачів
-            if (videoData.private && videoData.email !== currentUserEmail && !currentUser) {
-                return; // Якщо відео приватне і користувач не авторизований чи не є власником відео, пропускаємо його
+            if (videoData.private && videoData.email !== currentUserEmail) {
+                return;
             }
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
 
-            // Додаємо розмиття для NSFW відео
             if (videoData.nsfw || videoData.password) {
                 videoElement.style.filter = 'blur(30px)';
             }
@@ -803,7 +797,6 @@ function loadVideos() {
             videoElement.onclick = () => {
                 if (videoData.password) {
                     const userPassword = prompt("Це приватне відео. Введіть пароль:");
-
                     if (videoData.password !== userPassword) {
                         alert("Неправильний пароль!");
                         return;
@@ -817,7 +810,6 @@ function loadVideos() {
                     publishDate: videoData.publishDate,
                     description: videoData.description || "Без опису",
                     views: videoData.views || 0,
-                    requests: [],
                     avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
                 });
                 window.location.href = `video.html?${videoParams.toString()}`;
@@ -839,23 +831,10 @@ function loadVideos() {
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            // Додаємо мітки приватного і NSFW відео
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
-            // Додаємо кнопку для надсилання запиту на перегляд відео (якщо воно приватне)
-            if (videoData.private && currentUserEmail && videoData.email !== currentUserEmail) {
-                const requestButton = document.createElement("button");
-                requestButton.innerText = "Надіслати запит на перегляд";
-                requestButton.style.backgroundColor = "#008CBA";
-                requestButton.style.color = "white";
-                requestButton.style.marginTop = "10px";
-                requestButton.onclick = () => sendAccessRequest(videoKey);
-                infoElement.appendChild(requestButton);
-            }
-
-            // Додаємо кнопку видалення тільки для власника або модератора
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
@@ -864,6 +843,16 @@ function loadVideos() {
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
                 infoElement.appendChild(deleteButton);
+            }
+
+            if (videoData.private && currentUserEmail && videoData.email !== currentUserEmail) {
+                const requestButton = document.createElement("button");
+                requestButton.innerText = "Надіслати запит на перегляд";
+                requestButton.style.backgroundColor = "#008CBA";
+                requestButton.style.color = "white";
+                requestButton.style.marginTop = "10px";
+                requestButton.onclick = () => sendAccessRequest(videoKey);
+                infoElement.appendChild(requestButton);
             }
 
             infoElement.appendChild(avatar);
@@ -885,26 +874,17 @@ function sendAccessRequest(videoKey) {
         alert("Будь ласка, увійдіть в систему для відправлення запиту.");
         return;
     }
-    
     const currentUserEmail = currentUser.email;
-
-    const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
+    const videoRef = firebase.database().ref("videos/" + videoKey);
 
     videoRef.once("value").then((snapshot) => {
         const videoData = snapshot.val();
-
-        if (!videoData.requests) {
-            videoData.requests = [];  // Якщо немає запитів, ініціалізуємо масив
-        }
-
         const request = {
             email: currentUserEmail,
-            status: "pending" // Статус запиту: pending, approved, denied
+            status: "pending"
         };
 
-        videoRef.update({
-            requests: [...videoData.requests, request] // Додаємо новий запит до існуючих
-        }).then(() => {
+        videoRef.child("requests").push(request).then(() => {
             alert("Запит на перегляд відео відправлений власнику.");
         }).catch((error) => {
             alert("Помилка при відправленні запиту: " + error.message);
@@ -912,54 +892,24 @@ function sendAccessRequest(videoKey) {
     });
 }
 
-function loadAccessRequests(videoKey) {
-    const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-
-    videoRef.once("value").then((snapshot) => {
-        const videoData = snapshot.val();
-        const requestsContainer = document.getElementById("requests-container");
-
-        if (videoData.requests && videoData.requests.length > 0) {
-            videoData.requests.forEach((request, index) => {
-                const requestElement = document.createElement("div");
-                requestElement.innerHTML = `
-                    <p>Запит від: ${request.email} - Статус: ${request.status}</p>
-                    <button onclick="approveRequest('${videoKey}', ${index})">Схвалити</button>
-                    <button onclick="denyRequest('${videoKey}', ${index})">Відхилити</button>
-                `;
-                requestsContainer.appendChild(requestElement);
-            });
-        } else {
-            requestsContainer.innerHTML = "<p>Немає запитів на перегляд відео.</p>";
-        }
-    });
-}
-
-function approveRequest(videoKey, requestIndex) {
-    const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-
-    videoRef.update({
-        [`requests/${requestIndex}/status`]: "approved"
-    }).then(() => {
+function approveRequest(videoKey, requestId) {
+    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
+    videoRef.update({ status: "approved" }).then(() => {
         alert("Запит схвалено.");
-        loadAccessRequests(videoKey); // Перезавантажуємо запити
     }).catch((error) => {
         alert("Помилка при схваленні запиту: " + error.message);
     });
 }
 
-function denyRequest(videoKey, requestIndex) {
-    const videoRef = firebase.database().ref("videos/" + videoKey); // Для Realtime Database
-
-    videoRef.update({
-        [`requests/${requestIndex}/status`]: "denied"
-    }).then(() => {
+function denyRequest(videoKey, requestId) {
+    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
+    videoRef.update({ status: "denied" }).then(() => {
         alert("Запит відхилено.");
-        loadAccessRequests(videoKey); // Перезавантажуємо запити
     }).catch((error) => {
         alert("Помилка при відхиленні запиту: " + error.message);
     });
 }
+
 
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
