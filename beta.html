@@ -821,8 +821,9 @@ function loadVideos() {
             if (currentUserEmail === videoData.email) {
                 const requestList = document.createElement("div");
                 requestList.classList.add("request-list");
-                loadAccessRequests(videoKey, requestList);
+                requestList.id = `requests-${videoKey}`;
                 infoElement.appendChild(requestList);
+                loadAccessRequests(videoKey);
             } else if (videoData.password) {
                 const requestButton = document.createElement("button");
                 requestButton.innerText = "Надіслати запит на перегляд";
@@ -855,24 +856,25 @@ function sendAccessRequest(videoKey) {
     const currentUserEmail = currentUser.email;
     const videoRef = firebase.database().ref("videos/" + videoKey);
 
-    videoRef.once("value").then((snapshot) => {
-        const request = {
-            email: currentUserEmail,
-            status: "pending"
-        };
-
-        videoRef.child("requests").push(request).then(() => {
-            alert("Запит на перегляд відео відправлений власнику.");
-        }).catch((error) => {
-            alert("Помилка при відправленні запиту: " + error.message);
-        });
+    videoRef.child("requests").push({
+        email: currentUserEmail,
+        status: "pending"
+    }).then(() => {
+        alert("Запит на перегляд відео відправлений власнику.");
+        loadAccessRequests(videoKey);
+    }).catch((error) => {
+        alert("Помилка при відправленні запиту: " + error.message);
     });
 }
 
-function loadAccessRequests(videoKey, container) {
+function loadAccessRequests(videoKey) {
+    const requestList = document.getElementById(`requests-${videoKey}`);
+    if (!requestList) return;
+    requestList.innerHTML = "<h4>Запити на перегляд:</h4>";
+    
     const videoRef = firebase.database().ref("videos/" + videoKey + "/requests");
-    videoRef.once("value").then((snapshot) => {
-        container.innerHTML = "<h4>Запити на перегляд:</h4>";
+    videoRef.on("value", (snapshot) => {
+        requestList.innerHTML = "<h4>Запити на перегляд:</h4>";
         snapshot.forEach((childSnapshot) => {
             const request = childSnapshot.val();
             const requestId = childSnapshot.key;
@@ -892,27 +894,21 @@ function loadAccessRequests(videoKey, container) {
                 requestElement.appendChild(approveButton);
                 requestElement.appendChild(denyButton);
             }
-            container.appendChild(requestElement);
+            requestList.appendChild(requestElement);
         });
     });
 }
 
 function approveRequest(videoKey, requestId) {
-    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
-    videoRef.update({ status: "approved" }).then(() => {
-        alert("Запит схвалено.");
-    }).catch((error) => {
-        alert("Помилка при схваленні запиту: " + error.message);
-    });
+    firebase.database().ref(`videos/${videoKey}/requests/${requestId}`).update({ status: "approved" })
+    .then(() => loadAccessRequests(videoKey))
+    .catch(error => alert("Помилка при схваленні запиту: " + error.message));
 }
 
 function denyRequest(videoKey, requestId) {
-    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests/" + requestId);
-    videoRef.update({ status: "denied" }).then(() => {
-        alert("Запит відхилено.");
-    }).catch((error) => {
-        alert("Помилка при відхиленні запиту: " + error.message);
-    });
+    firebase.database().ref(`videos/${videoKey}/requests/${requestId}`).update({ status: "denied" })
+    .then(() => loadAccessRequests(videoKey))
+    .catch(error => alert("Помилка при відхиленні запиту: " + error.message));
 }
 
 
