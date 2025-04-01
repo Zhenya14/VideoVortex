@@ -371,7 +371,7 @@ nav {
     <i class="material-icons">menu</i>
 </a>
             <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
-            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup><sup><div id="timer"></div></sup></a>
         </div>
         <div style="display: flex; gap: 15px; margin-left: auto;">
             <a href="#" id="upload-link" style="display: none;">
@@ -490,8 +490,7 @@ nav {
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
 </div>
-	<div id="timer"></div>
-    <div id="alert">Ваш час на сьогодні вичерпано або зараз час сну (21:00 - 07:00). Сторінка недоступна.</div>
+
     <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
          
@@ -1248,7 +1247,7 @@ function isSleepTime() {
 // Оновлення таймера + фон
 function updateTimer() {
     if (isSleepTime()) {
-        document.body.style.background = "blue";
+        document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
         return;
     } else {
@@ -1262,10 +1261,11 @@ function updateTimer() {
         timeLeftInSeconds--;
         localStorage.setItem('timeLeft', timeLeftInSeconds);
     } else if (timeLeftInSeconds !== null) {
-        document.getElementById('alert').style.display = 'block';
-        document.body.style.pointerEvents = 'none';
-        document.getElementById('timer').textContent = '';
-    }
+	    document.body.style.background = "mediumseagreen";
+       document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час Закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
+        return;
+    } else {
+        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
 }
 
 // Запускаємо оновлення таймера
