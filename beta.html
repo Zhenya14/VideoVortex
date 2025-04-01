@@ -693,8 +693,9 @@ function deleteAccount() {
                 .then(() => {
                     alert("Акаунт успішно видалено.");
                     location.reload();
+			}
                 })
-		}
+		
                 .catch((error) => {
                     if (error.code === 'auth/requires-recent-login') {
                         alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
