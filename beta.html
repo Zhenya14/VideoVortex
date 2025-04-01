@@ -687,13 +687,14 @@ function deleteAccount() {
 
     if (user) {
         if (confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
-		if(currentUserEmail === videoData.email
-		database.ref(`videos/${videoKey}`).remove().then(() => {
+		if(currentUserEmail === videoData.email) {
+		database.ref(`videos/${videoKey}`).remove()
             user.delete()
                 .then(() => {
                     alert("Акаунт успішно видалено.");
                     location.reload();
                 })
+		}
                 .catch((error) => {
                     if (error.code === 'auth/requires-recent-login') {
                         alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
