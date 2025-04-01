@@ -1237,15 +1237,22 @@ function saveSettings() {
 function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
     const currentHour = new Date().getHours();
-    return (currentHour >= sleepStart || currentHour < sleepEnd);
+
+    // Якщо період сну переходить через північ
+    if (sleepStart > sleepEnd) {
+        return currentHour >= sleepStart || currentHour < sleepEnd;
+    }
+    return currentHour >= sleepStart && currentHour < sleepEnd;
 }
 
-// Оновлення таймера
+// Оновлення таймера + фон
 function updateTimer() {
     if (isSleepTime()) {
-        document.body.style.backgroundColor = "blue";
-        document.body.textContent = `Час спати. Сайт розблокується о ${sleepEnd}:00`;
+        document.body.style.background = "blue";
+        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
         return;
+    } else {
+        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
     }
 
     if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
