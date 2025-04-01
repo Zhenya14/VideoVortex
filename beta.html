@@ -626,9 +626,9 @@ function closeSidebar() {
 
   </script>
     <script>
-	    let maxTimeInMinutes = 45; // Початкове значення максимального часу на день
-        let sleepStart = 21; // Початковий час сну
-        let sleepEnd = 7;   // Початковий час закінчення сну
+	    let maxTimeInMinutes = null; // Початкове значення максимального часу на день
+        let sleepStart = null; // Початковий час сну
+        let sleepEnd = null;   // Початковий час закінчення сну
         let timeLeftInSeconds = maxTimeInMinutes * 60; // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -1249,8 +1249,8 @@ function loadSettings() {
 
             // Якщо зараз час сну
             if (isSleepTime()) {
-                document.getElementById('alert').style.display = 'block';
-                document.body.style.pointerEvents = 'none'; // Блокуємо доступ
+                body.backgroundColor = 'blue';
+                body.innerHTML = 'Час спати. Сайт розблокується о ${sleepEnd} годині; // Блокуємо доступ
                 return; // Не оновлюємо таймер, якщо зараз час сну
             }
 
