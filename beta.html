@@ -1249,8 +1249,8 @@ function loadSettings() {
 
             // Якщо зараз час сну
             if (isSleepTime()) {
-                body.backgroundColor = 'blue';
-                body.innerHTML = 'Час спати. Сайт розблокується о ${sleepEnd} годині'; // Блокуємо доступ
+                document.body.style.backgroundColor = "blue";
+                document.body.innerHTML = 'Час спати. Сайт розблокується о ${sleepEnd} годині'; // Блокуємо доступ
                 return; // Не оновлюємо таймер, якщо зараз час сну
             }
 
