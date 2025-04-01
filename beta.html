@@ -683,32 +683,64 @@ const firebaseConfig = {
             }
         };
 function deleteAccount() {
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
 
     if (user) {
+        // Запит підтвердження перед видаленням акаунту
         if (confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
-		if(currentUserEmail === videoData.email) {
-		database.ref(`videos/${videoKey}`).remove()
-            user.delete()
-                .then(() => {
-                    alert("Акаунт успішно видалено.");
-                    location.reload();
-			}
-                })
-		
-                .catch((error) => {
-                    if (error.code === 'auth/requires-recent-login') {
-                        alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
-                        auth.signOut();
-                    } else {
-                        alert("Сталася помилка при видаленні акаунту: " + error.message);
+            // Спочатку знайдемо всі відео користувача в базі даних
+            const videosRef = firebase.database().ref("videos");
+            videosRef.once("value").then((snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const videoData = childSnapshot.val();
+                    const videoKey = childSnapshot.key;
+
+                    // Якщо відео належить поточному користувачу, видалити його
+                    if (videoData.email === user.email) {
+                        // Видалення відео з бази даних
+                        firebase.database().ref(`videos/${videoKey}`).remove()
+                            .then(() => {
+                                console.log(`Відео ${videoKey} видалено з бази даних`);
+                            })
+                            .catch((error) => {
+                                console.error(`Помилка при видаленні відео ${videoKey}:`, error);
+                            });
+
+                        // Видалення відео з Firebase Storage, якщо відео зберігається там
+                        const storageRef = firebase.storage().ref(`videos/${videoKey}`);
+                        storageRef.delete()
+                            .then(() => {
+                                console.log(`Відео ${videoKey} видалено з Firebase Storage`);
+                            })
+                            .catch((error) => {
+                                console.error(`Помилка при видаленні відео ${videoKey} з Firebase Storage:`, error);
+                            });
                     }
                 });
+
+                // Після видалення відео, видалимо акаунт користувача
+                user.delete()
+                    .then(() => {
+                        alert("Акаунт успішно видалено.");
+                        location.reload(); // Перезавантажити сторінку або перенаправити користувача
+                    })
+                    .catch((error) => {
+                        if (error.code === 'auth/requires-recent-login') {
+                            alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
+                            firebase.auth().signOut();
+                        } else {
+                            alert("Сталася помилка при видаленні акаунту: " + error.message);
+                        }
+                    });
+            }).catch((error) => {
+                console.error("Помилка при отриманні відео користувача:", error);
+            });
         }
     } else {
         alert("Спочатку увійдіть у свій акаунт.");
     }
-        }
+}
+
         function signIn() {
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
