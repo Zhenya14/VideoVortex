@@ -331,7 +331,31 @@ nav {
         z-index: 1000; /* Для того, щоб панель була поверх інших елементів */
     }
 }
-
+#timer {
+            font-size: 20px;
+            color: red;
+        }
+        #alert {
+            display: none;
+            background-color: yellow;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        input[type="number"] {
+            padding: 5px;
+            margin: 10px 0;
+        }
+        .save {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .save:hover {
+            background-color: #45a049;
+        }
         }
  #nsfw-toggle {
         display: none;
@@ -387,7 +411,17 @@ nav {
         <label>
             <input type="checkbox" id="show-nsfw-videos">Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>
         </label>
-
+<h1>Налаштування обмеження екранного часу</h1>
+    <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
+    <input type="number" id="maxTimeInput" value="45" min="1" />
+    <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
+    
+    <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
+    <label for="sleepStart">Час початку сну:</label>
+    <input type="time" id="sleepStart" value="21:00">
+    
+    <label for="sleepEnd">Час закінчення сну:</label>
+    <input type="time" id="sleepEnd" value="07:00">
         </div>
 	<form>
 <div class="register-form" id="register-form">
@@ -456,6 +490,8 @@ nav {
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
 </div>
+	<div id="timer"></div>
+    <div id="alert">Ваш час на сьогодні вичерпано або зараз час сну (21:00 - 07:00). Сторінка недоступна.</div>
     <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
          
@@ -590,6 +626,10 @@ function closeSidebar() {
 
   </script>
     <script>
+	    let maxTimeInMinutes = 45; // Початкове значення максимального часу на день
+        let sleepStart = 21; // Початковий час сну
+        let sleepEnd = 7;   // Початковий час закінчення сну
+        let timeLeftInSeconds = maxTimeInMinutes * 60; // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
 const firebaseConfig = {
@@ -1147,10 +1187,99 @@ function uploadPhoto() {
         alert("Будь ласка, виберіть фото для завантаження.");
     }
 }
+function loadSettings() {
+            const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
+            if (savedMaxTime) {
+                maxTimeInMinutes = parseInt(savedMaxTime);
+                document.getElementById('maxTimeInput').value = maxTimeInMinutes;
+            }
 
+            const savedSleepStart = localStorage.getItem('sleepStart');
+            if (savedSleepStart) {
+                sleepStart = parseInt(savedSleepStart);
+                document.getElementById('sleepStart').value = formatTime(sleepStart);
+            }
+
+            const savedSleepEnd = localStorage.getItem('sleepEnd');
+            if (savedSleepEnd) {
+                sleepEnd = parseInt(savedSleepEnd);
+                document.getElementById('sleepEnd').value = formatTime(sleepEnd);
+            }
+
+            timeLeftInSeconds = maxTimeInMinutes * 60; // Перезавантажуємо час після збереження налаштувань
+            localStorage.setItem('timeLeft', timeLeftInSeconds); // Зберігаємо залишок часу
+        }
+
+        // Функція форматування часу для поля input type="time"
+        function formatTime(hour) {
+            return hour < 10 ? '0' + hour + ':00' : hour + ':00';
+        }
+
+        // Функція збереження налаштувань
+        function saveSettings() {
+            const maxTime = parseInt(document.getElementById('maxTimeInput').value);
+            const sleepStartTime = document.getElementById('sleepStart').value;
+            const sleepEndTime = document.getElementById('sleepEnd').value;
+
+            maxTimeInMinutes = maxTime;
+            sleepStart = parseInt(sleepStartTime.split(':')[0]);
+            sleepEnd = parseInt(sleepEndTime.split(':')[0]);
+
+            localStorage.setItem('maxTimeInMinutes', maxTimeInMinutes);
+            localStorage.setItem('sleepStart', sleepStart);
+            localStorage.setItem('sleepEnd', sleepEnd);
+
+            timeLeftInSeconds = maxTimeInMinutes * 60; // Оновлюємо залишок часу
+            localStorage.setItem('timeLeft', timeLeftInSeconds);
+
+            alert("Налаштування збережено!");
+        }
+
+        // Перевірка часу сну
+        function isSleepTime() {
+            const currentHour = new Date().getHours();
+            return (currentHour >= sleepStart || currentHour < sleepEnd);
+        }
+
+        // Оновлення таймера
+        function updateTimer() {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinutes = currentTime.getMinutes();
+
+            // Якщо зараз час сну
+            if (isSleepTime()) {
+                document.getElementById('alert').style.display = 'block';
+                document.body.style.pointerEvents = 'none'; // Блокуємо доступ
+                return; // Не оновлюємо таймер, якщо зараз час сну
+            }
+
+            // Якщо залишок часу більше 0, оновлюємо таймер
+            if (timeLeftInSeconds > 0) {
+                const minutes = Math.floor(timeLeftInSeconds / 60);
+                const seconds = timeLeftInSeconds % 60;
+                document.getElementById('timer').textContent = `Залишилось часу: ${minutes} хв ${seconds} сек`;
+                timeLeftInSeconds--;
+
+                // Зберігаємо залишок часу в localStorage
+                localStorage.setItem('timeLeft', timeLeftInSeconds);
+            } else {
+                document.getElementById('alert').style.display = 'block';
+                document.body.style.pointerEvents = 'none'; // Блокуємо доступ
+                document.getElementById('timer').textContent = '';
+            }
+        }
+
+        // Оновлюємо таймер кожну секунду
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Завантажуємо налаштування при завантаженні сторінки
+        
 window.onload = function() {
         loadVideos();
-        loadPhotos();// Initial load of videos
+        loadPhotos();
+	loadSettings();
+        updateTimer();// Initial load of videos
     };
     </script>
 </body>                                                          
