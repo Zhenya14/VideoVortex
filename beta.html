@@ -686,7 +686,9 @@ function deleteAccount() {
     const user = auth.currentUser;
 
     if (user) {
-        if (confirm("Ви впевнені, що хочете видалити акаунт? Цю дію не можна скасувати.")) {
+        if (confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
+		if(currentUserEmail === videoData.email
+		database.ref(`videos/${videoKey}`).remove().then(() => {
             user.delete()
                 .then(() => {
                     alert("Акаунт успішно видалено.");
@@ -772,39 +774,62 @@ function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
-    const showNSFW = document.getElementById("show-nsfw-videos").checked;
+    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
 
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
+            // Перевірка на NSFW
             if (videoData.nsfw && !showNSFW) {
-                return;
+                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
             }
 
+            // Перевірка на приватність
             if (videoData.private && videoData.email !== currentUserEmail) {
-                return;
+                return; // Якщо відео приватне, пропускаємо його, якщо це не власник
             }
 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
 
-            if (videoData.nsfw || videoData.password) {
+            // Додаємо розмиття для NSFW відео
+            if (videoData.nsfw) {
+                videoElement.style.filter = 'blur(30px)';
+            }
+            if (videoData.password) {
                 videoElement.style.filter = 'blur(30px)';
             }
 
             videoElement.onclick = () => {
-                if (videoData.password) {
-                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
-                    if (videoData.password !== userPassword) {
-                        alert("Неправильний пароль!");
-                        return;
-                    }
-                }
-                window.location.href = `video.html?key=${videoKey}`;
+		    if (videoData.password) {
+          const userPassword = prompt("Це приватне відео. Введіть пароль:");
+
+          if (videoData.password !== userPassword) {
+            alert("Неправильний пароль!");
+            return;
+          }
+        }
+                const videoParams = new URLSearchParams({
+                    key: videoKey,
+                    url: videoData.url,
+                    title: videoData.title,
+                    author: videoData.author,
+                    publishDate: videoData.publishDate,
+                    description: videoData.description || "Без опису",
+                    views: videoData.views || 0,
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                });
+                window.location.href = `video.html?${videoParams.toString()}`;
             };
+
+            videoElement.addEventListener("play", () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                    .catch(error => console.error("Помилка оновлення переглядів:", error));
+            });
 
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
@@ -816,22 +841,20 @@ function loadVideos() {
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            detailsElement.innerHTML = `<strong>${videoData.title}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            // Додаємо мітки приватного і NSFW відео
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
+            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
-            if (currentUserEmail === videoData.email) {
-                const requestList = document.createElement("div");
-                requestList.classList.add("request-list");
-                requestList.id = `requests-${videoKey}`;
-                infoElement.appendChild(requestList);
-                loadAccessRequests(videoKey);
-            } else if (videoData.password) {
-                const requestButton = document.createElement("button");
-                requestButton.innerText = "Надіслати запит на перегляд";
-                requestButton.style.backgroundColor = "#008CBA";
-                requestButton.style.color = "white";
-                requestButton.style.marginTop = "10px";
-                requestButton.onclick = () => sendAccessRequest(videoKey);
-                infoElement.appendChild(requestButton);
+            // Додаємо кнопку видалення тільки для власника або модератора
+            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Видалити";
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                infoElement.appendChild(deleteButton);
             }
 
             infoElement.appendChild(avatar);
@@ -845,70 +868,6 @@ function loadVideos() {
             videoGallery.appendChild(container);
         });
     });
-}
-
-function sendAccessRequest(videoKey) {
-    const currentUser = firebase.auth().currentUser;
-    if (!currentUser) {
-        alert("Будь ласка, увійдіть в систему для відправлення запиту.");
-        return;
-    }
-    const currentUserEmail = currentUser.email;
-    const videoRef = firebase.database().ref("videos/" + videoKey);
-
-    videoRef.child("requests").push({
-        email: currentUserEmail,
-        status: "pending"
-    }).then(() => {
-        alert("Запит на перегляд відео відправлений власнику.");
-        loadAccessRequests(videoKey);
-    }).catch((error) => {
-        alert("Помилка при відправленні запиту: " + error.message);
-    });
-}
-
-function loadAccessRequests(videoKey) {
-    const requestList = document.getElementById(`requests-${videoKey}`);
-    if (!requestList) return;
-    requestList.innerHTML = "<h4>Запити на перегляд:</h4>";
-    
-    const videoRef = firebase.database().ref("videos/" + videoKey + "/requests");
-    videoRef.on("value", (snapshot) => {
-        requestList.innerHTML = "<h4>Запити на перегляд:</h4>";
-        snapshot.forEach((childSnapshot) => {
-            const request = childSnapshot.val();
-            const requestId = childSnapshot.key;
-            
-            const requestElement = document.createElement("div");
-            requestElement.innerHTML = `<p>${request.email} - ${request.status}</p>`;
-            
-            if (request.status === "pending") {
-                const approveButton = document.createElement("button");
-                approveButton.innerText = "Схвалити";
-                approveButton.onclick = () => approveRequest(videoKey, requestId);
-                
-                const denyButton = document.createElement("button");
-                denyButton.innerText = "Відхилити";
-                denyButton.onclick = () => denyRequest(videoKey, requestId);
-                
-                requestElement.appendChild(approveButton);
-                requestElement.appendChild(denyButton);
-            }
-            requestList.appendChild(requestElement);
-        });
-    });
-}
-
-function approveRequest(videoKey, requestId) {
-    firebase.database().ref(`videos/${videoKey}/requests/${requestId}`).update({ status: "approved" })
-    .then(() => loadAccessRequests(videoKey))
-    .catch(error => alert("Помилка при схваленні запиту: " + error.message));
-}
-
-function denyRequest(videoKey, requestId) {
-    firebase.database().ref(`videos/${videoKey}/requests/${requestId}`).update({ status: "denied" })
-    .then(() => loadAccessRequests(videoKey))
-    .catch(error => alert("Помилка при відхиленні запиту: " + error.message));
 }
 
 
