@@ -1187,6 +1187,7 @@ function uploadPhoto() {
     }
 }
 // Завантаження налаштувань
+// Завантаження налаштувань
 function loadSettings() {
     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
     maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
@@ -1200,15 +1201,18 @@ function loadSettings() {
     sleepEnd = savedSleepEnd ? parseInt(savedSleepEnd) : null;
     document.getElementById('sleepEnd').value = sleepEnd !== null ? formatTime(sleepEnd) : '';
 
-    // Завантаження залишку часу та скидання після 00:00
+    // Завантаження залишку часу
+    const savedTimeLeft = localStorage.getItem('timeLeft');
+    timeLeftInSeconds = savedTimeLeft ? parseInt(savedTimeLeft) : (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
+
+    // Скидання таймера після 00:00
     const savedDate = localStorage.getItem('lastUsedDate');
     const currentDate = new Date().toDateString();
 
     if (savedDate !== currentDate) {
         localStorage.setItem('lastUsedDate', currentDate);
         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-    } else {
-        timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
+        localStorage.setItem('timeLeft', timeLeftInSeconds);
     }
 }
 
@@ -1231,9 +1235,11 @@ function saveSettings() {
     localStorage.setItem('sleepStart', sleepStart ?? '');
     localStorage.setItem('sleepEnd', sleepEnd ?? '');
 
-    timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-    if (timeLeftInSeconds !== null) {
-        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    if (timeLeftInSeconds === null) {
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+        if (timeLeftInSeconds !== null) {
+            localStorage.setItem('timeLeft', timeLeftInSeconds);
+        }
     }
 
     alert("Налаштування збережено!");
@@ -1244,9 +1250,11 @@ function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
     const currentHour = new Date().getHours();
 
-    return (sleepStart < sleepEnd) ? 
-        (currentHour >= sleepStart && currentHour < sleepEnd) : 
-        (currentHour >= sleepStart || currentHour < sleepEnd);
+    if (sleepStart < sleepEnd) {
+        return currentHour >= sleepStart && currentHour < sleepEnd;
+    } else {
+        return currentHour >= sleepStart || currentHour < sleepEnd;
+    }
 }
 
 // Оновлення таймера та фону
@@ -1266,12 +1274,10 @@ function updateTimer() {
         timeLeftInSeconds--;
         localStorage.setItem('timeLeft', timeLeftInSeconds);
     } else if (timeLeftInSeconds !== null) {
-	    document.body.style.background = "mediumseagreen";
-       document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час Закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
+        document.body.style.background = "mediumseagreen";
+        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
         return;
-    } else {
-        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
-}
+    }
 
     // Скидання таймера після 00:00
     const currentDate = new Date().toDateString();
@@ -1284,6 +1290,7 @@ function updateTimer() {
 
 // Запуск таймера
 setInterval(updateTimer, 1000);
+
 
 
 
