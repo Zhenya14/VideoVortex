@@ -870,6 +870,7 @@ function loadVideos() {
             }
             const Comment = document.createElement("div");
 		Comment.classList.add("video-comment");
+		Comment.innerHTML = '<h3>Коментарі:</h3>'
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
