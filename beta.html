@@ -1186,6 +1186,7 @@ function uploadPhoto() {
         alert("Будь ласка, виберіть фото для завантаження.");
     }
 }
+// Завантаження налаштувань
 function loadSettings() {
     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
     maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
@@ -1199,18 +1200,24 @@ function loadSettings() {
     sleepEnd = savedSleepEnd ? parseInt(savedSleepEnd) : null;
     document.getElementById('sleepEnd').value = sleepEnd !== null ? formatTime(sleepEnd) : '';
 
-    timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-    if (timeLeftInSeconds !== null) {
-        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    // Завантаження залишку часу та скидання після 00:00
+    const savedDate = localStorage.getItem('lastUsedDate');
+    const currentDate = new Date().toDateString();
+
+    if (savedDate !== currentDate) {
+        localStorage.setItem('lastUsedDate', currentDate);
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+    } else {
+        timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
     }
 }
 
-// Функція форматування часу для input type="time"
+// Форматування часу для input type="time"
 function formatTime(hour) {
     return hour !== null ? (hour < 10 ? '0' + hour + ':00' : hour + ':00') : '';
 }
 
-// Функція збереження налаштувань
+// Збереження налаштувань
 function saveSettings() {
     const maxTime = parseInt(document.getElementById('maxTimeInput').value);
     const sleepStartTime = document.getElementById('sleepStart').value;
@@ -1237,14 +1244,12 @@ function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
     const currentHour = new Date().getHours();
 
-    // Якщо період сну переходить через північ
-    if (sleepStart > sleepEnd) {
-        return currentHour >= sleepStart || currentHour < sleepEnd;
-    }
-    return currentHour >= sleepStart && currentHour < sleepEnd;
+    return (sleepStart < sleepEnd) ? 
+        (currentHour >= sleepStart && currentHour < sleepEnd) : 
+        (currentHour >= sleepStart || currentHour < sleepEnd);
 }
 
-// Оновлення таймера + фон
+// Оновлення таймера та фону
 function updateTimer() {
     if (isSleepTime()) {
         document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
@@ -1267,9 +1272,19 @@ function updateTimer() {
     } else {
         document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
 }
-	    }
-// Запускаємо оновлення таймера
+
+    // Скидання таймера після 00:00
+    const currentDate = new Date().toDateString();
+    if (localStorage.getItem('lastUsedDate') !== currentDate) {
+        localStorage.setItem('lastUsedDate', currentDate);
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    }
+}
+
+// Запуск таймера
 setInterval(updateTimer, 1000);
+
 
 
         // Завантажуємо налаштування при завантаженні сторінки
