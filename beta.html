@@ -1250,12 +1250,16 @@ function saveSettings() {
 function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
 
+    // Переконуємося, що значення у форматі "HH:MM"
+    const sleepStartTime = sleepStart.toString().padStart(2, '0') + ':00';
+    const sleepEndTime = sleepEnd.toString().padStart(2, '0') + ':00';
+
     const currentTime = new Date();
     const currentHours = currentTime.getHours();
     const currentMinutes = currentTime.getMinutes();
 
-    const [sleepStartHour, sleepStartMinute] = sleepStart.split(':').map(num => parseInt(num));
-    const [sleepEndHour, sleepEndMinute] = sleepEnd.split(':').map(num => parseInt(num));
+    const [sleepStartHour, sleepStartMinute] = sleepStartTime.split(':').map(num => parseInt(num));
+    const [sleepEndHour, sleepEndMinute] = sleepEndTime.split(':').map(num => parseInt(num));
 
     const currentTotalMinutes = currentHours * 60 + currentMinutes;
     const sleepStartTotalMinutes = sleepStartHour * 60 + sleepStartMinute;
@@ -1267,6 +1271,7 @@ function isSleepTime() {
         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
     }
 }
+
 
 
 // Оновлення таймера та фону
