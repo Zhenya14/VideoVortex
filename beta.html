@@ -1250,24 +1250,16 @@ function saveSettings() {
 function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
 
-    // Переконуємося, що значення у форматі "HH:MM"
-    const sleepStartTime = sleepStart.toString().padStart(2, '0') + ':00';
-    const sleepEndTime = sleepEnd.toString().padStart(2, '0') + ':00';
-
     const currentTime = new Date();
-    const currentHours = currentTime.getHours();
-    const currentMinutes = currentTime.getMinutes();
+    const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+    const sleepStartTotalMinutes = sleepStart * 60;
+    const sleepEndTotalMinutes = sleepEnd * 60;
 
-    const [sleepStartHour, sleepStartMinute] = sleepStartTime.split(':').map(num => parseInt(num));
-    const [sleepEndHour, sleepEndMinute] = sleepEndTime.split(':').map(num => parseInt(num));
-
-    const currentTotalMinutes = currentHours * 60 + currentMinutes;
-    const sleepStartTotalMinutes = sleepStartHour * 60 + sleepStartMinute;
-    const sleepEndTotalMinutes = sleepEndHour * 60 + sleepEndMinute;
-
-    if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
+    if (sleepStart < sleepEnd) {
+        // Якщо час сну в межах одного дня (наприклад, 22:00 - 07:00)
         return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
     } else {
+        // Якщо час сну перетинає північ (наприклад, 23:00 - 06:00)
         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
     }
 }
