@@ -1246,20 +1246,23 @@ function saveSettings() {
 }
 
 // Перевірка часу сну
-// Перевірка часу сну з урахуванням хвилин
 function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
 
     const currentTime = new Date();
     const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-    const sleepStartTotalMinutes = sleepStart * 60;
-    const sleepEndTotalMinutes = sleepEnd * 60;
 
-    if (sleepStart < sleepEnd) {
-        // Якщо час сну в межах одного дня (наприклад, 22:00 - 07:00)
+    const sleepStartParts = sleepStart.split(':');
+    const sleepEndParts = sleepEnd.split(':');
+
+    const sleepStartTotalMinutes = parseInt(sleepStartParts[0]) * 60 + parseInt(sleepStartParts[1]);
+    const sleepEndTotalMinutes = parseInt(sleepEndParts[0]) * 60 + parseInt(sleepEndParts[1]);
+
+    if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
+        // Якщо час сну в межах одного дня (наприклад, 22:30 - 07:15)
         return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
     } else {
-        // Якщо час сну перетинає північ (наприклад, 23:00 - 06:00)
+        // Якщо час сну перетинає північ (наприклад, 23:30 - 06:45)
         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
     }
 }
