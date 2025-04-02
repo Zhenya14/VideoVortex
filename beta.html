@@ -142,6 +142,10 @@ height: 10px;
             color: #b0bec5; 
             padding: 5px;
         }
+	    .video-comment { 
+            background-color: blue; 
+            padding: 5px;
+        }
         .photo-container {
             display: flex;
             margin-top: 20px;
@@ -864,6 +868,7 @@ function loadVideos() {
                 return; // Якщо відео приватне, пропускаємо його, якщо це не власник
             }
             const Comment = document.createElement("div");
+		Comment.classList.add("video-comment");
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
