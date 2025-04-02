@@ -863,7 +863,7 @@ function loadVideos() {
             if (videoData.private && videoData.email !== currentUserEmail) {
                 return; // Якщо відео приватне, пропускаємо його, якщо це не власник
             }
-
+            const Comment = document.createElement("div");
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
@@ -936,6 +936,7 @@ function loadVideos() {
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
+	    container.appendChild(Comment);
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
