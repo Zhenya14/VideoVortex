@@ -1194,27 +1194,25 @@ function loadSettings() {
     document.getElementById('maxTimeInput').value = maxTimeInMinutes ?? '';
 
     const savedSleepStart = localStorage.getItem('sleepStart');
-    sleepStart = savedSleepStart ? parseInt(savedSleepStart) : null;
-    document.getElementById('sleepStart').value = sleepStart !== null ? formatTime(sleepStart) : '';
+    sleepStart = savedSleepStart ? savedSleepStart : null;
+    document.getElementById('sleepStart').value = sleepStart ?? '';
 
     const savedSleepEnd = localStorage.getItem('sleepEnd');
-    sleepEnd = savedSleepEnd ? parseInt(savedSleepEnd) : null;
-    document.getElementById('sleepEnd').value = sleepEnd !== null ? formatTime(sleepEnd) : '';
+    sleepEnd = savedSleepEnd ? savedSleepEnd : null;
+    document.getElementById('sleepEnd').value = sleepEnd ?? '';
 
     // Завантаження залишку часу
-    const savedTimeLeft = localStorage.getItem('timeLeft');
-    timeLeftInSeconds = savedTimeLeft ? parseInt(savedTimeLeft) : (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
-
-    // Скидання таймера після 00:00
     const savedDate = localStorage.getItem('lastUsedDate');
     const currentDate = new Date().toDateString();
 
     if (savedDate !== currentDate) {
         localStorage.setItem('lastUsedDate', currentDate);
         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    } else {
+        timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
     }
 }
+
 
 // Форматування часу для input type="time"
 function formatTime(hour) {
@@ -1247,7 +1245,7 @@ function saveSettings() {
 
 // Перевірка часу сну
 function isSleepTime() {
-    if (sleepStart === null || sleepEnd === null) return false;
+    if (!sleepStart || !sleepEnd) return false; // Якщо sleepStart або sleepEnd порожні — повертаємо false
 
     const currentTime = new Date();
     const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
@@ -1255,14 +1253,14 @@ function isSleepTime() {
     const sleepStartParts = sleepStart.split(':');
     const sleepEndParts = sleepEnd.split(':');
 
+    if (sleepStartParts.length < 2 || sleepEndParts.length < 2) return false; // Додатковий захист
+
     const sleepStartTotalMinutes = parseInt(sleepStartParts[0]) * 60 + parseInt(sleepStartParts[1]);
     const sleepEndTotalMinutes = parseInt(sleepEndParts[0]) * 60 + parseInt(sleepEndParts[1]);
 
     if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
-        // Якщо час сну в межах одного дня (наприклад, 22:30 - 07:15)
         return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
     } else {
-        // Якщо час сну перетинає північ (наприклад, 23:30 - 06:45)
         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
     }
 }
