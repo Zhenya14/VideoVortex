@@ -1246,16 +1246,28 @@ function saveSettings() {
 }
 
 // Перевірка часу сну
+// Перевірка часу сну з урахуванням хвилин
 function isSleepTime() {
     if (sleepStart === null || sleepEnd === null) return false;
-    const currentHour = new Date().getHours();
 
-    if (sleepStart < sleepEnd) {
-        return currentHour >= sleepStart && currentHour < sleepEnd;
+    const currentTime = new Date();
+    const currentHours = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
+    const [sleepStartHour, sleepStartMinute] = sleepStart.split(':').map(num => parseInt(num));
+    const [sleepEndHour, sleepEndMinute] = sleepEnd.split(':').map(num => parseInt(num));
+
+    const currentTotalMinutes = currentHours * 60 + currentMinutes;
+    const sleepStartTotalMinutes = sleepStartHour * 60 + sleepStartMinute;
+    const sleepEndTotalMinutes = sleepEndHour * 60 + sleepEndMinute;
+
+    if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
+        return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
     } else {
-        return currentHour >= sleepStart || currentHour < sleepEnd;
+        return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
     }
 }
+
 
 // Оновлення таймера та фону
 function updateTimer() {
