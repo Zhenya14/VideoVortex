@@ -39,7 +39,7 @@
     width: 50px;
     border-radius: 80px;
         }
-        body { 
+/*         body { 
             font-family: Arial, sans-serif; 
             background: linear-gradient(to bottom right, #0d324d, #7f5a83);
             color: #ffffff; 
@@ -50,7 +50,45 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-        }
+        } */
+	    #easter-decor {
+    font-size: 2rem;
+    padding: 10px;
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+.easter-banner {
+    background: #fff8e1;
+    color: #4e342e;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px auto;
+    max-width: 600px;
+    font-family: 'Comic Sans MS', cursive;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.easter-egg {
+    position: fixed;
+    top: -10px;
+    z-index: 9999;
+    animation: fallEgg linear infinite;
+    pointer-events: none;
+}
+
+@keyframes fallEgg {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+	    body {
+    background: linear-gradient(to right, #ffecd2, #fcb69f);
+}
         .container { 
             max-width: 800px; 
             margin: 0 auto; 
@@ -348,6 +386,10 @@ nav {
 </a>
             <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+		<div class="easter-banner">
+    <h2>🌸 Христос Воскрес! 🌸</h2>
+    <p>Нехай світло Великодня наповнить ваш дім миром, любов’ю та добром 💛</p>
+</div>
         </div>
         <div style="display: flex; gap: 15px; margin-left: auto;">
             <a href="#" id="upload-link" style="display: none;">
@@ -464,6 +506,9 @@ nav {
         <div class="photo-container" id="photo-gallery"></div>
          
     </div>
+	<div id="easter-decor">
+    🐇🌸🧳🌷🐣🌼
+</div>
 <!-- <script>
     // Генерація сніжинок
     function createSnowflake() {
@@ -484,6 +529,19 @@ nav {
     // Додавання сніжинок кожні 100 мс
     setInterval(createSnowflake, 100);
 </script> -->
+	<script>
+function createEasterEgg() {
+    const egg = document.createElement('div');
+    egg.classList.add('easter-egg');
+    egg.textContent = '🥚';
+    egg.style.left = Math.random() * 100 + 'vw';
+    egg.style.animationDuration = Math.random() * 3 + 3 + 's';
+    egg.style.fontSize = Math.random() * 10 + 20 + 'px';
+    document.body.appendChild(egg);
+    setTimeout(() => egg.remove(), 5000);
+}
+setInterval(createEasterEgg, 300);
+</script>
     <script>
     function checkBrowserSupport() {
         const ua = navigator.userAgent;
