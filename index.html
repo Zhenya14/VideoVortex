@@ -974,7 +974,7 @@ function uploadVideo() {
                 progressContainer.style.display = "block";
             }, 
             (error) => {
-                alert("Сталася помилка при завантаженні відео."+ error.authorization);
+                alert("Сталася помилка при завантаженні відео."+ error.not_authorization);
             }, 
             () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
