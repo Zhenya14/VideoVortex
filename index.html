@@ -974,7 +974,7 @@ function uploadVideo() {
                 progressContainer.style.display = "block";
             }, 
             (error) => {
-                alert("Сталася помилка при завантаженні відео."+ error.not_authorization);
+                alert("Сталася помилка при завантаженні відео. USER_NOT_AUTHORIZATION");
             }, 
             () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
@@ -1140,7 +1140,7 @@ function uploadPhoto() {
                 progressContainer.style.display = "block";
             }, 
             (error) => {
-                alert("Сталася помилка при завантаженні фото." + error.authorization);
+                alert("Сталася помилка при завантаженні фото. USER_NOT_AUTHORIZATION");
             }, 
             () => {
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
