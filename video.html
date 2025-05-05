@@ -324,7 +324,7 @@ nav {
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 });
 	    function checkPassword() {
-	    if (password) {
+	    if (videoData.password) {
 		    document.getElementById("video-container").style.display = 'none';
 		    document.getElementById("video-password").style.display = 'block';
                     } else {
