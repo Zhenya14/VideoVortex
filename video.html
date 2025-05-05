@@ -296,7 +296,6 @@ nav {
         const videoKey = urlParams.get("key");
         const videoUrl = urlParams.get("url");
         const title = urlParams.get("title");
-	const password = urlParams.get("password");
         const author = urlParams.get("author");
         const publishDate = urlParams.get("publishDate");
         const description = urlParams.get("description");
@@ -323,15 +322,6 @@ nav {
                	        database.ref("videos/" + videoKey).update({ views: newViewCount })
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 });
-	    function checkPassword() {
-	    if (videoData.password) {
-		    document.getElementById("video-container").style.display = 'none';
-		    document.getElementById("video-password").style.display = 'block';
-                    } else {
-		    document.getElementById("video-container").style.display = 'block';
-		    document.getElementById("video-password").style.display = 'none';
-                }
-	    }
     </script>
 </body>
 </html>
