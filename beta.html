@@ -41,7 +41,7 @@
         }
         body { 
             font-family: Arial, sans-serif; 
-            background: linear-gradient(to right, #ff7e5f, #feb47b)
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
             color: #ffffff; 
             text-align: center; 
             padding: 20px; 
@@ -143,6 +143,7 @@ height: 10px;
             padding: 5px;
         }
 	    .video-comment { 
+            display: inline-table;
 		        height: 300px;
             background-color: blue; 
             padding: 5px;
@@ -160,6 +161,43 @@ img.photo-item {
     border-radius: 8px; /* Округлення кутів зображення */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
     }
+    .comment-section {
+    display: flex;
+    align-items: center;  /* Вирівнює елементи по вертикалі */
+    padding-left: 50px;  /* Розташовує елементи з рівними відстанями */
+    width: 100%;
+    margin-top: 10px;
+}
+
+.comment-input {
+    width: 80%;  /* Ширина поля вводу */
+    padding: 10px;
+    margin-right: 10px;  /* Відступ між полем вводу та кнопкою */
+    background-color: #fff;
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+    color: #333;
+    box-sizing: border-box;  /* Враховує padding в ширину */
+}
+
+.comment-button {
+    width: 50px;
+    height: 40px;  /* Встановлюємо висоту кнопки */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-button:hover {
+    background-color: #0056b3;
+}
+
+.comment-button:hover {
+    background-color: #0056b3;
+}
+
         .photo-info { 
             text-align: left; 
             color: #b0bec5; 
@@ -209,6 +247,9 @@ img.photo-item {
   position: absolute;
   height: 100%;
   width: 240px;
+}
+.comments {
+    text-align: left;
 }
 .menu {
     position: fixed;
@@ -848,50 +889,49 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-function loadVideos() {
+    function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
-    const showNSFW = document.getElementById("show-nsfw-videos").checked; // Перевірка стану чекбоксу
+    const showNSFW = document.getElementById("show-nsfw-videos").checked;
 
     database.ref("videos").once("value").then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // Перевірка на NSFW
-            if (videoData.nsfw && !showNSFW) {
-                return; // Якщо відео NSFW, але не увімкнений параметр - пропускаємо його
-            }
+            if (videoData.nsfw && !showNSFW) return;
+            if (videoData.private && videoData.email !== currentUserEmail) return;
 
-            // Перевірка на приватність
-            if (videoData.private && videoData.email !== currentUserEmail) {
-                return; // Якщо відео приватне, пропускаємо його, якщо це не власник
-            }
-            const Comment = document.createElement("div");
-		Comment.classList.add("video-comment");
-		Comment.innerHTML = '<h3 style="color: white; text-align: left;">Коментарі:</h3><div class="comments"></div><input type="text" class="comment">'
+            const commentSection = document.createElement("div");
+            commentSection.classList.add("video-comment");
+            commentSection.innerHTML = `
+            <form>
+                <h3 style="color: white; text-align: left;">Коментарі:</h3>
+                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+                <div class="comment-section">
+                <input type="text" id="comment-input-${videoKey}" class="comment-input" style="width: 80%; padding-top: 19px;" placeholder="Ваш коментар">
+                <button class="comment-button" style="width: 50px; height: 50px;" onclick="uploadComment('${videoKey}')"><i class="material-icons">send</i></button>
+                </div>
+                </form>
+                `;
+
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
 
-            // Додаємо розмиття для NSFW відео
-            if (videoData.nsfw) {
-                videoElement.style.filter = 'blur(30px)';
-            }
-            if (videoData.password) {
+            if (videoData.nsfw || videoData.password) {
                 videoElement.style.filter = 'blur(30px)';
             }
 
             videoElement.onclick = () => {
-		    if (videoData.password) {
-          const userPassword = prompt("Це приватне відео. Введіть пароль:");
-
-          if (videoData.password !== userPassword) {
-            alert("Неправильний пароль!");
-            return;
-          }
-        }
+                if (videoData.password) {
+                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
+                    if (videoData.password !== userPassword) {
+                        alert("Неправильний пароль!");
+                        return;
+                    }
+                }
                 const videoParams = new URLSearchParams({
                     key: videoKey,
                     url: videoData.url,
@@ -905,12 +945,6 @@ function loadVideos() {
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
-            videoElement.addEventListener("play", () => {
-                const newViewCount = (videoData.views || 0) + 1;
-                database.ref("videos/" + videoKey).update({ views: newViewCount })
-                    .catch(error => console.error("Помилка оновлення переглядів:", error));
-            });
-
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
@@ -921,12 +955,10 @@ function loadVideos() {
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            // Додаємо мітки приватного і NSFW відео
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? " <span id='NSFW' style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонімний користувач"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
+            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонім"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
 
-            // Додаємо кнопку видалення тільки для власника або модератора
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
@@ -943,15 +975,16 @@ function loadVideos() {
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
-	    container.appendChild(Comment);
+            container.appendChild(commentSection);
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
+
+            // Завантажити коментарі для кожного відео
+            loadComments(videoKey);
         });
     });
 }
-
-
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
         // Видалення файлу зі сховища
@@ -1032,6 +1065,62 @@ function uploadVideo() {
         alert("Будь ласка, виберіть відео для завантаження.");
     }
 }
+
+function uploadComment(videoKey) {
+    const commentInput = document.getElementById(`comment-input-${videoKey}`);
+    const commentText = commentInput.value.trim();
+
+    if (commentText === "") {
+        alert("Коментар не може бути порожнім.");
+        return;
+    }
+
+    // Відправка коментаря в базу даних
+    database.ref("comments").push({
+        comment: commentText,
+        email: currentUserEmail,
+        publishDate: new Date().toLocaleDateString(),
+        videoKey: videoKey  // Додаємо videoKey для зв'язку з відео
+    }).then(() => {
+        // Очищаємо поле для вводу коментаря
+        commentInput.value = "";
+        // Перезавантажуємо коментарі для цього відео
+        loadComments(videoKey);
+    }).catch(error => {
+        alert("Помилка при публікації коментаря: " + error.message);
+    });
+}
+
+
+
+
+function loadComments(videoKey) {
+    const commentsContainer = document.getElementById(`comments-${videoKey}`);
+    if (!commentsContainer) {
+        console.error("Comments container not found for video: ", videoKey);
+        return;
+    }
+    commentsContainer.innerHTML = "";
+
+    database.ref("comments").orderByChild("videoKey").equalTo(videoKey).once("value").then(snapshot => {
+        if (!snapshot.exists()) {
+            // Якщо немає коментарів, додаємо повідомлення
+            commentsContainer.innerHTML = `<p style="text-align: center;">Ще немає коментарів...</p>`;
+            return;
+        }
+        
+        snapshot.forEach(childSnapshot => {
+            const data = childSnapshot.val();
+            const commentDiv = document.createElement("div");
+            commentDiv.className = "comments";
+            commentDiv.innerHTML = `<strong>${data.email}</strong>: ${data.comment} <br> <small>${data.publishDate}</small>`;
+            commentsContainer.appendChild(commentDiv);
+        });
+    }).catch(error => console.error("Помилка завантаження коментарів: ", error));
+
+}
+
+
 
 
 
@@ -1196,118 +1285,116 @@ function uploadPhoto() {
 }
 // Завантаження налаштувань
 // Завантаження налаштувань
-function loadSettings() {
-    const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
-    maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
-    document.getElementById('maxTimeInput').value = maxTimeInMinutes ?? '';
+// function loadSettings() {
+//     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
+//     maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
+//     document.getElementById('maxTimeInput').value = maxTimeInMinutes ?? '';
 
-    const savedSleepStart = localStorage.getItem('sleepStart');
-    sleepStart = savedSleepStart ? savedSleepStart : null;
-    document.getElementById('sleepStart').value = sleepStart ?? '';
+//     const savedSleepStart = localStorage.getItem('sleepStart');
+//     sleepStart = savedSleepStart ? savedSleepStart : null;
+//     document.getElementById('sleepStart').value = sleepStart ?? '';
 
-    const savedSleepEnd = localStorage.getItem('sleepEnd');
-    sleepEnd = savedSleepEnd ? savedSleepEnd : null;
-    document.getElementById('sleepEnd').value = sleepEnd ?? '';
+//     const savedSleepEnd = localStorage.getItem('sleepEnd');
+//     sleepEnd = savedSleepEnd ? savedSleepEnd : null;
+//     document.getElementById('sleepEnd').value = sleepEnd ?? '';
 
-    // Завантаження залишку часу
-    const savedDate = localStorage.getItem('lastUsedDate');
-    const currentDate = new Date().toDateString();
+//     // Завантаження залишку часу
+//     const savedDate = localStorage.getItem('lastUsedDate');
+//     const currentDate = new Date().toDateString();
 
-    if (savedDate !== currentDate) {
-        localStorage.setItem('lastUsedDate', currentDate);
-        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-    } else {
-        timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
-    }
-}
+//     if (savedDate !== currentDate) {
+//         localStorage.setItem('lastUsedDate', currentDate);
+//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+//     } else {
+//         timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
+//     }
+// }
 
 
-// Форматування часу для input type="time"
-function formatTime(hour) {
-    return hour !== null ? (hour < 10 ? '0' + hour + ':00' : hour + ':00') : '';
-}
+// // Форматування часу для input type="time"
+// function formatTime(hour) {
+//     return hour !== null ? (hour < 10 ? '0' + hour + ':00' : hour + ':00') : '';
+// }
 
-// Збереження налаштувань
-function saveSettings() {
-    const maxTime = parseInt(document.getElementById('maxTimeInput').value);
-    const sleepStartTime = document.getElementById('sleepStart').value;
-    const sleepEndTime = document.getElementById('sleepEnd').value;
+// // Збереження налаштувань
+// function saveSettings() {
+//     const maxTime = parseInt(document.getElementById('maxTimeInput').value);
+//     const sleepStartTime = document.getElementById('sleepStart').value;
+//     const sleepEndTime = document.getElementById('sleepEnd').value;
 
-    maxTimeInMinutes = isNaN(maxTime) ? null : maxTime;
-    sleepStart = sleepStartTime ? parseInt(sleepStartTime.split(':')[0]) : null;
-    sleepEnd = sleepEndTime ? parseInt(sleepEndTime.split(':')[0]) : null;
+//     maxTimeInMinutes = isNaN(maxTime) ? null : maxTime;
+//     sleepStart = sleepStartTime ? parseInt(sleepStartTime.split(':')[0]) : null;
+//     sleepEnd = sleepEndTime ? parseInt(sleepEndTime.split(':')[0]) : null;
 
-    localStorage.setItem('maxTimeInMinutes', maxTimeInMinutes ?? '');
-    localStorage.setItem('sleepStart', sleepStart ?? '');
-    localStorage.setItem('sleepEnd', sleepEnd ?? '');
+//     localStorage.setItem('maxTimeInMinutes', maxTimeInMinutes ?? '');
+//     localStorage.setItem('sleepStart', sleepStart ?? '');
+//     localStorage.setItem('sleepEnd', sleepEnd ?? '');
 
-    if (timeLeftInSeconds === null) {
-        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-        if (timeLeftInSeconds !== null) {
-            localStorage.setItem('timeLeft', timeLeftInSeconds);
-        }
-    }
+//     if (timeLeftInSeconds === null) {
+//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+//         if (timeLeftInSeconds !== null) {
+//             localStorage.setItem('timeLeft', timeLeftInSeconds);
+//         }
+//     }
+// }
 
-    alert("Налаштування збережено!");
-}
+// // Перевірка часу сну
+// function isSleepTime() {
+//     if (!sleepStart || !sleepEnd) return false; // Якщо sleepStart або sleepEnd порожні — повертаємо false
 
-// Перевірка часу сну
-function isSleepTime() {
-    if (!sleepStart || !sleepEnd) return false; // Якщо sleepStart або sleepEnd порожні — повертаємо false
+//     const currentTime = new Date();
+//     const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
-    const currentTime = new Date();
-    const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+//     const sleepStartParts = sleepStart.split(':');
+//     const sleepEndParts = sleepEnd.split(':');
 
-    const sleepStartParts = sleepStart.split(':');
-    const sleepEndParts = sleepEnd.split(':');
+//     if (sleepStartParts.length < 2 || sleepEndParts.length < 2) return false; // Додатковий захист
 
-    if (sleepStartParts.length < 2 || sleepEndParts.length < 2) return false; // Додатковий захист
+//     const sleepStartTotalMinutes = parseInt(sleepStartParts[0]) * 60 + parseInt(sleepStartParts[1]);
+//     const sleepEndTotalMinutes = parseInt(sleepEndParts[0]) * 60 + parseInt(sleepEndParts[1]);
 
-    const sleepStartTotalMinutes = parseInt(sleepStartParts[0]) * 60 + parseInt(sleepStartParts[1]);
-    const sleepEndTotalMinutes = parseInt(sleepEndParts[0]) * 60 + parseInt(sleepEndParts[1]);
-
-    if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
-        return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
-    } else {
-        return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
-    }
-}
+//     if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
+//         return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
+//     } else {
+//         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
+//     }
+// }
 
 
 
-// Оновлення таймера та фону
-function updateTimer() {
-    if (isSleepTime()) {
-        document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
-        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
-        return;
-    } else {
-        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
-    }
+// // Оновлення таймера та фону
+// function updateTimer() {
+//     if (isSleepTime()) {
+//         document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
+//         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
+//         return;
+//     } else {
+//         document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
+//     }
 
-    if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
-        const minutes = Math.floor(timeLeftInSeconds / 60);
-        const seconds = timeLeftInSeconds % 60;
-        document.getElementById('timer').textContent = `Залишилось часу: ${minutes} хв ${seconds} сек`;
-        timeLeftInSeconds--;
-        localStorage.setItem('timeLeft', timeLeftInSeconds);
-    } else if (timeLeftInSeconds !== null) {
-        document.body.style.background = "mediumseagreen";
-        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
-        return;
-    }
+//     if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
+//         const minutes = Math.floor(timeLeftInSeconds / 60);
+//         const seconds = timeLeftInSeconds % 60;
+//         document.getElementById('timer').textContent = `Залишилось часу: ${minutes} хв ${seconds} сек`;
+//         timeLeftInSeconds--;
+//         localStorage.setItem('timeLeft', timeLeftInSeconds);
+//     } else if (timeLeftInSeconds !== null) {
+//         document.body.style.background = "mediumseagreen";
+//         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
+//         return;
+//     }
 
-    // Скидання таймера після 00:00
-    const currentDate = new Date().toDateString();
-    if (localStorage.getItem('lastUsedDate') !== currentDate) {
-        localStorage.setItem('lastUsedDate', currentDate);
-        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-        localStorage.setItem('timeLeft', timeLeftInSeconds);
-    }
-}
+//     // Скидання таймера після 00:00
+//     const currentDate = new Date().toDateString();
+//     if (localStorage.getItem('lastUsedDate') !== currentDate) {
+//         localStorage.setItem('lastUsedDate', currentDate);
+//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+//         localStorage.setItem('timeLeft', timeLeftInSeconds);
+//     }
+// }
 
-// Запуск таймера
-setInterval(updateTimer, 1000);
+// // Запуск таймера
+// setInterval(updateTimer, 1000);
 
 
 
@@ -1317,8 +1404,10 @@ setInterval(updateTimer, 1000);
 window.onload = function() {
         loadVideos();
         loadPhotos();
-	loadSettings();
-        updateTimer();// Initial load of videos
+        const commentsContainer = document.getElementById('comments');
+  if (commentsContainer) {
+    loadComments();
+  }
     };
     </script>
 </body>                                                          
