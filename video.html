@@ -379,6 +379,7 @@ nav {
         const videoKey = urlParams.get("key");
         const videoUrl = urlParams.get("url");
         const title = urlParams.get("title");
+	const password = urlParams.get("password");
         const author = urlParams.get("author");
         const publishDate = urlParams.get("publishDate");
         const description = urlParams.get("description");
@@ -405,6 +406,13 @@ nav {
                	        database.ref("videos/" + videoKey).update({ views: newViewCount })
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 });
+	    if (videoData.password) {
+                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
+                    if (videoData.password !== userPassword) {
+                        alert("Неправильний пароль!");
+                        return;
+                    }
+                }
     </script>
 </body>
 </html>
