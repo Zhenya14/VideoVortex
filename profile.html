@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Профіль користувача</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .avatar {
+      background: #6c63ff;
+      color: white;
+      width: 70px;
+      height: 70px;
+      font-size: 28px;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+    .posts .post {
+      background: white;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      border-left: 4px solid #6c63ff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-header">
+    <div class="avatar" id="avatar">?</div>
+    <div>
+      <h2 id="userName">Завантаження...</h2>
+      <div id="joinDate"></div>
+    </div>
+  </div>
+
+  <div class="posts">
+    <h3>Публікації</h3>
+    <div id="postList"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_MSG_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const uid = user.uid;
+        const userDoc = await getDoc(doc(db, "users", uid));
+
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          const initials = data.fullName.split(" ").map(w => w[0]).join("").toUpperCase();
+
+          document.getElementById("avatar").textContent = initials;
+          document.getElementById("userName").textContent = data.fullName;
+          document.getElementById("joinDate").textContent =
+            "Приєднався: " + new Date(data.joined).toLocaleDateString("uk-UA");
+
+          const postList = document.getElementById("postList");
+          data.posts.forEach(post => {
+            const div = document.createElement("div");
+            div.className = "post";
+            div.textContent = post;
+            postList.appendChild(div);
+          });
+        } else {
+          document.getElementById("userName").textContent = "Профіль не знайдено";
+        }
+      } else {
+        document.getElementById("userName").textContent = "Користувач не увійшов";
+      }
+    });
+  </script>
+</body>
+</html>
