@@ -277,6 +277,10 @@ nav {
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
         </div>
     </nav>
+<div id="video-password">
+        <input type="password" placeholder="Введіть пароль">
+	<button onclick="checkPassword()">Перевірити</button>
+</div>
 
     <div id="video-container">
         <video id="video-player" controls></video>
@@ -319,13 +323,15 @@ nav {
                	        database.ref("videos/" + videoKey).update({ views: newViewCount })
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 });
+	    function checkPassword() {
 	    if (password) {
-                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
-                    if (videoData.password !== userPassword) {
-                        alert("Неправильний пароль!");
-			    return;
-                    }
+		    document.getElementById("video-container").style.display = 'none';
+		    document.getElementById("video-password").style.display = 'block';
+                    } else {
+		    document.getElementById("video-container").style.display = 'block';
+		    document.getElementById("video-password").style.display = 'none';
                 }
+	    }
     </script>
 </body>
 </html>
