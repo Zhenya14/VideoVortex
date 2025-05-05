@@ -115,16 +115,13 @@
           document.getElementById("joinDate").textContent =
             "Приєднався: " + new Date(data.joined).toLocaleDateString("uk-UA");
 
-          const postList = document.getElementById("postList");
+          const postList = document.getElementById("video-gallery");
           data.posts.forEach(post => {
             const div = document.createElement("div");
             div.className = "post";
             div.textContent = post;
             postList.appendChild(div);
           });
-        } else {
-          document.getElementById("userName").textContent = "Профіль не знайдено";
-        }
       } else {
         document.getElementById("userName").textContent = "Користувач не увійшов";
       }
