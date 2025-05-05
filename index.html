@@ -951,12 +951,12 @@ alert("Сталася помилка при увімкненні функції 
 
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
- infoElement.onclick = () => {
-                const videoParams = new URLSearchParams({
+ 	infoElement.onclick = () => {
+                const infoParams = new URLSearchParams({
 		    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
                     author: videoData.author,
                 });
-                window.location.href = `profile.html?${videoParams.toString()}`;
+                window.location.href = `profile.html?${infoParams.toString()}`;
             };
 
             const avatar = document.createElement("div");
