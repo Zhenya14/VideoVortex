@@ -953,6 +953,7 @@ alert("Сталася помилка при увімкненні функції 
             infoElement.classList.add("video-info");
  infoElement.onclick = () => {
                 const videoParams = new URLSearchParams({
+		    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
                     author: videoData.author,
                 });
                 window.location.href = `profile.html?${videoParams.toString()}`;
