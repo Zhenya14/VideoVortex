@@ -676,10 +676,11 @@ function closeSidebar() {
 
   </script>
     <script>
-	    let maxTimeInMinutes = null; // Початкове значення максимального часу на день
-        let sleepStart = null; // Початковий час сну
-        let sleepEnd = null;   // Початковий час закінчення сну
-        let timeLeftInSeconds = maxTimeInMinutes * 60; // Конвертуємо час в секунди
+let maxTimeInMinutes = null;
+let timeLeftInSeconds = null;
+let sleepStart = null;
+let sleepEnd = null;
+ // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
 const firebaseConfig = {
@@ -1296,117 +1297,115 @@ function uploadPhoto() {
     }
 }
 // Завантаження налаштувань
-// Завантаження налаштувань
-// function loadSettings() {
-//     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
-//     maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
-//     document.getElementById('maxTimeInput').value = maxTimeInMinutes ?? '';
+function loadSettings() {
+    const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
+    maxTimeInMinutes = savedMaxTime ? parseInt(savedMaxTime) : null;
+    const maxInput = document.getElementById('maxTimeInput');
+    if (maxInput) maxInput.value = maxTimeInMinutes ?? '';
 
-//     const savedSleepStart = localStorage.getItem('sleepStart');
-//     sleepStart = savedSleepStart ? savedSleepStart : null;
-//     document.getElementById('sleepStart').value = sleepStart ?? '';
+    const savedSleepStart = localStorage.getItem('sleepStart');
+    sleepStart = savedSleepStart !== '' ? savedSleepStart : null;
+    const sleepStartInput = document.getElementById('sleepStart');
+    if (sleepStartInput) sleepStartInput.value = sleepStart ?? '';
 
-//     const savedSleepEnd = localStorage.getItem('sleepEnd');
-//     sleepEnd = savedSleepEnd ? savedSleepEnd : null;
-//     document.getElementById('sleepEnd').value = sleepEnd ?? '';
+    const savedSleepEnd = localStorage.getItem('sleepEnd');
+    sleepEnd = savedSleepEnd !== '' ? savedSleepEnd : null;
+    const sleepEndInput = document.getElementById('sleepEnd');
+    if (sleepEndInput) sleepEndInput.value = sleepEnd ?? '';
 
-//     // Завантаження залишку часу
-//     const savedDate = localStorage.getItem('lastUsedDate');
-//     const currentDate = new Date().toDateString();
+    const savedDate = localStorage.getItem('lastUsedDate');
+    const currentDate = new Date().toDateString();
 
-//     if (savedDate !== currentDate) {
-//         localStorage.setItem('lastUsedDate', currentDate);
-//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-//     } else {
-//         timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
-//     }
-// }
+    if (savedDate !== currentDate) {
+        localStorage.setItem('lastUsedDate', currentDate);
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+    } else {
+        timeLeftInSeconds = parseInt(localStorage.getItem('timeLeft')) || (maxTimeInMinutes ? maxTimeInMinutes * 60 : null);
+    }
+}
 
 
 // // Форматування часу для input type="time"
-// function formatTime(hour) {
-//     return hour !== null ? (hour < 10 ? '0' + hour + ':00' : hour + ':00') : '';
-// }
+function formatTime(hour) {
+    return hour !== null ? (hour < 10 ? '0' + hour + ':00' : hour + ':00') : '';
+}
 
-// // Збереження налаштувань
-// function saveSettings() {
-//     const maxTime = parseInt(document.getElementById('maxTimeInput').value);
-//     const sleepStartTime = document.getElementById('sleepStart').value;
-//     const sleepEndTime = document.getElementById('sleepEnd').value;
+// Збереження налаштувань
+function saveSettings() {
+    const maxTime = parseInt(document.getElementById('maxTimeInput').value);
+    const sleepStartTime = document.getElementById('sleepStart').value;
+    const sleepEndTime = document.getElementById('sleepEnd').value;
 
-//     maxTimeInMinutes = isNaN(maxTime) ? null : maxTime;
-//     sleepStart = sleepStartTime ? parseInt(sleepStartTime.split(':')[0]) : null;
-//     sleepEnd = sleepEndTime ? parseInt(sleepEndTime.split(':')[0]) : null;
+    maxTimeInMinutes = isNaN(maxTime) ? null : maxTime;
+    sleepStart = sleepStartTime ? parseInt(sleepStartTime.split(':')[0]) : null;
+    sleepEnd = sleepEndTime ? parseInt(sleepEndTime.split(':')[0]) : null;
 
-//     localStorage.setItem('maxTimeInMinutes', maxTimeInMinutes ?? '');
-//     localStorage.setItem('sleepStart', sleepStart ?? '');
-//     localStorage.setItem('sleepEnd', sleepEnd ?? '');
+    localStorage.setItem('maxTimeInMinutes', maxTimeInMinutes ?? '');
+    localStorage.setItem('sleepStart', sleepStart ?? '');
+    localStorage.setItem('sleepEnd', sleepEnd ?? '');
 
-//     if (timeLeftInSeconds === null) {
-//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-//         if (timeLeftInSeconds !== null) {
-//             localStorage.setItem('timeLeft', timeLeftInSeconds);
-//         }
-//     }
-// }
+    if (timeLeftInSeconds === null) {
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+        if (timeLeftInSeconds !== null) {
+            localStorage.setItem('timeLeft', timeLeftInSeconds);
+        }
+    }
+}
 
 // // Перевірка часу сну
-// function isSleepTime() {
-//     if (!sleepStart || !sleepEnd) return false; // Якщо sleepStart або sleepEnd порожні — повертаємо false
+function isSleepTime() {
+    if (!sleepStart || !sleepEnd) return false;
 
-//     const currentTime = new Date();
-//     const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+    const [startH, startM] = sleepStart.split(':').map(Number);
+    const [endH, endM] = sleepEnd.split(':').map(Number);
 
-//     const sleepStartParts = sleepStart.split(':');
-//     const sleepEndParts = sleepEnd.split(':');
+    if (isNaN(startH) || isNaN(endH)) return false;
 
-//     if (sleepStartParts.length < 2 || sleepEndParts.length < 2) return false; // Додатковий захист
+    const current = new Date();
+    const nowMinutes = current.getHours() * 60 + current.getMinutes();
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
 
-//     const sleepStartTotalMinutes = parseInt(sleepStartParts[0]) * 60 + parseInt(sleepStartParts[1]);
-//     const sleepEndTotalMinutes = parseInt(sleepEndParts[0]) * 60 + parseInt(sleepEndParts[1]);
-
-//     if (sleepStartTotalMinutes < sleepEndTotalMinutes) {
-//         return currentTotalMinutes >= sleepStartTotalMinutes && currentTotalMinutes < sleepEndTotalMinutes;
-//     } else {
-//         return currentTotalMinutes >= sleepStartTotalMinutes || currentTotalMinutes < sleepEndTotalMinutes;
-//     }
-// }
+    return startMinutes < endMinutes
+        ? nowMinutes >= startMinutes && nowMinutes < endMinutes
+        : nowMinutes >= startMinutes || nowMinutes < endMinutes;
+}
 
 
 
 // // Оновлення таймера та фону
-// function updateTimer() {
-//     if (isSleepTime()) {
-//         document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
-//         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
-//         return;
-//     } else {
-//         document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
-//     }
+function updateTimer() {
+    if (isSleepTime()) {
+        document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
+        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
+        return;
+    } else {
+        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
+    }
 
-//     if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
-//         const minutes = Math.floor(timeLeftInSeconds / 60);
-//         const seconds = timeLeftInSeconds % 60;
-//         document.getElementById('timer').textContent = `Залишилось часу: ${minutes} хв ${seconds} сек`;
-//         timeLeftInSeconds--;
-//         localStorage.setItem('timeLeft', timeLeftInSeconds);
-//     } else if (timeLeftInSeconds !== null) {
-//         document.body.style.background = "mediumseagreen";
-//         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
-//         return;
-//     }
+    if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
+        const minutes = Math.floor(timeLeftInSeconds / 60);
+        const seconds = timeLeftInSeconds % 60;
+        document.getElementById('timer').textContent = `Залишилось часу: ${minutes} хв ${seconds} сек`;
+        timeLeftInSeconds--;
+        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    } else if (timeLeftInSeconds !== null) {
+        document.body.style.background = "mediumseagreen";
+        document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час закінчився. Ви можете вийти із сайту щоб не перевищувати екранний ліміт.</h1>`;
+        return;
+    }
 
-//     // Скидання таймера після 00:00
-//     const currentDate = new Date().toDateString();
-//     if (localStorage.getItem('lastUsedDate') !== currentDate) {
-//         localStorage.setItem('lastUsedDate', currentDate);
-//         timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
-//         localStorage.setItem('timeLeft', timeLeftInSeconds);
-//     }
-// }
+    // Скидання таймера після 00:00
+    const currentDate = new Date().toDateString();
+    if (localStorage.getItem('lastUsedDate') !== currentDate) {
+        localStorage.setItem('lastUsedDate', currentDate);
+        timeLeftInSeconds = maxTimeInMinutes ? maxTimeInMinutes * 60 : null;
+        localStorage.setItem('timeLeft', timeLeftInSeconds);
+    }
+}
 
-// // Запуск таймера
-// setInterval(updateTimer, 1000);
+// Запуск таймера
+setInterval(updateTimer, 1000);
 
 
 
@@ -1414,6 +1413,7 @@ function uploadPhoto() {
         // Завантажуємо налаштування при завантаженні сторінки
         
 window.onload = function() {
+	loadSettings();
         loadVideos();
         loadPhotos();
         const commentsContainer = document.getElementById('comments');
