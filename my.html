@@ -113,6 +113,20 @@
     .music-button:hover {
       background-color: #fb8c00;
     }
+    .stop-button {
+      background-color: red;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .stop-button:hover {
+      background-color: #c71515;
+    }
 
     /* Фото подруги */
     .profile-image {
@@ -133,7 +147,8 @@
     <div class="notes" id="hiddenNotes">♪ ♫ ♪</div>
     <p class="quote">"Ти — музика, що живе в наших серцях."</p>
     <!--<a href="#" class="button">Почати тренування</a> -->
-    <button class="music-button" onclick="playMusic()">Програти музику</button>
+    <button id="music-button" class="music-button" onclick="playMusic()">Програти музику</button>
+    <button id="stop-button" class="stop-button" onclick="stopMusic()">Зупинити музику</button>
   </div>
 
   <!-- Можна додати елемент аудіо тут -->
@@ -142,10 +157,22 @@
   </audio>
 
   <script>
+     function stopMusic() {
+      const audio = document.getElementById("music"); // Вказати шлях до аудіофайлу
+      audio.stop(); // Відтворити музику
+       const stopButton = document.getElementById("stop-button");
+       stopButton.style.display = "none";
+       const playButton = document.getElementById("music-button");
+       playButton.style.display = "block";
+    }
     // Функція для відтворення музики
     function playMusic() {
       const audio = document.getElementById("music") ; // Вказати шлях до аудіофайлу
       audio.play(); // Відтворити музику
+      const stopButton = document.getElementById("stop-button");
+       stopButton.style.display = "block";
+       const playButton = document.getElementById("music-button");
+       playButton.style.display = "none";
     }
 const text = `Для моєї улюбленої бандуристки
   Твоя музика — це музика, що дарує світло і натхнення. Нехай твої струни завжди звучать з любов’ю до рідної землі!`;
