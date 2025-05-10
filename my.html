@@ -132,19 +132,19 @@
     <img src="your-friend-photo.jpg" alt="Бандуристка" class="profile-image" id="hiddenNoteImage" />
     <div class="notes" id="hiddenNotes">♪ ♫ ♪</div>
     <p class="quote">"Ти — музика, що живе в наших серцях."</p>
-    <a href="#" class="button">Почати тренування</a>
+    <!--<a href="#" class="button">Почати тренування</a> -->
     <button class="music-button" onclick="playMusic()">Програти музику</button>
   </div>
 
   <!-- Можна додати елемент аудіо тут -->
-  <audio id="music" preload="auto">
+  <Audio src="https://mufm.me/track/ukraina-xagompj" id="music">
     <!-- Логіку відтворення додавай тут -->
   </audio>
 
   <script>
     // Функція для відтворення музики
     function playMusic() {
-      var audio = new Audio("your-music-file.mp3"); // Вказати шлях до аудіофайлу
+      const audio = document.getElementById("music") ; // Вказати шлях до аудіофайлу
       audio.play(); // Відтворити музику
     }
 const text = `Для моєї улюбленої бандуристки
