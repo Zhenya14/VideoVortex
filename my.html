@@ -44,7 +44,6 @@
       display: inline-block;
       white-space: nowrap;
       border-right: 4px solid #333;
-      animation: typing 4s steps(30) 1s 1 normal both, blink 0.75s step-end infinite;
     }
 
     @keyframes typing {
@@ -129,8 +128,7 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="typing">Для моєї улюбленої бандуристки</h1> <!-- Додаємо клас для ефекту друкарської машинки -->
-    <p>Твоя музика — це музика, що дарує світло і натхнення. Нехай твої струни завжди звучать з любов’ю до рідної землі!</p>
+    <div id="text"></div>
     <img src="your-friend-photo.jpg" alt="Бандуристка" class="profile-image" id="hiddenNoteImage" />
     <div class="notes" id="hiddenNotes">♪ ♫ ♪</div>
     <p class="quote">"Ти — музика, що живе в наших серцях."</p>
@@ -149,7 +147,20 @@
       var audio = new Audio("your-music-file.mp3"); // Вказати шлях до аудіофайлу
       audio.play(); // Відтворити музику
     }
+const text = `Для моєї улюбленої бандуристки
+  Твоя музика — це музика, що дарує світло і натхнення. Нехай твої струни завжди звучать з любов’ю до рідної землі!`;
+const element = document.getElementById("text");
+let index = 0;
 
+function typeLetter() {
+  if (index < text.length) {
+    element.textContent += text[index];
+    index++;
+    setTimeout(typeLetter, 100); // затримка між літерами
+  }
+}
+
+typeLetter();
     // Пасхалка: Нота, яка з’являється при натисканні на зображення
     document.getElementById("hiddenNoteImage").addEventListener("click", function() {
       var notes = document.getElementById("hiddenNotes");
