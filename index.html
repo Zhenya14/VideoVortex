@@ -549,7 +549,7 @@ nav {
     </div>
 	<footer style="width: 100%; background-color: black;">
 		<h3>Версія додатка:</h3>
-		<p>2.0.0</p>
+		<p>2.0.1</p>
 	</footer>
 <!-- <script>
     // Генерація сніжинок
@@ -773,6 +773,43 @@ const firebaseConfig = {
                 alert("Будь ласка, увійдіть, щоб завантажити фото.");
             }
         };
+	    function blockScreenForVerification() {
+    document.body.innerHTML = `
+                <h1>Підтвердьте вашу електронну пошту</h1>
+                <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт!</p>
+                <button style="
+                    margin-top: 20px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    border-radius: 5px;
+                    background: #ffffff;
+                    color: #ff7e5f;
+                    cursor: pointer;
+                " onclick="resendVerification()">Надіслати лист ще раз</button>
+<button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
+<a href="#" id="logout-link-verification" onclick="logout()">
+                <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
+</a>
+                <p style="margin-top: 20px;">Після підтвердження просто зачекайте або перезавантажте сторінку.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Надіслати лист повторно
+function resendVerification() {
+    const user = auth.currentUser;
+    if (user) {
+        user.sendEmailVerification()
+            .then(() => {
+                alert("Лист підтвердження надіслано повторно!");
+            })
+            .catch((error) => {
+                alert("Помилка надсилання листа: " + error.message);
+            });
+    }
+}
 function deleteAccount() {
     const user = firebase.auth().currentUser;
 
@@ -1138,30 +1175,52 @@ function loadComments(videoKey) {
 
 
 auth.onAuthStateChanged((user) => {
-        if (user) {
-            currentUserEmail = user.email; 
-            document.getElementById("email").textContent = `${user.email}`;
-            document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
-            document.getElementById("auth-link").style.display = "none";
-            document.getElementById("register-link").style.display = "none";
-            document.getElementById("upload-link").style.display = "flex";
-            document.getElementById("upload-link-photo").style.display = "flex";
-	    document.getElementById("smart-upload-link").style.display = "grid";
-            document.getElementById("smart-upload-link-photo").style.display = "grid";
-            document.getElementById("logout-link").style.display = "flex";
-             document.getElementById("account-link").style.display = "flex";
+    if (user) {
+        currentUserEmail = user.email;
+
+        if (!user.emailVerified) {
+            blockScreenForVerification();
+
+            // Кожні 10 секунд перевіряємо, чи користувач підтвердив пошту
+            verificationInterval = setInterval(() => {
+                user.reload().then(() => {
+                    if (user.emailVerified) {
+                        clearInterval(verificationInterval);
+                        location.reload(); // Перезавантажити сторінку після підтвердження
+                    }
+                }).catch((error) => {
+                    console.error("Помилка перевірки email:", error);
+                });
+            }, 10000);
         } else {
-            currentUserEmail = null;
-            document.getElementById("auth-link").style.display = "flex";
-            document.getElementById("register-link").style.display = "flex";
-            document.getElementById("upload-link").style.display = "none";
-            document.getElementById("upload-link-photo").style.display = "none";
-            document.getElementById("smart-upload-link").style.display = "none";
-            document.getElementById("smart-upload-link-photo").style.display = "none";
-            document.getElementById("logout-link").style.display = "none";
-             document.getElementById("account-link").style.display = "none";
+            console.log("Пошта верифікована. Доступ дозволено.");
         }
-    });
+
+        // Показуємо інтерфейс для авторизованого користувача
+        document.getElementById("email").textContent = `${user.email}`;
+        document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
+        document.getElementById("auth-link").style.display = "none";
+        document.getElementById("register-link").style.display = "none";
+        document.getElementById("upload-link").style.display = "flex";
+        document.getElementById("upload-link-photo").style.display = "flex";
+        document.getElementById("smart-upload-link").style.display = "grid";
+        document.getElementById("smart-upload-link-photo").style.display = "grid";
+        document.getElementById("logout-link").style.display = "flex";
+        document.getElementById("account-link").style.display = "flex";
+
+    } else {
+        // Якщо користувач не авторизований
+        currentUserEmail = null;
+        document.getElementById("auth-link").style.display = "flex";
+        document.getElementById("register-link").style.display = "flex";
+        document.getElementById("upload-link").style.display = "none";
+        document.getElementById("upload-link-photo").style.display = "none";
+        document.getElementById("smart-upload-link").style.display = "none";
+        document.getElementById("smart-upload-link-photo").style.display = "none";
+        document.getElementById("logout-link").style.display = "none";
+        document.getElementById("account-link").style.display = "none";
+    }
+});
 document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з акаунту.");
