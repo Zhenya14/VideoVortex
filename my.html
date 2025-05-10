@@ -114,6 +114,7 @@
       background-color: #fb8c00;
     }
     .stop-button {
+      display: none;
       background-color: red;
       color: white;
       padding: 12px 20px;
@@ -159,7 +160,7 @@
   <script>
      function stopMusic() {
       const audio = document.getElementById("music"); // Вказати шлях до аудіофайлу
-      audio.stop(); // Відтворити музику
+      audio.pause(); // Відтворити музику
        const stopButton = document.getElementById("stop-button");
        stopButton.style.display = "none";
        const playButton = document.getElementById("music-button");
