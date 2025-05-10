@@ -100,6 +100,7 @@
     }
 
     .music-button {
+      display: initial;
       background-color: #ff9800;
       color: white;
       padding: 12px 20px;
@@ -164,14 +165,14 @@
        const stopButton = document.getElementById("stop-button");
        stopButton.style.display = "none";
        const playButton = document.getElementById("music-button");
-       playButton.style.display = "block";
+       playButton.style.display = "initial";
     }
     // Функція для відтворення музики
     function playMusic() {
       const audio = document.getElementById("music") ; // Вказати шлях до аудіофайлу
       audio.play(); // Відтворити музику
       const stopButton = document.getElementById("stop-button");
-       stopButton.style.display = "block";
+       stopButton.style.display = "initial";
        const playButton = document.getElementById("music-button");
        playButton.style.display = "none";
     }
