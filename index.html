@@ -1200,11 +1200,18 @@ auth.onAuthStateChanged((user) => {
         document.getElementById("email").textContent = `${user.email}`;
         document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
         document.getElementById("auth-link").style.display = "none";
+function hideOnMobile() {
+    if (window.innerWidth <= 768) { // наприклад, 768px — типовий breakpoint
+       document.getElementById("smart-upload-link").style.display = "grid";
+        document.getElementById("smart-upload-link-photo").style.display = "grid";
+    } else {
+       document.getElementById("smart-upload-link").style.display = "none";
+        document.getElementById("smart-upload-link-photo").style.display = "none";
+    }
+  }
         document.getElementById("register-link").style.display = "none";
         document.getElementById("upload-link").style.display = "flex";
         document.getElementById("upload-link-photo").style.display = "flex";
-        document.getElementById("smart-upload-link").style.display = "grid";
-        document.getElementById("smart-upload-link-photo").style.display = "grid";
         document.getElementById("logout-link").style.display = "flex";
         document.getElementById("account-link").style.display = "flex";
 
