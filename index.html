@@ -329,10 +329,7 @@ nav {
             margin-left: 5px;
         }
         
-        @media (max-width: 600px) {
-		#open-menu {
-			display: none;
-		}
+        @media (max-width: 768px) {
             .icon-text {
                 display: none;
             }
@@ -1200,13 +1197,16 @@ function toggleUploadVisibility() {
     const photoUpload = document.getElementById("upload-link-photo");
     const smartPhotoUpload = document.getElementById("smart-upload-link-photo");
     const smartUpload = document.getElementById("smart-upload-link");
+    const openMenu = document.getElementById("open-menu");
 
     if (window.innerWidth <= 768) {
         upload.style.display = "none";
+	openMenu.style.display = "none";
 	photoUpload.style.display = "none";
         smartUpload.style.display = "grid";
 	smartPhotoUpload.style.display = "grid";
     } else {
+	openMenu.style.display = "block";
         upload.style.display = "flex";
 	photoUpload.style.display = "flex";
         smartUpload.style.display = "none";
