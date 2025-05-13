@@ -1165,33 +1165,6 @@ function loadComments(videoKey) {
 
 
 
-
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        currentUserEmail = user.email;
-
-        if (!user.emailVerified) {
-            blockScreenForVerification();
-
-            // Кожні 10 секунд перевіряємо, чи користувач підтвердив пошту
-            verificationInterval = setInterval(() => {
-                user.reload().then(() => {
-                    if (user.emailVerified) {
-                        clearInterval(verificationInterval);
-                        location.reload(); // Перезавантажити сторінку після підтвердження
-                    }
-                }).catch((error) => {
-                    console.error("Помилка перевірки email:", error);
-                });
-            }, 10000);
-        } else {
-            console.log("Пошта верифікована. Доступ дозволено.");
-        }
-
-        // Показуємо інтерфейс для авторизованого користувача
-        document.getElementById("email").textContent = `${user.email}`;
-        document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
-        document.getElementById("auth-link").style.display = "none";
 function toggleUploadVisibility() {
     const upload = document.getElementById("upload-link");
     const photoUpload = document.getElementById("upload-link-photo");
@@ -1216,7 +1189,32 @@ function toggleUploadVisibility() {
 
 window.addEventListener('load', toggleUploadVisibility);
 window.addEventListener('resize', toggleUploadVisibility);
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUserEmail = user.email;
 
+        if (!user.emailVerified) {
+            blockScreenForVerification();
+
+            // Кожні 10 секунд перевіряємо, чи користувач підтвердив пошту
+            verificationInterval = setInterval(() => {
+                user.reload().then(() => {
+                    if (user.emailVerified) {
+                        clearInterval(verificationInterval);
+                        location.reload(); // Перезавантажити сторінку після підтвердження
+                    }
+                }).catch((error) => {
+                    console.error("Помилка перевірки email:", error);
+                });
+            }, 10000);
+        } else {
+            console.log("Пошта верифікована. Доступ дозволено.");
+        }
+        toggleUploadVisibility();
+        // Показуємо інтерфейс для авторизованого користувача
+        document.getElementById("email").textContent = `${user.email}`;
+        document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
+        document.getElementById("auth-link").style.display = "none";
         document.getElementById("register-link").style.display = "none";
         document.getElementById("upload-link").style.display = "flex";
         document.getElementById("upload-link-photo").style.display = "flex";
