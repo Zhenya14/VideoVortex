@@ -1230,7 +1230,6 @@ auth.onAuthStateChanged((user) => {
     toggleUploadVisibility(); // ВАЖЛИВО: після всіх змін
 });
 
-});
 document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з акаунту.");
