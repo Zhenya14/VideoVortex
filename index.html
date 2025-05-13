@@ -1166,73 +1166,70 @@ function loadComments(videoKey) {
 
 
 function toggleUploadVisibility() {
+    const isMobile = window.innerWidth <= 600;
     const upload = document.getElementById("upload-link");
     const photoUpload = document.getElementById("upload-link-photo");
     const smartPhotoUpload = document.getElementById("smart-upload-link-photo");
     const smartUpload = document.getElementById("smart-upload-link");
     const openMenu = document.getElementById("open-menu");
 
-    if (window.innerWidth <= 600) {
-        upload.style.display = "none";
-	openMenu.style.display = "none";
-	photoUpload.style.display = "none";
+    if (isMobile) {
+        openMenu.style.display = "none";
         smartUpload.style.display = "grid";
-	smartPhotoUpload.style.display = "grid";
+        smartPhotoUpload.style.display = "grid";
+        if (auth.currentUser) {
+            upload.style.display = "none";
+            photoUpload.style.display = "none";
+        }
     } else {
-	openMenu.style.display = "block";
-        upload.style.display = "flex";
-	photoUpload.style.display = "flex";
+        openMenu.style.display = "flex";
         smartUpload.style.display = "none";
-	smartPhotoUpload.style.display = "none";
+        smartPhotoUpload.style.display = "none";
+        if (auth.currentUser) {
+            upload.style.display = "flex";
+            photoUpload.style.display = "flex";
+        }
     }
 }
 
 window.addEventListener('load', toggleUploadVisibility);
 window.addEventListener('resize', toggleUploadVisibility);
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        currentUserEmail = user.email;
 
+auth.onAuthStateChanged((user) => {
+    currentUserEmail = user ? user.email : null;
+
+    if (user) {
         if (!user.emailVerified) {
             blockScreenForVerification();
 
-            // Кожні 10 секунд перевіряємо, чи користувач підтвердив пошту
             verificationInterval = setInterval(() => {
                 user.reload().then(() => {
                     if (user.emailVerified) {
                         clearInterval(verificationInterval);
-                        location.reload(); // Перезавантажити сторінку після підтвердження
+                        location.reload();
                     }
                 }).catch((error) => {
                     console.error("Помилка перевірки email:", error);
                 });
             }, 10000);
-        } else {
-            console.log("Пошта верифікована. Доступ дозволено.");
         }
-        toggleUploadVisibility();
-        // Показуємо інтерфейс для авторизованого користувача
+
         document.getElementById("email").textContent = `${user.email}`;
         document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
         document.getElementById("auth-link").style.display = "none";
         document.getElementById("register-link").style.display = "none";
-        document.getElementById("upload-link").style.display = "flex";
-        document.getElementById("upload-link-photo").style.display = "flex";
         document.getElementById("logout-link").style.display = "flex";
         document.getElementById("account-link").style.display = "flex";
-
     } else {
-        // Якщо користувач не авторизований
-        currentUserEmail = null;
         document.getElementById("auth-link").style.display = "flex";
         document.getElementById("register-link").style.display = "flex";
-        document.getElementById("upload-link").style.display = "none";
-        document.getElementById("upload-link-photo").style.display = "none";
-        document.getElementById("smart-upload-link").style.display = "none";
-        document.getElementById("smart-upload-link-photo").style.display = "none";
         document.getElementById("logout-link").style.display = "none";
         document.getElementById("account-link").style.display = "none";
     }
+
+    toggleUploadVisibility(); // ВАЖЛИВО: після всіх змін
+});
+
 });
 document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
