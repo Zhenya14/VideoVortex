@@ -987,18 +987,18 @@ alert("Сталася помилка при увімкненні функції 
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 		
- 	avatar.onclick = () => {
+ 	
+
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
+           avatar.onclick = () => {
                 const infoParams = new URLSearchParams({
 		    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
                     author: videoData.author
                 });
                 window.location.href = `profile.html?${infoParams.toString()}`;
             };
-
-            const avatar = document.createElement("div");
-            avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
-
             const author = document.getElementById("author");
            author.onclick = () => {
                 const infoParams = new URLSearchParams({
