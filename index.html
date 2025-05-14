@@ -999,14 +999,6 @@ alert("Сталася помилка при увімкненні функції 
                 });
                 window.location.href = `profile.html?${infoParams.toString()}`;
             };
-            const author = document.getElementById("author");
-           author.onclick = () => {
-                const infoParams = new URLSearchParams({
-		    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
-                    author: videoData.author
-                });
-                window.location.href = `profile.html?${infoParams.toString()}`;
-            };
 
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
