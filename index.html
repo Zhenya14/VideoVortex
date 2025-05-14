@@ -329,7 +329,7 @@ nav {
             margin-left: 5px;
         }
         
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .icon-text {
                 display: none;
             }
@@ -1176,7 +1176,7 @@ function loadComments(videoKey) {
 
 
 function toggleUploadVisibility() {
-    const isMobile = window.innerWidth <= 600;
+    const isMobile = window.innerWidth <= 768;
     const upload = document.getElementById("upload-link");
     const photoUpload = document.getElementById("upload-link-photo");
     const smartPhotoUpload = document.getElementById("smart-upload-link-photo");
