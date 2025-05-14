@@ -988,7 +988,9 @@ alert("Сталася помилка при увімкненні функції 
             };
 		
  	
-
+	    const infoElement = document.createElement("div");
+            infoElement.classList.add("video-info");
+		
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
