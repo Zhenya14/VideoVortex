@@ -937,48 +937,33 @@ alert("Сталася помилка при увімкненні функції 
 
     const showNSFW = document.getElementById("show-nsfw-videos").checked;
 
-    database.ref("videos").once("value").then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
+    database.ref("videos").once("value").then(snapshot => {
+        snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
             if (videoData.nsfw && !showNSFW) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
 
-            const commentSection = document.createElement("div");
-            commentSection.classList.add("video-comment");
-            commentSection.innerHTML = `
-            <form>
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section">
-                <input type="text" id="comment-input-${videoKey}" class="comment-input" style="width: 80%; padding-top: 19px;" placeholder="Ваш коментар">
-                <button class="comment-button" style="width: 50px; height: 50px;" onclick="uploadComment('${videoKey}')"><i class="material-icons">send</i></button>
-                </div>
-                </form>
-                `;
-
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-		
-            videoElement.onclick = () => {
-    const viewedKey = `viewed_${videoKey}`;
-    
-    if (!localStorage.getItem(viewedKey)) {
-        const newViewCount = (videoData.views || 0) + 1;
 
-        database.ref("videos/" + videoKey).update({ views: newViewCount })
-            .then(() => {
-                localStorage.setItem(viewedKey, true);
-                console.log("Перегляд зараховано");
-            })
-            .catch(error => console.error("Помилка оновлення переглядів:", error));
-    }
-            if (videoData.nsfw || videoData.password) {
-                videoElement.style.filter = 'blur(30px)';
-            }
+            // Коментарі
+            const commentSection = document.createElement("div");
+            commentSection.classList.add("video-comment");
+            commentSection.innerHTML = `
+                <h3 style="color: white; text-align: left;">Коментарі:</h3>
+                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+                <div class="comment-section">
+                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+                    <button class="comment-button" onclick="uploadComment('${videoKey}')">
+                        <i class="material-icons">send</i>
+                    </button>
+                </div>
+            `;
 
+            // Перегляд відео та перевірка пароля
             videoElement.onclick = () => {
                 if (videoData.password) {
                     const userPassword = prompt("Це приватне відео. Введіть пароль:");
@@ -987,6 +972,17 @@ alert("Сталася помилка при увімкненні функції 
                         return;
                     }
                 }
+
+                const viewedKey = `viewed_${videoKey}`;
+                if (!localStorage.getItem(viewedKey)) {
+                    const newViewCount = (videoData.views || 0) + 1;
+                    database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .then(() => {
+                            localStorage.setItem(viewedKey, true);
+                        })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                }
+
                 const videoParams = new URLSearchParams({
                     key: videoKey,
                     url: videoData.url,
@@ -999,28 +995,35 @@ alert("Сталася помилка при увімкненні функції 
                 });
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
-		
- 	
-	    const infoElement = document.createElement("div");
+
+            // Інформація про відео
+            const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
-		
+
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
-           avatar.onclick = () => {
+            avatar.onclick = () => {
                 const infoParams = new URLSearchParams({
-		    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
                     author: videoData.author
                 });
                 window.location.href = `profile.html?${infoParams.toString()}`;
             };
+
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-		
+
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `<strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>Автор: ${videoData.author || "Анонім"}<br>Переглядів: ${videoData.views || 0}<br>Дата публікації: ${videoData.publishDate || "Не вказана"}`;
+            detailsElement.innerHTML = `
+                <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
+                Автор: ${videoData.author || "Анонім"}<br>
+                Переглядів: ${videoData.views || 0}<br>
+                Дата публікації: ${videoData.publishDate || "Не вказана"}
+            `;
 
+            // Кнопка видалення (для власника)
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
                 deleteButton.innerText = "Видалити";
@@ -1042,8 +1045,9 @@ alert("Сталася помилка при увімкненні функції 
 
             videoGallery.appendChild(container);
 
-            // Завантажити коментарі для кожного відео
+            // Завантаження коментарів
             loadComments(videoKey);
+        });
     });
 }
 function deleteVideo(videoKey, videoURL) {
