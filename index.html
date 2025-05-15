@@ -961,7 +961,20 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
+		
+            videoElement.onclick = () => {
+    const viewedKey = `viewed_${videoKey}`;
+    
+    if (!localStorage.getItem(viewedKey)) {
+        const newViewCount = (videoData.views || 0) + 1;
 
+        database.ref("videos/" + videoKey).update({ views: newViewCount })
+            .then(() => {
+                localStorage.setItem(viewedKey, true);
+                console.log("Перегляд зараховано");
+            })
+            .catch(error => console.error("Помилка оновлення переглядів:", error));
+    }
             if (videoData.nsfw || videoData.password) {
                 videoElement.style.filter = 'blur(30px)';
             }
