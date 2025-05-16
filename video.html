@@ -265,6 +265,83 @@ nav a {
         display: none;
 }
     </style>
+	<style>
+.video-wrapper {
+  position: relative;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  display: block;
+  border-bottom: 2px solid #007BFF;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #111;
+  padding: 10px;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #007BFF;
+  border: none;
+  padding: 6px 10px;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 4px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+input[type="range"] {
+  accent-color: #00f;
+  margin: 4px;
+}
+
+#seek-bar {
+  flex: 1 1 auto;
+  margin: 0 10px;
+}
+
+#volume-bar {
+  width: 100px;
+}
+
+#time-display {
+  min-width: 90px;
+  text-align: right;
+  font-family: monospace;
+}
+
+@media (max-width: 600px) {
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #seek-bar,
+  #volume-bar {
+    width: 100%;
+  }
+
+  #time-display {
+    align-self: flex-end;
+  }
+}
+</style>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -276,14 +353,71 @@ nav a {
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
         </div>
     </nav>
-    <div id="video-container">
-        <video id="video-player" controls></video>
-        <div сlass="video-info" id="video-info">
-            <div сlass="avatar" id="avatar"></div>
-            <div сlass="details" id="details"></div>
-            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
-        </div>
-    </div>
+    <div class="video-wrapper">
+  <video id="custom-video"  preload="metadata"></video>
+  <div class="controls">
+    <button id="play-pause">▶️</button>
+    <input type="range" id="seek-bar" value="0">
+    <span id="time-display">0:00 / 0:00</span>
+    <input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
+    <button id="fullscreen">⛶</button>
+  </div>
+</div>
+
+<script>
+const video = document.getElementById("custom-video");
+const playPause = document.getElementById("play-pause");
+const seekBar = document.getElementById("seek-bar");
+const timeDisplay = document.getElementById("time-display");
+const volumeBar = document.getElementById("volume-bar");
+const fullscreen = document.getElementById("fullscreen");
+
+playPause.addEventListener("click", () => {
+  if (video.paused) {
+    video.play();
+    playPause.textContent = "⏸️";
+  } else {
+    video.pause();
+    playPause.textContent = "▶️";
+  }
+});
+
+video.addEventListener("timeupdate", () => {
+  if (!isNaN(video.duration)) {
+    const current = Math.floor(video.currentTime);
+    const duration = Math.floor(video.duration);
+    seekBar.value = (video.currentTime / video.duration) * 100 || 0;
+    timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+  }
+});
+
+seekBar.addEventListener("input", () => {
+  if (!isNaN(video.duration)) {
+    const time = (seekBar.value / 100) * video.duration;
+    video.currentTime = time;
+  }
+});
+
+volumeBar.addEventListener("input", () => {
+  video.volume = volumeBar.value;
+});
+
+fullscreen.addEventListener("click", () => {
+  if (video.requestFullscreen) {
+    video.requestFullscreen();
+  } else if (video.webkitRequestFullscreen) {
+    video.webkitRequestFullscreen();
+  } else if (video.msRequestFullscreen) {
+    video.msRequestFullscreen();
+  }
+});
+
+function formatTime(sec) {
+  const min = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${min}:${s.toString().padStart(2, "0")}`;
+}
+</script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
