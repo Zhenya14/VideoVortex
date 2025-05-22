@@ -154,7 +154,7 @@
 </div>
 
 <script>
-const video = document.getElementById("custom-video");
+// const video = document.getElementById("custom-video");
 const playPause = document.getElementById("play-pause");
 const seekBar = document.getElementById("seek-bar");
 const timeDisplay = document.getElementById("time-display");
@@ -205,7 +205,7 @@ function formatTime(sec) {
   const min = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${min}:${s.toString().padStart(2, "0")}`;
-}
+  }//
 
 // Отримання параметрів із URL
 const urlParams = new URLSearchParams(window.location.search);
