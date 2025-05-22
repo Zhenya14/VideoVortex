@@ -154,59 +154,6 @@
 </div>
 
 <script>
-// const video = document.getElementById("custom-video");
-const playPause = document.getElementById("play-pause");
-const seekBar = document.getElementById("seek-bar");
-const timeDisplay = document.getElementById("time-display");
-const volumeBar = document.getElementById("volume-bar");
-const fullscreen = document.getElementById("fullscreen");
-
-playPause.addEventListener("click", () => {
-  if (video.paused) {
-    video.play();
-    playPause.textContent = "⏸️";
-  } else {
-    video.pause();
-    playPause.textContent = "▶️";
-  }
-});
-
-video.addEventListener("timeupdate", () => {
-  if (!isNaN(video.duration) && video.duration > 0) {
-    const current = Math.floor(video.currentTime);
-    const duration = Math.floor(video.duration);
-    seekBar.value = (video.currentTime / video.duration) * 100 || 0;
-    timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-  }
-});
-
-seekBar.addEventListener("input", () => {
-  if (!isNaN(video.duration) && video.duration > 0) {
-    const time = (seekBar.value / 100) * video.duration;
-    video.currentTime = time;
-  }
-});
-
-volumeBar.addEventListener("input", () => {
-  video.volume = volumeBar.value;
-});
-
-fullscreen.addEventListener("click", () => {
-  if (video.requestFullscreen) {
-    video.requestFullscreen();
-  } else if (video.webkitRequestFullscreen) {
-    video.webkitRequestFullscreen();
-  } else if (video.msRequestFullscreen) {
-    video.msRequestFullscreen();
-  }
-});
-
-function formatTime(sec) {
-  const min = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${min}:${s.toString().padStart(2, "0")}`;
-  }//
-
 // Отримання параметрів із URL
 const urlParams = new URLSearchParams(window.location.search);
 const videoUrl = urlParams.get("url");
