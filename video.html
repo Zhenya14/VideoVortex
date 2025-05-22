@@ -1,24 +1,235 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Video Player</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
     <style>
-        /* Твої стилі, як у наданому коді */
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+.btn-container {
+    display: flex;
+    flex-basis: auto;
+    justify-content: center;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+.downloads-list {
+    font-size: 30px;
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+    width: 100%;
+    max-width: 350px;
+    margin-top: -3px;
+}
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
         }
-        nav {
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
+            color: #ffffff; 
+            text-align: center; 
+            padding: 20px; 
+            margin: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .photo-container-title { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .snowflake {
+    position: fixed;
+    top: -10px;
+    color: #fff;
+    font-size: 1em;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 1000;
+}
+::-webkit-scrollbar {
+width: 10px;
+background-color: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background-color: #888;
+border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}
+::-webkit-scrollbar {
+height: 10px;
+}
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
+        .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+            width: 100%; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+        button { 
+            background: #4facfe; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+        button:hover { 
+            background: #00f2fe;
+        }
+        #video-player {
+            width: 100%;
+            height: 450px;
+        }
+    
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .photo-container {
+            display: flex;
+            margin-top: 20px;
+           flex-direction: column-reverse; 
+        }
+        /* Стилі для зображень з класом .photo-item */
+img.photo-item {
+    width: 100%;  /* Зображення заповнює ширину контейнера */
+    height: auto; /* Пропорції зображення зберігаються */
+    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+    border-radius: 8px; /* Округлення кутів зображення */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
+    }
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background-color: blue;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+        #delete-account { 
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: color 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: red; 
+            color: white; 
+            cursor: pointer;
+        }
+.nsfw-label {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
+    display: inline-block;
+}
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #1c1e22;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
+
+.menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: #4facfe;
+}
+
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
+
+nav {
             display: flex;
             align-items: center;
             width: 100%;
@@ -30,7 +241,8 @@
         nav a {
             color: #ffffff;
             text-decoration: none;
-            padding: 3px 8px;
+            font-weight: bold;
+            padding: 8px 15px;
             border-radius: 5px;
             transition: color 0.3s ease, background 0.3s ease;
             display: flex;
@@ -41,176 +253,70 @@
             background-color: #4facfe;
             color: #1c1e22;
         }
-        .video-wrapper {
-            position: relative;
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            width: 80%;
+        .icon-text {
+            margin-left: 5px;
         }
-        video {
-            width: 100%;
-            display: block;
-            border-bottom: 2px solid #007BFF;
-        }
-        .controls {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #111;
-            padding: 10px;
-            color: #fff;
-            flex-wrap: wrap;
-        }
-        button {
-            background: #007BFF;
-            border: none;
-            padding: 6px 10px;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 4px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        input[type="range"] {
-            accent-color: #00f;
-            margin: 4px;
-        }
-        #seek-bar {
-            flex: 1 1 auto;
-            margin: 0 10px;
-        }
-        #volume-bar {
-            width: 100px;
-        }
-        #time-display {
-            min-width: 90px;
-            text-align: right;
-            font-family: monospace;
-        }
+        
         @media (max-width: 600px) {
-            .controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            #seek-bar,
-            #volume-bar {
-                width: 100%;
-            }
-            #time-display {
-                align-self: flex-end;
+            .icon-text {
+                display: none;
             }
         }
-        .video-info {
-            text-align: center;
-            font-size: 13px;
-            color: #b0bec5;
-            padding: 5px;
-        }
-        .avatar {
-            font-weight: bold;
-            font-size: 30px;
-            color: white;
-            background-color: #007BFF;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            line-height: 60px;
-            margin: 0 auto 10px auto;
-            user-select: none;
-        }
+ #nsfw-toggle {
+        display: none;
+}
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 </head>
 <body>
-<nav>
-    <a href="index.html">
-        <img src="VideoVortex_logo.ico" alt="Logo" style="height: 50px; width: 50px; border-radius: 50%;" />
-        <h1 style="padding-left: 5px; margin: 0;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
-    </a>
-</nav>
+    <nav>
+            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+        </div>
+    </nav>
+    <div id="video-container">
+        <video id="video-player" controls></video>
+        <div сlass="video-info" id="video-info">
+            <div сlass="avatar" id="avatar"></div>
+            <div сlass="details" id="details"></div>
+            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
+        </div>
+    </div>
 
-<div class="video-wrapper">
-  <video id="custom-video" preload="metadata" controls></video>
-</div>
-    <!--<div class="controls">
-    <button id="play-pause">▶️</button>
-    <input type="range" id="seek-bar" value="0" min="0" max="100" step="0.1" />
-    <span id="time-display">0:00 / 0:00</span>
-    <input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1" />
-    <button id="fullscreen">⛶</button>
-  </div>-->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoKey = urlParams.get("key");
+        const videoUrl = urlParams.get("url");
+        const title = urlParams.get("title");
+        const author = urlParams.get("author");
+        const publishDate = urlParams.get("publishDate");
+        const description = urlParams.get("description");
+        const views = urlParams.get("views");
+        const avatar = urlParams.get("avatar");
 
 
-<div class="video-info">
-    <div class="avatar" id="avatar">?</div>
-    <div id="details"></div>
-</div>
-
-<script>
-// Отримання параметрів із URL
-const urlParams = new URLSearchParams(window.location.search);
-const videoUrl = urlParams.get("url");
-const title = urlParams.get("title");
-const author = urlParams.get("author");
-const publishDate = urlParams.get("publishDate");
-const description = urlParams.get("description");
-const views = urlParams.get("views");
-const avatarChar = urlParams.get("avatar") || "?";
-
-// Встановлення відео і деталей
-if (videoUrl) {
-  video.src = videoUrl;
-}
-
-document.title = title || "Video Player";
-
-const avatarDiv = document.getElementById("avatar");
-avatarDiv.textContent = avatarChar;
-
-const detailsDiv = document.getElementById("details");
-detailsDiv.innerHTML = `
-  <h2>${title || "Без назви"}</h2>
-  <p><strong>Автор:</strong> ${author || "Анонім"}</p>
-  <p><strong>Дата публікації:</strong> ${publishDate || "Не вказана"}</p>
-  <p><strong>Переглядів:</strong> ${views || 0}</p>
-  <p><strong>Опис:</strong> ${description || "Без опису"}</p>
-`;
-
-// Ініціалізація Firebase (треба додати власні дані конфігурації)
-const firebaseConfig = {
-     apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-     authDomain: "videovortex-235cd.firebaseapp.com",
-     databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app"
-     projectId: "videovortex-235cd",
-     storageBucket: "videovortex-235cd.appspot.com",
-     messagingSenderId: "681594250269",
-     appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"// Твої firebase конфігураційні дані сюди
-};
-firebase.initializeApp(firebaseConfig);
-
-const database = firebase.database();
-
-video.addEventListener("play", () => {
-  // Оновлення лічильника переглядів в базі
-  if (videoUrl) {
-    // Для уникнення багаторазового збільшення можна робити це тут або на сервері
-    // Простий приклад:
-    const videoKey = urlParams.get("key");
-    if (videoKey) {
-      const viewsRef = database.ref("videos/" + videoKey + "/views");
-      viewsRef.transaction(currentViews => {
-        return (currentViews || 0) + 1;
-      });
-    }
-  }
-});
-</script>
+        document.title = `${title}`;
+        document.getElementById("video-player").src = videoUrl;
+        document.getElementById("avatar").innerText = avatar;
+        document.getElementById("details").innerHTML = `
+            <h2>${title}</h2>
+            <p><strong>Автор:</strong> ${author}</p>
+            <p><strong>Дата публікації:</strong> ${publishDate}</p>
+            <p><strong>Перегляди:</strong> ${views}</p>
+            <p><strong>Опис:</strong> ${description}</p>
+        `;
+        const videoElement = document.getElementById("video-player");
+            videoElement.src = videoData.url;
+            videoElement.classList.add("video-item");
+		
+	        videoElement.addEventListener("play", () => {
+			const newViewCount = (videoData.views || 0) + 1;
+               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                });
+    </script>
 </body>
-</html>
+    </html>
