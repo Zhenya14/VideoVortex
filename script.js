@@ -116,6 +116,7 @@ function closeSidebar() {
     content.style.marginLeft = "0";
 }
 
+let currentEditKey = null;
 let maxTimeInMinutes = null;
 let timeLeftInSeconds = null;
 let sleepStart = null;
@@ -332,6 +333,9 @@ function deleteAccount() {
                 });
         }
         function signUp() {
+	    const birthInput = document.getElementById("birthdate").value;
+            const name = document.getElementById("register-name").value.trim();
+            const supername = document.getElementById("register-supername").value.trim();
             const email = document.getElementById("register-email").value.trim();
             const password = document.getElementById("register-password").value.trim();
             const confirmationpassword = document.getElementById("register-confirmation-password").value.trim();
@@ -340,9 +344,18 @@ function deleteAccount() {
         alert("Поля не повинні бути порожніми.");
         return;
             }
+const [year, month, day] = birthInput.split("-");
+const birthdate = `${day}.${month}.${year}`;
             if(password == confirmationpassword) {
 auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
+ const uid = userCredential.user.uid;
+  database.ref("users/" + uid).set({
+    name: name,
+    supername: supername,
+    email: email,
+    birthdate: birthdate
+  });
                     alert("Ви успішно зареєструвалися!");
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("register-form").style.display = "none";
@@ -463,21 +476,43 @@ alert("Сталася помилка при увімкненні функції 
                 Переглядів: ${videoData.views || 0}<br>
                 Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
+            
+            const moreBtn = document.createElement("button");
+            moreBtn.classList.add("more-btn");
+            moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
+
+            const actionMenu = document.createElement("div");
+            actionMenu.classList.add("action-menu");
+            actionMenu.style.display = "none";
 
             // Кнопка видалення (для власника)
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
-                deleteButton.innerText = "Видалити";
+                deleteButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">delete</i>Видалити</a>`;
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-                infoElement.appendChild(deleteButton);
+                actionMenu.appendChild(deleteButton);
             }
 
+            if (currentUserEmail === videoData.email) {
+                const editButton = document.createElement("button");
+                editButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">edit</i>Редагувати</a>`;
+                editButton.style.backgroundColor = "blue";
+                editButton.style.color = "white";
+                editButton.style.marginTop = "10px";
+                editButton.onclick = () => editVideo(videoKey, videoData);
+                actionMenu.appendChild(editButton);
+            }
+
+	   moreBtn.addEventListener("click", () => {
+	     actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
+          });
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
-
+            infoElement.appendChild(moreBtn);
+            infoElement.appendChild(actionMenu);
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
@@ -507,6 +542,36 @@ function deleteVideo(videoKey, videoURL) {
             alert("Помилка при видаленні відео зі сховища: " + error.message);
         });
     }
+}
+
+function editVideo(videoKey, videoData) {
+currentEditKey = videoKey;
+document.getElementById("edit-form").style.display = 'block';
+const editVideo = document.getElementById("edit-video-title");
+const editAuthor = document.getElementById("edit-video-author");
+const editDescription = document.getElementById("edit-video-description");
+editVideo.value = videoData.title || '';
+editAuthor.value = videoData.author || '';
+editDescription.value = videoData.description || '';
+}
+function saveVideoChanges() {
+  if (!currentEditKey) return alert("Відео не вибрано.");
+
+  const newTitle = document.getElementById("edit-video-title").value;
+  const newAuthor = document.getElementById("edit-video-author").value;
+  const newDescription = document.getElementById("edit-video-description").value;
+
+  database.ref("videos/" + currentEditKey).update({
+    title: newTitle,
+    author: newAuthor,
+    description: newDescription
+  }).then(() => {
+    alert("Відео оновлено!");
+    document.getElementById("edit-form").style.display = 'none';
+    loadVideos(); // перезавантаження списку
+  }).catch(error => {
+    alert("Помилка при оновленні відео: " + error.message);
+  });
 }
 
 // Функція для генерації секретного ключа
@@ -571,6 +636,8 @@ function uploadVideo() {
         alert("Будь ласка, виберіть відео для завантаження.");
     }
 }
+
+
 
 function uploadComment(videoKey) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
@@ -660,40 +727,127 @@ window.addEventListener('load', toggleUploadVisibility);
 window.addEventListener('resize', toggleUploadVisibility);
 
 auth.onAuthStateChanged((user) => {
-    currentUserEmail = user ? user.email : null;
+  if (user) {
+    currentUserEmail = user.email;
 
-    if (user) {
-        if (!user.emailVerified) {
-            blockScreenForVerification();
-
-            verificationInterval = setInterval(() => {
-                user.reload().then(() => {
-                    if (user.emailVerified) {
-                        clearInterval(verificationInterval);
-                        location.reload();
-                    }
-                }).catch((error) => {
-                    console.error("Помилка перевірки email:", error);
-                });
-            }, 10000);
-        }
-
-        document.getElementById("email").textContent = `${user.email}`;
-        document.getElementById("user-info").textContent = `Ви увійшли як: ${user.email}`;
-        document.getElementById("auth-link").style.display = "none";
-        document.getElementById("register-link").style.display = "none";
-        document.getElementById("logout-link").style.display = "flex";
-        document.getElementById("account-link").style.display = "flex";
-    } else {
-        document.getElementById("auth-link").style.display = "flex";
-        document.getElementById("register-link").style.display = "flex";
-        document.getElementById("logout-link").style.display = "none";
-        document.getElementById("account-link").style.display = "none";
+    // Перевірка верифікації email
+    if (!user.emailVerified) {
+      blockScreenForVerification();
+      verificationInterval = setInterval(() => {
+        user.reload().then(() => {
+          if (user.emailVerified) {
+            clearInterval(verificationInterval);
+            location.reload();
+          }
+        }).catch((error) => {
+          console.error("Помилка перевірки email:", error);
+        });
+      }, 10000);
     }
 
-    toggleUploadVisibility(); // ВАЖЛИВО: після всіх змін
-});
+    // Оновлення інтерфейсу
+    
+    const userInfoEl = document.getElementById("user-info");
 
+    
+    if (userInfoEl) userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
+
+    document.getElementById("auth-link")?.style?.setProperty("display", "none");
+    document.getElementById("register-link")?.style?.setProperty("display", "none");
+    document.getElementById("logout-link")?.style?.setProperty("display", "flex");
+    document.getElementById("account-link")?.style?.setProperty("display", "flex");
+
+    // Перевірка віку
+    const uid = user.uid;
+    database.ref("users/" + uid).once("value").then(snapshot => {
+      const userData = snapshot.val();
+      const birthStr = userData.birthdate;
+
+      if (!userData.email || !userData.birthdate) {
+        // Показати модальне вікно
+        document.getElementById("birthdate-modal").style.display = "flex";
+      }
+
+      const match = birthStr?.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (!match) {
+        alert("Некоректний формат дати народження.");
+        return;
+      }
+
+      const [, day, month, year] = match;
+      const birthDate = new Date(`${year}-${month}-${day}`);
+      const today = new Date();
+
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      const NSFW = document.getElementById("nsfw");
+      const emailEl = document.getElementById("email");
+      const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+      const nsfwInfo = document.getElementById("information-nsfw");
+      const viewBirthdate = document.getElementById("view");
+      if (nsfwCheckbox) {
+        if (age < 18) {
+          nsfwCheckbox.checked = false;
+          NSFW.checked = false;
+          nsfwCheckbox.disabled = true;
+          if (NSFW) NSFW.style.display = "none";
+          if (nsfwInfo) nsfwInfo.style.display = "block";
+          if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
+          if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
+
+        } else {
+          nsfwCheckbox.disabled = false;
+          if (nsfwInfo) nsfwInfo.style.display = "none";
+          if (NSFW) NSFW.style.display = "block";
+          if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
+          if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
+          nsfwCheckbox.addEventListener("change", function () {
+            showNSFW = this.checked;
+            loadVideos();
+          });
+        }
+      }
+    });
+
+  } else {
+    currentUserEmail = null;
+    document.getElementById("auth-link")?.style?.setProperty("display", "flex");
+    document.getElementById("register-link")?.style?.setProperty("display", "flex");
+    document.getElementById("logout-link")?.style?.setProperty("display", "none");
+    document.getElementById("account-link")?.style?.setProperty("display", "none");
+  }
+
+  toggleUploadVisibility();
+});
+function submitBirthdate() {
+  const user = firebase.auth().currentUser;
+  const input = document.getElementById("birthdate-input").value;
+  const nameInput = document.getElementById("name-input").value;
+  const supernameInput = document.getElementById("supername-input").value;
+
+
+  if (!input || !nameInput || !supernameInput) {
+    alert("Будь ласка, введіть дату народження.");
+    return;
+  }
+
+  const [year, month, day] = input.split("-");
+  const formattedDate = `${day}.${month}.${year}`;
+
+  firebase.database().ref("users/" + user.uid).update({
+    birthdate: formattedDate,
+    email: user.email,
+    name: nameInput,
+    supername: supernameInput
+  }).then(() => {
+    alert("Дата збережена.");
+    document.getElementById("birthdate-modal").style.display = "none";
+  });
+}
 document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
                 alert("Ви вийшли з акаунту.");
