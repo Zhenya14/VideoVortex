@@ -3,8 +3,9 @@
   "short_name": "Vortex",
   "start_url": "index.html",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#000000",
-  "theme_color": "#1a1a1a",
+  "theme_color": "#1a1a1a"
   "icons": [
     {
       "src": "VideoVortex_logo.ico",    
