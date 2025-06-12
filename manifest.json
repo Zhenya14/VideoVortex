@@ -1,7 +1,7 @@
 {
   "name": "VideoVortex",
   "short_name": "Vortex",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#000000",
