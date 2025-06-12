@@ -607,7 +607,7 @@ color: #ffffff;
   <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
   <button onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
 </div>
-
+<button id="installBtn" style="display:none;">Встановити додаток</button>
     <div class="container" id="container">
         <div class="video-container" id="video-gallery"></div>
          
@@ -628,7 +628,26 @@ color: #ffffff;
     .catch(err => console.error('Помилка реєстрації Service Worker:', err));
 		}
 	</script>
-  
+  <script>
+	  let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();  // Забираємо стандартний банер
+  deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
+  installBtn.style.display = 'block'; // Показуємо кнопку
+});
+
+installBtn.addEventListener('click', async () => {
+  installBtn.style.display = 'none'; // Ховаємо кнопку після кліку
+  if (deferredPrompt) {
+    deferredPrompt.prompt();          // Показуємо системний діалог встановлення
+    const choiceResult = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    console.log('Встановлення: ', choiceResult.outcome);
+  }
+});
+  </script>
     <script src="script.js"></script>
 </body>                                                          
 </html>
