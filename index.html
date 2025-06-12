@@ -620,6 +620,13 @@ color: #ffffff;
 		<h3>Версія додатка:</h3>
 		<p>2.1.2</p>
 	</footer>
+	<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker зареєстровано'))
+      .catch(err => console.error('SW помилка', err));
+  }
+	</script>
     <script src="script.js"></script>
 </body>                                                          
 </html>
