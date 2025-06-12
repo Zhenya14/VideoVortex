@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
@@ -623,7 +623,7 @@ color: #ffffff;
 	</footer>
 	<script>
 		if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
+  navigator.serviceWorker.register('service-worker.js')
     .then(() => console.log('Service Worker зареєстрований'))
     .catch(err => console.error('Помилка реєстрації Service Worker:', err));
 		}
