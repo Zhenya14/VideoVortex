@@ -485,7 +485,7 @@ color: #ffffff;
             <a href="#" id="account-link" style="display: none;">
                 <i class="material-icons">person</i><span class="icon-text" id="email"></span>
             </a>
-		    <button id="installBtn" style="display:none;">Встановити додаток</button>
+		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
 	<form>
@@ -638,7 +638,7 @@ const installBtn = document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();  // Забираємо стандартний банер
   deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
-  installBtn.style.display = 'block'; // Показуємо кнопку
+  installBtn.style.display = 'flex'; // Показуємо кнопку
 });
 
 installBtn.addEventListener('click', async () => {
