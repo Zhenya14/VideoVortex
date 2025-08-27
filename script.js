@@ -317,6 +317,7 @@ function deleteAccount() {
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Вхід успішний!");
+location.reload();
                     currentUserEmail = userCredential.user.email;
                     document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
@@ -357,7 +358,7 @@ auth.createUserWithEmailAndPassword(email, password)
     birthdate: birthdate
   });
                     alert("Ви успішно зареєструвалися!");
-                    document.getElementById("auth-form").style.display = "none";
+                   location.reload(); document.getElementById("auth-form").style.display = "none";
                     document.getElementById("register-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
