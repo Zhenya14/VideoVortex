@@ -410,7 +410,8 @@ alert("Сталася помилка при увімкненні функції 
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section">
+<button class="comment-button" id="signup" onclick="signIn()" style="display: none;"> Увійдіть, щоб коментувати</button>
+                <div class="comment-section" id="comment-section">
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
@@ -753,7 +754,8 @@ auth.onAuthStateChanged((user) => {
     
     if (userInfoEl) userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
 
-    document.getElementById("auth-link")?.style?.setProperty("display", "none");
+document.getElementById("signup")?.style?.setProperty("display", "none");
+document.getElementById("comment-section")?.style?.setProperty("display", "flex"); document.getElementById("auth-link")?.style?.setProperty("display", "none");
     document.getElementById("register-link")?.style?.setProperty("display", "none");
     document.getElementById("logout-link")?.style?.setProperty("display", "flex");
     document.getElementById("account-link")?.style?.setProperty("display", "flex");
@@ -816,7 +818,10 @@ auth.onAuthStateChanged((user) => {
 
   } else {
     currentUserEmail = null;
-    document.getElementById("auth-link")?.style?.setProperty("display", "flex");
+   document.getElementById("signup")?.style?.setProperty("display", "flex");
+
+document.getElementById("comment-section")?.style?.setProperty("display", "none");
+ document.getElementById("auth-link")?.style?.setProperty("display", "flex");
     document.getElementById("register-link")?.style?.setProperty("display", "flex");
     document.getElementById("logout-link")?.style?.setProperty("display", "none");
     document.getElementById("account-link")?.style?.setProperty("display", "none");
