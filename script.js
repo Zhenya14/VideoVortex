@@ -183,11 +183,11 @@ const firebaseConfig = {
         document.getElementById("photo-container").style.display = 'flex';
         }
             document.getElementById("video").onclick = function() {
-           document.getElementById("container").style.display = 'flex';
+           document.getElementById("video-container").style.display = 'flex';
         document.getElementById("photo-container").style.display = 'none';
         }
         document.getElementById("smart-post").onclick = function() {
-           document.getElementById("container").style.display = 'none';
+           document.getElementById("video-container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
         }
             document.getElementById("smart-video").onclick = function() {
