@@ -6,29 +6,33 @@
   <title>Профіль користувача</title>
   <style>
     nav {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      background: #1c1e22;
-      padding: 10px 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-    }
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 8px 15px;
-      border-radius: 5px;
-      transition: color 0.3s ease, background 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    nav a:hover {
-      background-color: #4facfe;
-      color: #1c1e22;
-    }
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 10px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+        nav a {
+color: #ffffff;
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 35px;
+    transition: color 0.3s ease, background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        }
+        nav a:hover {
+            background-color: #4facfe;
+            color: #1c1e22;
+        }
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #ff7e5f, #feb47b);
