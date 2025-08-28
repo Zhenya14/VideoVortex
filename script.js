@@ -319,7 +319,9 @@ function deleteAccount() {
                     alert("Вхід успішний!");
 location.reload();
                     currentUserEmail = userCredential.user.email;
-                    document.getElementById("auth-form").style.display = "none";
+document.getElementById("comment-input-${videoKey}").style.display = "flex";
+document.getElementById("signup").style.display = "none";
+ document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
@@ -359,7 +361,9 @@ auth.createUserWithEmailAndPassword(email, password)
   });
                     alert("Ви успішно зареєструвалися!");
                    location.reload(); document.getElementById("auth-form").style.display = "none";
-                    document.getElementById("register-form").style.display = "none";
+document.getElementById("comment-input-${videoKey}").style.display = "flex";
+document.getElementById("signup").style.display = "none";
+ document.getElementById("register-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
                     document.getElementById("register-link").style.display = "none";
                     document.getElementById("upload-link").style.display = "flex";
@@ -410,8 +414,8 @@ alert("Сталася помилка при увімкненні функції 
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-<button class="comment-button" id="signup" onclick="signIn()" style="display: none;"> Увійдіть, щоб коментувати</button>
                 <div class="comment-section" id="comment-section">
+<button class="comment-button" id="signup" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
@@ -755,7 +759,7 @@ auth.onAuthStateChanged((user) => {
     if (userInfoEl) userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
 
 document.getElementById("signup")?.style?.setProperty("display", "none");
-document.getElementById("comment-section")?.style?.setProperty("display", "flex"); document.getElementById("auth-link")?.style?.setProperty("display", "none");
+document.getElementById("comment-input-${videoKey}")?.style?.setProperty("display", "flex"); document.getElementById("auth-link")?.style?.setProperty("display", "none");
     document.getElementById("register-link")?.style?.setProperty("display", "none");
     document.getElementById("logout-link")?.style?.setProperty("display", "flex");
     document.getElementById("account-link")?.style?.setProperty("display", "flex");
@@ -820,7 +824,7 @@ document.getElementById("comment-section")?.style?.setProperty("display", "flex"
     currentUserEmail = null;
    document.getElementById("signup")?.style?.setProperty("display", "flex");
 
-document.getElementById("comment-section")?.style?.setProperty("display", "none");
+document.getElementById("comment-input-${videoKey}")?.style?.setProperty("display", "none");
  document.getElementById("auth-link")?.style?.setProperty("display", "flex");
     document.getElementById("register-link")?.style?.setProperty("display", "flex");
     document.getElementById("logout-link")?.style?.setProperty("display", "none");
