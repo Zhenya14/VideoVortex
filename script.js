@@ -217,7 +217,7 @@ const firebaseConfig = {
 	    function blockScreenForVerification() {
     document.body.innerHTML = `
                 <h1>Підтвердьте вашу електронну пошту</h1>
-                <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт!</p>
+                <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт! Якщо немає листа, то перевірте папку "Спам".</p>
                 <button style="
                     margin-top: 20px;
                     padding: 10px 20px;
@@ -332,7 +332,7 @@ document.getElementById("signup").style.display = "none";
                     document.getElementById("account-link").style.display = "flex";
                 })
                 .catch((error) => {
-                    alert("Невірний логін або пароль." + error);
+                    alert("Невірний логін або пароль." + error.message);
                 });
         }
         function signUp() {
