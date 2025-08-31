@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoVortex</title>
+    <link rel="icon" href="VideoVortex_logo.ico">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+	<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1c1e22">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<script defer>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("✅ SW зареєстровано"))
+      .catch(err => console.error("❌ Помилка SW:", err));
+  }
+</script>
+	<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JQTQ0P69EF');
+</script>
+<style>
+.btn-container {
+    display: flex;
+    flex-basis: auto;
+    justify-content: center;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+.downloads-list {
+    font-size: 30px;
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+    width: 100%;
+    max-width: 350px;
+    margin-top: -3px;
+}
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
+        }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #ffffff; 
+            text-align: center; 
+            padding: 0 20px; 
+            margin: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .container { 
+    margin-top: 130px;
+                width: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+        } 
+        .snowflake {
+    position: fixed;
+    top: -10px;
+    color: #fff;
+    font-size: 1em;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 1000;
+}
+::-webkit-scrollbar {
+width: 10px;
+background-color: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background-color: #888;
+border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}
+::-webkit-scrollbar {
+height: 10px;
+}
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
+        .form, .upload-form, .auth-form, .register-form, .account-form, .edit-form, .version-form, .upload-photo-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 130px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+            width: 100%; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+        button { 
+            background: #4facfe; 
+            color: white; 
+            border-radius: 35px;
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+        button:hover { 
+            background: #00f2fe;
+        }
+        .video-container {
+            display: flex;
+            margin-top: 20px;
+           flex-direction: column-reverse; 
+        }
+        video { 
+            width: 100%; 
+            margin: 10px auto; 
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+	    .video-comment { 
+            display: inline-table;
+		        height: 300px;
+            background-color: blue; 
+            padding: 5px;
+        }
+#video-container {
+            display: flex;
+    margin-top: 20px;
+    flex-direction: column-reverse;
+        }
+        .photo-container {
+            display: flex;
+    margin-top: 20px;
+    flex-direction: column-reverse;
+        }
+        /* Стилі для зображень з класом .photo-item */
+img.photo-item {
+    width: 100%;  /* Зображення заповнює ширину контейнера */
+    height: auto; /* Пропорції зображення зберігаються */
+    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+    border-radius: 8px; /* Округлення кутів зображення */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
+    }
+    .comment-section {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.comment-input {
+    width: 80%;  /* Ширина поля вводу */
+    padding: 10px;
+    margin-right: 10px;  /* Відступ між полем вводу та кнопкою */
+    background-color: #fff;
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+    color: #333;
+    box-sizing: border-box;  /* Враховує padding в ширину */
+}
+
+.comment-button {
+    width: 50px;
+    height: 40px;  /* Встановлюємо висоту кнопки */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 35px;
+    cursor: pointer;
+}
+
+.comment-button:hover {
+    background-color: #0056b3;
+}
+
+.comment-button:hover {
+    background-color: #0056b3;
+}
+
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+        #delete-account { 
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 35px;
+            transition: color 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: red; 
+            color: white; 
+            cursor: pointer;
+        }
+.nsfw-label {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
+    display: inline-block;
+}
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.comments {
+    text-align: left;
+}
+.menu {
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    border-radius: 0 25px 25px 0;
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
+.smart-menu {
+display: none;
+}
+.smart-menu a {
+    padding: 10px 0px;
+    text-decoration: none;
+    color: white;
+    display: grid;
+    transition: 0.3s;
+}
+.menu a {
+    border-radius: 35px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: #4facfe;
+}
+
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
+#open-menu {
+	display: flex;
+}
+.action-menu {
+bottom: 9%;
+    left: 12%;
+    position: fixed;
+    background: #1c1e22;
+    border: 1px solid #4facfe;
+    border-radius: 8px;
+    padding: 5px;
+    z-index: 10;
+}
+
+.action-menu button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+#photo-container {
+  display: none;
+}
+.action-menu button:hover {
+  background-color: #4facfe;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 10px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+        nav a {
+color: #ffffff;
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 35px;
+    transition: color 0.3s ease, background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        }
+        nav a:hover {
+            background-color: #4facfe;
+            color: #1c1e22;
+        }
+        .icon-text {
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .icon-text {
+                display: none;
+            }
+        #upload-link {
+        display: none;
+    }
+    #upload-link-photo {
+        display: none;
+    }
+    #smart-upload-link {
+        display: none;
+    }
+		.modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  margin: 20% auto;
+  width: 300px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+    #smart-upload-link-photo {
+        display: none;
+    }
+	.smart-menu {
+    display: flex;
+    bottom: 0;
+    left: 0;
+    border-radius: 16px 16px 0 0;
+    justify-content: space-around;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+}
+#timer {
+            font-size: 20px;
+            color: red;
+        }
+        #alert {
+            display: none;
+            background-color: yellow;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        input[type="number"] {
+            padding: 5px;
+            margin: 10px 0;
+        }
+        .save {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .save:hover {
+            background-color: #45a049;
+        }
+        }
+ #nsfw-toggle {
+        display: none;
+}
+	    }
+    </style>
+</head>
+<body> 
+
+ <nav>
+        <div style="display: flex; align-items: center;">
+            <a href="#" id="open-menu" onclick="toggleSidebar()">
+    <i class="material-icons">menu</i>
+</a>
+            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup><sup><div id="timer"></div></sup></a>
+        </div>
+        <div style="display: flex; gap: 15px; margin-left: auto;">
+            <a href="#" id="upload-link" style="display: none;">
+                <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
+            </a>
+            <div style="display: flex; gap: 15px; margin-left: auto;">
+            <a href="#" id="upload-link-photo" style="display: none;">
+                <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
+            </a>
+            <a href="#" id="auth-link">
+                <i class="material-icons">login</i><span class="icon-text">Увійти</span>
+            </a>
+            <a href="#" id="register-link">
+                <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
+            </a>
+            <a href="#" id="logout-link" style="display: none;">
+                <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
+            <a href="#" id="account-link" style="display: none;">
+                <i class="material-icons">person</i><span class="icon-text" id="email"></span>
+            </a>
+		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
+        </div>
+    </nav>
+	<form>
+<div class="auth-form" id="auth-form">
+            <h2>Увійти</h2>
+            <input type="email" id="auth-email" placeholder="Електронна пошта">
+            <input type="password" id="auth-password" placeholder="Пароль">
+            <button onclick="signIn()">Увійти</button>
+
+        </div>
+	</form>
+<div class="account-form" id="account-form">
+            <h2>Інформація про акаунт</h2>
+            <p id="user-info"></p>
+<p id="view">Дата народження: Невідома</p>
+	<div id="requests-container"></div>
+<button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
+        <label>
+            <input type="checkbox" id="show-nsfw-videos">Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>
+        <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
+</label>
+<h1>Налаштування обмеження екранного часу</h1>
+    <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
+    <input type="number" id="maxTimeInput" value="45" min="1" />
+    <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
+    
+    <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
+    <label for="sleepStart">Час початку сну:</label>
+    <input type="time" id="sleepStart" value="21:00">
+    
+    <label for="sleepEnd">Час закінчення сну:</label>
+    <input type="time" id="sleepEnd" value="07:00">
+        </div>
+	<form>
+<div class="register-form" id="register-form">
+            <h2>Реєстрація</h2>
+            <input type="text" id="register-name" placeholder="Ім'я">
+            <input type="text" id="register-supername" placeholder="Прізвище">
+            <input type="email" id="register-email" placeholder="Електронна адреса">
+            <p>День народження:<input type="date" id="birthdate">
+            <input type="password" id="register-password" placeholder="Введіть пароль">
+            <input type="password" id="register-confirmation-password" placeholder="Введіть пароль для підтвердження">
+            <button onclick="signUp()">Зареєструватися</button>
+        </div>
+	</form>
+        <div class="upload-form" id="upload-form">
+            <h2>Завантажити відео</h2>
+            <input type="text" id="video-title" placeholder="Назва відео">
+            <input type="text" id="video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
+            <textarea id="video-description" placeholder="Опис відео"></textarea>
+            <input type="file" id="video-file" accept="video/*"> 
+		
+   <label for="private-checkbox"><input type="checkbox" id="private-checkbox">Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+
+           <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+<h3>Експериментальна функція</h3>
+		<label for="video-password">Пароль для відео(необов’язково)<sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>:</label>
+  <input type="password" id="video-password" />
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>
+            <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
+        </div>
+<div class="edit-form" id="edit-form" style="display: none;">
+            <h2>Редагувати відео</h2>
+            <input type="text" id="edit-video-title" placeholder="Назва відео">
+            <input type="text" id="edit-video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
+            <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
+ 
+            <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
+        </div>
+
+        <div class="upload-photo-form" id="upload-photo-form">
+            <h2>Завантажити фото</h2>
+            <input type="text" id="photo-title" placeholder="Назва Фото">
+            <input type="text" id="photo-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
+            <textarea id="photo-description" placeholder="Опис Фото"></textarea>
+            <input type="file" id="photo-file" accept="image/*"> 
+            
+            <div id="progress-photo-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>
+            <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
+        </div>
+	<div  class="smart-menu">
+
+    <a href="#" id="smart-post" onclick="post()">
+        <i class="material-icons">photo</i><span>Дописи</span>
+    </a>
+<a href="#" id="smart-upload-link">
+                <i class="material-icons">upload</i><span>Завантажити відео</span>
+            </a>
+<a href="#" id="smart-upload-link-photo">
+                <i class="material-icons">upload</i><span>Завантажити фото</span>
+            </a>
+    <a href="#" id="smart-video" onclick="video()">
+        <i class="material-icons">movie</i><span>Відео</span>
+    </a>
+</div>
+                <div class="menu" style="align-items: center;">
+    <a href="#" id="close-menu" onclick="closeSidebar()">
+        <i class="material-icons">close</i>
+    </a>
+    <a href="#" id="post" onclick="post()">
+        <i class="material-icons">photo</i><span style="margin-left: 5px">Дописи</span>
+    </a>
+    <a href="#" id="video" onclick="video()">
+        <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
+    </a>
+</div>
+<div id="birthdate-modal" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    text-align: center;
+    color: white;
+">
+  <input type="text" id="name-input" placeholder="Ім'я" style="padding: 10px; font-size: 1em;">
+<input type="text" id="supername-input" placeholder="Прізвище" style="padding: 10px; font-size: 1em;">
+<h2>Вкажіть дату народження</h2>
+  <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
+  <button onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
+</div>
+    <div class="container" id="video-container">
+        <div class="video-container" id="video-gallery"></div>
+         
+    </div>
+
+    <div class="container" id="photo-container">
+        <div class="photo-container" id="photo-gallery"></div>
+         
+    </div>
+	<footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
+		<h3>Версія додатка:</h3>
+		<p>2.1.4</p>
+	</footer>
+	
+  <script>
+	  let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();  // Забираємо стандартний банер
+  deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
+  installBtn.style.display = 'flex'; // Показуємо кнопку
+});
+
+installBtn.addEventListener('click', async () => {
+  installBtn.style.display = 'none'; // Ховаємо кнопку після кліку
+  if (deferredPrompt) {
+    deferredPrompt.prompt();          // Показуємо системний діалог встановлення
+    const choiceResult = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    console.log('Встановлення: ', choiceResult.outcome);
+  }
+});
+  </script>
+    <script src="script.js"></script>
+</body>                                                          
+</html>

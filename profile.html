@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профіль користувача</title>
+  <style>
+    nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 10px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+        nav a {
+color: #ffffff;
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 35px;
+    transition: color 0.3s ease, background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        }
+        nav a:hover {
+            background-color: #4facfe;
+            color: #1c1e22;
+        }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #ff7e5f, #feb47b);
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+   .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+    .posts .post {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    }
+    .video-item {
+      width: 320px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">
+      <img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+      <h1 style="padding-left: 5px;">VideoVortex</h1>
+      <sup style="margin-left: 3px; font-size: 0.6em;">beta</sup>
+      <sup><div id="timer"></div></sup>
+    </a>
+  </nav>
+
+  <div class="profile-header">
+    <div class="avatar" id="avatar">?</div>
+    <div>
+      <h2 id="userName">Завантаження...</h2>
+      <div id="joinDate"></div>
+    </div>
+  </div>
+
+  <div class="posts">
+    <h3>Публікації</h3>
+    <div id="video-gallery"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+      authDomain: "videovortex-235cd.firebaseapp.com",
+      databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "videovortex-235cd",
+      storageBucket: "videovortex-235cd.appspot.com",
+      messagingSenderId: "681594250269",
+      appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const rtdb = getDatabase(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const avatar = urlParams.get("avatar") || "?";
+    const author = urlParams.get("author") || "Невідомий автор";
+
+    document.getElementById("avatar").textContent = avatar;
+    document.getElementById("userName").textContent = author;
+
+    // Симуляція дати приєднання (опціонально: замінити на дані з бази)
+    document.getElementById("joinDate").textContent = "Приєднався: " + new Date().toLocaleDateString("uk-UA");
+
+    async function loadVideos() {
+      const videoGallery = document.getElementById("video-gallery");
+      videoGallery.innerHTML = "";
+
+      const snapshot = await get(ref(rtdb, "videos"));
+
+      snapshot.forEach((childSnapshot) => {
+        const videoData = childSnapshot.val();
+
+        // Показуємо лише відео, створені цим автором
+        if (videoData.author !== author) return;
+
+        const videoElement = document.createElement("video");
+        videoElement.src = videoData.url;
+        videoElement.classList.add("video-item");
+        videoElement.controls = true;
+
+        if (videoData.nsfw || videoData.password) {
+          videoElement.style.filter = 'blur(30px)';
+        }
+
+        videoElement.onclick = () => {
+          if (videoData.password) {
+            const userPassword = prompt("Це приватне відео. Введіть пароль:");
+            if (videoData.password !== userPassword) {
+              alert("Неправильний пароль!");
+              return;
+            }
+            videoElement.style.filter = 'none';
+          } else {
+            videoElement.style.filter = 'none';
+          }
+        };
+
+        const container = document.createElement("div");
+        container.className = "post";
+        container.appendChild(videoElement);
+
+        videoGallery.appendChild(container);
+      });
+    }
+
+    loadVideos();
+  </script>
+</body>
+</html>
