@@ -319,7 +319,7 @@ function deleteAccount() {
                     alert("Вхід успішний!");
 location.reload();
                     currentUserEmail = userCredential.user.email;
-document.getElementById("comment-input-${videoKey}").style.display = "flex";
+document.getElementById("comment-input").style.display = "flex";
 document.getElementById("signup").style.display = "none";
  document.getElementById("auth-form").style.display = "none";
                     document.getElementById("auth-link").style.display = "none";
@@ -332,7 +332,7 @@ document.getElementById("signup").style.display = "none";
                     document.getElementById("account-link").style.display = "flex";
                 })
                 .catch((error) => {
-                    alert("Невірний логін або пароль." + error.message);
+                    alert("Невірний логін або пароль.");
                 });
         }
         function signUp() {
