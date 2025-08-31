@@ -332,7 +332,7 @@ document.getElementById("signup").style.display = "none";
                     document.getElementById("account-link").style.display = "flex";
                 })
                 .catch((error) => {
-                    alert("Невірний логін або пароль.");
+                    alert("Невірний логін або пароль." + error);
                 });
         }
         function signUp() {
