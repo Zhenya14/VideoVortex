@@ -765,16 +765,15 @@ auth.onAuthStateChanged((user) => {
         });
       }, 10000);
     }
-window.addEventListener("DOMContentLoaded", () => {
-        const domainOnlyLabel = document.getElementById("domain-only-label");
-        if (domainOnlyLabel) {
-            console.log("Авторизований email:", user.email); // для перевірки
-            if (user.email.toLowerCase().endsWith("@kfccte-nau.ukr.education")) {
-                domainOnlyLabel.style.display = "block";
-            } else {
-                domainOnlyLabel.style.display = "none";
-            }
+const domainOnlyLabel = document.getElementById("domain-only-label");
+    if (domainOnlyLabel) {
+        console.log("Авторизований email:", user.email); // ✅ для дебагу
+        if (user.email.toLowerCase().endsWith("@kfccte-nau.ukr.education")) {
+            domainOnlyLabel.style.display = "block";
+        } else {
+            domainOnlyLabel.style.display = "none";
         }
+    }
     });
     // Оновлення інтерфейсу
     
