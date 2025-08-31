@@ -403,7 +403,9 @@ alert("Сталася помилка при увімкненні функції 
 
             if (videoData.nsfw && !showNSFW) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
-
+            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) {
+    return; // Пропускаємо відео
+}
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
@@ -589,6 +591,8 @@ function uploadVideo() {
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
+    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
     const progressContainer = document.getElementById("progress-container");
@@ -598,51 +602,45 @@ function uploadVideo() {
         return;
     }
 
-    if (videoFile) {
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
-        const uploadTask = storageRef.put(videoFile);
+    const storageRef = storage.ref(`videos/${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                uploadProgress.value = progress;
-                progressText.innerText = `${Math.round(progress)}%`;
-                progressContainer.style.display = "block";
-            }, 
-            (error) => {
-                alert("Сталася помилка при завантаженні відео.");
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    // Get current date
-                    const currentDate = new Date().toLocaleDateString();
+    uploadTask.on('state_changed',
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadProgress.value = progress;
+            progressText.innerText = `${Math.round(progress)}%`;
+            progressContainer.style.display = "block";
+        },
+        (error) => {
+            alert("Сталася помилка при завантаженні відео.");
+        },
+        () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                const currentDate = new Date().toLocaleDateString();
 
-                    // Save video info to database
-                    database.ref("videos").push({
-                        title: videoTitle,
-                        author: videoAuthor,
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: videoDescription,
-			password: videoPassword || null,
-                        views: 0,
-                        private: privateVideo,
-                        nsfw: isNSFW,
-                        publishDate: currentDate // Save the publish date
-                    }).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos(); // Reload videos
-                        document.getElementById("upload-form").reset();
-                        progressContainer.style.display = "none"; // Hide progress
-                    });
+                database.ref("videos").push({
+                    title: videoTitle,
+                    author: videoAuthor,
+                    email: currentUserEmail,
+                    url: downloadURL,
+                    description: videoDescription,
+                    password: videoPassword || null,
+                    views: 0,
+                    private: privateVideo,
+                    nsfw: isNSFW,
+                    domainRestrict: domainRestrict, // ✅ Зберігаємо прапорець
+                    publishDate: currentDate
+                }).then(() => {
+                    alert("Відео завантажено!");
+                    loadVideos();
+                    document.getElementById("upload-form").reset();
+                    progressContainer.style.display = "none";
                 });
-            }
-        );
-    } else {
-        alert("Будь ласка, виберіть відео для завантаження.");
-    }
+            });
+        }
+    );
 }
-
 
 
 function uploadComment(videoKey) {
@@ -767,7 +765,14 @@ auth.onAuthStateChanged((user) => {
         });
       }, 10000);
     }
-
+const domainRestrictContainer = document.getElementById("domain-restrict-container");
+if (domainRestrictContainer) {
+    if (currentUserEmail && currentUserEmail.endsWith("@kfccte-nau.ukr.education")) {
+        domainRestrictContainer.style.display = "block";
+    } else {
+        domainRestrictContainer.style.display = "none";
+    }
+}
     // Оновлення інтерфейсу
     
     const userInfoEl = document.getElementById("user-info");
