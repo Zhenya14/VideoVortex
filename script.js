@@ -683,22 +683,39 @@ function loadComments(videoKey) {
 
     database.ref("comments").orderByChild("videoKey").equalTo(videoKey).once("value").then(snapshot => {
         if (!snapshot.exists()) {
-            // Якщо немає коментарів, додаємо повідомлення
-            commentsContainer.innerHTML = `<p style="text-align: center;">Ще немає коментарів...</p>`;
+            const noComment = document.createElement("p");
+            noComment.style.textAlign = "center";
+            noComment.textContent = "Ще немає коментарів...";
+            commentsContainer.appendChild(noComment);
             return;
         }
-        
+
         snapshot.forEach(childSnapshot => {
             const data = childSnapshot.val();
+
             const commentDiv = document.createElement("div");
             commentDiv.className = "comments";
-            commentDiv.innerHTML = `<strong>${data.email}</strong>: ${data.comment} <br> <small>${data.publishDate}</small>`;
+
+            const userEl = document.createElement("strong");
+            userEl.textContent = data.email;
+
+            const textEl = document.createElement("span");
+            textEl.textContent = `: ${data.comment}`;
+
+            const br = document.createElement("br");
+
+            const dateEl = document.createElement("small");
+            dateEl.textContent = data.publishDate;
+
+            commentDiv.appendChild(userEl);
+            commentDiv.appendChild(textEl);
+            commentDiv.appendChild(br);
+            commentDiv.appendChild(dateEl);
+
             commentsContainer.appendChild(commentDiv);
         });
     }).catch(error => console.error("Помилка завантаження коментарів: ", error));
-
 }
-
 
 
 
