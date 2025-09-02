@@ -310,7 +310,8 @@ function deleteAccount() {
     }
 }
 
-        function signIn() {
+        function signIn(event) {
+if (event) event.preventDefault(); // блокуємо перезавантаження
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
 
@@ -335,7 +336,8 @@ document.getElementById("signup").style.display = "none";
                     alert("Невірний логін або пароль." + error);
                 });
         }
-        function signUp() {
+        function signUp(event) {
+if (event) event.preventDefault(); // блокуємо перезавантаження
 	    const birthInput = document.getElementById("birthdate").value;
             const name = document.getElementById("register-name").value.trim();
             const supername = document.getElementById("register-supername").value.trim();
