@@ -592,7 +592,7 @@ function uploadVideo() {
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
-    const eduOnly = document.getElementById("edu-checkbox")?.checked || false;
+    const eduOnly = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
