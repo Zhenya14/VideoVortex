@@ -51,7 +51,7 @@
 .slider {
   position: absolute;
   cursor: pointer;
-  background-color: #ccc;
+  background-color: red;
   border-radius: 34px;
   top: 0;
   left: 0;
@@ -565,7 +565,9 @@ color: #ffffff;
 	<div id="requests-container"></div>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
         <label>
-            <input type="checkbox" id="show-nsfw-videos">Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>
+<label class="switch">
+          <input type="checkbox" id="show-nsfw-videos"></label><span class="slider round"></span>
+       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span>
         <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
 </label>
 <h1>Налаштування обмеження екранного часу</h1>
@@ -599,12 +601,11 @@ color: #ffffff;
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
 		
-   <label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
+   <label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"></label><span class="slider round"></span><span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span>
 <div id="domain-restrict-container" style="display: none; margin-top: 10px;">
     <label class="switch">
-        <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span>
-        Тільки для користувачів з доменом kfccte-nau.ukr.education
-    </label>
+        <input type="checkbox" id="domain-restrict-checkbox"></label><span class="slider round"></span>
+        <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span>
 </div>
            <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 <h3>Експериментальна функція</h3>
@@ -619,7 +620,6 @@ color: #ffffff;
 <div class="edit-form" id="edit-form" style="display: none;">
             <h2>Редагувати відео</h2>
             <input type="text" id="edit-video-title" placeholder="Назва відео">
-            <input type="text" id="edit-video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
             <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
  
             <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
