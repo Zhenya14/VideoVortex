@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Авторизація – VideoVortex</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .form-container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+    .form-container input { display: block; width: 100%; margin: 10px 0; padding: 10px; }
+    .form-container button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; }
+    .form-container button:hover { background: #0056b3; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Увійти</h2>
+    <form id="login-form">
+      <input type="email" id="auth-email" placeholder="Email" required>
+      <input type="password" id="auth-password" placeholder="Пароль" required>
+      <button type="submit">Увійти</button>
+    </form>
+
+    <h2>Реєстрація</h2>
+    <form id="register-form">
+      <input type="text" id="register-name" placeholder="Ім’я" required>
+      <input type="text" id="register-supername" placeholder="Прізвище" required>
+      <input type="date" id="birthdate" required>
+      <input type="email" id="register-email" placeholder="Email" required>
+      <input type="password" id="register-password" placeholder="Пароль" required>
+      <input type="password" id="register-confirmation-password" placeholder="Підтвердіть пароль" required>
+      <button type="submit">Зареєструватися</button>
+    </form>
+  </div>
+
+  <script>
+    // 🔹 Налаштуй свій Firebase
+    const firebaseConfig = {
+      apiKey: "ТВОЯ_API_KEY",
+      authDomain: "ТВОЄ_ДОМЕН.firebaseapp.com",
+      databaseURL: "https://ТВОЄ.firebaseio.com",
+      projectId: "ТВОЄ_ID",
+      storageBucket: "ТВОЄ.appspot.com",
+      messagingSenderId: "ТВОЄ_ID",
+      appId: "ТВОЄ_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // 🟢 Авторизація
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("auth-email").value;
+      const password = document.getElementById("auth-password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("Вхід успішний!");
+          window.location.href = "index.html"; // повернення на головну
+        })
+        .catch((error) => {
+          alert("Помилка входу: " + error.message);
+        });
+    });
+
+    // 🟢 Реєстрація
+    document.getElementById("register-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("register-name").value.trim();
+      const supername = document.getElementById("register-supername").value.trim();
+      const email = document.getElementById("register-email").value.trim();
+      const password = document.getElementById("register-password").value.trim();
+      const confirmation = document.getElementById("register-confirmation-password").value.trim();
+      const birthInput = document.getElementById("birthdate").value;
+      const [year, month, day] = birthInput.split("-");
+      const birthdate = `${day}.${month}.${year}`;
+
+      if (password !== confirmation) {
+        alert("Паролі не збігаються!");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          database.ref("users/" + uid).set({
+            name: name,
+            supername: supername,
+            email: email,
+            birthdate: birthdate
+          });
+          alert("Реєстрація успішна!");
+          window.location.href = "index.html"; // повернення на головну
+        })
+        .catch((error) => {
+          alert("Помилка реєстрації: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>
