@@ -535,10 +535,10 @@ color: #ffffff;
             <a href="#" id="upload-link-photo" style="display: none;">
                 <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
             </a>
-            <a href="#" id="auth-link">
+            <a href="auth.html" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
-            <a href="#" id="register-link">
+            <a href="auth.html" id="register-link">
                 <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
             </a>
             <a href="#" id="logout-link" style="display: none;">
@@ -549,15 +549,6 @@ color: #ffffff;
 		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
-	<form>
-<div class="auth-form" id="auth-form">
-            <h2>Увійти</h2>
-            <input type="email" id="auth-email" placeholder="Електронна пошта">
-            <input type="password" id="auth-password" placeholder="Пароль">
-            <button type="submit" onclick="signIn()">Увійти</button>
-
-        </div>
-	</form>
 <div class="account-form" id="account-form">
             <h2>Інформація про акаунт</h2>
             <p id="user-info"></p>
@@ -582,22 +573,10 @@ color: #ffffff;
     <label for="sleepEnd">Час закінчення сну:</label>
     <input type="time" id="sleepEnd" value="07:00">
         </div>
-	<form>
-<div class="register-form" id="register-form">
-            <h2>Реєстрація</h2>
-            <input type="text" id="register-name" placeholder="Ім'я">
-            <input type="text" id="register-supername" placeholder="Прізвище">
-            <input type="email" id="register-email" placeholder="Електронна адреса">
-            <p>День народження:<input type="date" id="birthdate">
-            <input type="password" id="register-password" placeholder="Введіть пароль">
-            <input type="password" id="register-confirmation-password" placeholder="Введіть пароль для підтвердження">
-            <button type="submit" onclick="signUp()">Зареєструватися</button>
-        </div>
-	</form>
+
         <div class="upload-form" id="upload-form">
             <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
-            <input type="text" style="display: none;" id="video-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
 		
