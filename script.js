@@ -404,7 +404,7 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
- <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
+ <button id="random-comments" onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
 <button class="comment-button" id="signup" style="display: none;" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
@@ -772,7 +772,9 @@ function updateUI(user) {
     document.getElementById("logout-link")?.style?.setProperty("display", "flex");
     document.getElementById("account-link")?.style?.setProperty("display", "flex");
     document.getElementById("upload-link")?.style?.setProperty("display", "flex");
-    document.getElementById("upload-link-photo")?.style?.setProperty("display", "flex");
+
+document.getElementById("random-comments")?.style?.setProperty("display", "flex");
+ document.getElementById("upload-link-photo")?.style?.setProperty("display", "flex");
     document.getElementById("smart-upload-link")?.style?.setProperty("display", "grid");
     document.getElementById("smart-upload-link-photo")?.style?.setProperty("display", "grid");
 
@@ -800,11 +802,13 @@ function updateUI(user) {
 
     // Кнопки/посилання
     document.getElementById("signup")?.style?.setProperty("display", "flex");
-    document.getElementById("auth-link")?.style?.setProperty("display", "flex");
+  document.getElementById("auth-link")?.style?.setProperty("display", "flex");
     document.getElementById("register-link")?.style?.setProperty("display", "flex");
     document.getElementById("logout-link")?.style?.setProperty("display", "none");
     document.getElementById("account-link")?.style?.setProperty("display", "none");
-    document.getElementById("upload-link")?.style?.setProperty("display", "none");
+ 
+document.getElementById("random-comments")?.style?.setProperty("display", "none");
+ document.getElementById("upload-link")?.style?.setProperty("display", "none");
     document.getElementById("upload-link-photo")?.style?.setProperty("display", "none");
     document.getElementById("smart-upload-link")?.style?.setProperty("display", "none");
     document.getElementById("smart-upload-link-photo")?.style?.setProperty("display", "none");
