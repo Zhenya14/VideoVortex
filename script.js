@@ -523,10 +523,14 @@ alert("Сталася помилка при увімкненні функції 
         });
     });
 }
-function insertRandomComment() {
-      const randomIndex = Math.floor(Math.random() * randomComments.length);
-      const comment = randomComments[randomIndex];
-      document.getElementById("comment-input-${videoKey}").value = comment;
+ function insertRandomComment(videoKey) {
+      const inputId = `comment-input-${videoKey}`;
+      const input = document.getElementById(inputId);
+
+      if (input) {
+        const randomIndex = Math.floor(Math.random() * randomComments.length);
+        input.value = randomComments[randomIndex];
+      }
     }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
