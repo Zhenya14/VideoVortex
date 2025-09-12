@@ -736,10 +736,69 @@ function toggleUploadVisibility() {
 window.addEventListener('load', toggleUploadVisibility);
 window.addEventListener('resize', toggleUploadVisibility);
 
-auth.onAuthStateChanged((user) => {
+// Функція для оновлення інтерфейсу
+function updateUI(user) {
   if (user) {
     currentUserEmail = user.email;
 
+    // Інфо про користувача
+    const userInfoEl = document.getElementById("user-info");
+    if (userInfoEl) userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
+
+    // Кнопки/посилання
+    document.getElementById("signup")?.style?.setProperty("display", "none");
+    document.getElementById("auth-link")?.style?.setProperty("display", "none");
+    document.getElementById("register-link")?.style?.setProperty("display", "none");
+    document.getElementById("logout-link")?.style?.setProperty("display", "flex");
+    document.getElementById("account-link")?.style?.setProperty("display", "flex");
+    document.getElementById("upload-link")?.style?.setProperty("display", "flex");
+    document.getElementById("upload-link-photo")?.style?.setProperty("display", "flex");
+    document.getElementById("smart-upload-link")?.style?.setProperty("display", "grid");
+    document.getElementById("smart-upload-link-photo")?.style?.setProperty("display", "grid");
+
+    // Показати поля коментарів для всіх відео
+    document.querySelectorAll('[id^="comment-input-"]').forEach(el => {
+      el.style.display = "flex";
+    });
+
+    // Доступ тільки для певного домену
+    const domainRestrictContainer = document.getElementById("domain-restrict-container");
+    if (domainRestrictContainer) {
+      if (currentUserEmail.endsWith("@kfccte-nau.ukr.education")) {
+        domainRestrictContainer.style.display = "block";
+      } else {
+        domainRestrictContainer.style.display = "none";
+      }
+    }
+
+  } else {
+    currentUserEmail = null;
+
+    // Інфо про користувача
+    const userInfoEl = document.getElementById("user-info");
+    if (userInfoEl) userInfoEl.textContent = "";
+
+    // Кнопки/посилання
+    document.getElementById("signup")?.style?.setProperty("display", "flex");
+    document.getElementById("auth-link")?.style?.setProperty("display", "flex");
+    document.getElementById("register-link")?.style?.setProperty("display", "flex");
+    document.getElementById("logout-link")?.style?.setProperty("display", "none");
+    document.getElementById("account-link")?.style?.setProperty("display", "none");
+    document.getElementById("upload-link")?.style?.setProperty("display", "none");
+    document.getElementById("upload-link-photo")?.style?.setProperty("display", "none");
+    document.getElementById("smart-upload-link")?.style?.setProperty("display", "none");
+    document.getElementById("smart-upload-link-photo")?.style?.setProperty("display", "none");
+
+    // Сховати коментарі
+    document.querySelectorAll('[id^="comment-input-"]').forEach(el => {
+      el.style.display = "none";
+    });
+  }
+}
+
+// Слухач стану автентифікації
+auth.onAuthStateChanged((user) => {
+  if (user) {
     // Перевірка верифікації email
     if (!user.emailVerified) {
       blockScreenForVerification();
@@ -747,101 +806,66 @@ auth.onAuthStateChanged((user) => {
         user.reload().then(() => {
           if (user.emailVerified) {
             clearInterval(verificationInterval);
-            location.reload();
+            updateUI(user); // без reload()
           }
         }).catch((error) => {
           console.error("Помилка перевірки email:", error);
         });
       }, 10000);
     }
-const domainRestrictContainer = document.getElementById("domain-restrict-container");
-if (domainRestrictContainer) {
-    if (currentUserEmail && currentUserEmail.endsWith("@kfccte-nau.ukr.education")) {
-        domainRestrictContainer.style.display = "block";
-    } else {
-        domainRestrictContainer.style.display = "none";
-    }
-}
-    // Оновлення інтерфейсу
-    
-    const userInfoEl = document.getElementById("user-info");
-
-    
-    if (userInfoEl) userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
-
-document.getElementById("signup")?.style?.setProperty("display", "none");
-document.getElementById("comment-input-${videoKey}")?.style?.setProperty("display", "flex"); document.getElementById("auth-link")?.style?.setProperty("display", "none");
-    document.getElementById("register-link")?.style?.setProperty("display", "none");
-    document.getElementById("logout-link")?.style?.setProperty("display", "flex");
-    document.getElementById("account-link")?.style?.setProperty("display", "flex");
 
     // Перевірка віку
     const uid = user.uid;
     database.ref("users/" + uid).once("value").then(snapshot => {
       const userData = snapshot.val();
-      const birthStr = userData.birthdate;
+      const birthStr = userData?.birthdate;
 
-      if (!userData.email || !userData.birthdate) {
-        // Показати модальне вікно
+      if (!userData?.email || !birthStr) {
         document.getElementById("birthdate-modal").style.display = "flex";
       }
 
       const match = birthStr?.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-      if (!match) {
-        alert("Некоректний формат дати народження.");
-        return;
-      }
+      if (match) {
+        const [, day, month, year] = match;
+        const birthDate = new Date(`${year}-${month}-${day}`);
+        const today = new Date();
 
-      const [, day, month, year] = match;
-      const birthDate = new Date(`${year}-${month}-${day}`);
-      const today = new Date();
-
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      
-      const NSFW = document.getElementById("nsfw");
-      const emailEl = document.getElementById("email");
-      const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-      const nsfwInfo = document.getElementById("information-nsfw");
-      const viewBirthdate = document.getElementById("view");
-      if (nsfwCheckbox) {
-        if (age < 18) {
-          nsfwCheckbox.checked = false;
-          NSFW.checked = false;
-          nsfwCheckbox.disabled = true;
-          if (NSFW) NSFW.style.display = "none";
-          if (nsfwInfo) nsfwInfo.style.display = "block";
-          if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
-          if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-
-        } else {
-          nsfwCheckbox.disabled = false;
-          if (nsfwInfo) nsfwInfo.style.display = "none";
-          if (NSFW) NSFW.style.display = "block";
-          if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
-          if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-          nsfwCheckbox.addEventListener("change", function () {
-            showNSFW = this.checked;
-            loadVideos();
-          });
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
         }
+
+        const NSFW = document.getElementById("nsfw");
+        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+        const nsfwInfo = document.getElementById("information-nsfw");
+        const viewBirthdate = document.getElementById("view");
+        const emailEl = document.getElementById("email");
+
+        if (nsfwCheckbox) {
+          if (age < 18) {
+            nsfwCheckbox.checked = false;
+            nsfwCheckbox.disabled = true;
+            if (NSFW) NSFW.style.display = "none";
+            if (nsfwInfo) nsfwInfo.style.display = "block";
+          } else {
+            nsfwCheckbox.disabled = false;
+            if (nsfwInfo) nsfwInfo.style.display = "none";
+            if (NSFW) NSFW.style.display = "block";
+            nsfwCheckbox.addEventListener("change", function () {
+              showNSFW = this.checked;
+              loadVideos();
+            });
+          }
+        }
+
+        if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
+        if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
       }
     });
-
-  } else {
-    currentUserEmail = null;
-   document.getElementById("signup")?.style?.setProperty("display", "flex");
-
-document.getElementById("comment-input-${videoKey}")?.style?.setProperty("display", "none");
- document.getElementById("auth-link")?.style?.setProperty("display", "flex");
-    document.getElementById("register-link")?.style?.setProperty("display", "flex");
-    document.getElementById("logout-link")?.style?.setProperty("display", "none");
-    document.getElementById("account-link")?.style?.setProperty("display", "none");
   }
 
+  updateUI(user); // 🔥 викликається завжди
   toggleUploadVisibility();
 });
 function submitBirthdate() {
