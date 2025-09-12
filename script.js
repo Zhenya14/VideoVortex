@@ -318,19 +318,7 @@ if (event) event.preventDefault(); // блокуємо перезавантаж�
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert("Вхід успішний!");
-location.reload();
-                    currentUserEmail = userCredential.user.email;
-document.getElementById("comment-input-${videoKey}").style.display = "flex";
-document.getElementById("signup").style.display = "none";
- document.getElementById("auth-form").style.display = "none";
-                    document.getElementById("auth-link").style.display = "none";
-                    document.getElementById("register-link").style.display = "none";
-                    document.getElementById("upload-link").style.display = "flex";
-                    document.getElementById("upload-link-photo").style.display = "flex";
-	            document.getElementById("smart-upload-link").style.display = "grid";
-                    document.getElementById("smart-upload-link-photo").style.display = "grid";
-                    document.getElementById("logout-link").style.display = "flex";
-                    document.getElementById("account-link").style.display = "flex";
+
                 })
                 .catch((error) => {
                     alert("Невірний логін або пароль." + error);
@@ -362,18 +350,7 @@ auth.createUserWithEmailAndPassword(email, password)
     birthdate: birthdate
   });
                     alert("Ви успішно зареєструвалися!");
-                   location.reload(); document.getElementById("auth-form").style.display = "none";
-document.getElementById("comment-input-${videoKey}").style.display = "flex";
-document.getElementById("signup").style.display = "none";
- document.getElementById("register-form").style.display = "none";
-                    document.getElementById("auth-link").style.display = "none";
-                    document.getElementById("register-link").style.display = "none";
-                    document.getElementById("upload-link").style.display = "flex";
-                    document.getElementById("upload-link-photo").style.display = "flex";
-		    document.getElementById("smart-upload-link").style.display = "grid";
-                    document.getElementById("smart-upload-link-photo").style.display = "grid";
-                    document.getElementById("account-link").style.display = "flex";
-                    document.getElementById("logout-link").style.display = "flex";
+ 
                 })
 
             .catch((error) => {
