@@ -137,7 +137,15 @@ const firebaseConfig = {
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
-
+ const randomComments = [
+      "Це просто чудово!",
+      "Неочікувано, але цікаво.",
+      "Мені це подобається 👍",
+      "Хотілося б дізнатись більше!",
+      "Хтось ще таке бачив?",
+      "Супер! 🔥",
+      "Хм, це змушує замислитись..."
+    ];
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -401,6 +409,7 @@ alert("Сталася помилка при увімкненні функції 
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
                     </button>
+ <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
                 </div>
             `;
 
@@ -513,6 +522,11 @@ alert("Сталася помилка при увімкненні функції 
         });
     });
 }
+function insertRandomComment() {
+      const randomIndex = Math.floor(Math.random() * randomComments.length);
+      const comment = randomComments[randomIndex];
+      document.getElementById("commentBox").value = comment;
+    }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
         // Видалення файлу зі сховища
