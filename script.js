@@ -526,7 +526,7 @@ alert("Сталася помилка при увімкненні функції 
 function insertRandomComment() {
       const randomIndex = Math.floor(Math.random() * randomComments.length);
       const comment = randomComments[randomIndex];
-      document.getElementById("comment-input").value = comment;
+      document.getElementById("comment-input-${videoKey}").value = comment;
     }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
