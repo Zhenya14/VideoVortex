@@ -404,12 +404,13 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
-<button class="comment-button" id="signup" onclick="signIn()"> Увійдіть, щоб коментувати</button>
+ <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
+<button class="comment-button" id="signup" style="display: none;" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
                     </button>
- <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
+
                 </div>
             `;
 
