@@ -556,9 +556,8 @@ color: #ffffff;
 	<div id="requests-container"></div>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
         <label>
-<label class="switch">
+       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
           <input type="checkbox" id="show-nsfw-videos"><span class="slider round"></span></label>
-       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span>
         <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
 
 <h1>Налаштування обмеження екранного часу</h1>
@@ -580,11 +579,11 @@ color: #ffffff;
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
 		
-   <label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label><span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span>
+   <span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
 <div id="domain-restrict-container" style="display: none; margin-top: 10px;">
-    <label class="switch">
+    
+        <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
         <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
-        <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span>
 </div>
            <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
 <h3>Експериментальна функція</h3>
