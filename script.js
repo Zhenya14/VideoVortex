@@ -844,13 +844,13 @@ auth.onAuthStateChanged((user) => {
 
         if (nsfwCheckbox) {
           if (age < 18) {
-document.getElwmentById("slider-show-nsfw-videos").style.backgroundColor = "gray";
+document.getElwmentById("slidernsfw").style.backgroundColor = "gray";
             nsfwCheckbox.checked = false;
             nsfwCheckbox.disabled = true;
             if (NSFW) NSFW.style.display = "none";
             if (nsfwInfo) nsfwInfo.style.display = "block";
           } else {
-document.getElwmentById("slider-show-nsfw-videos").style.backgroundColor = "red";
+document.getElwmentById("slidernsfw").style.backgroundColor = "red";
             nsfwCheckbox.disabled = false;
             if (nsfwInfo) nsfwInfo.style.display = "none";
             if (NSFW) NSFW.style.display = "block";
