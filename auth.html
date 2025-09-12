@@ -7,17 +7,51 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    .form-container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-    .form-container input { display: block; width: 100%; margin: 10px 0; padding: 10px; }
-    .form-container button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; }
-    .form-container button:hover { background: #0056b3; cursor: pointer; }
+            body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #ffffff; 
+            text-align: center; 
+            padding: 0 20px; 
+            margin: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .container { 
+    margin-top: 130px;
+                width: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+        .form, .upload-form, .auth-form, .register-form, .account-form, .edit-form, .version-form, .upload-photo-form { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 130px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+            width: 100%; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
   </style>
 </head>
 <body>
-  <div class="form-container">
+        <div style="display: flex; align-items: center;">
+            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+        </div>
     <h2>Увійти</h2>
-    <form id="login-form">
+    <form id="auth-form">
       <input type="email" id="auth-email" placeholder="Email" required>
       <input type="password" id="auth-password" placeholder="Пароль" required>
       <button type="submit">Увійти</button>
