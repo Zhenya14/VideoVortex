@@ -590,12 +590,7 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const userDomain = currentUserEmail.split("@")[1];
 
- if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
-    alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
-    return;
-  }
     // Отримуємо UID поточного користувача
     const uid = firebase.auth().currentUser.uid;
 
