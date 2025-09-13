@@ -124,6 +124,15 @@ let sleepEnd = null;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
+const randomComments = [
+      "Це просто чудово!",
+      "Неочікувано, але цікаво.",
+      "Мені це подобається 👍",
+      "Хотілося б дізнатись більше!",
+      "Хтось ще таке бачив?",
+      "Супер! 🔥",
+      "Хм, це змушує замислитись..."
+    ];
 const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -396,7 +405,7 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
-<button class="comment-button" id="signup" onclick="signIn()"> Увійдіть, щоб коментувати</button>
+<button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
@@ -513,6 +522,15 @@ alert("Сталася помилка при увімкненні функції 
         });
     });
 }
+function insertRandomComment(videoKey) {
+      const inputId = `comment-input-${videoKey}`;
+      const input = document.getElementById(inputId);
+
+      if (input) {
+        const randomIndex = Math.floor(Math.random() * randomComments.length);
+        input.value = randomComments[randomIndex];
+      }
+    }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
         // Видалення файлу зі сховища
