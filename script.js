@@ -137,15 +137,7 @@ const firebaseConfig = {
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
- const randomComments = [
-      "Це просто чудово!",
-      "Неочікувано, але цікаво.",
-      "Мені це подобається 👍",
-      "Хотілося б дізнатись більше!",
-      "Хтось ще таке бачив?",
-      "Супер! 🔥",
-      "Хм, це змушує замислитись..."
-    ];
+
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -404,13 +396,11 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
- <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
-<button class="comment-button" id="signup" style="display: none;" onclick="signIn()"> Увійдіть, щоб коментувати</button>
+<button class="comment-button" id="signup" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
                     </button>
-
                 </div>
             `;
 
@@ -521,15 +511,7 @@ alert("Сталася помилка при увімкненні функції 
             // Завантаження коментарів
             loadComments(videoKey);
         });
-    }
-function insertRandomComment(videoKey) {
-  const inputId = `comment-input-${videoKey}`;
-  const input = document.getElementById(inputId);
-
-  if (input) {
-    const randomIndex = Math.floor(Math.random() * randomComments.length);
-    input.value = randomComments[randomIndex];
-  }
+    });
 }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
