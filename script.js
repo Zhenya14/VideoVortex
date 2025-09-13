@@ -594,12 +594,9 @@ if (!videoTitle || !videoFile) {
     return;  
 }
 
-if (privateVideo.checked == true) {
-domainRectrict.checked == false;
-}
-if (domainRectrict.checked == true) {
-privateVideo.checked == false;
-}
+if (privateVideo) domainRestrict = false;
+if (domainRestrict) privateVideo = false;
+
 // Отримуємо UID поточного користувача
 const uid = firebase.auth().currentUser.uid;
 
