@@ -913,6 +913,7 @@ function submitBirthdate() {
   }).then(() => {
     alert("Дата збережена.");
     document.getElementById("birthdate-modal").style.display = "none";
+location.reload(); // Перезавантажити сторінку або перенаправити користувача
   });
 }
 document.getElementById("logout-link").onclick = function() {
