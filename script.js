@@ -404,7 +404,7 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
- <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
+ <button onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
 <button class="comment-button" id="signup" style="display: none;" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
@@ -523,10 +523,10 @@ alert("Сталася помилка при увімкненні функції 
         });
     });
 }
-function insertRandomComment() {
+function insertRandomComment(videoKey) {
       const randomIndex = Math.floor(Math.random() * randomComments.length);
       const comment = randomComments[randomIndex];
-      document.getElementById("commentBox").value = comment;
+      document.getElementById(`comment-input-${videoKey}`).value = comment;
     }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
@@ -590,7 +590,7 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const userDomain = email.split("@")[1];
+const userDomain = currentUserEmail.split("@")[1];
 
  if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
     alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
