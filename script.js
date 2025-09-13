@@ -124,15 +124,6 @@ let sleepEnd = null;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
-const randomComments = [
-      "Це просто чудово!",
-      "Неочікувано, але цікаво.",
-      "Мені це подобається 👍",
-      "Хотілося б дізнатись більше!",
-      "Хтось ще таке бачив?",
-      "Супер! 🔥",
-      "Хм, це змушує замислитись..."
-    ];
 const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
@@ -146,7 +137,15 @@ const firebaseConfig = {
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
-
+ const randomComments = [
+      "Це просто чудово!",
+      "Неочікувано, але цікаво.",
+      "Мені це подобається 👍",
+      "Хотілося б дізнатись більше!",
+      "Хтось ще таке бачив?",
+      "Супер! 🔥",
+      "Хм, це змушує замислитись..."
+    ];
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -405,11 +404,13 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
-<button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
+ <button onclick="insertRandomComment()">🔁 Вставити випадковий текст</button>
+<button class="comment-button" id="signup" style="display: none;" onclick="signIn()"> Увійдіть, щоб коментувати</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
                     </button>
+
                 </div>
             `;
 
@@ -522,14 +523,10 @@ alert("Сталася помилка при увімкненні функції 
         });
     });
 }
-function insertRandomComment(videoKey) {
-      const inputId = `comment-input-${videoKey}`;
-      const input = document.getElementById(inputId);
-
-      if (input) {
-        const randomIndex = Math.floor(Math.random() * randomComments.length);
-        input.value = randomComments[randomIndex];
-      }
+function insertRandomComment() {
+      const randomIndex = Math.floor(Math.random() * randomComments.length);
+      const comment = randomComments[randomIndex];
+      document.getElementById("commentBox").value = comment;
     }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
@@ -593,7 +590,12 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
+const userDomain = email.split("@")[1];
 
+ if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
+    alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
+    return;
+  }
     // Отримуємо UID поточного користувача
     const uid = firebase.auth().currentUser.uid;
 
@@ -862,13 +864,13 @@ auth.onAuthStateChanged((user) => {
 
         if (nsfwCheckbox) {
           if (age < 18) {
-document.getElwmentById("slider-show-nsfw-videos").style.backgroundColor = "gray";
+document.getElementById("slidernsfw").style.backgroundColor = "gray";
             nsfwCheckbox.checked = false;
             nsfwCheckbox.disabled = true;
             if (NSFW) NSFW.style.display = "none";
             if (nsfwInfo) nsfwInfo.style.display = "block";
           } else {
-document.getElwmentById("slider-show-nsfw-videos").style.backgroundColor = "red";
+document.getElementById("slidernsfw").style.backgroundColor = "red";
             nsfwCheckbox.disabled = false;
             if (nsfwInfo) nsfwInfo.style.display = "none";
             if (NSFW) NSFW.style.display = "block";
