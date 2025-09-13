@@ -594,8 +594,6 @@ if (!videoTitle || !videoFile) {
     return;  
 }
 
-if (privateVideo) domainRestrict = false;
-if (domainRestrict) privateVideo = false;
 
 // Отримуємо UID поточного користувача
 const uid = firebase.auth().currentUser.uid;
