@@ -396,7 +396,9 @@ alert("Сталася помилка при увімкненні функції 
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
-<button class="comment-button" id="signup" onclick="signIn()"> Увійдіть, щоб коментувати</button>
+ <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
+      🔁 Вставити випадковий текст
+    </button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
@@ -512,6 +514,24 @@ alert("Сталася помилка при увімкненні функції 
             loadComments(videoKey);
         });
     });
+}
+const randomComments = [
+  "Класне відео! 🔥",
+  "Дуже цікаво 👌",
+  "Дякую за контент 🙌",
+  "Супер пояснення!",
+  "Підтримую 👍",
+  "Топчик!"
+];
+
+function insertRandomComment(videoKey) {
+  const inputId = `comment-input-${videoKey}`;
+  const input = document.getElementById(inputId);
+
+  if (input) {
+    const randomIndex = Math.floor(Math.random() * randomComments.length);
+    input.value = randomComments[randomIndex];
+  }
 }
 function deleteVideo(videoKey, videoURL) {
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
