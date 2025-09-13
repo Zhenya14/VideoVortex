@@ -580,86 +580,77 @@ function saveVideoChanges() {
   });
 }
 
-// Функція для генерації секретного ключа
 function uploadVideo() {
-    const videoTitle = document.getElementById("video-title").value;
-    const videoDescription = document.getElementById("video-description").value;
-    const videoFile = document.getElementById("video-file").files[0];
-    const isNSFW = document.getElementById("nsfw-checkbox").checked;
-    const privateVideo = document.getElementById("private-checkbox").checked;
-    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+const videoTitle = document.getElementById("video-title").value;
+const videoDescription = document.getElementById("video-description").value;
+const videoFile = document.getElementById("video-file").files[0];
+const isNSFW = document.getElementById("nsfw-checkbox").checked;
+const privateVideo = document.getElementById("private-checkbox").checked;
+const videoPassword = document.getElementById("video-password").value.trim();
+const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
-    if (!videoTitle || !videoFile) {
-        alert("Будь ласка, заповніть всі поля!");
-        return;
-    }
-
-    if (!currentUserEmail) {
-        alert("Будь ласка, увійдіть у систему перед завантаженням відео.");
-        return;
-    }
-
-    const userDomain = currentUserEmail.split("@")[1];
-
-    if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
-        alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
-        return;
-    }
-
-    const uid = firebase.auth().currentUser.uid;
-
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        if (!userData) {
-            alert("Не вдалося отримати дані профілю.");
-            return;
-        }
-
-        const videoAuthor = `${userData.name} ${userData.supername}`;
-
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
-        const uploadTask = storageRef.put(videoFile);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById("upload-progress").value = progress;
-                document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
-                document.getElementById("progress-container").style.display = "block";
-            },
-            (error) => {
-                alert("Помилка завантаження відео.");
-            },
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const currentDate = new Date().toLocaleDateString();
-
-                    database.ref("videos").push({
-                        title: videoTitle,
-                        author: videoAuthor,
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: videoDescription,
-                        password: videoPassword || null,
-                        views: 0,
-                        private: privateVideo,
-                        domainRestrict: domainRestrict,
-                        nsfw: isNSFW,
-                        publishDate: currentDate
-                    }).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos(); 
-                        document.getElementById("upload-form").reset();
-                        document.getElementById("progress-container").style.display = "none";
-                    });
-                });
-            }
-        );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+if (!videoTitle || !videoFile) {  
+    alert("Будь ласка, заповніть всі поля!");  
+    return;  
 }
+
+
+// Отримуємо UID поточного користувача
+const uid = firebase.auth().currentUser.uid;
+
+// Беремо дані користувача з Firebase  
+database.ref("users/" + uid).once("value").then(snapshot => {  
+    const userData = snapshot.val();  
+    const videoAuthor = `${userData.name} ${userData.supername}`; // автоматично  
+
+    // Завантаження відео у Firebase Storage  
+    const storageRef = storage.ref(`videos/${videoFile.name}`);  
+    const uploadTask = storageRef.put(videoFile);  
+
+    uploadTask.on('state_changed',  
+        (snapshot) => {  
+            // Прогрес завантаження  
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;  
+            document.getElementById("upload-progress").value = progress;  
+            document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;  
+            document.getElementById("progress-container").style.display = "block";  
+        },  
+        (error) => {  
+            alert("Помилка завантаження відео.");  
+        },  
+        () => {  
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {  
+                const currentDate = new Date().toLocaleDateString();  
+
+                // Запис у базу  
+                database.ref("videos").push({  
+                    title: videoTitle,  
+                    author: videoAuthor,       // Ім'я і прізвище з профілю  
+                    email: currentUserEmail,  
+                    url: downloadURL,  
+                    description: videoDescription,  
+                    password: videoPassword || null,  
+                    views: 0,  
+                    private: privateVideo,  
+                    domainRestrict: domainRestrict,  
+                    nsfw: isNSFW,  
+                    publishDate: currentDate  
+                }).then(() => {  
+                    alert("Відео завантажено!");  
+                    loadVideos();   
+                    document.getElementById("upload-form").reset();  
+                    document.getElementById("progress-container").style.display = "none";  
+                });  
+            });  
+        }  
+    );  
+}).catch(err => {  
+    console.error("Помилка при отриманні даних користувача:", err);  
+    alert("Не вдалося отримати дані профілю.");  
+});
+
+}
+
 
 
 function uploadComment(videoKey) {
