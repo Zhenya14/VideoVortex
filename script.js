@@ -587,34 +587,41 @@ function uploadVideo() {
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
-    const videoPassword = document.getElementById("video-password").value.trim();
-     const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const userDomain = email.split("@")[1];
 
- if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
-    alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
-    return;
-  }
-    // Отримуємо UID поточного користувача
+    if (!currentUserEmail) {
+        alert("Будь ласка, увійдіть у систему перед завантаженням відео.");
+        return;
+    }
+
+    const userDomain = currentUserEmail.split("@")[1];
+
+    if (domainRestrict && userDomain !== "kfccte-nau.ukr.education") {
+        alert("❌ Сталася помилка: тільки користувачі з домену kfccte-nau.ukr.education можуть публікувати з цим параметром.");
+        return;
+    }
+
     const uid = firebase.auth().currentUser.uid;
 
-    // Беремо дані користувача з Firebase
     database.ref("users/" + uid).once("value").then(snapshot => {
         const userData = snapshot.val();
-        const videoAuthor = `${userData.name} ${userData.supername}`; // автоматично
+        if (!userData) {
+            alert("Не вдалося отримати дані профілю.");
+            return;
+        }
 
-        // Завантаження відео у Firebase Storage
+        const videoAuthor = `${userData.name} ${userData.supername}`;
+
         const storageRef = storage.ref(`videos/${videoFile.name}`);
         const uploadTask = storageRef.put(videoFile);
 
         uploadTask.on('state_changed',
             (snapshot) => {
-                // Прогрес завантаження
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 document.getElementById("upload-progress").value = progress;
                 document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
@@ -627,10 +634,9 @@ const userDomain = email.split("@")[1];
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                     const currentDate = new Date().toLocaleDateString();
 
-                    // Запис у базу
                     database.ref("videos").push({
                         title: videoTitle,
-                        author: videoAuthor,       // Ім'я і прізвище з профілю
+                        author: videoAuthor,
                         email: currentUserEmail,
                         url: downloadURL,
                         description: videoDescription,
