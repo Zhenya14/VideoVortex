@@ -503,36 +503,36 @@ function deleteVideo(videoKey, videoURL) {
 }
 
 function editVideo(videoKey, videoData) {
-currentEditKey = videoKey;
-document.getElementById("edit-form").style.display = 'block';
-const editVideo = document.getElementById("edit-video-title");
-const editDescription = document.getElementById("edit-video-description");
-editVideo.value = videoData.title || '';
-editDescription.value = videoData.description || '';
+  currentEditKey = videoKey;
+  document.getElementById("edit-form").style.display = 'block';
+
+  // Заповнюємо поля редагування
+  document.getElementById("edit-video-title").value = videoData.title || '';
+  document.getElementById("edit-video-description").value = videoData.description || '';
 }
+
 function saveVideoChanges() {
   if (!currentEditKey) return alert("Відео не вибрано.");
 
-  const newTitle = document.getElementById("edit-video-title").value;
-  const newDescription = document.getElementById("edit-video-description").value;
+  const newTitle = document.getElementById("edit-video-title").value.trim();
+  const newDescription = document.getElementById("edit-video-description").value.trim();
 
-const uid = firebase.auth().currentUser.uid;
+  if (!newTitle) {
+    alert("Назва не може бути порожньою!");
+    return;
+  }
 
-    // Беремо дані користувача з Firebase
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const newAuthor = `${userData.name} ${userData.supername}`; // автоматично
-
+  // Оновлюємо тільки заголовок і опис
   database.ref("videos/" + currentEditKey).update({
     title: newTitle,
-    author: newAuthor,
     description: newDescription
   }).then(() => {
-    alert("Відео оновлено!");
+    alert("✅ Відео оновлено!");
     document.getElementById("edit-form").style.display = 'none';
+    currentEditKey = null;
     loadVideos(); // перезавантаження списку
   }).catch(error => {
-    alert("Помилка при оновленні відео: " + error.message);
+    alert("❌ Помилка при оновленні відео: " + error.message);
   });
 }
 
