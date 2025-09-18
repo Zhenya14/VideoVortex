@@ -148,37 +148,47 @@ color: #ffffff;
 
     // 🟢 Реєстрація
     document.getElementById("register-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("register-name").value.trim();
-      const supername = document.getElementById("register-supername").value.trim();
-      const email = document.getElementById("register-email").value.trim();
-      const password = document.getElementById("register-password").value.trim();
-      const confirmation = document.getElementById("register-confirmation-password").value.trim();
-      const birthInput = document.getElementById("birthdate").value;
-      const [year, month, day] = birthInput.split("-");
-      const birthdate = `${day}.${month}.${year}`;
+  e.preventDefault();
 
-      if (password !== confirmation) {
-        alert("Паролі не збігаються!");
-        return;
-      }
+  const name = document.getElementById("register-name").value.trim();
+  const supername = document.getElementById("register-supername").value.trim();
+  const email = document.getElementById("register-email").value.trim();
+  const password = document.getElementById("register-password").value.trim();
+  const confirmation = document.getElementById("register-confirmation-password").value.trim();
+  const birthInput = document.getElementById("birthdate").value;
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const uid = userCredential.user.uid;
-          database.ref("users/" + uid).set({
-            name: name,
-            supername: supername,
-            email: email,
-            birthdate: birthdate
-          });
-          alert("Реєстрація успішна!");
-          window.location.href = "index.html"; // повернення на головну
-        })
-        .catch((error) => {
-          alert("Помилка реєстрації: " + error.message);
-        });
+  if (!name || !supername || !email || !password || !confirmation || !birthInput) {
+    alert("Будь ласка, заповніть всі поля!");
+    return;
+  }
+
+  if (password !== confirmation) {
+    alert("Паролі не збігаються!");
+    return;
+  }
+
+  const [year, month, day] = birthInput.split("-");
+  const birthdate = `${day}.${month}.${year}`;
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const uid = userCredential.user.uid;
+
+      return database.ref("users/" + uid).set({
+        name: name,
+        supername: supername,
+        email: email,
+        birthdate: birthdate
+      });
+    })
+    .then(() => {
+      alert("Реєстрація успішна!");
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      alert("Помилка: " + error.message);
     });
+});
   </script>
 </body>
 </html>
