@@ -552,6 +552,7 @@ function deleteVideo(videoKey, videoURL) {
 }
 
 function editVideo(videoKey, videoData) {
+document.querySelector(".more-btn").style.display = "none";
 currentEditKey = videoKey;
 document.getElementById("edit-form").style.display = 'block';
 const editVideo = document.getElementById("edit-video-title");
