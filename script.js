@@ -264,6 +264,11 @@ function deleteAccount() {
                     const videoData = childSnapshot.val();
                     const videoKey = childSnapshot.key;
 
+
+                     const uid = firebase.auth().currentUser.uid;
+
+    // Беремо дані користувача з Firebase
+    firebase.database().ref("users/" + uid).remove()
                     // Якщо відео належить поточному користувачу, видалити його
                     if (videoData.email === user.email) {
                         // Видалення відео з бази даних
