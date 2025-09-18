@@ -668,11 +668,8 @@ function loadComments(videoKey) {
                 commentDiv.className = "comments";
 
                 const userEl = document.createElement("strong");
-                // Якщо акаунт видалений або немає email → ставимо "Видалений акаунт"
-                const authorName = data.email && data.email !== "deleted"
-                    ? data.email
-                    : "Видалений акаунт";
-                userEl.textContent = authorName;
+                // Якщо акаунт видалений → "Видалений акаунт", інакше показує email
+                userEl.textContent = data.email ? data.email : "Видалений акаунт";
 
                 const textEl = document.createElement("span");
                 textEl.textContent = `: ${data.comment}`;
