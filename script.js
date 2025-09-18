@@ -643,40 +643,49 @@ function loadComments(videoKey) {
     }
     commentsContainer.innerHTML = "";
 
-    database.ref("comments").orderByChild("videoKey").equalTo(videoKey).once("value").then(snapshot => {
-        if (!snapshot.exists()) {
-            const noComment = document.createElement("p");
-            noComment.style.textAlign = "center";
-            noComment.textContent = "Ще немає коментарів...";
-            commentsContainer.appendChild(noComment);
-            return;
-        }
+    database.ref("comments")
+        .orderByChild("videoKey")
+        .equalTo(videoKey)
+        .once("value")
+        .then(snapshot => {
+            if (!snapshot.exists()) {
+                const noComment = document.createElement("p");
+                noComment.style.textAlign = "center";
+                noComment.textContent = "Ще немає коментарів...";
+                commentsContainer.appendChild(noComment);
+                return;
+            }
 
-        snapshot.forEach(childSnapshot => {
-            const data = childSnapshot.val();
+            snapshot.forEach(childSnapshot => {
+                const data = childSnapshot.val();
 
-            const commentDiv = document.createElement("div");
-            commentDiv.className = "comments";
+                const commentDiv = document.createElement("div");
+                commentDiv.className = "comments";
 
-            const userEl = document.createElement("strong");
-            userEl.textContent = data.email;
+                const userEl = document.createElement("strong");
+                // Якщо акаунт видалений або немає email → ставимо "Видалений акаунт"
+                const authorName = data.email && data.email !== "deleted"
+                    ? data.email
+                    : "Видалений акаунт";
+                userEl.textContent = authorName;
 
-            const textEl = document.createElement("span");
-            textEl.textContent = `: ${data.comment}`;
+                const textEl = document.createElement("span");
+                textEl.textContent = `: ${data.comment}`;
 
-            const br = document.createElement("br");
+                const br = document.createElement("br");
 
-            const dateEl = document.createElement("small");
-            dateEl.textContent = data.publishDate;
+                const dateEl = document.createElement("small");
+                dateEl.textContent = data.publishDate;
 
-            commentDiv.appendChild(userEl);
-            commentDiv.appendChild(textEl);
-            commentDiv.appendChild(br);
-            commentDiv.appendChild(dateEl);
+                commentDiv.appendChild(userEl);
+                commentDiv.appendChild(textEl);
+                commentDiv.appendChild(br);
+                commentDiv.appendChild(dateEl);
 
-            commentsContainer.appendChild(commentDiv);
-        });
-    }).catch(error => console.error("Помилка завантаження коментарів: ", error));
+                commentsContainer.appendChild(commentDiv);
+            });
+        })
+        .catch(error => console.error("Помилка завантаження коментарів: ", error));
 }
 
 
