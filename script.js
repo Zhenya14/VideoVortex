@@ -555,18 +555,22 @@ function editVideo(videoKey, videoData) {
 currentEditKey = videoKey;
 document.getElementById("edit-form").style.display = 'block';
 const editVideo = document.getElementById("edit-video-title");
-const editAuthor = document.getElementById("edit-video-author");
 const editDescription = document.getElementById("edit-video-description");
 editVideo.value = videoData.title || '';
-editAuthor.value = videoData.author || '';
 editDescription.value = videoData.description || '';
 }
 function saveVideoChanges() {
   if (!currentEditKey) return alert("Відео не вибрано.");
 
   const newTitle = document.getElementById("edit-video-title").value;
-  const newAuthor = document.getElementById("edit-video-author").value;
   const newDescription = document.getElementById("edit-video-description").value;
+
+const uid = firebase.auth().currentUser.uid;
+
+    // Беремо дані користувача з Firebase
+    database.ref("users/" + uid).once("value").then(snapshot => {
+        const userData = snapshot.val();
+        const newAuthor = `${userData.name} ${userData.supername}`; // автоматично
 
   database.ref("videos/" + currentEditKey).update({
     title: newTitle,
