@@ -310,56 +310,7 @@ function deleteAccount() {
     }
 }
 
-        function signIn(event) {
-if (event) event.preventDefault(); // блокуємо перезавантаження
-            const email = document.getElementById("auth-email").value;
-            const password = document.getElementById("auth-password").value;
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    alert("Вхід успішний!");
-
-                })
-                .catch((error) => {
-                    alert("Невірний логін або пароль." + error);
-                });
-        }
-        function signUp(event) {
-if (event) event.preventDefault(); // блокуємо перезавантаження
-	    const birthInput = document.getElementById("birthdate").value;
-            const name = document.getElementById("register-name").value.trim();
-            const supername = document.getElementById("register-supername").value.trim();
-            const email = document.getElementById("register-email").value.trim();
-            const password = document.getElementById("register-password").value.trim();
-            const confirmationpassword = document.getElementById("register-confirmation-password").value.trim();
-
-            if (!email || !password || !confirmationpassword) {
-        alert("Поля не повинні бути порожніми.");
-        return;
-            }
-const [year, month, day] = birthInput.split("-");
-const birthdate = `${day}.${month}.${year}`;
-            if(password == confirmationpassword) {
-auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
- const uid = userCredential.user.uid;
-  database.ref("users/" + uid).set({
-    name: name,
-    supername: supername,
-    email: email,
-    birthdate: birthdate
-  });
-                    alert("Ви успішно зареєструвалися!");
- 
-                })
-
-            .catch((error) => {
-                    alert("Цей акаунт вже існує.");
-             });
-} else {
-            alert("Паролі не збігаються.");
-}
-}
+        
       
     document.getElementById("show-nsfw-videos").addEventListener("change", function() {
 if (auth.currentUser) {
