@@ -353,7 +353,7 @@ alert("Сталася помилка при увімкненні функції 
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section">
  <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
-      🔁 Вставити випадковий текст
+      <i class="material-icons">casino</i> Вставити випадковий текст
     </button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
@@ -413,7 +413,7 @@ alert("Сталася помилка при увімкненні функції 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const privateLabel = videoData.private ? " <span style='color: orange;'><i class="material-icons">lock</i> Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `
                 <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
