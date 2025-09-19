@@ -325,7 +325,7 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-    function loadVideos() {
+    async function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
@@ -336,138 +336,38 @@ alert("Сталася помилка при увімкненні функції 
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
+            // Фільтрування NSFW та приватних
             if (videoData.nsfw && !showNSFW) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
-            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) {
-    return; // Пропускаємо відео
-}
+            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
+
             const videoElement = document.createElement("video");
-            videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
+            videoElement.controls = true;
 
-            // Коментарі
-            const commentSection = document.createElement("div");
-            commentSection.classList.add("video-comment");
-            commentSection.innerHTML = `
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section" id="comment-section">
- <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
-      <i class="material-icons">casino</i> Вставити випадковий текст
-    </button>
-                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-                    <button class="comment-button" onclick="uploadComment('${videoKey}')">
-                        <i class="material-icons">send</i>
-                    </button>
-                </div>
-            `;
+            // Відображаємо попередній перегляд (якщо не приватне)
+            if (!videoData.private) videoElement.src = videoData.url;
 
-            // Перегляд відео та перевірка пароля
+            // Перехід на video.html при кліку
             videoElement.onclick = () => {
-                if (videoData.password) {
-                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
-                    if (videoData.password !== userPassword) {
-                        alert("Неправильний пароль!");
-                        return;
-                    }
-                }
-
-                const viewedKey = `viewed_${videoKey}`;
-                if (!localStorage.getItem(viewedKey)) {
-                    const newViewCount = (videoData.views || 0) + 1;
-                    database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .then(() => {
-                            localStorage.setItem(viewedKey, true);
-                        })
-                        .catch(error => console.error("Помилка оновлення переглядів:", error));
-                }
-
-                const videoParams = new URLSearchParams({
-                    key: videoKey,
-                    url: videoData.url,
-                    title: videoData.title,
-                    author: videoData.author,
-                    publishDate: videoData.publishDate,
-                    description: videoData.description || "Без опису",
-                    views: videoData.views || 0,
-                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
-                });
+                const videoParams = new URLSearchParams({ key: videoKey });
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
-            // Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
-
-            const avatar = document.createElement("div");
-            avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
-            avatar.onclick = () => {
-                const infoParams = new URLSearchParams({
-                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
-                    author: videoData.author
-                });
-                window.location.href = `profile.html?${infoParams.toString()}`;
-            };
-
-            const detailsElement = document.createElement("div");
-            detailsElement.classList.add("video-details");
-
-            const privateLabel = videoData.private ? " <span style='color: orange;'><i class='material-icons'>lock</i> Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `
-                <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
+            infoElement.innerHTML = `
+                <strong>${videoData.title}</strong><br>
                 Автор: ${videoData.author || "Анонім"}<br>
                 Переглядів: ${videoData.views || 0}<br>
-                Дата публікації: ${videoData.publishDate || "Не вказана"}
+                Дата: ${videoData.publishDate || "Не вказана"}
             `;
-            
-            const moreBtn = document.createElement("button");
-            moreBtn.classList.add("more-btn");
-            moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
 
-            const actionMenu = document.createElement("div");
-            actionMenu.classList.add("action-menu");
-            actionMenu.style.display = "none";
-
-            // Кнопка видалення (для власника)
-            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-                const deleteButton = document.createElement("button");
-                deleteButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">delete</i>Видалити</a>`;
-                deleteButton.style.backgroundColor = "red";
-                deleteButton.style.color = "white";
-                deleteButton.style.marginTop = "10px";
-                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-                actionMenu.appendChild(deleteButton);
-            }
-
-            if (currentUserEmail === videoData.email) {
-                const editButton = document.createElement("button");
-                editButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">edit</i>Редагувати</a>`;
-                editButton.style.backgroundColor = "blue";
-                editButton.style.color = "white";
-                editButton.style.marginTop = "10px";
-                editButton.onclick = () => editVideo(videoKey, videoData);
-                actionMenu.appendChild(editButton);
-            }
-
-	   moreBtn.addEventListener("click", () => {
-	     actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
-          });
-            infoElement.appendChild(avatar);
-            infoElement.appendChild(detailsElement);
-            infoElement.appendChild(moreBtn);
-            infoElement.appendChild(actionMenu);
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
-            container.appendChild(commentSection);
             container.appendChild(infoElement);
-
             videoGallery.appendChild(container);
-
-            // Завантаження коментарів
-            loadComments(videoKey);
         });
     });
 }
