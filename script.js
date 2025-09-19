@@ -413,7 +413,7 @@ alert("Сталася помилка при увімкненні функції 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
 
-            const privateLabel = videoData.private ? " <span style='color: orange;'><i class="material-icons">lock</i> Приватне</span>" : "";
+            const privateLabel = videoData.private ? " <span style='color: orange;'><i class='material-icons'>lock</i> Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerHTML = `
                 <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
