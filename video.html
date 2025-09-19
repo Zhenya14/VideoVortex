@@ -3,268 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>VideoVortex</title>
     <style>
-.btn-container {
-    display: flex;
-    flex-basis: auto;
-    justify-content: center;
-    flex-direction: row;
-    flex-grow: 1;
-    align-items: center;
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-}
-.downloads-list {
-    font-size: 30px;
-    list-style: none;
-    text-decoration: none;
-    padding: 0;
-    width: 100%;
-    max-width: 350px;
-    margin-top: -3px;
-}
-        img {
-    padding: 0px 0px 0px 0px;
-    height: 50px;
-    width: 50px;
-    border-radius: 80px;
-        }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
-            color: #ffffff; 
-            text-align: center; 
-            padding: 20px; 
-            margin: 0;
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: rgba(0, 0, 0, 0.7); 
-            border-radius: 10px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        } 
-        .photo-container-title { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: rgba(0, 0, 0, 0.7); 
-            border-radius: 10px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        } 
-        .snowflake {
-    position: fixed;
-    top: -10px;
-    color: #fff;
-    font-size: 1em;
-    animation: fall linear infinite;
-    pointer-events: none;
-    z-index: 1000;
-}
-::-webkit-scrollbar {
-width: 10px;
-background-color: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-background-color: #888;
-border-radius: 5px;
-}
-::-webkit-scrollbar-thumb:hover {
-background-color: #555;
-}
-::-webkit-scrollbar {
-height: 10px;
-}
-@keyframes fall {
-    0% {
-        transform: translateX(0) translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
-        opacity: 0;
-    }
-}
-        .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
-            display: none; 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 20px; 
-            border-radius: 10px; 
-            margin-top: 20px;
-        }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
-            width: 100%; 
-            padding: 10px 0; 
-            margin: 10px 0; 
-            border-radius: 8px; 
-            border: none; 
-            outline: none;
-            font-size: 1em;
-        }
-        button { 
-            background: #4facfe; 
-            color: white; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: background 0.3s ease;
-        }
-        button:hover { 
-            background: #00f2fe;
-        }
-        #video-player {
-            width: 100%;
-            height: 450px;
-        }
-    
-        .video-info { 
-            text-align: left; 
-            color: #b0bec5; 
-            padding: 5px;
-        }
-        .photo-container {
-            display: flex;
-            margin-top: 20px;
-           flex-direction: column-reverse; 
-        }
-        /* Стилі для зображень з класом .photo-item */
-img.photo-item {
-    width: 100%;  /* Зображення заповнює ширину контейнера */
-    height: auto; /* Пропорції зображення зберігаються */
-    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
-    border-radius: 8px; /* Округлення кутів зображення */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
-    }
-        .photo-info { 
-            text-align: left; 
-            color: #b0bec5; 
-            padding: 5px;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            background-color: blue;
-            justify-content: center;
-            margin-right: 10px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .video-details {
-            display: inline-block;
-            vertical-align: top;
-            text-align: left;
-        }
-        #delete-account { 
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: color 0.3s ease, background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: red; 
-            color: white; 
-            cursor: pointer;
-        }
-.nsfw-label {
-    background-color: red;
-    color: white;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
-    display: inline-block;
-}
-.menu.active {
-  position: absolute;
-  height: 100%;
-  width: 240px;
-}
-.menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: #1c1e22;
-    color: white;
-    overflow-x: hidden;
-    transition: width 0.3s ease-in-out;
-    padding-top: 10px;
-}
-
-.menu a {
-    padding: 10px 15px;
-    text-decoration: none;
-    color: white;
-    display: block;
-    transition: 0.3s;
-}
-
-.menu a:hover {
-    background: #4facfe;
-}
-
-.content {
-    transition: margin-left 0.3s ease-in-out;
-}
-
-.content-close {
-  flex-grow: 1;
-  padding: 0px;
-  transition: margin-left 0.3s ease;
-}
-.content.active {
-  margin-left: 240px;
-}
-
-nav {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            background: #1c1e22;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: color 0.3s ease, background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        nav a:hover {
-            background-color: #4facfe;
-            color: #1c1e22;
-        }
-        .icon-text {
-            margin-left: 5px;
-        }
-        
-        @media (max-width: 600px) {
-            .icon-text {
-                display: none;
-            }
-        }
- #nsfw-toggle {
-        display: none;
-}
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
+        #video-player { width: 100%; max-width: 800px; height: 450px; margin-top: 20px; }
+        #details { margin-top: 15px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .avatar { display: inline-block; width: 40px; height: 40px; border-radius: 50%; background: blue; color: #fff; text-align: center; line-height: 40px; margin-right: 10px; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
@@ -272,22 +16,15 @@ nav {
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 </head>
 <body>
-    <nav>
-            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
-            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
-        </div>
-    </nav>
-    <div id="video-container">
-        <video id="video-player" controls></video>
-        <div сlass="video-info" id="video-info">
-            <div сlass="avatar" id="avatar"></div>
-            <div сlass="details" id="details"></div>
-            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
-        </div>
+    <h1>VideoVortex</h1>
+    <video id="video-player" controls></video>
+    <div id="details">
+        <span class="avatar" id="avatar"></span>
+        <div id="video-info"></div>
     </div>
 
     <script>
-const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
             authDomain: "videovortex-235cd.firebaseapp.com",
             databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
@@ -297,57 +34,51 @@ const firebaseConfig = {
             appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const database = firebase.database();
-        const storage = firebase.storage();
-async function decryptFile(blob, keyBytes) {
-    const arrayBuffer = await blob.arrayBuffer();
-    const iv = arrayBuffer.slice(0, 12); // перші 12 байт - IV
-    const encryptedData = arrayBuffer.slice(12);
 
-    const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
-    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(iv) }, cryptoKey, encryptedData);
-    return new Blob([decrypted], { type: blob.type });
-}
-async function decryptText(base64Text, keyBytes) {
-    const combined = Uint8Array.from(atob(base64Text), c => c.charCodeAt(0));
-    const iv = combined.slice(0, 12);
-    const data = combined.slice(12);
+        async function decryptText(base64Text, keyBytes) {
+            const combined = Uint8Array.from(atob(base64Text), c => c.charCodeAt(0));
+            const iv = combined.slice(0, 12);
+            const data = combined.slice(12);
+            const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
+            const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv, data }, cryptoKey, data);
+            return new TextDecoder().decode(decrypted);
+        }
 
-    const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
-    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv, data }, cryptoKey, data);
-    return new TextDecoder().decode(decrypted);
-}
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoKey = urlParams.get("key");
-        const videoUrl = urlParams.get("url");
-        const title = urlParams.get("title");
-        const author = urlParams.get("author");
-        const publishDate = urlParams.get("publishDate");
-        const description = urlParams.get("description");
-        const views = urlParams.get("views");
-        const avatar = urlParams.get("avatar");
+        async function loadVideo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoKey = urlParams.get("key");
+            if (!videoKey) { alert("Відео не знайдено."); return; }
 
+            const snapshot = await database.ref("videos/" + videoKey).once("value");
+            const videoData = snapshot.val();
+            if (!videoData) { alert("Відео не знайдено."); return; }
 
-        document.title = `${title}`;
-        document.getElementById("video-player").src = videoUrl;
-        document.getElementById("avatar").innerText = avatar;
-        document.getElementById("details").innerHTML = `
-            <h2>${title}</h2>
-            <p><strong>Автор:</strong> ${author}</p>
-            <p><strong>Дата публікації:</strong> ${publishDate}</p>
-            <p><strong>Перегляди:</strong> ${views}</p>
-            <p><strong>Опис:</strong> ${description}</p>
-        `;
-        const videoElement = document.getElementById("video-player");
-            videoElement.src = videoData.url;
-            videoElement.classList.add("video-item");
-		
-	        videoElement.addEventListener("play", () => {
-			const newViewCount = (videoData.views || 0) + 1;
-               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .catch(error => console.error("Помилка оновлення переглядів:", error));
-                });
+            let videoURL = videoData.url;
+            if (videoData.private && videoData.encryptionKey) {
+                const keyBytes = new Uint8Array(videoData.encryptionKey);
+                videoURL = await decryptText(videoData.url, keyBytes);
+            }
+
+            const videoElement = document.getElementById("video-player");
+            videoElement.src = videoURL;
+
+            document.getElementById("avatar").innerText = videoData.author.charAt(0).toUpperCase();
+            document.getElementById("video-info").innerHTML = `
+                <h2>${videoData.title}</h2>
+                <p><strong>Автор:</strong> ${videoData.author}</p>
+                <p><strong>Дата публікації:</strong> ${videoData.publishDate}</p>
+                <p><strong>Перегляди:</strong> ${videoData.views}</p>
+                <p><strong>Опис:</strong> ${videoData.description}</p>
+            `;
+
+            videoElement.addEventListener("play", async () => {
+                const newViewCount = (videoData.views || 0) + 1;
+                await database.ref("videos/" + videoKey).update({ views: newViewCount });
+            });
+        }
+
+        window.addEventListener("DOMContentLoaded", loadVideo);
     </script>
 </body>
-    </html>
+</html>
