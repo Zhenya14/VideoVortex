@@ -542,73 +542,107 @@ function saveVideoChanges() {
 }
 
 // Функція для генерації секретного ключа
-function uploadVideo() {
+async function uploadVideo() {
     const videoTitle = document.getElementById("video-title").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
-     const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
 
-    // Отримуємо UID поточного користувача
+    if (privateVideo && domainRestrict) {
+        alert("❌ Приватне відео і обмеження за доменом не можуть бути одночасно.");
+        return;
+    }
+
     const uid = firebase.auth().currentUser.uid;
+    let fileToUpload = videoFile;
+    let encryptionKey = null;
 
-    // Беремо дані користувача з Firebase
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const videoAuthor = `${userData.name} ${userData.supername}`; // автоматично
+    // Шифруємо приватне відео
+    if (privateVideo) {
+        encryptionKey = crypto.getRandomValues(new Uint8Array(32)); // 256-бітний ключ AES
+        fileToUpload = await encryptFile(videoFile, encryptionKey);
+    }
 
-        // Завантаження відео у Firebase Storage
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
-        const uploadTask = storageRef.put(videoFile);
+    const storageRef = firebase.storage().ref(`videos/${videoFile.name}`);
+    const uploadTask = storageRef.put(fileToUpload);
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                // Прогрес завантаження
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById("upload-progress").value = progress;
-                document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
-                document.getElementById("progress-container").style.display = "block";
-            },
-            (error) => {
-                alert("Помилка завантаження відео.");
-            },
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const currentDate = new Date().toLocaleDateString();
+    uploadTask.on('state_changed',
+        snapshot => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            document.getElementById("upload-progress").value = progress;
+            document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
+            document.getElementById("progress-container").style.display = "block";
+        },
+        error => alert("Помилка завантаження відео."),
+        async () => {
+            let downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
 
-                    // Запис у базу
-                    database.ref("videos").push({
-                        title: videoTitle,
-                        author: videoAuthor,       // Ім'я і прізвище з профілю
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: videoDescription,
-                        password: videoPassword || null,
-                        views: 0,
-                        private: privateVideo,
-                        domainRestrict: domainRestrict,
-                        nsfw: isNSFW,
-                        publishDate: currentDate
-                    }).then(() => {
-                        alert("Відео завантажено!");
-                        loadVideos(); 
-                        document.getElementById("upload-form").reset();
-                        document.getElementById("progress-container").style.display = "none";
-                    });
-                });
+            // Шифруємо URL якщо відео приватне
+            if (privateVideo && encryptionKey) {
+                downloadURL = await encryptText(downloadURL, encryptionKey);
             }
-        );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+
+            const currentDate = new Date().toLocaleDateString();
+            const userDataSnap = await database.ref("users/" + uid).once("value");
+            const userData = userDataSnap.val();
+            const videoAuthor = `${userData.name} ${userData.supername}`;
+
+            const videoData = {
+                title: videoTitle,
+                author: videoAuthor,
+                email: currentUserEmail,
+                url: downloadURL,         // зашифрований якщо приватне
+                description: videoDescription,
+                password: videoPassword || null,
+                views: 0,
+                private: privateVideo,
+                domainRestrict: domainRestrict,
+                nsfw: isNSFW,
+                publishDate: currentDate,
+                ownerUid: uid
+            };
+
+            if (privateVideo && encryptionKey) {
+                videoData.encryptionKey = Array.from(encryptionKey); // зберігаємо ключ у Firebase
+            }
+
+            await database.ref("videos").push(videoData);
+            alert("Відео завантажено!");
+            loadVideos();
+            document.getElementById("upload-form").reset();
+            document.getElementById("progress-container").style.display = "none";
+        }
+    );
+}
+
+// Шифрування файлу
+async function encryptFile(file, keyBytes) {
+    const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const arrayBuffer = await file.arrayBuffer();
+    const encryptedBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, arrayBuffer);
+    return new Blob([iv, new Uint8Array(encryptedBuffer)], { type: file.type });
+}
+
+// Шифрування тексту (URL)
+async function encryptText(text, keyBytes) {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(text));
+    // Зберігаємо IV + текст в Base64
+    const combined = new Uint8Array(iv.byteLength + encrypted.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(encrypted), iv.byteLength);
+    return btoa(String.fromCharCode(...combined));
 }
 
 
