@@ -325,7 +325,7 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-    async function loadVideos() {
+    function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
 
@@ -336,38 +336,138 @@ alert("Сталася помилка при увімкненні функції 
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // Фільтрування NSFW та приватних
             if (videoData.nsfw && !showNSFW) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
-            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
-
+            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) {
+    return; // Пропускаємо відео
+}
             const videoElement = document.createElement("video");
+            videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-            videoElement.controls = true;
 
-            // Відображаємо попередній перегляд (якщо не приватне)
-            if (!videoData.private) videoElement.src = videoData.url;
+            // Коментарі
+            const commentSection = document.createElement("div");
+            commentSection.classList.add("video-comment");
+            commentSection.innerHTML = `
+                <h3 style="color: white; text-align: left;">Коментарі:</h3>
+                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+                <div class="comment-section" id="comment-section">
+ <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
+      🔁 Вставити випадковий текст
+    </button>
+                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+                    <button class="comment-button" onclick="uploadComment('${videoKey}')">
+                        <i class="material-icons">send</i>
+                    </button>
+                </div>
+            `;
 
-            // Перехід на video.html при кліку
+            // Перегляд відео та перевірка пароля
             videoElement.onclick = () => {
-                const videoParams = new URLSearchParams({ key: videoKey });
+                if (videoData.password) {
+                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
+                    if (videoData.password !== userPassword) {
+                        alert("Неправильний пароль!");
+                        return;
+                    }
+                }
+
+                const viewedKey = `viewed_${videoKey}`;
+                if (!localStorage.getItem(viewedKey)) {
+                    const newViewCount = (videoData.views || 0) + 1;
+                    database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .then(() => {
+                            localStorage.setItem(viewedKey, true);
+                        })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                }
+
+                const videoParams = new URLSearchParams({
+                    key: videoKey,
+                    url: videoData.url,
+                    title: videoData.title,
+                    author: videoData.author,
+                    publishDate: videoData.publishDate,
+                    description: videoData.description || "Без опису",
+                    views: videoData.views || 0,
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                });
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
+            // Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
-            infoElement.innerHTML = `
-                <strong>${videoData.title}</strong><br>
+
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
+            avatar.onclick = () => {
+                const infoParams = new URLSearchParams({
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
+                    author: videoData.author
+                });
+                window.location.href = `profile.html?${infoParams.toString()}`;
+            };
+
+            const detailsElement = document.createElement("div");
+            detailsElement.classList.add("video-details");
+
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
+            detailsElement.innerHTML = `
+                <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
                 Автор: ${videoData.author || "Анонім"}<br>
                 Переглядів: ${videoData.views || 0}<br>
-                Дата: ${videoData.publishDate || "Не вказана"}
+                Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
+            
+            const moreBtn = document.createElement("button");
+            moreBtn.classList.add("more-btn");
+            moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
 
+            const actionMenu = document.createElement("div");
+            actionMenu.classList.add("action-menu");
+            actionMenu.style.display = "none";
+
+            // Кнопка видалення (для власника)
+            if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+                const deleteButton = document.createElement("button");
+                deleteButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">delete</i>Видалити</a>`;
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
+                deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                actionMenu.appendChild(deleteButton);
+            }
+
+            if (currentUserEmail === videoData.email) {
+                const editButton = document.createElement("button");
+                editButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">edit</i>Редагувати</a>`;
+                editButton.style.backgroundColor = "blue";
+                editButton.style.color = "white";
+                editButton.style.marginTop = "10px";
+                editButton.onclick = () => editVideo(videoKey, videoData);
+                actionMenu.appendChild(editButton);
+            }
+
+	   moreBtn.addEventListener("click", () => {
+	     actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
+          });
+            infoElement.appendChild(avatar);
+            infoElement.appendChild(detailsElement);
+            infoElement.appendChild(moreBtn);
+            infoElement.appendChild(actionMenu);
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
+            container.appendChild(commentSection);
             container.appendChild(infoElement);
+
             videoGallery.appendChild(container);
+
+            // Завантаження коментарів
+            loadComments(videoKey);
         });
     });
 }
@@ -442,107 +542,73 @@ function saveVideoChanges() {
 }
 
 // Функція для генерації секретного ключа
-async function uploadVideo() {
+function uploadVideo() {
     const videoTitle = document.getElementById("video-title").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
-    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+     const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
 
-    if (privateVideo && domainRestrict) {
-        alert("❌ Приватне відео і обмеження за доменом не можуть бути одночасно.");
-        return;
-    }
-
+    // Отримуємо UID поточного користувача
     const uid = firebase.auth().currentUser.uid;
-    let fileToUpload = videoFile;
-    let encryptionKey = null;
 
-    // Шифруємо приватне відео
-    if (privateVideo) {
-        encryptionKey = crypto.getRandomValues(new Uint8Array(32)); // 256-бітний ключ AES
-        fileToUpload = await encryptFile(videoFile, encryptionKey);
-    }
+    // Беремо дані користувача з Firebase
+    database.ref("users/" + uid).once("value").then(snapshot => {
+        const userData = snapshot.val();
+        const videoAuthor = `${userData.name} ${userData.supername}`; // автоматично
 
-    const storageRef = firebase.storage().ref(`videos/${videoFile.name}`);
-    const uploadTask = storageRef.put(fileToUpload);
+        // Завантаження відео у Firebase Storage
+        const storageRef = storage.ref(`videos/${videoFile.name}`);
+        const uploadTask = storageRef.put(videoFile);
 
-    uploadTask.on('state_changed',
-        snapshot => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            document.getElementById("upload-progress").value = progress;
-            document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
-            document.getElementById("progress-container").style.display = "block";
-        },
-        error => alert("Помилка завантаження відео."),
-        async () => {
-            let downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Прогрес завантаження
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                document.getElementById("upload-progress").value = progress;
+                document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
+                document.getElementById("progress-container").style.display = "block";
+            },
+            (error) => {
+                alert("Помилка завантаження відео.");
+            },
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    const currentDate = new Date().toLocaleDateString();
 
-            // Шифруємо URL якщо відео приватне
-            if (privateVideo && encryptionKey) {
-                downloadURL = await encryptText(downloadURL, encryptionKey);
+                    // Запис у базу
+                    database.ref("videos").push({
+                        title: videoTitle,
+                        author: videoAuthor,       // Ім'я і прізвище з профілю
+                        email: currentUserEmail,
+                        url: downloadURL,
+                        description: videoDescription,
+                        password: videoPassword || null,
+                        views: 0,
+                        private: privateVideo,
+                        domainRestrict: domainRestrict,
+                        nsfw: isNSFW,
+                        publishDate: currentDate
+                    }).then(() => {
+                        alert("Відео завантажено!");
+                        loadVideos(); 
+                        document.getElementById("upload-form").reset();
+                        document.getElementById("progress-container").style.display = "none";
+                    });
+                });
             }
-
-            const currentDate = new Date().toLocaleDateString();
-            const userDataSnap = await database.ref("users/" + uid).once("value");
-            const userData = userDataSnap.val();
-            const videoAuthor = `${userData.name} ${userData.supername}`;
-
-            const videoData = {
-                title: videoTitle,
-                author: videoAuthor,
-                email: currentUserEmail,
-                url: downloadURL,         // зашифрований якщо приватне
-                description: videoDescription,
-                password: videoPassword || null,
-                views: 0,
-                private: privateVideo,
-                domainRestrict: domainRestrict,
-                nsfw: isNSFW,
-                publishDate: currentDate,
-                ownerUid: uid
-            };
-
-            if (privateVideo && encryptionKey) {
-                videoData.encryptionKey = Array.from(encryptionKey); // зберігаємо ключ у Firebase
-            }
-
-            await database.ref("videos").push(videoData);
-            alert("Відео завантажено!");
-            loadVideos();
-            document.getElementById("upload-form").reset();
-            document.getElementById("progress-container").style.display = "none";
-        }
-    );
-}
-
-// Шифрування файлу
-async function encryptFile(file, keyBytes) {
-    const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const arrayBuffer = await file.arrayBuffer();
-    const encryptedBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, arrayBuffer);
-    return new Blob([iv, new Uint8Array(encryptedBuffer)], { type: file.type });
-}
-
-// Шифрування тексту (URL)
-async function encryptText(text, keyBytes) {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(text));
-    // Зберігаємо IV + текст в Base64
-    const combined = new Uint8Array(iv.byteLength + encrypted.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(encrypted), iv.byteLength);
-    return btoa(String.fromCharCode(...combined));
+        );
+    }).catch(err => {
+        console.error("Помилка при отриманні даних користувача:", err);
+        alert("Не вдалося отримати дані профілю.");
+    });
 }
 
 
