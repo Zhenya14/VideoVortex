@@ -617,114 +617,71 @@ function uploadVideo() {
 
 
 // Симетричне шифрування AES-GCM через Web Crypto API
+// Генеруємо або отримуємо ключ для відео
+function getVideoKey(videoKey) {
+    let key = localStorage.getItem(`videoKey-${videoKey}`);
+    if (!key) {
+        key = crypto.randomUUID(); // простий ключ, можна замінити на сильніше шифрування
+        localStorage.setItem(`videoKey-${videoKey}`, key);
+    }
+    return key;
+}
+
+// Просте шифрування/дешифрування (можна замінити на AES)
 async function encryptText(text, key) {
     const enc = new TextEncoder();
-    const encoded = enc.encode(text);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encrypted = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: iv },
-        key,
-        encoded
-    );
-    return { iv: Array.from(iv), data: Array.from(new Uint8Array(encrypted)) };
+    const encoded = enc.encode(text + key); // дуже базово
+    return btoa(String.fromCharCode(...encoded));
 }
 
-async function decryptText(encryptedObj, key) {
-    const iv = new Uint8Array(encryptedObj.iv);
-    const data = new Uint8Array(encryptedObj.data);
-    const decrypted = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: iv },
-        key,
-        data
-    );
+async function decryptText(cipher, key) {
+    const decoded = atob(cipher);
+    const arr = Uint8Array.from(decoded, c => c.charCodeAt(0));
     const dec = new TextDecoder();
-    return dec.decode(decrypted);
+    const text = dec.decode(arr);
+    return text.replace(key, ''); // віднімаємо ключ
 }
 
-// Приклад генерації ключа (для демонстрації)
-async function generateKey() {
-    return crypto.subtle.generateKey(
-        { name: "AES-GCM", length: 256 },
-        true,
-        ["encrypt", "decrypt"]
-    );
-}
-
-// Завантаження коментаря
-async function uploadComment(videoKey, sharedKey) {
-    const commentInput = document.getElementById(`comment-input-${videoKey}`);
-    const commentText = commentInput.value.trim();
-    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
-
-    if (!commentText) {
-        alert("Коментар не може бути порожнім.");
-        return;
-    }
-
-    // Беремо власника відео з бази даних
-    const videoSnapshot = await database.ref(`videos/${videoKey}`).once("value");
-    const videoData = videoSnapshot.val();
-    if (!videoData) {
-        alert("Помилка: відео не знайдено.");
-        return;
-    }
-    const videoOwnerEmail = videoData.ownerEmail; // власник відео
-
-    let commentData = commentText;
-
-    if (isPrivate && sharedKey) {
-        commentData = await encryptText(commentText, sharedKey);
-    }
-
-    await database.ref("comments").push({
-        comment: commentData,
-        email: currentUserEmail,      // автор коментаря
-        videoOwner: videoOwnerEmail,  // власник відео
-        isPrivate: isPrivate,
-        publishDate: new Date().toLocaleDateString(),
-        videoKey: videoKey
-    });
-
-    commentInput.value = "";
-    loadComments(videoKey, sharedKey);
-}
-
-// Завантаження коментарів теж використовує videoOwner із даних коментаря
-async function loadComments(videoKey, sharedKey) {
+// Завантажуємо коментарі
+async function loadComments(videoKey, videoOwnerEmail) {
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     commentsContainer.innerHTML = "";
 
-    const snapshot = await database.ref("comments").orderByChild("videoKey").equalTo(videoKey).once("value");
+    const snapshot = await database.ref("comments")
+        .orderByChild("videoKey")
+        .equalTo(videoKey)
+        .once("value");
 
     if (!snapshot.exists()) {
-        commentsContainer.innerHTML = "<p style='text-align:center'>Ще немає коментарів...</p>";
+        commentsContainer.textContent = "Ще немає коментарів...";
         return;
     }
 
+    const videoKeyLocal = getVideoKey(videoKey);
+
     snapshot.forEach(async childSnapshot => {
         const data = childSnapshot.val();
-        let commentText = data.comment;
-
-        // Приватний коментар — бачать тільки автор або власник відео
-        if (data.isPrivate) {
-            if (data.email === currentUserEmail || data.videoOwner === currentUserEmail) {
-                commentText = await decryptText(commentText, sharedKey);
-            } else {
-                return; // інші не бачать
-            }
-        }
-
         const commentDiv = document.createElement("div");
         commentDiv.className = "comments";
 
         const userEl = document.createElement("strong");
-        userEl.textContent = data.email ? data.email : "Видалений акаунт";
+        userEl.textContent = data.email || "Видалений акаунт";
 
         const textEl = document.createElement("span");
-        textEl.textContent = `: ${commentText}`;
+
+        // Якщо приватний
+        if (data.isPrivate) {
+            if (data.email === currentUserEmail || videoOwnerEmail === currentUserEmail) {
+                // Дешифруємо
+                textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
+            } else {
+                textEl.textContent = ": [Приватний коментар]";
+            }
+        } else {
+            textEl.textContent = ": " + data.comment;
+        }
 
         const br = document.createElement("br");
-
         const dateEl = document.createElement("small");
         dateEl.textContent = data.publishDate;
 
@@ -732,11 +689,36 @@ async function loadComments(videoKey, sharedKey) {
         commentDiv.appendChild(textEl);
         commentDiv.appendChild(br);
         commentDiv.appendChild(dateEl);
-
         commentsContainer.appendChild(commentDiv);
     });
 }
 
+// Відправка коментаря
+async function uploadComment(videoKey, videoOwnerEmail) {
+    const commentInput = document.getElementById(`comment-input-${videoKey}`);
+    const commentText = commentInput.value.trim();
+    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
+
+    if (!commentText) return alert("Коментар не може бути порожнім.");
+
+    let commentData = commentText;
+    if (isPrivate) {
+        const videoKeyLocal = getVideoKey(videoKey);
+        commentData = await encryptText(commentText, videoKeyLocal);
+    }
+
+    await database.ref("comments").push({
+        comment: commentData,
+        email: currentUserEmail,
+        videoOwner: videoOwnerEmail,
+        isPrivate: isPrivate,
+        publishDate: new Date().toLocaleDateString(),
+        videoKey: videoKey
+    });
+
+    commentInput.value = "";
+    loadComments(videoKey, videoOwnerEmail);
+}
 
 
 function toggleUploadVisibility() {
