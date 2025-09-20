@@ -656,9 +656,13 @@ async function loadComments(videoKey, videoOwnerEmail) {
     }
 
     const videoKeyLocal = getVideoKey(videoKey);
+    const commentsArray = [];
 
-    snapshot.forEach(async childSnapshot => {
-        const data = childSnapshot.val();
+    snapshot.forEach(childSnapshot => {
+        commentsArray.push(childSnapshot.val());
+    });
+
+    await Promise.all(commentsArray.map(async (data) => {
         const commentDiv = document.createElement("div");
         commentDiv.className = "comments";
 
@@ -686,7 +690,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
         commentDiv.appendChild(br);
         commentDiv.appendChild(dateEl);
         commentsContainer.appendChild(commentDiv);
-    });
+    }));
 }
 // Відправка коментаря
 async function uploadComment(videoKey, videoOwnerEmail) {
