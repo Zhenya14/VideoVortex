@@ -356,9 +356,13 @@ alert("Сталася помилка при увімкненні функції 
       🔁 Вставити випадковий текст
     </button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-                    <button class="comment-button" onclick="uploadComment('${videoKey}')">
-                        <i class="material-icons">send</i>
-                    </button>
+<button class="comment-button" onclick="uploadComment('${videoKey}', '${videoOwnerEmail}', '${videoKey}')">
+    <i class="material-icons">send</i>
+</button>
+<label>
+  <input type="checkbox" id="private-comment-${videoKey}">
+  Приватний
+</label>
                 </div>
             `;
 
@@ -612,82 +616,107 @@ function uploadVideo() {
 }
 
 
-function uploadComment(videoKey) {
-    const commentInput = document.getElementById(`comment-input-${videoKey}`);
-    const commentText = commentInput.value.trim();
+// Генеруємо або отримуємо ключ для відео
+function getVideoKey(videoKey) {
+    let key = localStorage.getItem(`videoKey-${videoKey}`);
+    if (!key) {
+        key = crypto.randomUUID(); // простий ключ, можна замінити на сильніше шифрування
+        localStorage.setItem(`videoKey-${videoKey}`, key);
+    }
+    return key;
+}
 
-    if (commentText === "") {
-        alert("Коментар не може бути порожнім.");
+// Просте шифрування/дешифрування (можна замінити на AES)
+async function encryptText(text, key) {
+    const enc = new TextEncoder();
+    const encoded = enc.encode(text + key); // дуже базово
+    return btoa(String.fromCharCode(...encoded));
+}
+
+async function decryptText(cipher, key) {
+    const decoded = atob(cipher);
+    const arr = Uint8Array.from(decoded, c => c.charCodeAt(0));
+    const dec = new TextDecoder();
+    const text = dec.decode(arr);
+    return text.replace(key, ''); // віднімаємо ключ
+}
+
+// Завантажуємо коментарі
+async function loadComments(videoKey, videoOwnerEmail) {
+    const commentsContainer = document.getElementById(`comments-${videoKey}`);
+    commentsContainer.innerHTML = "";
+
+    const snapshot = await database.ref("comments")
+        .orderByChild("videoKey")
+        .equalTo(videoKey)
+        .once("value");
+
+    if (!snapshot.exists()) {
+        commentsContainer.textContent = "Ще немає коментарів...";
         return;
     }
 
-    // Відправка коментаря в базу даних
-    database.ref("comments").push({
-        comment: commentText,
-        email: currentUserEmail,
-        publishDate: new Date().toLocaleDateString(),
-        videoKey: videoKey  // Додаємо videoKey для зв'язку з відео
-    }).then(() => {
-        // Очищаємо поле для вводу коментаря
-        commentInput.value = "";
-        // Перезавантажуємо коментарі для цього відео
-        loadComments(videoKey);
-    }).catch(error => {
-        alert("Помилка при публікації коментаря: " + error.message);
+    const videoKeyLocal = getVideoKey(videoKey);
+
+    snapshot.forEach(async childSnapshot => {
+        const data = childSnapshot.val();
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comments";
+
+        const userEl = document.createElement("strong");
+        userEl.textContent = data.email || "Видалений акаунт";
+
+        const textEl = document.createElement("span");
+
+        // Якщо приватний
+        if (data.isPrivate) {
+            if (data.email === currentUserEmail || videoOwnerEmail === currentUserEmail) {
+                // Дешифруємо
+                textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
+            } else {
+                textEl.textContent = ": [Приватний коментар]";
+            }
+        } else {
+            textEl.textContent = ": " + data.comment;
+        }
+
+        const br = document.createElement("br");
+        const dateEl = document.createElement("small");
+        dateEl.textContent = data.publishDate;
+
+        commentDiv.appendChild(userEl);
+        commentDiv.appendChild(textEl);
+        commentDiv.appendChild(br);
+        commentDiv.appendChild(dateEl);
+        commentsContainer.appendChild(commentDiv);
     });
 }
 
+// Відправка коментаря
+async function uploadComment(videoKey, videoOwnerEmail) {
+    const commentInput = document.getElementById(`comment-input-${videoKey}`);
+    const commentText = commentInput.value.trim();
+    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
+    if (!commentText) return alert("Коментар не може бути порожнім.");
 
-
-function loadComments(videoKey) {
-    const commentsContainer = document.getElementById(`comments-${videoKey}`);
-    if (!commentsContainer) {
-        console.error("Comments container not found for video: ", videoKey);
-        return;
+    let commentData = commentText;
+    if (isPrivate) {
+        const videoKeyLocal = getVideoKey(videoKey);
+        commentData = await encryptText(commentText, videoKeyLocal);
     }
-    commentsContainer.innerHTML = "";
 
-    database.ref("comments")
-        .orderByChild("videoKey")
-        .equalTo(videoKey)
-        .once("value")
-        .then(snapshot => {
-            if (!snapshot.exists()) {
-                const noComment = document.createElement("p");
-                noComment.style.textAlign = "center";
-                noComment.textContent = "Ще немає коментарів...";
-                commentsContainer.appendChild(noComment);
-                return;
-            }
+    await database.ref("comments").push({
+        comment: commentData,
+        email: currentUserEmail,
+        videoOwner: videoOwnerEmail,
+        isPrivate: isPrivate,
+        publishDate: new Date().toLocaleDateString(),
+        videoKey: videoKey
+    });
 
-            snapshot.forEach(childSnapshot => {
-                const data = childSnapshot.val();
-
-                const commentDiv = document.createElement("div");
-                commentDiv.className = "comments";
-
-                const userEl = document.createElement("strong");
-                // Якщо акаунт видалений → "Видалений акаунт", інакше показує email
-                userEl.textContent = data.email ? data.email : "Видалений акаунт";
-
-                const textEl = document.createElement("span");
-                textEl.textContent = `: ${data.comment}`;
-
-                const br = document.createElement("br");
-
-                const dateEl = document.createElement("small");
-                dateEl.textContent = data.publishDate;
-
-                commentDiv.appendChild(userEl);
-                commentDiv.appendChild(textEl);
-                commentDiv.appendChild(br);
-                commentDiv.appendChild(dateEl);
-
-                commentsContainer.appendChild(commentDiv);
-            });
-        })
-        .catch(error => console.error("Помилка завантаження коментарів: ", error));
+    commentInput.value = "";
+    loadComments(videoKey, videoOwnerEmail);
 }
 
 
