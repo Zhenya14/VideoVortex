@@ -359,6 +359,10 @@ alert("Сталася помилка при увімкненні функції 
                     <button class="comment-button" onclick="uploadComment('${videoKey}')">
                         <i class="material-icons">send</i>
                     </button>
+<label>
+  <input type="checkbox" id="private-comment-${videoKey}">
+  Приватний
+</label>
                 </div>
             `;
 
