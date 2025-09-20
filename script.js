@@ -616,122 +616,128 @@ function uploadVideo() {
 }
 
 
-// 🔑 Простий ключ (для тесту — у продакшені краще зберігати у профілі користувача)
-const commentKey = new TextEncoder().encode("super_secret_key_1234567890123456"); // 32 байти
-
-// Шифрування
-async function encryptText(text, keyBytes) {
+// Симетричне шифрування AES-GCM через Web Crypto API
+async function encryptText(text, key) {
+    const enc = new TextEncoder();
+    const encoded = enc.encode(text);
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
-    const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, new TextEncoder().encode(text));
-    const combined = new Uint8Array(iv.byteLength + encrypted.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(encrypted), iv.byteLength);
-    return btoa(String.fromCharCode(...combined));
+    const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        encoded
+    );
+    return { iv: Array.from(iv), data: Array.from(new Uint8Array(encrypted)) };
 }
 
-// Дешифрування
-async function decryptText(base64Text, keyBytes) {
-    const data = Uint8Array.from(atob(base64Text), c => c.charCodeAt(0));
-    const iv = data.slice(0, 12);
-    const encrypted = data.slice(12);
-    const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
-    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, encrypted);
-    return new TextDecoder().decode(decrypted);
+async function decryptText(encryptedObj, key) {
+    const iv = new Uint8Array(encryptedObj.iv);
+    const data = new Uint8Array(encryptedObj.data);
+    const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        data
+    );
+    const dec = new TextDecoder();
+    return dec.decode(decrypted);
+}
+
+// Приклад генерації ключа (для демонстрації)
+async function generateKey() {
+    return crypto.subtle.generateKey(
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+    );
 }
 
 // Завантаження коментаря
-async function uploadComment(videoKey) {
+async function uploadComment(videoKey, videoOwnerEmail, sharedKey) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
     const commentText = commentInput.value.trim();
-    const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
-    const isPrivate = privateCheckbox && privateCheckbox.checked;
+    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
     if (commentText === "") {
         alert("Коментар не може бути порожнім.");
         return;
     }
 
-    let storedComment = commentText;
+    let commentData = commentText;
 
-    if (isPrivate) {
-        storedComment = await encryptText(commentText, commentKey);
+    if (isPrivate && sharedKey) {
+        commentData = await encryptText(commentText, sharedKey);
     }
 
-    // Відправка коментаря в базу даних
     database.ref("comments").push({
-        comment: storedComment,
+        comment: commentData,
         email: currentUserEmail,
+        videoOwner: videoOwnerEmail,
+        isPrivate: isPrivate,
         publishDate: new Date().toLocaleDateString(),
-        videoKey: videoKey,
-        isPrivate: isPrivate
+        videoKey: videoKey
     }).then(() => {
         commentInput.value = "";
-        if (privateCheckbox) privateCheckbox.checked = false;
-        loadComments(videoKey);
+        loadComments(videoKey, sharedKey);
     }).catch(error => {
         alert("Помилка при публікації коментаря: " + error.message);
     });
 }
 
 // Завантаження коментарів
-function loadComments(videoKey) {
+async function loadComments(videoKey, sharedKey) {
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
-    if (!commentsContainer) {
-        console.error("Comments container not found for video: ", videoKey);
-        return;
-    }
     commentsContainer.innerHTML = "";
 
-    database.ref("comments")
+    const snapshot = await database.ref("comments")
         .orderByChild("videoKey")
         .equalTo(videoKey)
-        .once("value")
-        .then(async snapshot => {
-            if (!snapshot.exists()) {
-                const noComment = document.createElement("p");
-                noComment.style.textAlign = "center";
-                noComment.textContent = "Ще немає коментарів...";
-                commentsContainer.appendChild(noComment);
-                return;
+        .once("value");
+
+    if (!snapshot.exists()) {
+        const noComment = document.createElement("p");
+        noComment.style.textAlign = "center";
+        noComment.textContent = "Ще немає коментарів...";
+        commentsContainer.appendChild(noComment);
+        return;
+    }
+
+    for (const childSnapshot of Object.values(snapshot.val())) {
+        const data = childSnapshot;
+
+        // Приватні коментарі показуємо тільки автору та власнику відео
+        if (data.isPrivate && currentUserEmail !== data.email && currentUserEmail !== data.videoOwner) {
+            continue;
+        }
+
+        let commentText = data.comment;
+        if (data.isPrivate && sharedKey) {
+            try {
+                commentText = await decryptText(data.comment, sharedKey);
+            } catch (e) {
+                commentText = "[Не вдалося розшифрувати коментар]";
             }
+        }
 
-            for (const childSnapshot of Object.values(snapshot.val())) {
-                const data = childSnapshot;
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comments";
 
-                const commentDiv = document.createElement("div");
-                commentDiv.className = "comments";
+        const userEl = document.createElement("strong");
+        userEl.textContent = data.email ? data.email : "Видалений акаунт";
 
-                const userEl = document.createElement("strong");
-                userEl.textContent = data.email ? data.email : "Видалений акаунт";
+        const textEl = document.createElement("span");
+        textEl.textContent = `: ${commentText}`;
 
-                const textEl = document.createElement("span");
-                let textContent = data.comment;
+        const br = document.createElement("br");
 
-                if (data.isPrivate) {
-                    try {
-                        textContent = await decryptText(data.comment, commentKey);
-                        textContent = `🔒 ${textContent}`;
-                    } catch (e) {
-                        textContent = "🔒 [Не вдалося розшифрувати]";
-                    }
-                }
+        const dateEl = document.createElement("small");
+        dateEl.textContent = data.publishDate;
 
-                textEl.textContent = `: ${textContent}`;
+        commentDiv.appendChild(userEl);
+        commentDiv.appendChild(textEl);
+        commentDiv.appendChild(br);
+        commentDiv.appendChild(dateEl);
 
-                const br = document.createElement("br");
-                const dateEl = document.createElement("small");
-                dateEl.textContent = data.publishDate;
-
-                commentDiv.appendChild(userEl);
-                commentDiv.appendChild(textEl);
-                commentDiv.appendChild(br);
-                commentDiv.appendChild(dateEl);
-
-                commentsContainer.appendChild(commentDiv);
-            }
-        })
-        .catch(error => console.error("Помилка завантаження коментарів: ", error));
+        commentsContainer.appendChild(commentDiv);
+    }
 }
 
 
