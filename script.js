@@ -349,23 +349,24 @@ alert("Сталася помилка при увімкненні функції 
             // Під час рендеру відео
 const commentSection = document.createElement("div");
 commentSection.classList.add("video-comment");
+// Коментарі
 commentSection.innerHTML = `
   <h3 style="color: white; text-align: left;">Коментарі:</h3>
   <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
   <div class="comment-section" id="comment-section">
-    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
-      🔁 Вставити випадковий текст
-    </button>
-    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-    <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-      <i class="material-icons">send</i>
-    </button>
-    <label>
-      <input type="checkbox" id="private-comment-${videoKey}">
-      Приватний
-    </label>
+      <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
+          🔁 Вставити випадковий текст
+      </button>
+      <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+      <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+          <i class="material-icons">send</i>
+      </button>
+      <label>
+          <input type="checkbox" id="private-comment-${videoKey}">
+          Приватний
+      </label>
   </div>
-            `;
+`;
 
             // Перегляд відео та перевірка пароля
             videoElement.onclick = () => {
