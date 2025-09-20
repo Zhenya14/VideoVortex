@@ -346,24 +346,25 @@ alert("Сталася помилка при увімкненні функції 
             videoElement.classList.add("video-item");
 
             // Коментарі
-            const commentSection = document.createElement("div");
-            commentSection.classList.add("video-comment");
-            commentSection.innerHTML = `
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section" id="comment-section">
- <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
+            // Під час рендеру відео
+const commentSection = document.createElement("div");
+commentSection.classList.add("video-comment");
+commentSection.innerHTML = `
+  <h3 style="color: white; text-align: left;">Коментарі:</h3>
+  <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+  <div class="comment-section" id="comment-section">
+    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
       🔁 Вставити випадковий текст
     </button>
-                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-<button class="comment-button" onclick="uploadComment('${videoKey}', '${videoOwnerEmail}', '${videoKey}')">
-    <i class="material-icons">send</i>
-</button>
-<label>
-  <input type="checkbox" id="private-comment-${videoKey}">
-  Приватний
-</label>
-                </div>
+    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+    <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+      <i class="material-icons">send</i>
+    </button>
+    <label>
+      <input type="checkbox" id="private-comment-${videoKey}">
+      Приватний
+    </label>
+  </div>
             `;
 
             // Перегляд відео та перевірка пароля
@@ -471,7 +472,7 @@ alert("Сталася помилка при увімкненні функції 
             videoGallery.appendChild(container);
 
             // Завантаження коментарів
-            loadComments(videoKey);
+            loadComments(videoKey, videoData.email);
         });
     });
 }
@@ -640,8 +641,6 @@ async function decryptText(cipher, key) {
     const text = dec.decode(arr);
     return text.replace(key, ''); // віднімаємо ключ
 }
-
-// Завантажуємо коментарі
 async function loadComments(videoKey, videoOwnerEmail) {
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     commentsContainer.innerHTML = "";
@@ -668,10 +667,8 @@ async function loadComments(videoKey, videoOwnerEmail) {
 
         const textEl = document.createElement("span");
 
-        // Якщо приватний
         if (data.isPrivate) {
             if (data.email === currentUserEmail || videoOwnerEmail === currentUserEmail) {
-                // Дешифруємо
                 textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
             } else {
                 textEl.textContent = ": [Приватний коментар]";
@@ -691,7 +688,6 @@ async function loadComments(videoKey, videoOwnerEmail) {
         commentsContainer.appendChild(commentDiv);
     });
 }
-
 // Відправка коментаря
 async function uploadComment(videoKey, videoOwnerEmail) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
