@@ -651,15 +651,24 @@ async function generateKey() {
 }
 
 // Завантаження коментаря
-async function uploadComment(videoKey, videoOwnerEmail, sharedKey) {
+async function uploadComment(videoKey, sharedKey) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
     const commentText = commentInput.value.trim();
     const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
-    if (commentText === "") {
+    if (!commentText) {
         alert("Коментар не може бути порожнім.");
         return;
     }
+
+    // Беремо власника відео з бази даних
+    const videoSnapshot = await database.ref(`videos/${videoKey}`).once("value");
+    const videoData = videoSnapshot.val();
+    if (!videoData) {
+        alert("Помилка: відео не знайдено.");
+        return;
+    }
+    const videoOwnerEmail = videoData.ownerEmail; // власник відео
 
     let commentData = commentText;
 
@@ -667,53 +676,41 @@ async function uploadComment(videoKey, videoOwnerEmail, sharedKey) {
         commentData = await encryptText(commentText, sharedKey);
     }
 
-    database.ref("comments").push({
+    await database.ref("comments").push({
         comment: commentData,
-        email: currentUserEmail,
-        videoOwner: videoOwnerEmail,
+        email: currentUserEmail,      // автор коментаря
+        videoOwner: videoOwnerEmail,  // власник відео
         isPrivate: isPrivate,
         publishDate: new Date().toLocaleDateString(),
         videoKey: videoKey
-    }).then(() => {
-        commentInput.value = "";
-        loadComments(videoKey, sharedKey);
-    }).catch(error => {
-        alert("Помилка при публікації коментаря: " + error.message);
     });
+
+    commentInput.value = "";
+    loadComments(videoKey, sharedKey);
 }
 
-// Завантаження коментарів
+// Завантаження коментарів теж використовує videoOwner із даних коментаря
 async function loadComments(videoKey, sharedKey) {
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     commentsContainer.innerHTML = "";
 
-    const snapshot = await database.ref("comments")
-        .orderByChild("videoKey")
-        .equalTo(videoKey)
-        .once("value");
+    const snapshot = await database.ref("comments").orderByChild("videoKey").equalTo(videoKey).once("value");
 
     if (!snapshot.exists()) {
-        const noComment = document.createElement("p");
-        noComment.style.textAlign = "center";
-        noComment.textContent = "Ще немає коментарів...";
-        commentsContainer.appendChild(noComment);
+        commentsContainer.innerHTML = "<p style='text-align:center'>Ще немає коментарів...</p>";
         return;
     }
 
-    for (const childSnapshot of Object.values(snapshot.val())) {
-        const data = childSnapshot;
-
-        // Приватні коментарі показуємо тільки автору та власнику відео
-        if (data.isPrivate && currentUserEmail !== data.email && currentUserEmail !== data.videoOwner) {
-            continue;
-        }
-
+    snapshot.forEach(async childSnapshot => {
+        const data = childSnapshot.val();
         let commentText = data.comment;
-        if (data.isPrivate && sharedKey) {
-            try {
-                commentText = await decryptText(data.comment, sharedKey);
-            } catch (e) {
-                commentText = "[Не вдалося розшифрувати коментар]";
+
+        // Приватний коментар — бачать тільки автор або власник відео
+        if (data.isPrivate) {
+            if (data.email === currentUserEmail || data.videoOwner === currentUserEmail) {
+                commentText = await decryptText(commentText, sharedKey);
+            } else {
+                return; // інші не бачать
             }
         }
 
@@ -737,7 +734,7 @@ async function loadComments(videoKey, sharedKey) {
         commentDiv.appendChild(dateEl);
 
         commentsContainer.appendChild(commentDiv);
-    }
+    });
 }
 
 
