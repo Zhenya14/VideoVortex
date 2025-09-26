@@ -87,13 +87,6 @@ color: #ffffff;
             color: #1c1e22;
         }
   </style>
-  <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/firebase-messaging-sw.js")
-    .then(() => console.log("✅ Firebase SW зареєстровано"))
-    .catch(err => console.error("❌ Помилка реєстрації SW:", err));
-}
-  </script>
 </head>
 <body>
 <nav>
@@ -138,37 +131,20 @@ if ("serviceWorker" in navigator) {
     const database = firebase.database();
 
     // 🟢 Авторизація
-    document.getElementById("auth-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.getElementById("auth-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("auth-email").value;
+      const password = document.getElementById("auth-password").value;
 
-    const email = document.getElementById("auth-email").value;
-    const password = document.getElementById("auth-password").value;
-
-    try {
-      // Вхід користувача
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      const uid = userCredential.user.uid;
-
-      // Отримуємо permission на нотифікації
-      const messaging = firebase.messaging();
-
-      await Notification.requestPermission();
-
-      const token = await messaging.getToken({
-        vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4" // ОБОВ'ЯЗКОВО встав свій ключ
-      });
-
-      // Оновлюємо токен в базі даних
-      await database.ref("users/" + uid).update({
-        fcmToken: token
-      });
-
-      alert("Вхід успішний!");
-      window.location.href = "index.html"; // Повернення на головну
-    } catch (error) {
-      alert("Помилка входу: " + error.message);
-    }
-  });
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("Вхід успішний!");
+          window.location.href = "index.html"; // повернення на головну
+        })
+        .catch((error) => {
+          alert("Помилка входу: " + error.message);
+        });
+    });
 
     // 🟢 Реєстрація
     document.getElementById("register-form").addEventListener("submit", (e) => {
