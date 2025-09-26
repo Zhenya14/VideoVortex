@@ -685,30 +685,35 @@ installBtn.addEventListener('click', async () => {
   }  
 });  
   </script>  
-	<script>  
-const firebaseConfig = {  
-                    apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",  
-            authDomain: "videovortex-235cd.firebaseapp.com",  
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",  
-            projectId: "videovortex-235cd",  
-            storageBucket: "videovortex-235cd.appspot.com",  
-            messagingSenderId: "681594250269",  
-            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"  
-};  
-firebase.initializeApp(firebaseConfig);  
-  const messaging = firebase.messaging();
-Notification.requestPermission().then(function(permission) {
-  if(permission === 'granted') {
+	<script>
+// Ініціалізація Firebase 8.10.0
+const firebaseConfig = {
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+firebase.initializeApp(firebaseConfig);
+
+// Push-повідомлення
+const messaging = firebase.messaging();
+Notification.requestPermission().then(permission => {
+  if (permission === 'granted') {
     messaging.getToken({ vapidKey: 'BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4' })
-      .then(function(token){ console.log('FCM Token:', token); })
-      .catch(function(err){ console.error('Помилка отримання токена:', err); });
+    .then(token => console.log('FCM Token:', token))
+    .catch(err => console.error('Помилка отримання токена:', err));
   }
 });
-		if('serviceWorker' in navigator) {
+
+// Service Worker
+if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
-    .then(() => console.log('✅ SW зареєстровано'))
-    .catch(err => console.error('❌ Помилка SW:', err));
-		}
+  .then(() => console.log('✅ SW зареєстровано'))
+  .catch(err => console.error('❌ Помилка SW:', err));
+}
 	</script>  
     <script src="script.js"></script>  
 </body>                                                            
