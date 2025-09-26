@@ -87,6 +87,13 @@ color: #ffffff;
             color: #1c1e22;
         }
   </style>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/firebase-messaging-sw.js")
+    .then(() => console.log("✅ Firebase SW зареєстровано"))
+    .catch(err => console.error("❌ Помилка реєстрації SW:", err));
+}
+  </script>
 </head>
 <body>
 <nav>
