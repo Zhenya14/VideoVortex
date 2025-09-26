@@ -17,14 +17,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>  
 <link rel="manifest" href="manifest.json">  
 <meta name="theme-color" content="#1c1e22">  
-<link rel="apple-touch-icon" href="icons/icon-192.png">  
-<script defer>  
-  if ("serviceWorker" in navigator) {  
-    navigator.serviceWorker.register("/service-worker.js")  
-      .then(() => console.log("✅ SW зареєстровано"))  
-      .catch(err => console.error("❌ Помилка SW:", err));  
-  }  
-</script>  
+<link rel="apple-touch-icon" href="icons/icon-192.png"> 
 	<script>  
   window.dataLayer = window.dataLayer || [];  
   function gtag(){dataLayer.push(arguments);}  
@@ -703,18 +696,19 @@ const firebaseConfig = {
             appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"  
 };  
 firebase.initializeApp(firebaseConfig);  
-  
-const messaging = firebase.messaging();  
-  
-// Запит дозволу на push  
-Notification.requestPermission().then(permission => {  
-  if (permission === 'granted') {  
-    console.log('Дозвіл на повідомлення надано');  
-    messaging.getToken({ vapidKey: 'BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4' })  
-      .then(token => console.log('FCM Token:', token))  
-      .catch(err => console.error('Помилка отримання токена:', err));  
-  }  
-});  
+  const messaging = firebase.messaging();
+Notification.requestPermission().then(function(permission) {
+  if(permission === 'granted') {
+    messaging.getToken({ vapidKey: 'BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4' })
+      .then(function(token){ console.log('FCM Token:', token); })
+      .catch(function(err){ console.error('Помилка отримання токена:', err); });
+  }
+});
+		if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('✅ SW зареєстровано'))
+    .catch(err => console.error('❌ Помилка SW:', err));
+		}
 	</script>  
     <script src="script.js"></script>  
 </body>                                                            
