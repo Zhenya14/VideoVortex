@@ -3,38 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
-    <link rel="icon" href="VideoVortex_logo.ico">
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-	<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
+<title>VideoVortex</title>
+<link rel="icon" href="VideoVortex_logo.ico">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<script defer>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("✅ SW зареєстровано"))
-      .catch(err => console.error("❌ Помилка SW:", err));
-  }
-</script>
-	<script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-JQTQ0P69EF');
 </script>
-<style>
 
+<!-- Firebase 9 compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+
+<!-- Service Worker -->
+<script defer>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('✅ SW зареєстровано'))
+      .catch(err => console.error('❌ Помилка SW:', err));
+  }
+</script>
+
+<style>
+/* Твої стилі збережено */
+body { 
+  font-family: Arial, sans-serif; 
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  color: #ffffff; 
+  text-align: center; 
+  padding: 0 20px; 
+  margin: 0;
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+}
+/* Далі встав сюди всі твої інші стилі ... */
+</style>
+</head>
+<body> 
+
+<nav>
+  <div style="display: flex; align-items: center;">
+    <a href="#" id="open-menu" onclick="toggleSidebar()">
+      <i class="material-icons">menu</i>
+    </a>
+    <a href="index.html">
+      <img src="VideoVortex_logo.ico" style="height:50px;width:50px;border-radius:50%;">
+      <h1 style="padding-left:5px;">VideoVortex</h1><sup style="margin-left:3px;font-size:0.6em;">beta</sup>
+      <sup><div id="timer"></div></sup>
+    </a>
+  </div>
+  <div style="display: flex; gap: 15px; margin-left: auto;">
+    <a href="#" id="upload-link" style="display: none;">
+      <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
+    </a>
+    <a href="#" id="upload-link-photo" style="display: none;">
+      <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
+    </a>
+    <a href="auth.html" id="auth-link">
+      <i class="material-icons">login</i><span class="icon-text">Увійти</span>
+    </a>
+    <a href="auth.html" id="register-link">
+      <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
+    </a>
+    <a href="#" id="logout-link" style="display: none;">
+      <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
+    </a>
+    <a href="#" id="account-link" style="display: none;">
+      <i class="material-icons">person</i><span class="icon-text" id="email"></span>
+    </a>
+    <button id="installBtn" style="display:none; width:128px; right:152px; position:fixed; top:82px;">Встановити додаток</button>
+  </div>
+</nav>
+
+<!-- Контейнери -->
+<div class="container" id="video-container">
+  <div class="video-container" id="video-gallery"></div>
+</div>
+<div class="container" id="photo-container">
+  <div class="photo-container" id="photo-gallery"></div>
+</div>
+
+<footer style="text-align:center; padding:10px 20px; background:rgba(26,26,26,0.68); backdrop-filter:blur(12px); border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.2); width:97%;">
+  <h3>Версія додатка:</h3>
+  <p>2.2.4</p>
+</footer>
+
+<!-- Firebase конфігурація та push -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+
+// Запит дозволу на push
+Notification.requestPermission().then(permission => {
+  if (permission === 'granted') {
+    messaging.getToken({ vapidKey: 'BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4' })
+      .then(token => console.log('FCM Token:', token))
+      .catch(err => console.error('Помилка отримання токена:', err));
+  }
+});
+</script>
+
+<!-- Скрипт додатку -->
+<script src="script.js"></script>
+
+</body>
+</html>
 /* Стиль повзунка */
 .switch {
   position: relative;
