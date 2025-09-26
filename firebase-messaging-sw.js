@@ -19,7 +19,7 @@ messaging.setBackgroundMessageHandler((payload) => {
   const title = payload.notification.title;
   const options = {
     body: payload.notification.body,
-    icon: '/icon.png'  // або своя іконка
+    icon: '/VideoVortex_logo.ico'  // або своя іконка
   };
   return self.registration.showNotification(title, options);
 });
