@@ -140,7 +140,9 @@ color: #ffffff;
         .then((userCredential) => {
 const messaging = firebase.messaging();
 const token = await messaging.getToken();
-await database.ref("users/" + uid).update({ fcmToken: token });
+await database.ref("users/" + uid).update({ 
+fcmToken: token 
+});
           alert("Вхід успішний!");
           window.location.href = "index.html"; // повернення на головну
         })
