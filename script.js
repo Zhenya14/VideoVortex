@@ -834,17 +834,16 @@ function updateUI(user) {
   }
 }
 
-// Слухач стану автентифікації
 auth.onAuthStateChanged((user) => {
   if (user) {
-    // Перевірка верифікації email
+    // ✅ Перевірка верифікації email
     if (!user.emailVerified) {
       blockScreenForVerification();
       verificationInterval = setInterval(() => {
         user.reload().then(() => {
           if (user.emailVerified) {
             clearInterval(verificationInterval);
-            updateUI(user); // без reload()
+            updateUI(user);
           }
         }).catch((error) => {
           console.error("Помилка перевірки email:", error);
@@ -852,7 +851,7 @@ auth.onAuthStateChanged((user) => {
       }, 10000);
     }
 
-    // Перевірка віку
+    // ✅ Перевірка віку
     const uid = user.uid;
     database.ref("users/" + uid).once("value").then(snapshot => {
       const userData = snapshot.val();
@@ -874,53 +873,67 @@ auth.onAuthStateChanged((user) => {
           age--;
         }
 
-        const NSFW = document.getElementById("nsfw");
-        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-        const nsfwInfo = document.getElementById("information-nsfw");
-        const viewBirthdate = document.getElementById("view");
-        const emailEl = document.getElementById("email");
+        // 👉 застосовуємо вікові обмеження
+        applyAgeRestrictions(age);
+      }
 
-        if (age < 16) {
-    // Ховаємо приватні коментарі
-    const privateCheckbox = document.getElementById(`private-checkbox-${videoKey}`);
-    if (privateCheckbox) privateCheckbox.style.display = "none";
+      const viewBirthdate = document.getElementById("view");
+      const emailEl = document.getElementById("email");
+      if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
+      if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
+    });
+  }
 
-    // Також блокуємо NSFW, бо автоматично <18
-    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+  updateUI(user);
+  toggleUploadVisibility();
+});
+
+
+// 🔥 Окрема функція для вікових обмежень
+function applyAgeRestrictions(age) {
+  const NSFW = document.getElementById("nsfw");
+  const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+  const nsfwInfo = document.getElementById("information-nsfw");
+
+  if (age < 16) {
+    // ❌ Ховаємо приватні коментарі для всіх відео
+    document.querySelectorAll("[id^='private-checkbox-']").forEach(el => {
+      el.style.display = "none";
+    });
+
+    // ❌ Блокуємо NSFW
     if (nsfwCheckbox) {
-        document.getElementById("slidernsfw").style.backgroundColor = "gray";
-        nsfwCheckbox.checked = false;
-        nsfwCheckbox.disabled = true;
+      document.getElementById("slidernsfw").style.backgroundColor = "gray";
+      nsfwCheckbox.checked = false;
+      nsfwCheckbox.disabled = true;
     }
     if (NSFW) NSFW.style.display = "none";
     if (nsfwInfo) nsfwInfo.style.display = "block";
 
-} else if (age < 18) {
-    // Дозволяємо коментарі, але блокуємо NSFW
-    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+  } else if (age < 18) {
+    // ✅ Коментарі можна, але NSFW блокуємо
     if (nsfwCheckbox) {
-        document.getElementById("slidernsfw").style.backgroundColor = "gray";
-        nsfwCheckbox.checked = false;
-        nsfwCheckbox.disabled = true;
+      document.getElementById("slidernsfw").style.backgroundColor = "gray";
+      nsfwCheckbox.checked = false;
+      nsfwCheckbox.disabled = true;
     }
     if (NSFW) NSFW.style.display = "none";
     if (nsfwInfo) nsfwInfo.style.display = "block";
 
-} else {
-    // Повнолітній користувач → усе доступно
-    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+  } else {
+    // 🔓 Повнолітнім доступно все
     if (nsfwCheckbox) {
-        document.getElementById("slidernsfw").style.backgroundColor = "red";
-        nsfwCheckbox.disabled = false;
+      document.getElementById("slidernsfw").style.backgroundColor = "red";
+      nsfwCheckbox.disabled = false;
+      nsfwCheckbox.addEventListener("change", function () {
+        showNSFW = this.checked;
+        loadVideos();
+      });
     }
     if (nsfwInfo) nsfwInfo.style.display = "none";
     if (NSFW) NSFW.style.display = "block";
-            nsfwCheckbox.addEventListener("change", function () {
-              showNSFW = this.checked;
-              loadVideos();
-            });
-          }
-        }
+  }
+}
 
         if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
         if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
