@@ -887,6 +887,8 @@ document.getElementById("slidernsfw").style.backgroundColor = "gray";
             nsfwCheckbox.disabled = true;
             if (NSFW) NSFW.style.display = "none";
             if (nsfwInfo) nsfwInfo.style.display = "block";
+} else if (age < 16) {
+document.getElementById("private-checkbox{$videoKey}").style.display = "none";
           } else {
 document.getElementById("slidernsfw").style.backgroundColor = "red";
             nsfwCheckbox.disabled = false;
