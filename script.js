@@ -485,7 +485,18 @@ const randomComments = [
   "Підтримую 👍",
   "Топчик!"
 ];
+function formatTime(seconds) {
+    seconds = Math.floor(seconds); // округлюємо до цілого
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
 
+    let result = "";
+    if (h > 0) result += h + "h ";
+    if (m > 0) result += m + "m ";
+    result += s + "s";
+    return result;
+}
 function insertRandomComment(videoKey) {
   const inputId = `comment-input-${videoKey}`;
   const input = document.getElementById(inputId);
@@ -584,7 +595,7 @@ const startTime = Date.now();
             const speed = snapshot.bytesTransferred / timeElapsed;
             const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
             const timeLeft = remainingBytes / speed;
-      document.getElementById("time-left").innerText= timeLeft;
+      document.getElementById("time-left").innerText= formatTime(timeLeft);
       document.getElementById("upload-progress").value = progress;
                 document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
                 document.getElementById("progress-container").style.display = "block";
