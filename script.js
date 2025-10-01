@@ -361,8 +361,8 @@ commentSection.innerHTML = `
       <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
           <i class="material-icons">send</i>
       </button>
-      <label>
-          <input type="checkbox" id="private-comment-${videoKey}" style="display: none;">
+      <label id="private-checkbox" style="display: none;">
+          <input type="checkbox" id="private-comment-${videoKey}">
           Приватний
       </label>
   </div>
@@ -876,7 +876,7 @@ auth.onAuthStateChanged((user) => {
 
         const NSFW = document.getElementById("nsfw");
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-const privateComment = documenr.getElementById(`private-checkbox-${videoKey}`);
+const privateComment = documenr.getElementById('private-checkbox');
         const nsfwInfo = document.getElementById("information-nsfw");
         const viewBirthdate = document.getElementById("view");
         const emailEl = document.getElementById("email");
