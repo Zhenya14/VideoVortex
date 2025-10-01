@@ -122,7 +122,7 @@ let timeLeftInSeconds = null;
 let sleepStart = null;
 let verificationInterval;
 let sleepEnd = null;
-let userAge = 0;
+let userAge = null;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -472,13 +472,6 @@ commentSection.innerHTML = `
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
-const privateComment = container.querySelector(`#private-checkbox-${videoKey}`);
-const privateCheckbox = container.querySelector(`#private-comment-${videoKey}`);
-if (privateComment && privateCheckbox) {
-  const showPrivate = userAge >= 16;
-  privateComment.style.display = showPrivate ? "block" : "none";
-  privateCheckbox.disabled = !showPrivate;
-}
             // Завантаження коментарів
             loadComments(videoKey, videoData.email);
         });
@@ -885,13 +878,25 @@ auth.onAuthStateChanged((user) => {
 
             // DOM елементи
             const NSFW = document.getElementById("nsfw");
-            const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+            const nsfwCheckbox = document.getElementById("show-nsfw-videos");
             const nsfwSlider = document.getElementById("slidernsfw");
             const nsfwInfo = document.getElementById("information-nsfw");
+            const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
+            const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
             const viewBirthdate = document.getElementById("view");
             const emailEl = document.getElementById("email");
 
-          
+            // Якщо користувач молодше 16 → ховаємо приватні коментарі
+            if (privateComment) {
+              if (age < 16) {
+                privateCheckbox.disabled = true;
+                privateComment.style.display = "none";
+              } else {
+                privateComment.style.display = "block";
+                privateCheckbox.disabled = false;
+              }
+            }
+
             // NSFW
             if (nsfwCheckbox) {
               if (age < 18) {
@@ -906,17 +911,14 @@ auth.onAuthStateChanged((user) => {
                 if (NSFW) NSFW.style.display = "block";
                 if (nsfwInfo) nsfwInfo.style.display = "none";
 
-                // Видаляємо старі обробники, щоб не додавати повторно
-                nsfwCheckbox.replaceWith(nsfwCheckbox.cloneNode(true));
-                const newCheckbox = document.getElementById('show-nsfw-videos');
-                newCheckbox.addEventListener("change", function () {
+                nsfwCheckbox.addEventListener("change", function () {
                   showNSFW = this.checked;
                   loadVideos();
                 });
               }
             }
 
-            // Показуємо інформацію про користувача
+            // Інформація про користувача
             if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr}`;
             if (emailEl && userData?.name && userData?.supername) {
               emailEl.innerHTML = `${userData.name} ${userData.supername}`;
