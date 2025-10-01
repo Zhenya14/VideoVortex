@@ -834,115 +834,106 @@ function updateUI(user) {
   }
 }
 
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    // ✅ Перевірка верифікації email
-    if (!user.emailVerified) {
-      blockScreenForVerification();
-      verificationInterval = setInterval(() => {
-        user.reload().then(() => {
-          if (user.emailVerified) {
-            clearInterval(verificationInterval);
-            updateUI(user);
-          }
-        }).catch((error) => {
-          console.error("Помилка перевірки email:", error);
-        });
-      }, 10000);
-    }
+auth.onAuthStateChanged((user) => {  
+  if (user) {  
+    // ✅ Перевірка верифікації email  
+    if (!user.emailVerified) {  
+      blockScreenForVerification();  
+      let verificationInterval = setInterval(() => {  
+        user.reload().then(() => {  
+          if (user.emailVerified) {  
+            clearInterval(verificationInterval);  
+            updateUI(user);  
+          }  
+        }).catch((error) => {  
+          console.error("Помилка перевірки email:", error);  
+        });  
+      }, 10000);  
+    }  
 
-    // ✅ Перевірка віку
-    const uid = user.uid;
-    database.ref("users/" + uid).once("value").then(snapshot => {
-      const userData = snapshot.val();
-      const birthStr = userData?.birthdate;
+    // ✅ Перевірка віку  
+    const uid = user.uid;  
+    database.ref("users/" + uid).once("value").then(snapshot => {  
+      const userData = snapshot.val();  
+      const birthStr = userData?.birthdate;  
 
-      if (!userData?.email || !birthStr) {
-        document.getElementById("birthdate-modal").style.display = "flex";
-      }
+      if (!userData?.email || !birthStr) {  
+        document.getElementById("birthdate-modal").style.display = "flex";  
+      }  
 
-      const match = birthStr?.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-      if (match) {
-        const [, day, month, year] = match;
-        const birthDate = new Date(`${year}-${month}-${day}`);
-        const today = new Date();
+      const match = birthStr?.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);  
+      if (match) {  
+        const [, day, month, year] = match;  
+        const birthDate = new Date(`${year}-${month}-${day}`);  
+        const today = new Date();  
 
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
+        let age = today.getFullYear() - birthDate.getFullYear();  
+        const m = today.getMonth() - birthDate.getMonth();  
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {  
+          age--;  
+        }  
 
-        // 👉 застосовуємо вікові обмеження
-        applyAgeRestrictions(age);
-      }
+        // 👉 застосовуємо вікові обмеження  
+        applyAgeRestrictions(age);  
+      }  
 
-      const viewBirthdate = document.getElementById("view");
-      const emailEl = document.getElementById("email");
-      if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
-      if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-  }
+      const viewBirthdate = document.getElementById("view");  
+      const emailEl = document.getElementById("email");  
+      if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;  
+      if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;  
+    });  
 
-  updateUI(user);
-  toggleUploadVisibility();
-});
-
-
-// 🔥 Окрема функція для вікових обмежень
-function applyAgeRestrictions(age) {
-  const NSFW = document.getElementById("nsfw");
-  const nsfwCheckbox = document.getElementById("nsfw-checkbox");
-  const nsfwInfo = document.getElementById("information-nsfw");
-
-  if (age < 16) {
-    // ❌ Ховаємо приватні коментарі для всіх відео
-    document.querySelectorAll("[id^='private-checkbox-']").forEach(el => {
-      el.style.display = "none";
-    });
-
-    // ❌ Блокуємо NSFW
-    if (nsfwCheckbox) {
-      document.getElementById("slidernsfw").style.backgroundColor = "gray";
-      nsfwCheckbox.checked = false;
-      nsfwCheckbox.disabled = true;
-    }
-    if (NSFW) NSFW.style.display = "none";
-    if (nsfwInfo) nsfwInfo.style.display = "block";
-
-  } else if (age < 18) {
-    // ✅ Коментарі можна, але NSFW блокуємо
-    if (nsfwCheckbox) {
-      document.getElementById("slidernsfw").style.backgroundColor = "gray";
-      nsfwCheckbox.checked = false;
-      nsfwCheckbox.disabled = true;
-    }
-    if (NSFW) NSFW.style.display = "none";
-    if (nsfwInfo) nsfwInfo.style.display = "block";
-
+    updateUI(user);  
+    toggleUploadVisibility();  
   } else {
-    // 🔓 Повнолітнім доступно все
-    if (nsfwCheckbox) {
-      document.getElementById("slidernsfw").style.backgroundColor = "red";
-      nsfwCheckbox.disabled = false;
-      nsfwCheckbox.addEventListener("change", function () {
-        showNSFW = this.checked;
-        loadVideos();
-      });
-    }
-    if (nsfwInfo) nsfwInfo.style.display = "none";
-    if (NSFW) NSFW.style.display = "block";
+    // Якщо користувача немає
+    updateUI(null);
+    toggleUploadVisibility();
   }
+});  
+
+
+// 🔥 Окрема функція для вікових обмежень  
+function applyAgeRestrictions(age) {  
+  const NSFW = document.getElementById("nsfw");  
+  const nsfwCheckbox = document.getElementById("nsfw-checkbox");  
+  const nsfwInfo = document.getElementById("information-nsfw");  
+
+  if (age < 16) {  
+    document.querySelectorAll("[id^='private-checkbox-']").forEach(el => el.style.display = "none");  
+
+    if (nsfwCheckbox) {  
+      document.getElementById("slidernsfw").style.backgroundColor = "gray";  
+      nsfwCheckbox.checked = false;  
+      nsfwCheckbox.disabled = true;  
+    }  
+    if (NSFW) NSFW.style.display = "none";  
+    if (nsfwInfo) nsfwInfo.style.display = "block";  
+
+  } else if (age < 18) {  
+    if (nsfwCheckbox) {  
+      document.getElementById("slidernsfw").style.backgroundColor = "gray";  
+      nsfwCheckbox.checked = false;  
+      nsfwCheckbox.disabled = true;  
+    }  
+    if (NSFW) NSFW.style.display = "none";  
+    if (nsfwInfo) nsfwInfo.style.display = "block";  
+
+  } else {  
+    if (nsfwCheckbox) {  
+      document.getElementById("slidernsfw").style.backgroundColor = "red";  
+      nsfwCheckbox.disabled = false;  
+
+      // Забезпечуємо один слухач
+      nsfwCheckbox.onchange = function () {  
+        showNSFW = this.checked;  
+        loadVideos();  
+      };  
+    }  
+    if (nsfwInfo) nsfwInfo.style.display = "none";  
+    if (NSFW) NSFW.style.display = "block";  
+  }  
 }
-
-        if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
-        if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-      }
-    });
-  }
-
-  updateUI(user); // 🔥 викликається завжди
-  toggleUploadVisibility();
-});
 function submitBirthdate() {
   const user = firebase.auth().currentUser;
   const input = document.getElementById("birthdate-input").value;
