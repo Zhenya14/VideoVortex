@@ -549,6 +549,7 @@ function saveVideoChanges() {
 
 // Функція для генерації секретного ключа
 function uploadVideo() {
+const startTime = Date.now();
     const videoTitle = document.getElementById("video-title").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
