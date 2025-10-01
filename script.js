@@ -486,16 +486,20 @@ const randomComments = [
   "Топчик!"
 ];
 function formatTime(seconds) {
-    seconds = Math.floor(seconds); // округлюємо до цілого
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
+    seconds = Math.floor(seconds); // округлюємо до цілого числа
+    const h = Math.floor(seconds / 3600); // години
+    const m = Math.floor((seconds % 3600) / 60); // хвилини
+    const s = seconds % 60; // секунди
 
-    let result = "";
-    if (h > 0) result += h + "h ";
-    if (m > 0) result += m + "m ";
-    result += s + "s";
-    return result;
+    const mm = m.toString().padStart(2, "0");
+    const ss = s.toString().padStart(2, "0");
+
+    if (h > 0) {
+        const hh = h.toString().padStart(2, "0");
+        return `${hh}:${mm}:${ss}`;
+    } else {
+        return `${mm}:${ss}`;
+    }
 }
 function insertRandomComment(videoKey) {
   const inputId = `comment-input-${videoKey}`;
