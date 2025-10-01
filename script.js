@@ -880,20 +880,41 @@ auth.onAuthStateChanged((user) => {
         const viewBirthdate = document.getElementById("view");
         const emailEl = document.getElementById("email");
 
-        if (nsfwCheckbox) {
-          if (age < 18) {
-document.getElementById("slidernsfw").style.backgroundColor = "gray";
-            nsfwCheckbox.checked = false;
-            nsfwCheckbox.disabled = true;
-            if (NSFW) NSFW.style.display = "none";
-            if (nsfwInfo) nsfwInfo.style.display = "block";
-} else if (age < 16) {
-document.getElementById(`private-checkbox-${videoKey}`).style.display = "none";
-          } else {
-document.getElementById("slidernsfw").style.backgroundColor = "red";
-            nsfwCheckbox.disabled = false;
-            if (nsfwInfo) nsfwInfo.style.display = "none";
-            if (NSFW) NSFW.style.display = "block";
+        if (age < 16) {
+    // Ховаємо приватні коментарі
+    const privateCheckbox = document.getElementById(`private-checkbox-${videoKey}`);
+    if (privateCheckbox) privateCheckbox.style.display = "none";
+
+    // Також блокуємо NSFW, бо автоматично <18
+    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+    if (nsfwCheckbox) {
+        document.getElementById("slidernsfw").style.backgroundColor = "gray";
+        nsfwCheckbox.checked = false;
+        nsfwCheckbox.disabled = true;
+    }
+    if (NSFW) NSFW.style.display = "none";
+    if (nsfwInfo) nsfwInfo.style.display = "block";
+
+} else if (age < 18) {
+    // Дозволяємо коментарі, але блокуємо NSFW
+    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+    if (nsfwCheckbox) {
+        document.getElementById("slidernsfw").style.backgroundColor = "gray";
+        nsfwCheckbox.checked = false;
+        nsfwCheckbox.disabled = true;
+    }
+    if (NSFW) NSFW.style.display = "none";
+    if (nsfwInfo) nsfwInfo.style.display = "block";
+
+} else {
+    // Повнолітній користувач → усе доступно
+    const nsfwCheckbox = document.getElementById("nsfw-checkbox");
+    if (nsfwCheckbox) {
+        document.getElementById("slidernsfw").style.backgroundColor = "red";
+        nsfwCheckbox.disabled = false;
+    }
+    if (nsfwInfo) nsfwInfo.style.display = "none";
+    if (NSFW) NSFW.style.display = "block";
             nsfwCheckbox.addEventListener("change", function () {
               showNSFW = this.checked;
               loadVideos();
