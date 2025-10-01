@@ -369,9 +369,9 @@ commentSection.innerHTML = `
       </label>
   </div>
 `;
-const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
-      const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
-      if (privateComment && privateCheckbox) {
+const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
+const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
+if (privateComment && privateCheckbox) {
         const showPrivate = userAge >= 16;
         privateComment.style.display = showPrivate ? "block" : "none";
         privateCheckbox.disabled = !showPrivate;
@@ -845,81 +845,90 @@ function updateUI(user) {
 // Слухач стану автентифікації
 
 auth.onAuthStateChanged((user) => {
-  if (!user) return;
+  if (user) {
+    // Перевірка верифікації email
+    if (!user.emailVerified) {
+      blockScreenForVerification();
+      verificationInterval = setInterval(() => {
+        user.reload()
+          .then(() => {
+            if (user.emailVerified) {
+              clearInterval(verificationInterval);
+              updateUI(user);
+            }
+          })
+          .catch((error) => console.error("Помилка перевірки email:", error));
+      }, 10000);
+    }
 
-  // Перевірка верифікації email
-  if (!user.emailVerified) {
-    blockScreenForVerification();
-    verificationInterval = setInterval(() => {
-      user.reload()
-        .then(() => {
-          if (user.emailVerified) {
-            clearInterval(verificationInterval);
-            updateUI(user);
+    // Перевірка віку та даних користувача
+    const uid = user.uid;
+    database.ref("users/" + uid).once("value")
+      .then(snapshot => {
+        const userData = snapshot.val();
+        const birthStr = userData?.birthdate;
+
+        if (!userData?.email || !birthStr) {
+          const modal = document.getElementById("birthdate-modal");
+          if (modal) modal.style.display = "flex";
+        }
+
+        if (birthStr) {
+          const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+          if (match) {
+            const [, day, month, year] = match;
+            const birthDate = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+            // DOM елементи
+            const NSFW = document.getElementById("nsfw");
+            const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+            const nsfwSlider = document.getElementById("slidernsfw");
+            const nsfwInfo = document.getElementById("information-nsfw");
+            const viewBirthdate = document.getElementById("view");
+            const emailEl = document.getElementById("email");
+
+          
+            // NSFW
+            if (nsfwCheckbox) {
+              if (age < 18) {
+                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+                nsfwCheckbox.checked = false;
+                nsfwCheckbox.disabled = true;
+                if (NSFW) NSFW.style.display = "none";
+                if (nsfwInfo) nsfwInfo.style.display = "block";
+              } else {
+                if (nsfwSlider) nsfwSlider.style.backgroundColor = "red";
+                nsfwCheckbox.disabled = false;
+                if (NSFW) NSFW.style.display = "block";
+                if (nsfwInfo) nsfwInfo.style.display = "none";
+
+                // Видаляємо старі обробники, щоб не додавати повторно
+                nsfwCheckbox.replaceWith(nsfwCheckbox.cloneNode(true));
+                const newCheckbox = document.getElementById('show-nsfw-videos');
+                newCheckbox.addEventListener("change", function () {
+                  showNSFW = this.checked;
+                  loadVideos();
+                });
+              }
+            }
+
+            // Показуємо інформацію про користувача
+            if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr}`;
+            if (emailEl && userData?.name && userData?.supername) {
+              emailEl.innerHTML = `${userData.name} ${userData.supername}`;
+            }
           }
-        })
-        .catch((error) => console.error("Помилка перевірки email:", error));
-    }, 10000);
+        }
+      })
+      .catch(error => console.error("Помилка отримання даних користувача:", error));
   }
 
-  // Отримуємо дані користувача
-  const uid = user.uid;
-  database.ref("users/" + uid).once("value")
-    .then(snapshot => {
-      const userData = snapshot.val();
-      const birthStr = userData?.birthdate;
-
-      if (!userData?.email || !birthStr) {
-        const modal = document.getElementById("birthdate-modal");
-        if (modal) modal.style.display = "flex";
-      }
-
-      // Обчислюємо вік
-      if (birthStr) {
-        const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-        if (match) {
-          const [, day, month, year] = match;
-          const birthDate = new Date(`${year}-${month}-${day}`);
-          const today = new Date();
-          let age = today.getFullYear() - birthDate.getFullYear();
-          if (today.getMonth() < birthDate.getMonth() ||
-              (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
-            age--;
-          }
-          userAge = age; // зберігаємо глобально для loadVideos
-        }
-      }
-
-      // Глобальні елементи
-      const NSFW = document.getElementById("nsfw");
-      const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-      const nsfwSlider = document.getElementById("slidernsfw");
-      const nsfwInfo = document.getElementById("information-nsfw");
-      const viewBirthdate = document.getElementById("view");
-      const emailEl = document.getElementById("email");
-
-      if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr || 'не вказано'}`;
-      if (emailEl && userData?.name && userData?.supername) {
-        emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-      }
-
-      // NSFW глобальний чекбокс
-      if (nsfwCheckbox) {
-        nsfwCheckbox.disabled = userAge < 18;
-        nsfwCheckbox.checked = userAge < 18 ? false : nsfwCheckbox.checked;
-        if (NSFW) NSFW.style.display = userAge < 18 ? "none" : "block";
-        if (nsfwInfo) nsfwInfo.style.display = userAge < 18 ? "block" : "none";
-
-        nsfwCheckbox.addEventListener("change", function () {
-          showNSFW = this.checked;
-          loadVideos();
-        });
-      }
-
-      loadVideos(); // викликаємо після визначення віку
-    })
-    .catch(error => console.error("Помилка отримання даних користувача:", error));
-
+  // Завжди оновлюємо UI
   updateUI(user);
   toggleUploadVisibility();
 });
