@@ -421,7 +421,7 @@ commentSection.innerHTML = `
 
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerHTML = `
+            detailsElement.textContent= `
                 <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
                 Автор: ${videoData.author || "Анонім"}<br>
                 Переглядів: ${videoData.views || 0}<br>
@@ -578,7 +578,12 @@ function uploadVideo() {
             (snapshot) => {
                 // Прогрес завантаження
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById("upload-progress").value = progress;
+          const timeElapsed = (Date.now() - startTime) / 1000;
+            const speed = snapshot.bytesTransferred / timeElapsed;
+            const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
+            const timeLeft = remainingBytes / speed;
+      document.getElementById("time-left").value = timeLeft;
+      document.getElementById("upload-progress").value = progress;
                 document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
                 document.getElementById("progress-container").style.display = "block";
             },
@@ -676,7 +681,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
             if (data.email === currentUserEmail || videoOwnerEmail === currentUserEmail) {
                 textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
             } else {
-                textEl.textContent = ": [Приватний коментар]";
+                return;
             }
         } else {
             textEl.textContent = ": " + data.comment;
