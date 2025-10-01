@@ -327,7 +327,12 @@ document.getElementById("details").innerHTML = `
     <p><strong>Перегляди:</strong> <span id="view-count">${views}</span></p>
     <p><strong>Опис:</strong> ${description}</p>
 `;
-
+videoElement.addEventListener("play", () => {
+    views++;
+    document.getElementById("view-count").innerText = views;
+    database.ref("videos/" + videoKey).update({ views })
+        .catch(error => console.error("Помилка оновлення переглядів:", error));
+});
 // Функція для завантаження схожих відео
 function loadSimilarVideos(currentVideoData) {
     const container = document.getElementById("target-videos");
