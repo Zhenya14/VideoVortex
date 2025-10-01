@@ -330,7 +330,6 @@ alert("Сталася помилка при увімкненні функції 
     function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     videoGallery.innerHTML = "";
-
     const showNSFW = document.getElementById("show-nsfw-videos").checked;
 
     database.ref("videos").once("value").then(snapshot => {
