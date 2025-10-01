@@ -289,47 +289,75 @@ nav {
 <div id="target-videos"></div>
 <script>
 const firebaseConfig = {
-            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-            authDomain: "videovortex-235cd.firebaseapp.com",
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "videovortex-235cd",
-            storageBucket: "videovortex-235cd.appspot.com",
-            messagingSenderId: "681594250269",
-            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-        const storage = firebase.storage();
+    apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+    authDomain: "videovortex-235cd.firebaseapp.com",
+    databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "videovortex-235cd",
+    storageBucket: "videovortex-235cd.appspot.com",
+    messagingSenderId: "681594250269",
+    appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+const storage = firebase.storage();
+
+// Отримуємо дані відео з URL
+const urlParams = new URLSearchParams(window.location.search);
+const videoKey = urlParams.get("key");
+const videoUrl = urlParams.get("url");
+const title = urlParams.get("title");
+const author = urlParams.get("author");
+const publishDate = urlParams.get("publishDate");
+const description = urlParams.get("description");
+let views = parseInt(urlParams.get("views")) || 0;
+const avatar = urlParams.get("avatar");
+
+// Встановлюємо назву сторінки
+document.title = title;
+
+// Рендеримо поточне відео та деталі
+const videoElement = document.getElementById("video-player");
+videoElement.src = videoUrl;
+
+document.getElementById("details").innerHTML = `
+    <h2>${title}</h2>
+    <p><strong>Автор:</strong> ${author}</p>
+    <p><strong>Дата публікації:</strong> ${publishDate}</p>
+    <p><strong>Перегляди:</strong> <span id="view-count">${views}</span></p>
+    <p><strong>Опис:</strong> ${description}</p>
+`;
+
+// Функція для завантаження схожих відео
 function loadSimilarVideos(currentVideoData) {
     const container = document.getElementById("target-videos");
     container.innerHTML = ""; // Очищаємо контейнер
 
-    firebase.database().ref("videos").once("value").then(snapshot => {
+    database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
 
             // Пропускаємо поточне відео по назві
             if (videoData.title === currentVideoData.title) return;
 
-            // Показуємо тільки відео з такою ж кількістю переглядів
+            // Показуємо відео з такою ж кількістю переглядів
             if (videoData.views === currentVideoData.views) {
                 const videoContainer = document.createElement("div");
                 videoContainer.classList.add("video-item-container");
 
-                const videoElement = document.createElement("video");
-                videoElement.src = videoData.url;
-                videoElement.autoplay = true;
-                videoElement.muted = true;
-                videoElement.loop = true;
-                videoElement.controls = false; // без панелі керування
+                const similarVideo = document.createElement("video");
+                similarVideo.src = videoData.url;
+                similarVideo.autoplay = true;
+                similarVideo.muted = true;
+                similarVideo.loop = true;
+                similarVideo.controls = false;
 
                 const titleElement = document.createElement("h3");
                 titleElement.innerText = videoData.title;
                 titleElement.style.color = "white";
 
                 videoContainer.appendChild(titleElement);
-                videoContainer.appendChild(videoElement);
+                videoContainer.appendChild(similarVideo);
                 container.appendChild(videoContainer);
             }
         });
@@ -337,41 +365,18 @@ function loadSimilarVideos(currentVideoData) {
         console.error("Помилка при завантаженні схожих відео:", error);
     });
 }
-window.onload = function() {
-loadSimilarVideos();
-}
+
+// Створюємо об’єкт поточного відео для схожих
+const currentVideoData = {
+    title: title,
+    views: views
+};
+
+// Завантажуємо схожі відео після завантаження сторінки
+window.addEventListener("DOMContentLoaded", () => {
+    loadSimilarVideos(currentVideoData);
+});
 </script>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoKey = urlParams.get("key");
-        const videoUrl = urlParams.get("url");
-        const title = urlParams.get("title");
-        const author = urlParams.get("author");
-        const publishDate = urlParams.get("publishDate");
-        const description = urlParams.get("description");
-        const views = urlParams.get("views");
-        const avatar = urlParams.get("avatar");
 
-
-        document.title = `${title}`;
-        document.getElementById("video-player").src = videoUrl;
-        document.getElementById("avatar").innerText = avatar;
-        document.getElementById("details").innerHTML = `
-            <h2>${title}</h2>
-            <p><strong>Автор:</strong> ${author}</p>
-            <p><strong>Дата публікації:</strong> ${publishDate}</p>
-            <p><strong>Перегляди:</strong> ${views}</p>
-            <p><strong>Опис:</strong> ${description}</p>
-        `;
-        const videoElement = document.getElementById("video-player");
-            videoElement.src = videoData.url;
-            videoElement.classList.add("video-item");
-		
-	        videoElement.addEventListener("play", () => {
-			const newViewCount = (videoData.views || 0) + 1;
-               	        database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .catch(error => console.error("Помилка оновлення переглядів:", error));
-                });
-    </script>
 </body>
     </html>
