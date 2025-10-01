@@ -286,7 +286,9 @@ nav {
         </div>
     </div>
 <h3>Схожі відео:</h3>
-<div id="target-videos"></div>
+<div id="target-videos">
+<p id="message" style="display: none;">Схожих відео немає 😔</p>
+</div>
 <script>
 const firebaseConfig = {
     apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
@@ -364,10 +366,7 @@ found = true;
             }
         });
 if (!found) {
-            const message = document.createElement("p");
-            message.innerText = "Схожих відео немає 😔";
-            message.style.color = "white";
-            container.appendChild(message);
+            document.getElementById("message").style.display = "block";
         }
     }).catch(error => {
         console.error("Помилка при завантаженні схожих відео:", error);
