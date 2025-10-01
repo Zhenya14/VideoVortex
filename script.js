@@ -838,98 +838,101 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    // Перевірка верифікації email
+    // Перевірка email
     if (!user.emailVerified) {
       blockScreenForVerification();
       verificationInterval = setInterval(() => {
-        user.reload()
-          .then(() => {
-            if (user.emailVerified) {
-              clearInterval(verificationInterval);
-              updateUI(user);
-            }
-          })
-          .catch((error) => console.error("Помилка перевірки email:", error));
+        user.reload().then(() => {
+          if (user.emailVerified) {
+            clearInterval(verificationInterval);
+            updateUI(user);
+          }
+        }).catch(err => console.error("Помилка перевірки email:", err));
       }, 10000);
     }
 
-    // Перевірка віку та даних користувача
+    // Перевірка віку
     const uid = user.uid;
-    database.ref("users/" + uid).once("value")
-      .then(snapshot => {
-        const userData = snapshot.val();
-        const birthStr = userData?.birthdate;
+    database.ref("users/" + uid).once("value").then(snapshot => {
+      const userData = snapshot.val();
+      const birthStr = userData?.birthdate;
 
-        if (!userData?.email || !birthStr) {
-          const modal = document.getElementById("birthdate-modal");
-          if (modal) modal.style.display = "flex";
+      if (!userData?.email || !birthStr) {
+        const modal = document.getElementById("birthdate-modal");
+        if (modal) modal.style.display = "flex";
+      }
+
+      if (birthStr) {
+        // парсимо дату
+        let birthDate = null;
+        let match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+        if (match) {
+          const [, d, m, y] = match;
+          birthDate = new Date(`${y}-${m}-${d}`);
+        } else {
+          // пробуємо як ISO
+          birthDate = new Date(birthStr);
         }
 
-        if (birthStr) {
-          const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-          if (match) {
-            const [, day, month, year] = match;
-            const birthDate = new Date(`${year}-${month}-${day}`);
-            const today = new Date();
+        if (!isNaN(birthDate)) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const mm = today.getMonth() - birthDate.getMonth();
+          if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
 
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+          // DOM елементи
+          const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+          const nsfwSlider = document.getElementById("slidernsfw");
+          const nsfwInfo = document.getElementById("information-nsfw");
+          const NSFW = document.getElementById("nsfw");
 
-            // DOM елементи
-            const NSFW = document.getElementById("nsfw");
-            const nsfwCheckbox = document.getElementById("show-nsfw-videos");
-            const nsfwSlider = document.getElementById("slidernsfw");
-            const nsfwInfo = document.getElementById("information-nsfw");
-            const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
-            const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
-            const viewBirthdate = document.getElementById("view");
-            const emailEl = document.getElementById("email");
-
-            // Якщо користувач молодше 16 → ховаємо приватні коментарі
-            if (privateComment) {
-              if (age < 16) {
-                privateCheckbox.disabled = true;
-                privateComment.style.display = "none";
-              } else {
-                privateComment.style.display = "block";
-                privateCheckbox.disabled = false;
-              }
+          // приватні коментарі – краще заховати всі, а не по videoKey
+          document.querySelectorAll('[id^="private-comment-"]').forEach(el => {
+            if (age < 16) {
+              el.style.display = "none";
+              el.disabled = true;
+            } else {
+              el.style.display = "block";
+              el.disabled = false;
             }
+          });
 
-            // NSFW
-            if (nsfwCheckbox) {
-              if (age < 18) {
-                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
-                nsfwCheckbox.checked = false;
-                nsfwCheckbox.disabled = true;
-                if (NSFW) NSFW.style.display = "none";
-                if (nsfwInfo) nsfwInfo.style.display = "block";
-              } else {
-                if (nsfwSlider) nsfwSlider.style.backgroundColor = "red";
-                nsfwCheckbox.disabled = false;
-                if (NSFW) NSFW.style.display = "block";
-                if (nsfwInfo) nsfwInfo.style.display = "none";
+          // NSFW логіка
+          if (nsfwCheckbox) {
+            if (age < 18) {
+              if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+              nsfwCheckbox.checked = false;
+              nsfwCheckbox.disabled = true;
+              if (NSFW) NSFW.style.display = "none";
+              if (nsfwInfo) nsfwInfo.style.display = "block";
+            } else {
+              if (nsfwSlider) nsfwSlider.style.backgroundColor = "red";
+              nsfwCheckbox.disabled = false;
+              if (NSFW) NSFW.style.display = "block";
+              if (nsfwInfo) nsfwInfo.style.display = "none";
 
+              if (!nsfwCheckbox.dataset.listenerAdded) {
                 nsfwCheckbox.addEventListener("change", function () {
                   showNSFW = this.checked;
                   loadVideos();
                 });
+                nsfwCheckbox.dataset.listenerAdded = "true";
               }
             }
-
-            // Інформація про користувача
-            if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr}`;
-            if (emailEl && userData?.name && userData?.supername) {
-              emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-            }
           }
+
+          // показ даних
+          const viewBirthdate = document.getElementById("view");
+          if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr}`;
+          const emailEl = document.getElementById("email");
+          if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
         }
-      })
-      .catch(error => console.error("Помилка отримання даних користувача:", error));
+      }
+    });
   }
 
-  // Завжди оновлюємо UI
   updateUI(user);
   toggleUploadVisibility();
 });
