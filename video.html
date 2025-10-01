@@ -301,45 +301,44 @@ const firebaseConfig = {
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
-function loadTargetVideos() {
+function loadSimilarVideos(currentVideoData) {
     const container = document.getElementById("target-videos");
-    container.innerHTML = ""; // Очищуємо контейнер перед рендером
+    container.innerHTML = ""; // Очищаємо контейнер
 
-    // Зчитуємо дані з Firebase
     firebase.database().ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
 
-            // Створюємо контейнер для відео
-            const videoContainer = document.createElement("div");
-            videoContainer.classList.add("video-item-container");
+            // Пропускаємо поточне відео по назві
+            if (videoData.title === currentVideoData.title) return;
 
-            // Створюємо елемент відео без панелі керування
-            const videoElement = document.createElement("video");
-            videoElement.src = videoData.url;
-            videoElement.autoplay = true;      // автоматичне відтворення
-            videoElement.muted = true;         // щоб не блокував браузер автоплей
-            videoElement.loop = true;          // за бажанням, повторення
-            videoElement.controls = false;     // без панелі керування
+            // Показуємо тільки відео з такою ж кількістю переглядів
+            if (videoData.views === currentVideoData.views) {
+                const videoContainer = document.createElement("div");
+                videoContainer.classList.add("video-item-container");
 
-            // Створюємо заголовок
-            const titleElement = document.createElement("h3");
-            titleElement.innerText = videoData.title || "Без назви";
-            titleElement.style.color = "white";
+                const videoElement = document.createElement("video");
+                videoElement.src = videoData.url;
+                videoElement.autoplay = true;
+                videoElement.muted = true;
+                videoElement.loop = true;
+                videoElement.controls = false; // без панелі керування
 
-            // Додаємо відео та заголовок у контейнер
-            videoContainer.appendChild(titleElement);
-            videoContainer.appendChild(videoElement);
+                const titleElement = document.createElement("h3");
+                titleElement.innerText = videoData.title;
+                titleElement.style.color = "white";
 
-            // Додаємо все у DOM
-            container.appendChild(videoContainer);
+                videoContainer.appendChild(titleElement);
+                videoContainer.appendChild(videoElement);
+                container.appendChild(videoContainer);
+            }
         });
     }).catch(error => {
-        console.error("Помилка при завантаженні відео:", error);
+        console.error("Помилка при завантаженні схожих відео:", error);
     });
 }
 window.onload = function() {
-loadTargetVideos();
+loadSimilarVideos();
 }
 </script>
     <script>
