@@ -835,83 +835,97 @@ function updateUI(user) {
 }
 
 // Слухач стану автентифікації
+let verificationInterval;
+
 auth.onAuthStateChanged((user) => {
   if (user) {
     // Перевірка верифікації email
     if (!user.emailVerified) {
       blockScreenForVerification();
       verificationInterval = setInterval(() => {
-        user.reload().then(() => {
-          if (user.emailVerified) {
-            clearInterval(verificationInterval);
-            updateUI(user); // без reload()
-          }
-        }).catch((error) => {
-          console.error("Помилка перевірки email:", error);
-        });
+        user.reload()
+          .then(() => {
+            if (user.emailVerified) {
+              clearInterval(verificationInterval);
+              updateUI(user);
+            }
+          })
+          .catch((error) => console.error("Помилка перевірки email:", error));
       }, 10000);
     }
 
-    // Перевірка віку
+    // Перевірка віку та даних користувача
     const uid = user.uid;
-    database.ref("users/" + uid).once("value").then(snapshot => {
-      const userData = snapshot.val();
-      const birthStr = userData?.birthdate;
+    database.ref("users/" + uid).once("value")
+      .then(snapshot => {
+        const userData = snapshot.val();
+        const birthStr = userData?.birthdate;
 
-      if (!userData?.email || !birthStr) {
-        document.getElementById("birthdate-modal").style.display = "flex";
-      }
-
-      const match = birthStr?.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-      if (match) {
-        const [, day, month, year] = match;
-        const birthDate = new Date(`${year}-${month}-${day}`);
-        const today = new Date();
-
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
+        if (!userData?.email || !birthStr) {
+          const modal = document.getElementById("birthdate-modal");
+          if (modal) modal.style.display = "flex";
         }
 
-        const NSFW = document.getElementById("nsfw");
-        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-const privateComment = document.getElementById('private-checkbox');
-        const nsfwInfo = document.getElementById("information-nsfw");
-        const viewBirthdate = document.getElementById("view");
-        const emailEl = document.getElementById("email");
-if (privateComment) {
-if (age < 16) {
-privateComment.style.display = "none";
-} else {
-privateComment.style.display = "block";
-}
-}
-        if (nsfwCheckbox) {
-          if (age < 18) {
-document.getElementById("slidernsfw").style.backgroundColor = "gray";
-            nsfwCheckbox.checked = false;
-            nsfwCheckbox.disabled = true;
-            if (NSFW) NSFW.style.display = "none";
-            if (nsfwInfo) nsfwInfo.style.display = "block";
-}
-            nsfwCheckbox.disabled = false;
-            if (nsfwInfo) nsfwInfo.style.display = "none";
-            if (NSFW) NSFW.style.display = "block";
-            nsfwCheckbox.addEventListener("change", function () {
-              showNSFW = this.checked;
-              loadVideos();
-            });
+        if (birthStr) {
+          const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+          if (match) {
+            const [, day, month, year] = match;
+            const birthDate = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+            // DOM елементи
+            const NSFW = document.getElementById("nsfw");
+            const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+            const nsfwSlider = document.getElementById("slidernsfw");
+            const nsfwInfo = document.getElementById("information-nsfw");
+            const privateComment = document.getElementById('private-checkbox');
+            const viewBirthdate = document.getElementById("view");
+            const emailEl = document.getElementById("email");
+
+            // Приватні коментарі для до 16
+            if (privateComment) privateComment.style.display = age < 16 ? "none" : "block";
+
+            // NSFW
+            if (nsfwCheckbox) {
+              if (age < 18) {
+                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+                nsfwCheckbox.checked = false;
+                nsfwCheckbox.disabled = true;
+                if (NSFW) NSFW.style.display = "none";
+                if (nsfwInfo) nsfwInfo.style.display = "block";
+              } else {
+                if (nsfwSlider) nsfwSlider.style.backgroundColor = "red";
+                nsfwCheckbox.disabled = false;
+                if (NSFW) NSFW.style.display = "block";
+                if (nsfwInfo) nsfwInfo.style.display = "none";
+
+                // Видаляємо старі обробники, щоб не додавати повторно
+                nsfwCheckbox.replaceWith(nsfwCheckbox.cloneNode(true));
+                const newCheckbox = document.getElementById('show-nsfw-videos');
+                newCheckbox.addEventListener("change", function () {
+                  showNSFW = this.checked;
+                  loadVideos();
+                });
+              }
+            }
+
+            // Показуємо інформацію про користувача
+            if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr}`;
+            if (emailEl && userData?.name && userData?.supername) {
+              emailEl.innerHTML = `${userData.name} ${userData.supername}`;
+            }
           }
         }
-
-        if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
-        if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-      }
-    });
+      })
+      .catch(error => console.error("Помилка отримання даних користувача:", error));
   }
 
-  updateUI(user); // 🔥 викликається завжди
+  // Завжди оновлюємо UI
+  updateUI(user);
   toggleUploadVisibility();
 });
 function submitBirthdate() {
