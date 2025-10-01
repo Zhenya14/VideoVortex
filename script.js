@@ -369,13 +369,7 @@ commentSection.innerHTML = `
       </label>
   </div>
 `;
-const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
-const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
-if (privateComment && privateCheckbox) {
-        const showPrivate = userAge >= 16;
-        privateComment.style.display = showPrivate ? "block" : "none";
-        privateCheckbox.disabled = !showPrivate;
-      }
+
             // Перегляд відео та перевірка пароля
             videoElement.onclick = () => {
                 if (videoData.password) {
@@ -479,7 +473,13 @@ if (privateComment && privateCheckbox) {
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
-
+const privateComment = container.querySelector(`#private-checkbox-${videoKey}`);
+const privateCheckbox = container.querySelector(`#private-comment-${videoKey}`);
+if (privateComment && privateCheckbox) {
+  const showPrivate = userAge >= 16;
+  privateComment.style.display = showPrivate ? "block" : "none";
+  privateCheckbox.disabled = !showPrivate;
+}
             // Завантаження коментарів
             loadComments(videoKey, videoData.email);
         });
