@@ -876,7 +876,7 @@ auth.onAuthStateChanged((user) => {
 
         const NSFW = document.getElementById("nsfw");
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-const privateComment = documenr.getElementById('private-checkbox');
+const privateComment = document.getElementById('private-checkbox');
         const nsfwInfo = document.getElementById("information-nsfw");
         const viewBirthdate = document.getElementById("view");
         const emailEl = document.getElementById("email");
