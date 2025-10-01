@@ -582,7 +582,7 @@ function uploadVideo() {
             const speed = snapshot.bytesTransferred / timeElapsed;
             const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
             const timeLeft = remainingBytes / speed;
-      document.getElementById("time-left").value = timeLeft;
+      document.getElementById("time-left").innerText= timeLeft;
       document.getElementById("upload-progress").value = progress;
                 document.getElementById("progress-text").innerText = `${Math.round(progress)}%`;
                 document.getElementById("progress-container").style.display = "block";
