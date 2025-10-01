@@ -888,11 +888,8 @@ auth.onAuthStateChanged((user) => {
 
             // Приватні коментарі для до 16
             if (privateComment) {
-if (age < 16) {
-privateComment.style.display = "none";
-} else {
-privateComment.style.display = "block";
-}
+  privateComment.style.display = "block"; // стандартно показуємо
+  if (age < 16) privateComment.style.display = "none"; // ховаємо, якщо менше 16
 }
 
             // NSFW
