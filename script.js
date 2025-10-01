@@ -881,7 +881,6 @@ auth.onAuthStateChanged((user) => {
       const emailEl = document.getElementById("email");
       if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${userData.birthdate}`;
       if (emailEl) emailEl.innerHTML = `${userData.name} ${userData.supername}`;
-    });
   }
 
   updateUI(user);
