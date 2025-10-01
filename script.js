@@ -362,7 +362,7 @@ commentSection.innerHTML = `
       <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
           <i class="material-icons">send</i>
       </button>
-      <label id="private-checkbox" style="display: none;">
+      <label id="private-checkbox-${videoKey}" style="display: none;">
           <input type="checkbox" id="private-comment-${videoKey}">
           Приватний
       </label>
@@ -882,16 +882,22 @@ auth.onAuthStateChanged((user) => {
             const nsfwCheckbox = document.getElementById('show-nsfw-videos');
             const nsfwSlider = document.getElementById("slidernsfw");
             const nsfwInfo = document.getElementById("information-nsfw");
-            const privateComment = document.getElementById('private-checkbox');
+            const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
+            const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
             const viewBirthdate = document.getElementById("view");
             const emailEl = document.getElementById("email");
 
             // Приватні коментарі для до 16
             if (privateComment) {
-  privateComment.style.display = "block"; // стандартно показуємо
-  if (age < 16) privateComment.style.display = "none"; // ховаємо, якщо менше 16
+              if (age < 16) {
+privateCheckbox.disabled = true;
+  if (privateComment) privateComment.style.display = "none"; // стандартно показуємо
+} else {
+if (privateComment) privateComment.style.display = "block"; 
+// ховаємо, якщо менше 16
+privateCheckbox.disabled = false;
 }
-
+}
             // NSFW
             if (nsfwCheckbox) {
               if (age < 18) {
