@@ -421,7 +421,7 @@ commentSection.innerHTML = `
 
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.textContent= `
+            detailsElement.innerText= `
                 <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
                 Автор: ${videoData.author || "Анонім"}<br>
                 Переглядів: ${videoData.views || 0}<br>
