@@ -887,7 +887,13 @@ auth.onAuthStateChanged((user) => {
             const emailEl = document.getElementById("email");
 
             // Приватні коментарі для до 16
-            if (privateComment) privateComment.style.display = age < 16 ? "none" : "block";
+            if (privateComment) {
+if (age < 16) {
+privateComment.style.display = "none";
+} else {
+privateComment.style.display = "block";
+}
+}
 
             // NSFW
             if (nsfwCheckbox) {
