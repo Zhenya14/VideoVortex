@@ -362,7 +362,7 @@ commentSection.innerHTML = `
       <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
           <i class="material-icons">send</i>
       </button>
-      <label id="private-checkbox-${videoKey}" style="display: none;">
+      <label id="private-checkbox-${videoKey}">
           <input type="checkbox" id="private-comment-${videoKey}">
           Приватний
       </label>
@@ -887,17 +887,17 @@ auth.onAuthStateChanged((user) => {
           const nsfwSlider = document.getElementById("slidernsfw");
           const nsfwInfo = document.getElementById("information-nsfw");
           const NSFW = document.getElementById("nsfw");
-
+          const privateComment = document.getElementById("private-checkbox");
           // приватні коментарі – краще заховати всі, а не по videoKey
-          document.querySelectorAll('[id^="private-comment-"]').forEach(el => {
+      
             if (age < 16) {
-              el.style.display = "none";
-              el.disabled = true;
+              privateComment.style.display = "none";
+              privateComment.disabled = true;
             } else {
-              el.style.display = "block";
-              el.disabled = false;
+              privateComment.style.display = "block";
+              privateComment.disabled = false;
             }
-          });
+          
 
           // NSFW логіка
           if (nsfwCheckbox) {
