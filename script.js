@@ -496,23 +496,24 @@ function insertRandomComment(videoKey) {
   }
 }
 function deleteVideo(videoKey, videoURL) {
+    if (!videoURL || !videoKey) return alert("Немає даних для видалення відео");
+
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
-        // Видалення файлу зі сховища
         const storageRef = storage.refFromURL(videoURL);
-        storageRef.delete().then(() => {
-            // Видалення запису з бази даних
-            database.ref(`videos/${videoKey}`).remove().then(() => {
-                alert("Відео успішно видалено.");
-                loadVideos(); // Оновлюємо список відео
-            }).catch((error) => {
-                alert("Помилка при видаленні відео з бази даних: " + error.message);
-            });
-        }).catch((error) => {
-            alert("Помилка при видаленні відео зі сховища: " + error.message);
+        storageRef.delete()
+        .then(() => {
+            return database.ref(`videos/${videoKey}`).remove();
+        })
+        .then(() => {
+            alert("Відео успішно видалено.");
+            loadVideos();
+        })
+        .catch((error) => {
+            console.error("Помилка при видаленні відео:", error);
+            alert("Помилка при видаленні відео: " + error.message);
         });
     }
 }
-
 function editVideo(videoKey, videoData) {
   currentEditKey = videoKey;
   document.getElementById("edit-form").style.display = 'block';
