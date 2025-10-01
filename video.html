@@ -349,6 +349,7 @@ return;
 }
             // Показуємо відео з такою ж кількістю переглядів
             if (videoData.views === currentVideoData.views) {
+found = true;
                 const videoContainer = document.createElement("div");
                 videoContainer.classList.add("video-item-container");
 
@@ -368,6 +369,12 @@ return;
                 container.appendChild(videoContainer);
             }
         });
+if (!found) {
+            const message = document.createElement("p");
+            message.innerText = "Схожих відео немає 😔";
+            message.style.color = "white";
+            container.appendChild(message);
+        }
     }).catch(error => {
         console.error("Помилка при завантаженні схожих відео:", error);
     });
