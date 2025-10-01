@@ -362,7 +362,7 @@ commentSection.innerHTML = `
           <i class="material-icons">send</i>
       </button>
       <label>
-          <input type="checkbox" id="private-comment-${videoKey}">
+          <input type="checkbox" id="private-comment-${videoKey}" style="display: none;">
           Приватний
       </label>
   </div>
@@ -876,10 +876,17 @@ auth.onAuthStateChanged((user) => {
 
         const NSFW = document.getElementById("nsfw");
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+const privateComment = documenr.getElementById(`private-checkbox-${videoKey}`);
         const nsfwInfo = document.getElementById("information-nsfw");
         const viewBirthdate = document.getElementById("view");
         const emailEl = document.getElementById("email");
-
+if (privateComment) {
+if (age < 16) {
+privateComment.style.display = "none";
+} else {
+privateComment.style.display = "block";
+}
+}
         if (nsfwCheckbox) {
           if (age < 18) {
 document.getElementById("slidernsfw").style.backgroundColor = "gray";
@@ -887,10 +894,7 @@ document.getElementById("slidernsfw").style.backgroundColor = "gray";
             nsfwCheckbox.disabled = true;
             if (NSFW) NSFW.style.display = "none";
             if (nsfwInfo) nsfwInfo.style.display = "block";
-} else if (age < 16) {
-document.getElementById("private-checkbox{$videoKey}").style.display = "none";
-          } else {
-document.getElementById("slidernsfw").style.backgroundColor = "red";
+}
             nsfwCheckbox.disabled = false;
             if (nsfwInfo) nsfwInfo.style.display = "none";
             if (NSFW) NSFW.style.display = "block";
