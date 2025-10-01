@@ -344,7 +344,9 @@ function loadSimilarVideos(currentVideoData) {
 
             // Пропускаємо поточне відео по назві
             if (videoData.title === currentVideoData.title) return;
-
+if(videoData.nsfw) {
+return;
+}
             // Показуємо відео з такою ж кількістю переглядів
             if (videoData.views === currentVideoData.views) {
                 const videoContainer = document.createElement("div");
