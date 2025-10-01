@@ -120,6 +120,7 @@ let currentEditKey = null;
 let maxTimeInMinutes = null;
 let timeLeftInSeconds = null;
 let sleepStart = null;
+let verificationInterval;
 let sleepEnd = null;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
@@ -835,7 +836,6 @@ function updateUI(user) {
 }
 
 // Слухач стану автентифікації
-let verificationInterval;
 
 auth.onAuthStateChanged((user) => {
   if (user) {
