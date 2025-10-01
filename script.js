@@ -327,59 +327,47 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-    function loadVideos() {
+        function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
-    if (!videoGallery) return;
     videoGallery.innerHTML = "";
-
-    const showNSFWGlobal = showNSFW; // глобальна змінна
-    const showNSFWCheckbox = document.getElementById("show-nsfw-videos");
-    const showNSFW = showNSFWCheckbox ? showNSFWCheckbox.checked : false;
+    const showNSFW = document.getElementById("show-nsfw-videos").checked;
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // Фільтрація відео
             if (videoData.nsfw && !showNSFW) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
-            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
-
-            // Створюємо відео
+            if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) {
+    return; // Пропускаємо відео
+}
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
 
             // Коментарі
-            const commentSection = document.createElement("div");
-            commentSection.classList.add("video-comment");
-            commentSection.innerHTML = `
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section" id="comment-section-${videoKey}">
-                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
-                        🔁 Вставити випадковий текст
-                    </button>
-                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-                    <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-                        <i class="material-icons">send</i>
-                    </button>
-                    <label id="private-checkbox-${videoKey}" style="display: none;">
-                        <input type="checkbox" id="private-comment-${videoKey}">
-                        Приватний
-                    </label>
-                </div>
-            `;
-
-            // Приватні коментарі за віком
-            const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
-            const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
-            if (privateComment && privateCheckbox) {
-                const showPrivate = userAge >= 16; // userAge має бути глобально
-                privateComment.style.display = showPrivate ? "block" : "none";
-                privateCheckbox.disabled = !showPrivate;
-            }
+            // Під час рендеру відео
+const commentSection = document.createElement("div");
+commentSection.classList.add("video-comment");
+// Коментарі
+commentSection.innerHTML = `
+  <h3 style="color: white; text-align: left;">Коментарі:</h3>
+  <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+  <div class="comment-section" id="comment-section">
+      <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">
+          🔁 Вставити випадковий текст
+      </button>
+      <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+      <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+          <i class="material-icons">send</i>
+      </button>
+      <label id="private-checkbox-${videoKey}">
+          <input type="checkbox" id="private-comment-${videoKey}">
+          Приватний
+      </label>
+  </div>
+`;
 
             // Перегляд відео та перевірка пароля
             videoElement.onclick = () => {
@@ -395,7 +383,9 @@ alert("Сталася помилка при увімкненні функції 
                 if (!localStorage.getItem(viewedKey)) {
                     const newViewCount = (videoData.views || 0) + 1;
                     database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .then(() => localStorage.setItem(viewedKey, true))
+                        .then(() => {
+                            localStorage.setItem(viewedKey, true);
+                        })
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 }
 
@@ -429,9 +419,10 @@ alert("Сталася помилка при увімкненні функції 
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
+
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerText = `
+            detailsElement.innerText= `
                 ${videoData.title}${privateLabel}${nsfwLabel}
                 Автор: ${videoData.author || "Анонім"}
                 Переглядів: ${videoData.views || 0}
@@ -446,9 +437,10 @@ alert("Сталася помилка при увімкненні функції 
             actionMenu.classList.add("action-menu");
             actionMenu.style.display = "none";
 
+            // Кнопка видалення (для власника)
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
-                deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">delete</i>Видалити</a>`;
+                deleteButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">delete</i>Видалити</a>`;
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
@@ -458,7 +450,7 @@ alert("Сталася помилка при увімкненні функції 
 
             if (currentUserEmail === videoData.email) {
                 const editButton = document.createElement("button");
-                editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">edit</i>Редагувати</a>`;
+                editButton.innerHTML = `<a style="padding: 3px 8px; display: flex; align-items: center; justify-content: center;"><i class="material-icons">edit</i>Редагувати</a>`;
                 editButton.style.backgroundColor = "blue";
                 editButton.style.color = "white";
                 editButton.style.marginTop = "10px";
@@ -466,15 +458,13 @@ alert("Сталася помилка при увімкненні функції 
                 actionMenu.appendChild(editButton);
             }
 
-            moreBtn.addEventListener("click", () => {
-                actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
-            });
-
+           moreBtn.addEventListener("click", () => {
+             actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
+          });
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
-
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
@@ -482,7 +472,6 @@ alert("Сталася помилка при увімкненні функції 
             container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
-
             // Завантаження коментарів
             loadComments(videoKey, videoData.email);
         });
