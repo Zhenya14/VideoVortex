@@ -422,9 +422,9 @@ commentSection.innerHTML = `
             const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerText= `
-                <strong>${videoData.title}${privateLabel}${nsfwLabel}</strong><br>
-                Автор: ${videoData.author || "Анонім"}<br>
-                Переглядів: ${videoData.views || 0}<br>
+                ${videoData.title}${privateLabel}${nsfwLabel}
+                Автор: ${videoData.author || "Анонім"}
+                Переглядів: ${videoData.views || 0}
                 Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
             
