@@ -525,7 +525,7 @@ function editVideo(videoKey, videoData) {
   // Заповнюємо поля редагування
   document.getElementById("edit-video-title").value = videoData.title || '';
   document.getElementById("edit-video-description").value = videoData.description || '';
-document.getElementById("edit-private-checkbox").checked = videoData.privateVideo || false;
+document.getElementById("edit-private-checkbox").checked = videoData.private || false;
 }
 
 function saveVideoChanges() {
