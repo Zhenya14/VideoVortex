@@ -532,6 +532,7 @@ function saveVideoChanges() {
   if (!currentEditKey) return alert("Відео не вибрано.");
 
   const newTitle = document.getElementById("edit-video-title").value.trim();
+const newPrivate = document.getElementById("edit-private-checkbox").checked;
   const newDescription = document.getElementById("edit-video-description").value.trim();
 
   if (!newTitle) {
@@ -542,7 +543,8 @@ function saveVideoChanges() {
   // Оновлюємо тільки заголовок і опис
   database.ref("videos/" + currentEditKey).update({
     title: newTitle,
-    description: newDescription
+    description: newDescription,
+    private: newPrivate
   }).then(() => {
     alert("✅ Відео оновлено!");
     document.getElementById("edit-form").style.display = 'none';
