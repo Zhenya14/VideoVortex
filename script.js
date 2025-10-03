@@ -350,6 +350,38 @@ alert("Сталася помилка при увімкненні функції 
                 </div>
             `;
 
+videoElement.onclick = () => {
+                if (videoData.password) {
+                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
+                    if (videoData.password !== userPassword) {
+                        alert("Неправильний пароль!");
+                        return;
+                    }
+                }
+
+                const viewedKey = `viewed_${videoKey}`;
+                if (!localStorage.getItem(viewedKey)) {
+                    const newViewCount = (videoData.views || 0) + 1;
+                    database.ref("videos/" + videoKey).update({ views: newViewCount })
+                        .then(() => {
+                            localStorage.setItem(viewedKey, true);
+                        })
+                        .catch(error => console.error("Помилка оновлення переглядів:", error));
+                }
+
+                const videoParams = new URLSearchParams({
+                    key: videoKey,
+                    url: videoData.url,
+                    title: videoData.title,
+                    author: videoData.author,
+                    publishDate: videoData.publishDate,
+                    description: videoData.description || "Без опису",
+                    views: videoData.views || 0,
+                    avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                });
+                window.location.href = `video.html?${videoParams.toString()}`;
+            };
+
             // Приватні коментарі
             const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
             const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
