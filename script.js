@@ -524,6 +524,7 @@ function editVideo(videoKey, videoData) {
 
   // Заповнюємо поля редагування
   document.getElementById("edit-video-title").value = videoData.title || '';
+document.getElementById("private-checkbox").checked = videoData.private || false;
   document.getElementById("edit-video-description").value = videoData.description || '';
 }
 
