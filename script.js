@@ -330,13 +330,13 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-if (videoData.disabledComments === true) {
-    commentSection.innerHTML = `<p>Коментарі вимкнені для цього відео.</p>`;
-    return; // зупиняємо далі завантаження коментарів
-}
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
+if (videoData.disabledComments === true) {
+    commentSection.innerHTML = `<p>Коментарі вимкнені для цього відео.</p>`;
+    return; // зупиняємо далі завантаження коментарів
+} else {
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
@@ -352,6 +352,7 @@ if (videoData.disabledComments === true) {
                     </label>
                 </div>
             `;
+}
 
 videoElement.onclick = () => {
                 if (videoData.password) {
