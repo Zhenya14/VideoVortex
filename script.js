@@ -107,6 +107,7 @@ let sleepStart = null;
 let verificationInterval;
 let sleepEnd = null;
 let userAge = null;
+let disableComments = true;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -311,7 +312,7 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-  function loadVideos() {
+        function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
     videoGallery.innerHTML = "";
@@ -330,6 +331,8 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
+if(videoData.disabledComments === disableComments) {
+commentSection.innerHTML = `<p>Коментарі вимкненні для цього відео.</p>`;
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
@@ -1030,6 +1033,7 @@ function deletePhoto(photoKey, photoURL) {
 function uploadPhoto() {
     const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
+    const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
@@ -1078,14 +1082,13 @@ const uid = firebase.auth().currentUser.uid;
                         loadPhotos(); // Reload videos
                         document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
-                     });
+                    });
                 });
             }
         );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+    } else {
+        alert("Будь ласка, виберіть фото для завантаження.");
+    }
 }
 // Завантаження налаштувань
 function loadSettings() {
