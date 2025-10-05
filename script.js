@@ -311,7 +311,7 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-        function loadVideos() {
+  function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
     videoGallery.innerHTML = "";
@@ -323,41 +323,33 @@ alert("Сталася помилка при увімкненні функції 
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // 🔒 Фільтрація контенту
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
-            // 🎥 Відео
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-
-            // 💬 Коментарі
+            // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
+            commentSection.innerHTML = `
+                <h3 style="color: white; text-align: left;">Коментарі:</h3>
+                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+                <div class="comment-section" id="comment-section-${videoKey}">
+                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
+                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+                    <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+                        <i class="material-icons">send</i>
+                    </button>
+                    <label id="private-checkbox-${videoKey}" style="display: none;">
+                        <input type="checkbox" id="private-comment-${videoKey}">
+                        Приватний
+                    </label>
+                </div>
+            `;
 
-            if (videoData.disabledComments === true) {
-                commentSection.innerHTML = `<p style="color:white; text-align:center;">Коментарі вимкнені для цього відео.</p>`;
-            } else {
-                commentSection.innerHTML = `
-                    <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                    <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                    <div class="comment-section" id="comment-section-${videoKey}">
-                        <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Випадковий текст</button>
-                        <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-                        <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-                            <i class="material-icons">send</i>
-                        </button>
-                        <label id="private-checkbox-${videoKey}" style="display: none;">
-                            <input type="checkbox" id="private-comment-${videoKey}"> Приватний
-                        </label>
-                    </div>
-                `;
-            }
-
-            // 🧠 Відео при натисканні
-            videoElement.onclick = () => {
+videoElement.onclick = () => {
                 if (videoData.password) {
                     const userPassword = prompt("Це приватне відео. Введіть пароль:");
                     if (videoData.password !== userPassword) {
@@ -370,7 +362,9 @@ alert("Сталася помилка при увімкненні функції 
                 if (!localStorage.getItem(viewedKey)) {
                     const newViewCount = (videoData.views || 0) + 1;
                     database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .then(() => localStorage.setItem(viewedKey, true))
+                        .then(() => {
+                            localStorage.setItem(viewedKey, true);
+                        })
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 }
 
@@ -387,7 +381,7 @@ alert("Сталася помилка при увімкненні функції 
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
-            // 🕵️‍♀️ Приватні коментарі
+            // Приватні коментарі
             const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
             const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
             if (privateComment && privateCheckbox) {
@@ -396,7 +390,7 @@ alert("Сталася помилка при увімкненні функції 
                 privateCheckbox.disabled = !showPrivate;
             }
 
-            // 📜 Інфо про відео
+            // Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
@@ -413,16 +407,15 @@ alert("Сталася помилка при увімкненні функції 
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const privateLabel = videoData.private ? "<span style='color:orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? "<span style='color:red;'>NSFW</span>" : "";
-            detailsElement.innerHTML = `
-                ${videoData.title} ${privateLabel} ${nsfwLabel}<br>
-                Автор: ${videoData.author || "Анонім"}<br>
-                Переглядів: ${videoData.views || 0}<br>
-                Дата: ${videoData.publishDate || "Не вказана"}
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
+            detailsElement.innerText = `
+                ${videoData.title}${privateLabel}${nsfwLabel}
+                Автор: ${videoData.author || "Анонім"}
+                Переглядів: ${videoData.views || 0}
+                Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
 
-            // ⚙️ Меню дій
             const moreBtn = document.createElement("button");
             moreBtn.classList.add("more-btn");
             moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
@@ -433,25 +426,22 @@ alert("Сталася помилка при увімкненні функції 
 
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
-                deleteButton.innerHTML = `<i class="material-icons">delete</i> Видалити`;
+                deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">delete</i>Видалити</a>`;
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
+                deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
                 actionMenu.appendChild(deleteButton);
+            }
 
-                // 💬 Вимкнути/Увімкнути коментарі
-                const toggleComments = document.createElement("button");
-                toggleComments.innerHTML = videoData.disabledComments ? "💬 Увімкнути коментарі" : "🚫 Вимкнути коментарі";
-                toggleComments.style.marginTop = "8px";
-                toggleComments.onclick = () => {
-                    database.ref("videos/" + videoKey).update({
-                        disabledComments: !videoData.disabledComments
-                    }).then(() => {
-                        alert("Статус коментарів оновлено!");
-                        loadVideos();
-                    });
-                };
-                actionMenu.appendChild(toggleComments);
+            if (currentUserEmail === videoData.email) {
+                const editButton = document.createElement("button");
+                editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">edit</i>Редагувати</a>`;
+                editButton.style.backgroundColor = "blue";
+                editButton.style.color = "white";
+                editButton.style.marginTop = "10px";
+                editButton.onclick = () => editVideo(videoKey, videoData);
+                actionMenu.appendChild(editButton);
             }
 
             moreBtn.addEventListener("click", () => {
@@ -463,7 +453,6 @@ alert("Сталася помилка при увімкненні функції 
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
 
-            // 🧩 Контейнер відео
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
@@ -472,8 +461,7 @@ alert("Сталася помилка при увімкненні функції 
 
             videoGallery.appendChild(container);
 
-            if (!videoData.disabledComments)
-                loadComments(videoKey, videoData.email);
+            loadComments(videoKey, videoData.email);
         });
     });
 }
