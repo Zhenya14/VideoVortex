@@ -107,7 +107,6 @@ let sleepStart = null;
 let verificationInterval;
 let sleepEnd = null;
 let userAge = null;
-let disableComments = true;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -331,10 +330,6 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-if (videoData.disabledComments === true) {
-    commentSection.innerHTML = `<p>Коментарі вимкнені для цього відео.</p>`;
-    return; // зупиняємо далі завантаження коментарів
-}
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
