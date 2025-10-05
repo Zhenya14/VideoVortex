@@ -335,7 +335,6 @@ alert("Сталася помилка при увімкненні функції 
             commentSection.classList.add("video-comment");
 if (videoData.disabledComments === true) {
     commentSection.innerHTML = `<p>Коментарі вимкнені для цього відео.</p>`;
-    return; // зупиняємо далі завантаження коментарів
 } else {
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
