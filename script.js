@@ -1030,7 +1030,6 @@ function deletePhoto(photoKey, photoURL) {
 function uploadPhoto() {
     const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
-    const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
@@ -1086,6 +1085,7 @@ const uid = firebase.auth().currentUser.uid;
     } else {
         alert("Будь ласка, виберіть фото для завантаження.");
     }
+});
 }
 // Завантаження налаштувань
 function loadSettings() {
