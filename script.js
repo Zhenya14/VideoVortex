@@ -1035,7 +1035,6 @@ function deletePhoto(photoKey, photoURL) {
 function uploadPhoto() {
     const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
-    const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
@@ -1084,13 +1083,14 @@ const uid = firebase.auth().currentUser.uid;
                         loadPhotos(); // Reload videos
                         document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
-                    });
+                                        });
                 });
             }
         );
-    } else {
-        alert("Будь ласка, виберіть фото для завантаження.");
-    }
+    }).catch(err => {
+        console.error("Помилка при отриманні даних користувача:", err);
+        alert("Не вдалося отримати дані профілю.");
+    });
 }
 // Завантаження налаштувань
 function loadSettings() {
