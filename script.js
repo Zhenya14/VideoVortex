@@ -331,8 +331,6 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
-if(videoData.disabledComments === disableComments) {
-commentSection.innerHTML = `<p>Коментарі вимкненні для цього відео.</p>`;
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
