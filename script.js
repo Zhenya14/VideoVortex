@@ -107,7 +107,6 @@ let sleepStart = null;
 let verificationInterval;
 let sleepEnd = null;
 let userAge = null;
-let disableComments = true;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -331,12 +330,10 @@ alert("Сталася помилка при увімкненні функції 
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
+
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
-if(videoData.disabledComments ===  disableComments) {
-commentSection.innerHTML = `<p>Коментарі вимкненні для цього відео.</p>`;
-} else {
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
@@ -352,7 +349,6 @@ commentSection.innerHTML = `<p>Коментарі вимкненні для ць
                     </label>
                 </div>
             `;
-}
 
 videoElement.onclick = () => {
                 if (videoData.password) {
@@ -565,7 +561,6 @@ const startTime = Date.now();
     const videoTitle = document.getElementById("video-title").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
-const disabledComments = document.getElementById("disabled-comments-checkbox").checked
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
@@ -614,7 +609,6 @@ const disabledComments = document.getElementById("disabled-comments-checkbox").c
                         author: videoAuthor,       // Ім'я і прізвище з профілю
                         email: currentUserEmail,
                         url: downloadURL,
-                        disabledComments: disabledComments,
                         description: videoDescription,
                         password: videoPassword || null,
                         views: 0,
@@ -1035,6 +1029,7 @@ function deletePhoto(photoKey, photoURL) {
 function uploadPhoto() {
     const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
+    const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
@@ -1044,12 +1039,6 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const uid = firebase.auth().currentUser.uid;
-
-    // Беремо дані користувача з Firebase
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const photoAuthor = `${userData.name} ${userData.supername}`; // автоматично
 
     if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
@@ -1083,14 +1072,13 @@ const uid = firebase.auth().currentUser.uid;
                         loadPhotos(); // Reload videos
                         document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
-                                        });
+                    });
                 });
             }
         );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+    } else {
+        alert("Будь ласка, виберіть фото для завантаження.");
+    }
 }
 // Завантаження налаштувань
 function loadSettings() {
