@@ -203,7 +203,7 @@ const firebaseConfig = {
 	    function blockScreenForVerification() {
     document.body.innerHTML = `
                 <h1>Підтвердьте вашу електронну пошту</h1>
-                <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт!</p>
+                <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт! Якщо не бачите, то перевірте папку "Спам".</p>
                 <button style="
                     margin-top: 20px;
                     padding: 10px 20px;
