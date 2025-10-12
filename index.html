@@ -114,26 +114,30 @@ input:checked + .slider:before {
   display: none;
   position: fixed;
   z-index: 9999;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  backdrop-filter: blur(20px);
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
   justify-content: center;
   align-items: flex-end;
   animation: fadeIn 0.3s ease;
 }
 
+.ios-modal.show {
+  display: flex;
+}
+
 .ios-modal-content {
   width: 100%;
   max-width: 480px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
   border-radius: 25px 25px 0 0;
   padding: 25px;
   color: #fff;
   text-align: center;
-  box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.4s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .ios-modal-content h2 {
@@ -145,25 +149,27 @@ input:checked + .slider:before {
 .ios-modal-content ul {
   text-align: left;
   margin: 10px 0 20px 25px;
-  font-size: 16px;
+  font-size: 15px;
+  line-height: 1.4em;
 }
 
 .ios-modal-content button {
   background: linear-gradient(135deg, #007aff, #4da3ff);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 12px 20px;
   font-size: 16px;
   font-weight: 600;
   width: 100%;
-  transition: 0.3s;
-  box-shadow: 0 4px 10px rgba(0,122,255,0.4);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 .ios-modal-content button:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 6px rgba(0,122,255,0.3);
+  transform: scale(0.96);
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
 }
 
 @keyframes slideUp {
@@ -617,9 +623,9 @@ color: #ffffff;
     <h2>🔔 Оновлені правила</h2>
     <p>Ми оновили правила спільноти VideoVortex:</p>
     <ul>
-      <li>🚫 Заборонено фейки та образи.</li>
+      <li>🚫 Заборонено фейки, образи чи зневагу до будь-кого.</li>
       <li>🔒 Посилено правила приватності.</li>
-      <li>🧒 Обмеження для користувачів до 16 років.</li>
+      <li>🧒 Обмеження для користувачів молодших 16 років.</li>
     </ul>
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
   </div>
@@ -777,16 +783,32 @@ function showRulesModal() {
   const currentVersion = "2025-10";
 
   if (lastAccepted !== currentVersion) {
-    modal.style.display = "flex";
+    modal.classList.add("show");
   }
 }
 
 function acceptRulesUpdate() {
+  const modal = document.getElementById("rules-update-modal");
+  modal.style.animation = "fadeOut 0.3s ease forwards";
   localStorage.setItem("rules_version", "2025-10");
-  document.getElementById("rules-update-modal").style.display = "none";
+
+  setTimeout(() => {
+    modal.classList.remove("show");
+    modal.style.animation = "";
+  }, 300);
 }
 
 window.addEventListener("load", showRulesModal);
+
+// Плавне зникання
+const fadeOut = `
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}`;
+const styleSheet = document.createElement("style");
+styleSheet.textContent = fadeOut;
+document.head.appendChild(styleSheet);
   </script>
     <script src="script.js"></script>
 </body>                                                          
