@@ -16,68 +16,7 @@
 
     // // Додавання сніжинок кожні 100 мс
     // setInterval(createSnowflake, 100);
-    function checkBrowserSupport() {
-    const ua = navigator.userAgent;
-    const today = new Date();
-    const blockDate = new Date('2026-03-01'); // Початок повного блокування з березня 2026
-
-    // Перевірка браузерів
-    const isChrome = /Chrome\/([0-9]+)/.exec(ua);
-    const isFirefox = /Firefox\/([0-9]+)/.exec(ua);
-    const isEdge = /Edg\/([0-9]+)/.exec(ua);
-
-    const minVersion = {
-        Chrome: 90,
-        Firefox: 88,
-        Edge: 90
-    };
-
-    if (isChrome && parseInt(isChrome[1]) < minVersion.Chrome) return false;
-    if (isFirefox && parseInt(isFirefox[1]) < minVersion.Firefox) return false;
-    if (isEdge && parseInt(isEdge[1]) < minVersion.Edge) return false;
-    if (!isChrome && !isFirefox && !isEdge) return false;
-
-    // Перевірка Android
-    const androidMatch = /Android (\d+)\.?(\d+)?/.exec(ua);
-    if (androidMatch) {
-        const major = parseInt(androidMatch[1], 10);
-
-        if (major <= 6) {
-            if (today >= blockDate) {
-                // Після березня 2026 — повне блокування
-                return false;
-            } else {
-                // До березня 2026 — попередження
-                return 'warning';
-            }
-        }
-    }
-
-    return true;
-}
-
-const support = checkBrowserSupport();
-
-if (support === false) {
-    document.body.innerHTML = `
-        <div style="text-align: center; margin-top: 20%; font-family: Arial, sans-serif;">
-            <h1>Ваш браузер або пристрій застарів</h1>
-            <p>Будь ласка, оновіть браузер або Android для доступу до цього сайту.</p>
-        </div>
-    `;
-} else if (support === 'warning') {
-    const warningBanner = document.createElement('div');
-    warningBanner.style.background = '#ffeb3b';
-    warningBanner.style.color = '#333';
-    warningBanner.style.padding = '10px';
-    warningBanner.style.textAlign = 'center';
-    warningBanner.style.fontFamily = 'Arial, sans-serif';
-    warningBanner.innerHTML = `
-        ⚠️ Ваш Android застарів. З березня 2026 року підтримка Android 6 і нижче буде припинена. 
-        Рекомендуємо оновити пристрій або браузер.
-    `;
-    document.body.prepend(warningBanner);
-}
+    
 function toggleSidebar() {
     var sidebar = document.querySelector('.menu');
     var content = document.querySelector('.content');
