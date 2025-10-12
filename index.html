@@ -110,6 +110,71 @@ input:checked + .slider:before {
     max-width: 350px;
     margin-top: -3px;
 }
+.ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-content {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(30px);
+  border-radius: 25px 25px 0 0;
+  padding: 25px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease;
+}
+
+.ios-modal-content h2 {
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.ios-modal-content ul {
+  text-align: left;
+  margin: 10px 0 20px 25px;
+  font-size: 16px;
+}
+
+.ios-modal-content button {
+  background: linear-gradient(135deg, #007aff, #4da3ff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,122,255,0.4);
+}
+
+.ios-modal-content button:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(0,122,255,0.3);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
         img {
     padding: 0px 0px 0px 0px;
     height: 50px;
@@ -547,6 +612,18 @@ color: #ffffff;
 		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
+<div id="rules-update-modal" class="ios-modal">
+  <div class="ios-modal-content">
+    <h2>🔔 Оновлені правила</h2>
+    <p>Ми оновили правила спільноти VideoVortex:</p>
+    <ul>
+      <li>🚫 Заборонено фейки та образи.</li>
+      <li>🔒 Посилено правила приватності.</li>
+      <li>🧒 Обмеження для користувачів до 16 років.</li>
+    </ul>
+    <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
+  </div>
+</div>
 <div class="account-form" id="account-form">
             <h2>Інформація про акаунт</h2>
             <p id="user-info"></p>
@@ -694,6 +771,22 @@ installBtn.addEventListener('click', async () => {
     console.log('Встановлення: ', choiceResult.outcome);
   }
 });
+function showRulesModal() {
+  const modal = document.getElementById("rules-update-modal");
+  const lastAccepted = localStorage.getItem("rules_version");
+  const currentVersion = "2025-10";
+
+  if (lastAccepted !== currentVersion) {
+    modal.style.display = "flex";
+  }
+}
+
+function acceptRulesUpdate() {
+  localStorage.setItem("rules_version", "2025-10");
+  document.getElementById("rules-update-modal").style.display = "none";
+}
+
+window.addEventListener("load", showRulesModal);
   </script>
     <script src="script.js"></script>
 </body>                                                          
