@@ -1,8 +1,8 @@
-    // Генерація сніжинок
+// Генерація сніжинок
     // function createSnowflake() {
     //     const snowflake = document.createElement('div');
     //     snowflake.classList.add('snowflake');
-    //     snowflake.textContent = '❄';
+    //     snowflake.textContent = '?';
     //     snowflake.style.left = Math.random() * 100 + 'vw';
     //     snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
     //     snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
@@ -16,7 +16,6 @@
 
     // // Додавання сніжинок кожні 100 мс
     // setInterval(createSnowflake, 100);
-    
 function toggleSidebar() {
     var sidebar = document.querySelector('.menu');
     var content = document.querySelector('.content');
@@ -43,7 +42,6 @@ let currentEditKey = null;
 let maxTimeInMinutes = null;
 let timeLeftInSeconds = null;
 let sleepStart = null;
-let verificationInterval;
 let sleepEnd = null;
 let userAge = null;
  // Конвертуємо час в секунди
@@ -179,66 +177,81 @@ function resendVerification() {
 function deleteAccount() {
     const user = firebase.auth().currentUser;
 
-    if (user) {
-        // Запит підтвердження перед видаленням акаунту
-        if (confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
-            // Спочатку знайдемо всі відео користувача в базі даних
-            const videosRef = firebase.database().ref("videos");
-            videosRef.once("value").then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoKey = childSnapshot.key;
-
-
-                     const uid = firebase.auth().currentUser.uid;
-
-    // Беремо дані користувача з Firebase
-    firebase.database().ref("users/" + uid).remove()
-                    // Якщо відео належить поточному користувачу, видалити його
-                    if (videoData.email === user.email) {
-                        // Видалення відео з бази даних
-                        firebase.database().ref(`videos/${videoKey}`).remove()
-                            .then(() => {
-                                console.log(`Відео ${videoKey} видалено з бази даних`);
-                            })
-                            .catch((error) => {
-                                console.error(`Помилка при видаленні відео ${videoKey}:`, error);
-                            });
-
-                        // Видалення відео з Firebase Storage, якщо відео зберігається там
-                        const storageRef = firebase.storage().ref(`videos/${videoKey}`);
-                        storageRef.delete()
-                            .then(() => {
-                                console.log(`Відео ${videoKey} видалено з Firebase Storage`);
-                            })
-                            .catch((error) => {
-                                console.error(`Помилка при видаленні відео ${videoKey} з Firebase Storage:`, error);
-                            });
-                    }
-                });
-
-                // Після видалення відео, видалимо акаунт користувача
-                user.delete()
-                    .then(() => {
-                        alert("Акаунт успішно видалено.");
-                        location.reload(); // Перезавантажити сторінку або перенаправити користувача
-                    })
-                    .catch((error) => {
-                        if (error.code === 'auth/requires-recent-login') {
-                            alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
-                            firebase.auth().signOut();
-                        } else {
-                            alert("Сталася помилка при видаленні акаунту: " + error.message);
-                        }
-                    });
-            }).catch((error) => {
-                console.error("Помилка при отриманні відео користувача:", error);
-            });
-        }
-    } else {
+    if (!user) {
         alert("Спочатку увійдіть у свій акаунт.");
+        return;
     }
+
+    if (!confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
+        return;
+    }
+
+    const uid = user.uid;
+    const videosRef = firebase.database().ref("videos");
+    const commentsRef = firebase.database().ref("comments");
+    const usersRef = firebase.database().ref("users/" + uid);
+
+    // ?? 1. Видаляємо всі відео користувача
+    videosRef.once("value")
+        .then(snapshot => {
+            const deleteVideoPromises = [];
+
+            snapshot.forEach(childSnapshot => {
+                const videoData = childSnapshot.val();
+                const videoKey = childSnapshot.key;
+
+                if (videoData.email === user.email) {
+                    const dbDelete = firebase.database().ref(`videos/${videoKey}`).remove();
+                    const storageDelete = firebase.storage().ref(`videos/${videoKey}`).delete()
+                        .catch(error => console.warn(`?? Не вдалося видалити файл з Storage (${videoKey}):`, error));
+
+                    deleteVideoPromises.push(dbDelete, storageDelete);
+                }
+            });
+
+            return Promise.all(deleteVideoPromises);
+        })
+        // ?? 2. Оновлюємо всі коментарі користувача
+        .then(() => commentsRef.once("value"))
+        .then(snapshot => {
+            const updatePromises = [];
+
+            snapshot.forEach(childSnapshot => {
+                const commentData = childSnapshot.val();
+                const commentKey = childSnapshot.key;
+
+                // Якщо коментар належить поточному користувачу
+                if (commentData.email === user.email) {
+                    const update = commentsRef.child(commentKey).update({
+                        email: "Видалений акаунт",
+                        commentAuthor: "Видалений акаунт"
+                    });
+                    updatePromises.push(update);
+                }
+            });
+
+            return Promise.all(updatePromises);
+        })
+        // ?? 3. Видаляємо користувача з бази даних
+        .then(() => usersRef.remove())
+        // ?? 4. Видаляємо сам акаунт
+        .then(() => user.delete())
+        // ?? 5. Повідомлення користувачу
+        .then(() => {
+            alert("? Акаунт і всі пов’язані дані успішно видалено.");
+            location.reload();
+        })
+        .catch(error => {
+            if (error.code === 'auth/requires-recent-login') {
+                alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
+                firebase.auth().signOut();
+            } else {
+                console.error("? Помилка при видаленні акаунту:", error);
+                alert("Сталася помилка при видаленні акаунту: " + error.message);
+            }
+        });
 }
+
 
         
       
@@ -250,7 +263,8 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-        function loadVideos() {
+
+ function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
     videoGallery.innerHTML = "";
@@ -273,11 +287,14 @@ alert("Сталася помилка при увімкненні функції 
             // Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
+if (videoData.disabledComments == true) {
+commentSection.innerHTML = `?? Коментарі вимкнені для цього відео.`;
+} else {
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section-${videoKey}">
-                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
+                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">?? Вставити випадковий текст</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
                         <i class="material-icons">send</i>
@@ -288,7 +305,7 @@ alert("Сталася помилка при увімкненні функції 
                     </label>
                 </div>
             `;
-
+}
 videoElement.onclick = () => {
                 if (videoData.password) {
                     const userPassword = prompt("Це приватне відео. Введіть пароль:");
@@ -336,7 +353,7 @@ videoElement.onclick = () => {
 
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "🕵️";
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "???";
             avatar.onclick = () => {
                 const infoParams = new URLSearchParams({
                     avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
@@ -347,7 +364,7 @@ videoElement.onclick = () => {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
+            const privateLabel = videoData.private ? " <span style='color: orange;'>?? Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerText = `
                 ${videoData.title}${privateLabel}${nsfwLabel}
@@ -371,6 +388,9 @@ videoElement.onclick = () => {
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
+                deleteButton.addEventListener("click", () => {
+                actionMenu.style.display = "none";
+            });
                 actionMenu.appendChild(deleteButton);
             }
 
@@ -381,6 +401,9 @@ videoElement.onclick = () => {
                 editButton.style.color = "white";
                 editButton.style.marginTop = "10px";
                 editButton.onclick = () => editVideo(videoKey, videoData);
+                editButton.addEventListener("click", () => {
+                actionMenu.style.display = "none";
+            });
                 actionMenu.appendChild(editButton);
             }
 
@@ -406,11 +429,11 @@ videoElement.onclick = () => {
     });
 }
 const randomComments = [
-  "Класне відео! 🔥",
-  "Дуже цікаво 👌",
-  "Дякую за контент 🙌",
+  "Класне відео! ??",
+  "Дуже цікаво ??",
+  "Дякую за контент ??",
   "Супер пояснення!",
-  "Підтримую 👍",
+  "Підтримую ??",
   "Топчик!"
 ];
 function formatTime(seconds) {
@@ -485,15 +508,14 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
     description: newDescription,
     private: newPrivate
   }).then(() => {
-    alert("✅ Відео оновлено!");
+    alert("? Відео оновлено!");
     document.getElementById("edit-form").style.display = 'none';
     currentEditKey = null;
     loadVideos(); // перезавантаження списку
   }).catch(error => {
-    alert("❌ Помилка при оновленні відео: " + error.message);
+    alert("? Помилка при оновленні відео: " + error.message);
   });
 }
-
 // Функція для генерації секретного ключа
 function uploadVideo() {
 const startTime = Date.now();
@@ -501,6 +523,7 @@ const startTime = Date.now();
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
+    const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
     const videoPassword = document.getElementById("video-password").value.trim();
      const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
@@ -547,6 +570,7 @@ const startTime = Date.now();
                         title: videoTitle,
                         author: videoAuthor,       // Ім'я і прізвище з профілю
                         email: currentUserEmail,
+                        disabledComments: disabledComments,
                         url: downloadURL,
                         description: videoDescription,
                         password: videoPassword || null,
@@ -595,7 +619,7 @@ async function decryptText(cipher, key) {
     const text = dec.decode(arr);
     return text.replace(key, ''); // віднімаємо ключ
 }
-async function loadComments(videoKey, videoOwnerEmail) {
+async function loadComments(videoKey, videoOwnerEmail) { 
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     commentsContainer.innerHTML = "";
 
@@ -616,21 +640,20 @@ async function loadComments(videoKey, videoOwnerEmail) {
         commentsArray.push(childSnapshot.val());
     });
 
-    await Promise.all(commentsArray.map(async (data) => {
+    for (const data of commentsArray) {
+        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
+            continue; // Пропускаємо приватні коментарі, якщо користувач не автор або власник відео
+        }
+
         const commentDiv = document.createElement("div");
         commentDiv.className = "comments";
 
         const userEl = document.createElement("strong");
-        userEl.textContent = data.email || "Видалений акаунт";
+        userEl.textContent = data.commentAuthor || "Видалений акаунт";
 
         const textEl = document.createElement("span");
-
         if (data.isPrivate) {
-            if (data.email === currentUserEmail || videoOwnerEmail === currentUserEmail) {
-                textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
-            } else {
-                return;
-            }
+            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
         } else {
             textEl.textContent = ": " + data.comment;
         }
@@ -644,8 +667,64 @@ async function loadComments(videoKey, videoOwnerEmail) {
         commentDiv.appendChild(br);
         commentDiv.appendChild(dateEl);
         commentsContainer.appendChild(commentDiv);
-    }));
+    }
 }
+// Відкрити форму редагування імені
+function editName() {
+  document.getElementById("form-edit-name").style.display = "block";
+  document.getElementById("name").style.display = "none";
+  document.getElementById("button-name").style.display = "none";
+
+  const currentName = document.getElementById("name").textContent.replace("Ім'я: ", "");
+  document.getElementById("edit-name").value = currentName;
+}
+
+// Відкрити форму редагування прізвища
+function editSuperName() {
+  document.getElementById("form-edit-supername").style.display = "block";
+  document.getElementById("supername").style.display = "none";
+  document.getElementById("button-supername").style.display = "none";
+
+  const currentSuperName = document.getElementById("supername").textContent.replace("Прізвище: ", "");
+  document.getElementById("edit-supername").value = currentSuperName;
+}
+
+// Зберегти зміну імені
+function saveEditName() {
+  const newName = document.getElementById("edit-name").value.trim();
+  const user = firebase.auth().currentUser;
+  if (!user) return alert("Будь ласка, увійдіть.");
+
+  const uid = user.uid;
+  database.ref("users/" + uid).update({ name: newName }).then(() => {
+    alert("? Ім’я змінено!");
+    document.getElementById("form-edit-name").style.display = "none";
+    document.getElementById("name").style.display = "block";
+    document.getElementById("button-name").style.display = "block";
+    document.getElementById("name").textContent = "Ім'я: " + newName;
+    updateVideosAuthor();
+  }).catch(err => alert("? Помилка: " + err.message));
+}
+
+// Зберегти зміну прізвища
+function saveEditSuperName() {
+  const newSuperName = document.getElementById("edit-supername").value.trim();
+  const user = firebase.auth().currentUser;
+  if (!user) return alert("Будь ласка, увійдіть.");
+
+  const uid = user.uid;
+  database.ref("users/" + uid).update({ supername: newSuperName }).then(() => {
+    alert("? Прізвище змінено!");
+    document.getElementById("form-edit-supername").style.display = "none";
+    document.getElementById("supername").style.display = "block";
+    document.getElementById("button-supername").style.display = "block";
+    document.getElementById("supername").textContent = "Прізвище: " + newSuperName;
+    updateVideosAuthor();
+  }).catch(err => alert("? Помилка: " + err.message));
+}
+
+// Оновлення авторів у відео та коментарях
+
 // Відправка коментаря
 async function uploadComment(videoKey, videoOwnerEmail) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
@@ -660,19 +739,28 @@ async function uploadComment(videoKey, videoOwnerEmail) {
         commentData = await encryptText(commentText, videoKeyLocal);
     }
 
+    const uid = firebase.auth().currentUser.uid;
+
+    // Беремо дані користувача з Firebase
+    const snapshot = await database.ref("users/" + uid).once("value");
+    const userData = snapshot.val();
+    const commentAuthor = `${userData.name} ${userData.supername}`;
+
+    // Додаємо коментар у базу
     await database.ref("comments").push({
         comment: commentData,
         email: currentUserEmail,
+        commentAuthor: commentAuthor,
         videoOwner: videoOwnerEmail,
         isPrivate: isPrivate,
         publishDate: new Date().toLocaleDateString(),
         videoKey: videoKey
     });
 
+    // Очищуємо поле та оновлюємо коментарі
     commentInput.value = "";
-    loadComments(videoKey, videoOwnerEmail);
+    await loadComments(videoKey, videoOwnerEmail);
 }
-
 
 
 function toggleUploadVisibility() {
@@ -820,8 +908,11 @@ auth.onAuthStateChanged((user) => {
         const viewBirthdate = document.getElementById("view");
         if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr || "не вказано"}`;
         const emailEl = document.getElementById("email");
+const avatarProfile = document.querySelector(".avatar");
+       avatarProfile.innerText = userData.name ? userData.name.charAt(0).toUpperCase() : "?";
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
-
+document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
+document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
         // NSFW глобальний чекбокс
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
@@ -836,7 +927,6 @@ auth.onAuthStateChanged((user) => {
                 if (NSFW) NSFW.style.display = "none";
                 if (nsfwInfo) nsfwInfo.style.display = "block";
             } else {
-                if (nsfwSlider) nsfwSlider.style.backgroundColor = "red";
                 nsfwCheckbox.disabled = false;
                 if (NSFW) NSFW.style.display = "block";
                 if (nsfwInfo) nsfwInfo.style.display = "none";
@@ -844,7 +934,7 @@ auth.onAuthStateChanged((user) => {
                 if (!nsfwCheckbox.dataset.listenerAdded) {
                     nsfwCheckbox.addEventListener("change", function () {
                         showNSFW = this.checked;
-                        loadVideos();
+        loadVideos();
                     });
                     nsfwCheckbox.dataset.listenerAdded = "true";
                 }
@@ -881,8 +971,47 @@ function submitBirthdate() {
     supername: supernameInput
   }).then(() => {
     alert("Дата збережена.");
-    document.getElementById("birthdate-modal").style.display = "none";
-location.reload(); // Перезавантажити сторінку або перенаправити користувача
+   updateVideosAuthor();
+  });
+}
+function updateVideosAuthor() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  const uid = user.uid;
+
+  database.ref("users/" + uid).once("value").then(snapshot => {
+    const userData = snapshot.val() || {};
+    const namePart = userData.name ? userData.name : "";
+    const supernamePart = userData.supername ? userData.supername : "";
+    const fullName = namePart + " " + supernamePart;
+
+    // ?? Оновлення відео
+    const videoUpdates = [];
+    database.ref("videos").once("value").then(videoSnap => {
+      videoSnap.forEach(child => {
+        const video = child.val();
+        if (video.email === user.email) {
+          videoUpdates.push(database.ref("videos/" + child.key).update({ author: fullName }));
+        }
+      });
+      return Promise.all(videoUpdates);
+    }).then(() => {
+      // ?? Оновлення коментарів
+      const commentUpdates = [];
+      return database.ref("comments").once("value").then(commentSnap => {
+        commentSnap.forEach(child => {
+          const comment = child.val();
+          if (comment.email === user.email) {
+            commentUpdates.push(database.ref("comments/" + child.key).update({ commentAuthor: fullName }));
+          }
+        });
+        return Promise.all(commentUpdates);
+      });
+    }).then(() => {
+      location.reload(); // ?? Тепер перезавантажуємо тільки після завершення оновлення
+    }).catch(err => {
+      console.error("Помилка оновлення:", err);
+    });
   });
 }
 document.getElementById("logout-link").onclick = function() {
@@ -918,7 +1047,7 @@ function loadPhotos() {
             // Аватар
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
-            avatar.innerText = photoData.author ? photoData.author.charAt(0).toUpperCase() : "🕵️";
+            avatar.innerText = photoData.author ? photoData.author.charAt(0).toUpperCase() : "???";
             
             const detailsphotoElement = document.createElement("div");
             detailsphotoElement.classList.add("photo-details");
@@ -1099,11 +1228,11 @@ function isSleepTime() {
 // // Оновлення таймера та фону
 function updateTimer() {
     if (isSleepTime()) {
-        document.body.style.background = "linear-gradient(to right, rgb(6 99 229), rgb(6 208 229))";
+        document.body.style.background = "radial-gradient(circle at top left, #0f172a, #0a0e1a)";
         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
         return;
     } else {
-        document.body.style.background = "linear-gradient(to right, #ff7e5f, #feb47b)";
+        document.body.style.background = "radial-gradient(circle at top left, #0f172a, #0a0e1a)";
     }
 
     if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
