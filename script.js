@@ -288,13 +288,13 @@ alert("Сталася помилка при увімкненні функції 
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
 if (videoData.disabledComments == true) {
-commentSection.innerHTML = `?? Коментарі вимкнені для цього відео.`;
+commentSection.innerHTML = `💬 Коментарі вимкнені для цього відео.`;
 } else {
             commentSection.innerHTML = `
                 <h3 style="color: white; text-align: left;">Коментарі:</h3>
                 <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
                 <div class="comment-section" id="comment-section-${videoKey}">
-                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">?? Вставити випадковий текст</button>
+                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
                     <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
                     <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
                         <i class="material-icons">send</i>
@@ -357,7 +357,7 @@ videoElement.onclick = () => {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const privateLabel = videoData.private ? " <span style='color: orange;'>?? Приватне</span>" : "";
+            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
             detailsElement.innerText = `
                 ${videoData.title}${privateLabel}${nsfwLabel}
@@ -422,12 +422,12 @@ videoElement.onclick = () => {
     });
 }
 const randomComments = [
-  "Класне відео! ??",
-  "Дуже цікаво ??",
-  "Дякую за контент ??",
-  "Супер пояснення!",
-  "Підтримую ??",
-  "Топчик!"
+  "Класне відео! 🎬👍",
+  "Дуже цікаво 🤓✨",
+  "Дякую за контент 🙏💖",
+  "Супер пояснення!👌📚",
+  "Підтримую 💪🔥",
+  "Топчик!⭐😎"
 ];
 function formatTime(seconds) {
     seconds = Math.floor(seconds); // округлюємо до цілого числа
