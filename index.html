@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+    <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
-    <title>VideoVortex</title>
     <link rel="icon" href="VideoVortex_logo.ico">
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -193,16 +192,18 @@ margin: 0;
     border-radius: 80px;
         }
         body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
-            color: #ffffff; 
-            text-align: center; 
-            padding: 0 20px; 
             margin: 0;
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
+    color: #e2e8f0;
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
         }
         .container {
     margin-top: 130px;
@@ -254,8 +255,10 @@ height: 10px;
             border-radius: 10px; 
             margin-top: 130px;
         }
-        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], #video-description, #photo-description { 
             width: 100%; 
+            background-color: black;
+            color: white;
             padding: 10px 0; 
             margin: 10px 0; 
             border-radius: 35px; 
@@ -263,17 +266,47 @@ height: 10px;
             outline: none;
             font-size: 1em;
         }
+.more-btn {
+position: absolute;
+    right: 20px;
+}
+#upload-button, .random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
+width: 100%; 
+            background-color: black;
+border: 2px solid #333333;
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+}
         button { 
-            background: #4facfe; 
-            color: white; 
-            border-radius: 35px;
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: background 0.3s ease;
+            display: inline-block;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
         }
         button:hover { 
-            background: #00f2fe;
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+  
+box-shadow: 0 0 15px #f472b6; /* світіння */
+  
+transform: translateY(-2px); /* легке підняття */
         }
+button:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+  
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+  
+transform: scale(0.95); /* легке стиснення */
+}
         .video-container {
             display: flex;
             margin-top: 20px;
@@ -291,17 +324,19 @@ height: 10px;
             padding: 5px;
         }
 	    .video-comment {
+    border-radius: 20px;
     margin-left: 0.5px;
     display: inline-table;
-    background-color: blue;
+    background-color: #2a2727;
 }
 #video-container {
-            display: flex;
-    flex-direction: column-reverse;
+margin-top: 50px;
+display: flex;
+flex-direction: column-reverse;
         }
         .photo-container {
             display: flex;
-    margin-top: 20px;
+    margin-top: 50px;
     flex-direction: column-reverse;
         }
         /* Стилі для зображень з класом .photo-item */
@@ -332,20 +367,12 @@ img.photo-item {
 .comment-button {
     width: 50px;
     height: 40px;  /* Встановлюємо висоту кнопки */
-    background-color: #007BFF;
     color: white;
     border: none;
     border-radius: 35px;
     cursor: pointer;
 }
 
-.comment-button:hover {
-    background-color: #0056b3;
-}
-
-.comment-button:hover {
-    background-color: #0056b3;
-}
 
         .photo-info { 
             text-align: left; 
@@ -364,24 +391,47 @@ img.photo-item {
             font-weight: bold;
             color: #ffffff;
         }
+#account-form .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
         .video-details {
             display: inline-block;
             vertical-align: top;
             text-align: left;
         }
         #delete-account { 
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            border-radius: 35px;
-            transition: color 0.3s ease, background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: red; 
-            color: white; 
-            cursor: pointer;
+            width: 100%;
+    background-color: black;
+    padding: 10px 0;
+    margin: 10px 0;
+border: 2px solid #333333;
+    border-radius: 35px;
+    border: none;
+    outline: none;
+    font-size: 1em;
         }
+#delete-account:hover {
+border-color: red;
+box-shadow: 0 0 15px red; /* світіння */
+  
+transform: translateY(-2px);
+}
+#delete-account:active {
+border-color: red; /* рамка рожевого кольору при натисканні */
+  
+box-shadow: 0 0 10px red; /* світіння при натисканні */
+  
+transform: scale(0.95); /* легке стиснення */
+}
 .nsfw-label {
     background-color: red;
     color: white;
@@ -431,13 +481,26 @@ display: none;
     text-decoration: none;
     color: white;
     display: block;
-    transition: 0.3s;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
 }
 
 .menu a:hover {
-    background: #4facfe;
+    border-color: #f472b6; /* підсвічування рамки блакитним */
+  
+box-shadow: 0 0 15px #f472b6; /* світіння */
+  
+transform: translateY(-2px); /* легке підняття */
+        }
+.menu a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+  
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+  
+transform: scale(0.95); /* легке стиснення */
 }
-
 .content {
     transition: margin-left 0.3s ease-in-out;
 }
@@ -465,25 +528,72 @@ bottom: 9%;
 }
 
 .action-menu button {
-  background: none;
-  border: none;
   color: white;
   padding: 8px 12px;
   width: 100%;
   text-align: left;
   cursor: pointer;
 }
+.action-menu .delete-button:hover {
+border-color: red; /* підсвічування рамки червоним */
+  box-shadow: 0 0 10px red; /* легке світіння */
+  transform: translateY(-2px); /* легке підняття */
+}
+.action-menu .delete-button:active {
+border-color: red; /* рамка рожевого кольору при натисканні */
+  
+box-shadow: 0 0 10px red; /* світіння при натисканні */
+  
+transform: scale(0.95); /* легке стиснення */
+}
 #photo-container {
   display: none;
 }
-.action-menu button:hover {
-  background-color: #4facfe;
+body.halloween {
+  background: radial-gradient(circle at top, #1a1a1a, #000);
+  color: #ff7518;
+  transition: background 1s ease;
 }
 
+.halloween button {
+  background-color: #ff7518;
+  color: black;
+  border-radius: 35px;
+}
+
+.bat {
+  animation: fly 12s linear infinite;
+}
+
+@keyframes fly {
+  from { transform: translateX(-10vw) rotate(0deg); }
+  to { transform: translateX(110vw) rotate(360deg); }
+}
+
+.fog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTac0gfjeAI5QkLhujDIihfuGWT9fyJ_EnOJZPJNEM-UQ&s=10');
+  background-size: cover;
+  opacity: 0.2;
+  animation: fogMove 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fogMove {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}
+.hidden {
+display: none;
+}
 nav {
     display: flex;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 0px 20px;
     background: rgb(26 26 26 / 68%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -494,18 +604,34 @@ nav {
     width: 97%;
         }
         nav a {
-color: #ffffff;
-    text-decoration: none;
-    border-radius: 35px;
-    transition: color 0.3s ease, background 0.3s ease;
-    display: flex;
-    align-items: center;
+height: 50px;
+align-items: center;
     justify-content: center;
+display: flex;
+    padding: 0px 5px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
         }
         nav a:hover {
-            background-color: #4facfe;
-            color: #1c1e22;
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+  
+box-shadow: 0 0 15px #f472b6; /* світіння */
+  
+transform: translateY(-2px); /* легке підняття */
         }
+nav a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+  
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+  
+transform: scale(0.95); /* легке стиснення */
+}
         .icon-text {
             margin-left: 5px;
         }
@@ -545,9 +671,25 @@ color: #ffffff;
     #smart-upload-link-photo {
         display: none;
     }
+.delete-button {
+display: flex;
+padding: 3px 8px;
+align-items: center; 
+justify-content: center;
+text-decoration: none;
+  border-radius: 10px;
+  border: 2px solid transparent; /* початково без обводки */
+  background-color: #111;
+  border-color: #111; /* чорний фон або інший */
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
 	.smart-menu {
     display: flex;
-    bottom: 0;
+bottom: 0;
     left: 0;
     border-radius: 16px 16px 0 0;
     justify-content: space-around;
@@ -618,7 +760,7 @@ color: #ffffff;
             <a href="#" id="logout-link" style="display: none;">
                 <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
             <a href="#" id="account-link" style="display: none;">
-                <i class="material-icons">person</i><span class="icon-text" id="email"></span>
+                <i class="material-icons">person</i><span class="icon-text" id="email">Завантаження...</span>
             </a>
 		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
@@ -638,6 +780,17 @@ color: #ffffff;
 </div>
 <div class="account-form" id="account-form">
             <h2>Інформація про акаунт</h2>
+<div class="avatar"></div>
+<p id="name">Ім'я: Завантаження...</p><button id="button-name" onclick="editName()"><i class="material-icons">edit</i>Змінити</button>
+<div id="form-edit-name" style="display:none;">
+<input type="text" id="edit-name">
+<button id="save-name" onclick="saveEditName()">Зберегти</button>
+</div>
+<p id="supername">Прізвище: Завантаження...</p><button href="#" id="button-supername" onclick="editSuperName()"><i class="material-icons">edit</i>Змінити</button>
+<div id="form-edit-supername" style="display:none;">
+<input type="text" id="edit-supername">
+<button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
+</div>
             <p id="user-info"></p>
 <p id="view">Дата народження: Невідома</p>
 	<div id="requests-container"></div>
@@ -665,37 +818,34 @@ color: #ffffff;
             <input type="text" id="video-title" placeholder="Назва відео">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
             <input type="file" id="video-file" accept="video/*"> 
-		
-   <span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
+     <span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>	
+   <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
 <div id="domain-restrict-container" style="display: none; margin-top: 10px;">
     
         <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
         <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
 </div>
-           <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></label>
-<h3>Експериментальна функція</h3>
-		<label for="video-password">Пароль для відео(необов’язково)<sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>:</label>
-  <input type="password" id="video-password" />
+           <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW</label>
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
 <span id="time-left"></span>
             </div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
-<label>Публікуючи відео, ви погоджуєтеся з <a href="https://bustling-nasturtium-fc8.notion.site/VideoVortex-283beb289348809183e8e8d185b3c469" target="_blank">правилами спільноти.</a></label>
-        </div>
+<label>Публікуючи відео, ви погоджуєтеся з <a href="https://telegra.ph/Pravila-sp%D1%96lnoti-VideoVortex-09-14-2" target="_blank">правилами спільноти.</a></label>
+</div>
+
 <div class="edit-form" id="edit-form" style="display: none;">
             <h2>Редагувати відео</h2>
             <input type="text" id="edit-video-title" placeholder="Назва відео">
             <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
-  <span>Приватне відео <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
+ <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
             <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
         </div>
 
         <div class="upload-photo-form" id="upload-photo-form">
             <h2>Завантажити фото</h2>
             <input type="text" id="photo-title" placeholder="Назва Фото">
-            <input type="text" id="photo-author" placeholder="Ім'я автора(Якщо хочете опублікувати від анонімного користувача, то пропустіть цей крок.)">
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
             <input type="file" id="photo-file" accept="image/*"> 
             
@@ -732,7 +882,7 @@ color: #ffffff;
     </a>
 </div>
 <div id="birthdate-modal" style="
-      display: none;
+  display: none;
   position: fixed;
   z-index: 9999;
   inset: 0;
@@ -761,7 +911,60 @@ color: #ffffff;
 		<h3>Версія додатка:</h3>
 		<p>2.2.4</p>
 	</footer>
-	
+
+	<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
+  const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень
+  const day = today.getDate();
+
+  if (month === 10 && day === 7) {
+    activateHalloweenMode();
+  }
+});
+
+function activateHalloweenMode() {
+  document.body.classList.add("halloween");
+  console.log("🎃 Хелловінський режим активовано!");
+
+  // Додаємо літаючих кажанів
+  for (let i = 0; i < 5; i++) {
+    const bat = document.createElement("div");
+    bat.className = "bat";
+    bat.textContent = "🦇";
+    bat.style.position = "fixed";
+    bat.style.top = Math.random() * 80 + "%";
+    bat.style.left = Math.random() * 100 + "%";
+    bat.style.fontSize = Math.random() * 30 + 20 + "px";
+    bat.style.opacity = 0.8;
+    document.body.appendChild(bat);
+  }
+const profileIcon = document.getElementById("account-link");
+  if (profileIcon) profileIcon.innerHTML = `🕸️ <span class="icon-text" id="email">Завантаження...</span>`;
+    const logoutIcon = document.getElementById("logout-link");
+  if (logoutIcon) logoutIcon.innerHTML = `🚪 <span class="icon-text">Вийти</span>`;
+    const uploadIcon = document.getElementById("upload-link");
+  if (uploadIcon) uploadIcon.innerHTML = `🎃 <span class="icon-text">Завантажити відео</span>`;
+    const uploadPhotoIcon = document.getElementById("upload-link-photo");
+  if (uploadPhotoIcon) uploadPhotoIcon.innerHTML = `🎃 <span class="icon-text">Завантажити фото</span>`;
+    const postIcon = document.getElementById("post");
+  if (postIcon) postIcon.innerHTML = `👻 <span class="icon-text">Дописи</span>`;
+    const videoIcon = document.getElementById("video");
+  if (videoIcon) videoIcon.innerHTML = `🦇 <span class="icon-text">Відео</span>`;
+    const smartuploadIcon = document.getElementById("smart-upload-link");
+  if (smartuploadIcon) smartuploadIcon.innerHTML = `🎃 <span style="margin-left: 5px">Завантажити відео</span>`;
+    const smartuploadPhotoIcon = document.getElementById("smart-upload-link-photo");
+  if (smartuploadPhotoIcon) smartuploadPhotoIcon.innerHTML = `🎃 <span style="margin-left: 5px">Завантажити фото</span>`;
+    const smartpostIcon = document.getElementById("smart-post");
+  if (smartpostIcon) smartpostIcon.innerHTML = `👻 <span style="margin-left: 5px">Дописи</span>`;
+    const smartvideoIcon = document.getElementById("smart-video");
+  if (smartvideoIcon) smartvideoIcon.innerHTML = `🦇 <span style="margin-left: 5px">Відео</span>`;
+  // Додаємо туманний ефект
+  const fog = document.createElement("div");
+  fog.className = "fog";
+  document.body.appendChild(fog);
+}
+  </script>
   <script>
 	  let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
@@ -792,7 +995,7 @@ function showRulesModal() {
 }
 
 function acceptRulesUpdate() {
-  localStorage.setItem("rules_version", "2025-10");
+  localStorage.setItem("rules_version", "2025-12");
   document.getElementById("rules-update-modal").style.display = "none";
 }
 
