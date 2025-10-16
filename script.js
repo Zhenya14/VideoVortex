@@ -307,13 +307,6 @@ commentSection.innerHTML = `?? Коментарі вимкнені для цьо
             `;
 }
 videoElement.onclick = () => {
-                if (videoData.password) {
-                    const userPassword = prompt("Це приватне відео. Введіть пароль:");
-                    if (videoData.password !== userPassword) {
-                        alert("Неправильний пароль!");
-                        return;
-                    }
-                }
 
                 const viewedKey = `viewed_${videoKey}`;
                 if (!localStorage.getItem(viewedKey)) {
@@ -525,7 +518,6 @@ const startTime = Date.now();
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
     const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
-    const videoPassword = document.getElementById("video-password").value.trim();
      const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
@@ -573,7 +565,6 @@ const startTime = Date.now();
                         disabledComments: disabledComments,
                         url: downloadURL,
                         description: videoDescription,
-                        password: videoPassword || null,
                         views: 0,
                         private: privateVideo,
                         domainRestrict: domainRestrict,
@@ -1097,7 +1088,6 @@ function deletePhoto(photoKey, photoURL) {
 function uploadPhoto() {
     const photoDescription = document.getElementById("photo-description").value;
     const photoTitle = document.getElementById("photo-title").value;
-    const photoAuthor = document.getElementById("photo-author").value;
     const photoFile = document.getElementById("photo-file").files[0];
     const uploadProgress = document.getElementById("upload-progress");
     const progressText = document.getElementById("progress-text");
