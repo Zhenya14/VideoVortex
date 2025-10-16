@@ -1228,11 +1228,11 @@ function isSleepTime() {
 // // Оновлення таймера та фону
 function updateTimer() {
     if (isSleepTime()) {
-        document.body.style.background = "radial-gradient(circle at top left, #0f172a, #0a0e1a)";
+        document.body.style.background = "background: radial-gradient(circle at left top, rgb(15, 23, 42), rgb(10, 14, 26))";
         document.body.innerHTML = `<h1 style="color: white; text-align: center;">Час спати. Сайт розблокується о ${sleepEnd}:00</h1>`;
         return;
     } else {
-        document.body.style.background = "radial-gradient(circle at top left, #0f172a, #0a0e1a)";
+        document.body.style.background = "background: radial-gradient(circle at left top, rgb(15, 23, 42), rgb(10, 14, 26))";
     }
 
     if (timeLeftInSeconds !== null && timeLeftInSeconds > 0) {
