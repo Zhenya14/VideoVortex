@@ -48,31 +48,36 @@ let userAge = null;
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
 const firebaseConfig = {
-            apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
-            authDomain: "videovortex-235cd.firebaseapp.com",
-            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "videovortex-235cd",
-            storageBucket: "videovortex-235cd.appspot.com",
-            messagingSenderId: "681594250269",
-            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-        const storage = firebase.storage();
-        const messaging = getMessaging(app);
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
 
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+const storage = firebase.storage();
+const messaging = firebase.messaging();
+
+// ==========================
 // Реєстрація Service Worker
+// ==========================
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
     .then((registration) => {
       console.log('✅ Service Worker зареєстровано', registration);
-      messaging.useServiceWorker(registration);
+      messaging.useServiceWorker(registration); // v8 compat
     })
     .catch((err) => console.error('❌ Помилка реєстрації SW:', err));
 }
 
-// Запит дозволу на пуші
+// ==========================
+// Включення пуш-сповіщень
+// ==========================
 async function enablePushNotifications(userId) {
   try {
     const permission = await Notification.requestPermission();
@@ -87,7 +92,7 @@ async function enablePushNotifications(userId) {
 
     console.log("✅ Push токен:", token);
 
-    // Зберігаємо токен у Firebase
+    // Збереження токена у Firebase Realtime Database
     database.ref("users/" + userId + "/pushToken").set(token);
 
   } catch (err) {
@@ -95,7 +100,9 @@ async function enablePushNotifications(userId) {
   }
 }
 
+// ==========================
 // Отримання повідомлень коли сайт відкритий
+// ==========================
 messaging.onMessage((payload) => {
   console.log("📬 Нове повідомлення:", payload);
   const { title, body, icon } = payload.notification;
