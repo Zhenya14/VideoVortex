@@ -62,7 +62,17 @@ const firebaseConfig = {
         const storage = firebase.storage();
         const messaging = getMessaging(app);
 
-// 🔔 Запит дозволу на сповіщення
+// Реєстрація Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('✅ Service Worker зареєстровано', registration);
+      messaging.useServiceWorker(registration);
+    })
+    .catch((err) => console.error('❌ Помилка реєстрації SW:', err));
+}
+
+// Запит дозволу на пуші
 async function enablePushNotifications(userId) {
   try {
     const permission = await Notification.requestPermission();
@@ -71,23 +81,25 @@ async function enablePushNotifications(userId) {
       return;
     }
 
-    const token = await getToken(messaging, {
-      vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4",
+    const token = await messaging.getToken({
+      vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4"
     });
 
     console.log("✅ Push токен:", token);
 
-    // Зберігаємо токен у базі
-    firebase.database().ref("users/" + userId + "/pushToken").set(token);
+    // Зберігаємо токен у Firebase
+    database.ref("users/" + userId + "/pushToken").set(token);
+
   } catch (err) {
-    console.error("Помилка отримання токена:", err);
+    console.error("❌ Помилка отримання токена:", err);
   }
 }
 
-// 🔊 Отримання сповіщень коли сайт відкритий
-onMessage(messaging, (payload) => {
+// Отримання повідомлень коли сайт відкритий
+messaging.onMessage((payload) => {
   console.log("📬 Нове повідомлення:", payload);
-  alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
+  const { title, body, icon } = payload.notification;
+  new Notification(title, { body, icon });
 });
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
