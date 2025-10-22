@@ -60,7 +60,35 @@ const firebaseConfig = {
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
+        const messaging = getMessaging(app);
 
+// 🔔 Запит дозволу на сповіщення
+async function enablePushNotifications(userId) {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.log("❌ Користувач не дозволив сповіщення");
+      return;
+    }
+
+    const token = await getToken(messaging, {
+      vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4",
+    });
+
+    console.log("✅ Push токен:", token);
+
+    // Зберігаємо токен у базі
+    firebase.database().ref("users/" + userId + "/pushToken").set(token);
+  } catch (err) {
+    console.error("Помилка отримання токена:", err);
+  }
+}
+
+// 🔊 Отримання сповіщень коли сайт відкритий
+onMessage(messaging, (payload) => {
+  console.log("📬 Нове повідомлення:", payload);
+  alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
+});
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -848,6 +876,9 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
     if (!user) return;
+
+    // Вмикаємо push-сповіщення для користувача
+    enablePushNotifications(user.uid);
 
     currentUserEmail = user.email;
 
