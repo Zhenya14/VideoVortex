@@ -3,11 +3,13 @@ importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-  apiKey: "ТВОЯ_API_KEY",
-  authDomain: "ТВОЄ_AUTH_DOMAIN",
-  projectId: "ТВОЄ_PROJECT_ID",
-  messagingSenderId: "ТВОЄ_SENDER_ID",
-  appId: "ТВОЄ_APP_ID"
+              apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+            authDomain: "videovortex-235cd.firebaseapp.com",
+            databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "videovortex-235cd",
+            storageBucket: "videovortex-235cd.appspot.com",
+            messagingSenderId: "681594250269",
+            appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
 });
 
 const messaging = firebase.messaging();
