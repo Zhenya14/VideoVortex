@@ -68,11 +68,11 @@ const messaging = firebase.messaging();
 // ==========================
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then((registration) => {
+    .then(registration => {
       console.log('✅ Service Worker зареєстровано', registration);
-      messaging.useServiceWorker(registration); // v8 compat
+      messaging.useServiceWorker(registration);
     })
-    .catch((err) => console.error('❌ Помилка реєстрації SW:', err));
+    .catch(err => console.error('❌ Помилка реєстрації SW:', err));
 }
 
 // ==========================
@@ -92,7 +92,7 @@ async function enablePushNotifications(userId) {
 
     console.log("✅ Push токен:", token);
 
-    // Збереження токена у Firebase Realtime Database
+    // Збереження токена у Firebase
     database.ref("users/" + userId + "/pushToken").set(token);
 
   } catch (err) {
@@ -108,6 +108,7 @@ messaging.onMessage((payload) => {
   const { title, body, icon } = payload.notification;
   new Notification(title, { body, icon });
 });
+
 
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
@@ -896,11 +897,10 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
     if (!user) return;
-    
-enablePushNotifications(user.uid);
 
     currentUserEmail = user.email;
 
+    enablePushNotifications(user.uid);
     // Перевірка email
     if (!user.emailVerified) {
         blockScreenForVerification();
