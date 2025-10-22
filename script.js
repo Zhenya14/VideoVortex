@@ -69,14 +69,14 @@ const messaging = firebase.messaging();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
     .then(registration => {
-      console.log('✅ Service Worker зареєстровано', registration);
+      console.log('✅ SW зареєстровано', registration);
       messaging.useServiceWorker(registration);
     })
-    .catch(err => console.error('❌ Помилка реєстрації SW:', err));
+    .catch(err => console.error('❌ Помилка SW:', err));
 }
 
 // ==========================
-// Включення пуш-сповіщень
+// Пуші
 // ==========================
 async function enablePushNotifications(userId) {
   try {
@@ -92,8 +92,9 @@ async function enablePushNotifications(userId) {
 
     console.log("✅ Push токен:", token);
 
-    // Збереження токена у Firebase
-    database.ref("users/" + userId + "/pushToken").set(token);
+    database.ref("users/" + userId + "/pushToken").set(token)
+      .then(() => console.log("✅ Token saved"))
+      .catch(err => console.error("❌ Error saving token:", err));
 
   } catch (err) {
     console.error("❌ Помилка отримання токена:", err);
@@ -101,12 +102,12 @@ async function enablePushNotifications(userId) {
 }
 
 // ==========================
-// Отримання повідомлень коли сайт відкритий
+// Отримання пушів у браузері
 // ==========================
-messaging.onMessage((payload) => {
+messaging.onMessage(payload => {
   console.log("📬 Нове повідомлення:", payload);
-  const { title, body, icon } = payload.notification;
-  new Notification(title, { body, icon });
+  const { title, body, icon } = payload.notification || {};
+  if (title) new Notification(title, { body, icon });
 });
 
 
