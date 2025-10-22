@@ -1,3 +1,4 @@
+// SW для Firebase Messaging
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js');
 
@@ -13,9 +14,7 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Обробка повідомлень у фоновому режимі
-messaging.onBackgroundMessage(function(payload) {
-  console.log('[SW] Фонове повідомлення:', payload);
+messaging.setBackgroundMessageHandler(function(payload) {
   const { title, body, icon } = payload.notification;
-  self.registration.showNotification(title, { body, icon: icon || "/VideoVortex_logo.ico" });
+  return self.registration.showNotification(title, { title, body, icon });
 });
