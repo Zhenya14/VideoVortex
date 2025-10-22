@@ -47,7 +47,7 @@ let userAge = null;
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
   authDomain: "videovortex-235cd.firebaseapp.com",
   databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
@@ -55,9 +55,7 @@ const firebaseConfig = {
   storageBucket: "videovortex-235cd.appspot.com",
   messagingSenderId: "681594250269",
   appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
-};
-
-firebase.initializeApp(firebaseConfig);
+});
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
@@ -69,14 +67,14 @@ const messaging = firebase.messaging();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
     .then(registration => {
-      console.log('✅ SW зареєстровано', registration);
+      console.log('✅ Service Worker зареєстровано', registration);
       messaging.useServiceWorker(registration);
     })
-    .catch(err => console.error('❌ Помилка SW:', err));
+    .catch(err => console.error('❌ Помилка реєстрації SW:', err));
 }
 
 // ==========================
-// Пуші
+// Запит дозволу на пуші
 // ==========================
 async function enablePushNotifications(userId) {
   try {
@@ -92,9 +90,8 @@ async function enablePushNotifications(userId) {
 
     console.log("✅ Push токен:", token);
 
-    database.ref("users/" + userId + "/pushToken").set(token)
-      .then(() => console.log("✅ Token saved"))
-      .catch(err => console.error("❌ Error saving token:", err));
+    // Збереження токена у Firebase
+    database.ref("users/" + userId + "/pushToken").set(token);
 
   } catch (err) {
     console.error("❌ Помилка отримання токена:", err);
@@ -102,14 +99,13 @@ async function enablePushNotifications(userId) {
 }
 
 // ==========================
-// Отримання пушів у браузері
+// Отримання повідомлень коли сайт відкритий
 // ==========================
-messaging.onMessage(payload => {
+messaging.onMessage((payload) => {
   console.log("📬 Нове повідомлення:", payload);
-  const { title, body, icon } = payload.notification || {};
-  if (title) new Notification(title, { body, icon });
+  const { title, body, icon } = payload.notification;
+  new Notification(title, { body, icon });
 });
-
 
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
