@@ -894,10 +894,8 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
     if (!user) return;
-
+enablePushNotifications(user.uid);
     currentUserEmail = user.email;
-
-    enablePushNotifications(user.uid);
     // Перевірка email
     if (!user.emailVerified) {
         blockScreenForVerification();
