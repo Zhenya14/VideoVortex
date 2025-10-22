@@ -61,53 +61,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
-const messaging = firebase.messaging();
 
-// ==========================
-// Реєстрація Service Worker
-// ==========================
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then((registration) => {
-      console.log('✅ Service Worker зареєстровано', registration);
-      messaging.useServiceWorker(registration); // v8 compat
-    })
-    .catch((err) => console.error('❌ Помилка реєстрації SW:', err));
-}
-
-// ==========================
-// Включення пуш-сповіщень
-// ==========================
-async function enablePushNotifications(userId) {
-  try {
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      console.log("❌ Користувач не дозволив сповіщення");
-      return;
-    }
-
-    const token = await messaging.getToken({
-      vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4"
-    });
-
-    console.log("✅ Push токен:", token);
-
-    // Збереження токена у Firebase Realtime Database
-    database.ref("users/" + userId + "/pushToken").set(token);
-
-  } catch (err) {
-    console.error("❌ Помилка отримання токена:", err);
-  }
-}
-
-// ==========================
-// Отримання повідомлень коли сайт відкритий
-// ==========================
-messaging.onMessage((payload) => {
-  console.log("📬 Нове повідомлення:", payload);
-  const { title, body, icon } = payload.notification;
-  new Notification(title, { body, icon });
-});
         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -895,9 +849,7 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
     if (!user) return;
-
-    // Вмикаємо push-сповіщення для користувача
-    enablePushNotifications(user.uid);
+    
 
     currentUserEmail = user.email;
 
