@@ -17,7 +17,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: payload.notification.icon || "/icon.png",
+    icon: payload.notification.icon || "/VideoVortex_logo.ico",
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
