@@ -919,7 +919,10 @@ enablePushNotifications(user.uid);
             const modal = document.getElementById("birthdate-modal");
             if (modal) modal.style.display = "flex";
         }
-
+if (!userData?.gender) {
+        document.getElementById("gender-modal").style.display = "flex";
+      }
+    });
         // Обчислюємо вік
         if (birthStr) {
             let birthDate;
@@ -985,6 +988,19 @@ document.getElementById("supername").innerHTML = `Прізвище: ${userData?.
     updateUI(user);
     toggleUploadVisibility();
 });
+function saveGender() {
+  const selected = document.querySelector('input[name="gender"]:checked');
+  if (!selected) {
+    alert("Будь ласка, виберіть стать");
+    return;
+  }
+  const gender = selected.value;
+  const uid = auth.currentUser.uid;
+  database.ref("users/" + uid).update({ gender }).then(() => {
+    document.getElementById("gender-modal").style.display = "none";
+    alert("Дякуємо! Ваш профіль оновлено.");
+  });
+}
 function submitBirthdate() {
   const user = firebase.auth().currentUser;
   const input = document.getElementById("birthdate-input").value;
