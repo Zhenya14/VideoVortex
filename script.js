@@ -955,6 +955,8 @@ const avatarProfile = document.querySelector(".avatar");
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
 document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
 document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
+const gender = document.getElementById("gender");
+if (gender) emailEl.innerHTML = `Стать: ${userData.gender || ""}`;
         // NSFW глобальний чекбокс
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
