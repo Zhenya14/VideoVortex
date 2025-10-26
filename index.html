@@ -882,6 +882,25 @@ bottom: 0;
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
 </div>
+<div id="gender-modal" style="
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+">
+  <div class="modal-content">
+    <h2>Оберіть вашу стать</h2>
+    <label><input type="radio" name="gender" value="male"> Чоловіча</label><br>
+    <label><input type="radio" name="gender" value="female"> Жіноча</label><br>
+    <label><input type="radio" name="gender" value="other"> Інше / не вказувати</label><br>
+    <button onclick="saveGender()">Зберегти</button>
+  </div>
+</div>
 <div id="birthdate-modal" style="
   display: none;
   position: fixed;
