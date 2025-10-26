@@ -44,6 +44,7 @@ let timeLeftInSeconds = null;
 let sleepStart = null;
 let sleepEnd = null;
 let userAge = null;
+let currentUserGender = "unknown"; // 🔹 зберігає стать користувача
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
@@ -321,7 +322,11 @@ alert("Сталася помилка при увімкненні функції 
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
-
+            // 🔹 Фільтрація за статтю користувача
+if (videoData.visibility && videoData.visibility !== "all") {
+    if (videoData.visibility === "male" && currentUserGender !== "male") return;
+    if (videoData.visibility === "female" && currentUserGender !== "female") return;
+}
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
@@ -564,6 +569,7 @@ const startTime = Date.now();
     const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
      const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+const visibility = document.getElementById("visibility-select").value; // 🔹 видимість за статтю
 
     if (!videoTitle || !videoFile ) {
         alert("Будь ласка, заповніть всі поля!");
@@ -614,7 +620,8 @@ const startTime = Date.now();
                         private: privateVideo,
                         domainRestrict: domainRestrict,             
                         nsfw: isNSFW,
-                        publishDate: currentDate
+                        publishDate: currentDate,
+                        visibility: visibility
                     }).then(() => {
                         alert("Відео завантажено!");
                         loadVideos(); 
@@ -911,13 +918,15 @@ enablePushNotifications(user.uid);
     // Отримання даних користувача
     const uid = user.uid;
     database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const birthStr = userData?.birthdate;
+    const userData = snapshot.val();
+    const birthStr = userData?.birthdate;
+    currentUserGender = userData?.gender || "unknown"; // 🔹 зберігаємо стать користувача
 
-        if (!userData?.email || !birthStr) {
-            const modal = document.getElementById("birthdate-modal");
-            if (modal) modal.style.display = "flex";
-        }
+    // Якщо не вказано дату народження або стать — показати вікно
+    if (!userData?.email || !birthStr || !userData?.gender) {
+        const modal = document.getElementById("birthdate-modal") || document.getElementById("gender-modal");
+        if (modal) modal.style.display = "flex";
+    }
 });
         // Обчислюємо вік
         if (birthStr) {
@@ -948,6 +957,7 @@ const avatarProfile = document.querySelector(".avatar");
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
 document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
 document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
+document.getElementById("gender").innerHTML = `Стать: ${userData?.gender || ""}`;
         // NSFW глобальний чекбокс
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
@@ -984,6 +994,72 @@ document.getElementById("supername").innerHTML = `Прізвище: ${userData?.
     updateUI(user);
     toggleUploadVisibility();
 });
+function saveGender(gender) {
+    const user = firebase.auth().currentUser;
+    if (!user) return alert("Будь ласка, увійдіть у свій акаунт.");
+
+    const uid = user.uid;
+    database.ref("users/" + uid).update({ gender }).then(() => {
+        alert("✅ Стать збережено!");
+        currentUserGender = gender;
+        const modal = document.getElementById("gender-modal");
+        if (modal) modal.style.display = "none";
+        loadVideos(); // оновити список після вибору статі
+    }).catch(err => {
+        alert("❌ Помилка при збереженні статі: " + err.message);
+    });
+}
+        // NSFW глобальний чекбокс
+        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+        const nsfwSlider = document.getElementById("slidernsfw");
+        const nsfwInfo = document.getElementById("information-nsfw");
+        const NSFW = document.getElementById("nsfw");
+
+        if (nsfwCheckbox) {
+            if (userAge < 18) {
+                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+                nsfwCheckbox.checked = false;
+                nsfwCheckbox.disabled = true;
+                if (NSFW) NSFW.style.display = "none";
+                if (nsfwInfo) nsfwInfo.style.display = "block";
+            } else {
+                nsfwCheckbox.disabled = false;
+                if (NSFW) NSFW.style.display = "block";
+                if (nsfwInfo) nsfwInfo.style.display = "none";
+
+                if (!nsfwCheckbox.dataset.listenerAdded) {
+                    nsfwCheckbox.addEventListener("change", function () {
+                        showNSFW = this.checked;
+        loadVideos();
+                    });
+                    nsfwCheckbox.dataset.listenerAdded = "true";
+                }
+            }
+        }
+
+        // Після визначення віку завантажуємо відео
+        loadVideos();
+
+    }).catch(err => console.error("Помилка отримання даних користувача:", err));
+
+    updateUI(user);
+    toggleUploadVisibility();
+});
+function saveGender(gender) {
+    const user = firebase.auth().currentUser;
+    if (!user) return alert("Будь ласка, увійдіть у свій акаунт.");
+
+    const uid = user.uid;
+    database.ref("users/" + uid).update({ gender }).then(() => {
+        alert("✅ Стать збережено!");
+        currentUserGender = gender;
+        const modal = document.getElementById("gender-modal");
+        if (modal) modal.style.display = "none";
+        loadVideos(); // оновити список після вибору статі
+    }).catch(err => {
+        alert("❌ Помилка при збереженні статі: " + err.message);
+    });
+}
 function submitBirthdate() {
   const user = firebase.auth().currentUser;
   const input = document.getElementById("birthdate-input").value;
