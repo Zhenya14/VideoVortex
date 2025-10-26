@@ -558,7 +558,6 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
 function uploadVideo() {
 const startTime = Date.now();
     const videoTitle = document.getElementById("video-title").value;
-const visibility = document.getElementById("visibility-select").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
@@ -613,8 +612,7 @@ const visibility = document.getElementById("visibility-select").value;
                         description: videoDescription,
                         views: 0,
                         private: privateVideo,
-                        domainRestrict: domainRestrict,
-                        visibility: visibility,  
+                        domainRestrict: domainRestrict,             
                         nsfw: isNSFW,
                         publishDate: currentDate
                     }).then(() => {
@@ -920,10 +918,7 @@ enablePushNotifications(user.uid);
             const modal = document.getElementById("birthdate-modal");
             if (modal) modal.style.display = "flex";
         }
-if (!userData?.gender) {
-        document.getElementById("gender-modal").style.display = "flex";
-      }
-    });
+});
         // Обчислюємо вік
         if (birthStr) {
             let birthDate;
@@ -953,8 +948,6 @@ const avatarProfile = document.querySelector(".avatar");
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
 document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
 document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
-const gender = document.getElementById("gender");
-if (gender) gender.innerHTML = `Стать: ${userData.gender || ""}`;
         // NSFW глобальний чекбокс
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
@@ -991,19 +984,6 @@ if (gender) gender.innerHTML = `Стать: ${userData.gender || ""}`;
     updateUI(user);
     toggleUploadVisibility();
 });
-function saveGender() {
-  const selected = document.querySelector('input[name="gender"]:checked');
-  if (!selected) {
-    alert("Будь ласка, виберіть стать");
-    return;
-  }
-  const gender = selected.value;
-  const uid = auth.currentUser.uid;
-  database.ref("users/" + uid).update({ gender }).then(() => {
-    document.getElementById("gender-modal").style.display = "none";
-    alert("Дякуємо! Ваш профіль оновлено.");
-  });
-}
 function submitBirthdate() {
   const user = firebase.auth().currentUser;
   const input = document.getElementById("birthdate-input").value;
