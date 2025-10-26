@@ -325,7 +325,8 @@ alert("Сталася помилка при увімкненні функції 
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
-
+if (videoData.visibility === "male" && userData.gender !== "male") return;
+    if (videoData.visibility === "female" && userData.gender !== "female") return;
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
@@ -559,6 +560,7 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
 function uploadVideo() {
 const startTime = Date.now();
     const videoTitle = document.getElementById("video-title").value;
+const visibility = document.getElementById("visibility-select").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
     const isNSFW = document.getElementById("nsfw-checkbox").checked;
@@ -566,7 +568,7 @@ const startTime = Date.now();
     const privateVideo = document.getElementById("private-checkbox").checked;
      const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
-    if (!videoTitle || !videoFile) {
+    if (!videoTitle || !videoFile ) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
@@ -614,6 +616,7 @@ const startTime = Date.now();
                         views: 0,
                         private: privateVideo,
                         domainRestrict: domainRestrict,
+                        visibility: visibility,  
                         nsfw: isNSFW,
                         publishDate: currentDate
                     }).then(() => {
