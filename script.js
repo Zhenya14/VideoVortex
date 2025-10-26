@@ -316,9 +316,6 @@ alert("Сталася помилка при увімкненні функції 
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
-database.ref("users/" + uid).once("value").then(snapshot => {
-    const userData = snapshot.val();
-    if (!userData) return;
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
@@ -328,8 +325,6 @@ database.ref("users/" + uid).once("value").then(snapshot => {
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
-if (videoData.visibility === "male" && userData.gender !== "male") return;
-    if (videoData.visibility === "female" && userData.gender !== "female") return;
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
@@ -470,7 +465,6 @@ videoElement.onclick = () => {
             loadComments(videoKey, videoData.email);
         });
     });
-});
 }
 const randomComments = [
   "Класне відео! 🎬👍",
