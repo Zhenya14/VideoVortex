@@ -316,6 +316,9 @@ alert("Сталася помилка при увімкненні функції 
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
+database.ref("users/" + uid).once("value").then(snapshot => {
+    const userData = snapshot.val();
+    if (!userData) return;
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
@@ -467,6 +470,7 @@ videoElement.onclick = () => {
             loadComments(videoKey, videoData.email);
         });
     });
+});
 }
 const randomComments = [
   "Класне відео! 🎬👍",
