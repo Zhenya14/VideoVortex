@@ -794,7 +794,6 @@ bottom: 0;
 </div>
             <p id="user-info"></p>
 <p id="view">Дата народження: Завантаження...</p>
-<p id="gender">Стать: Завантаження...</p>
 	<div id="requests-container"></div>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
         <label>
@@ -828,13 +827,6 @@ bottom: 0;
         <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
 </div>
            <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW</label>
-<p>Експериментальні функції</p>
-<label>Видимість відео:</label>
-<select id="visibility-select">
-  <option value="all">Усім</option>
-  <option value="male">Лише чоловікам</option>
-  <option value="female">Лише жінкам</option>
-</select>
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
@@ -889,25 +881,6 @@ bottom: 0;
     <a href="#" id="video" onclick="video()">
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
-</div>
-<div id="gender-modal" style="
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(20px);
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-">
-  <div class="modal-content">
-    <h2>Оберіть вашу стать</h2>
-    <label><input type="radio" name="gender" value="male"> Чоловіча</label><br>
-    <label><input type="radio" name="gender" value="female"> Жіноча</label><br>
-    <label><input type="radio" name="gender" value="other"> Інше / не вказувати</label><br>
-    <button onclick="saveGender()">Зберегти</button>
-  </div>
 </div>
 <div id="birthdate-modal" style="
   display: none;
