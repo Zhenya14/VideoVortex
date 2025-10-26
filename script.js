@@ -321,10 +321,11 @@ alert("Сталася помилка при увімкненні функції 
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
-            // 🔹 Фільтрація за статтю користувача
+
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
+
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
@@ -565,7 +566,7 @@ const startTime = Date.now();
     const privateVideo = document.getElementById("private-checkbox").checked;
      const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
-    if (!videoTitle || !videoFile ) {
+    if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
@@ -612,9 +613,9 @@ const startTime = Date.now();
                         description: videoDescription,
                         views: 0,
                         private: privateVideo,
-                        domainRestrict: domainRestrict,             
+                        domainRestrict: domainRestrict,
                         nsfw: isNSFW,
-                        publishDate: currentDate,
+                        publishDate: currentDate
                     }).then(() => {
                         alert("Відео завантажено!");
                         loadVideos(); 
@@ -911,15 +912,14 @@ enablePushNotifications(user.uid);
     // Отримання даних користувача
     const uid = user.uid;
     database.ref("users/" + uid).once("value").then(snapshot => {
-    const userData = snapshot.val();
-    const birthStr = userData?.birthdate;
+        const userData = snapshot.val();
+        const birthStr = userData?.birthdate;
 
-    // Якщо не вказано дату народження або стать — показати вікно
-    if (!userData?.email || !birthStr) {
-        const modal = document.getElementById("birthdate-modal");
-        if (modal) modal.style.display = "flex";
-    }
-});
+        if (!userData?.email || !birthStr) {
+            const modal = document.getElementById("birthdate-modal");
+            if (modal) modal.style.display = "flex";
+        }
+
         // Обчислюємо вік
         if (birthStr) {
             let birthDate;
@@ -949,42 +949,6 @@ const avatarProfile = document.querySelector(".avatar");
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
 document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
 document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
-        // NSFW глобальний чекбокс
-        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-        const nsfwSlider = document.getElementById("slidernsfw");
-        const nsfwInfo = document.getElementById("information-nsfw");
-        const NSFW = document.getElementById("nsfw");
-
-        if (nsfwCheckbox) {
-            if (userAge < 18) {
-                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
-                nsfwCheckbox.checked = false;
-                nsfwCheckbox.disabled = true;
-                if (NSFW) NSFW.style.display = "none";
-                if (nsfwInfo) nsfwInfo.style.display = "block";
-            } else {
-                nsfwCheckbox.disabled = false;
-                if (NSFW) NSFW.style.display = "block";
-                if (nsfwInfo) nsfwInfo.style.display = "none";
-
-                if (!nsfwCheckbox.dataset.listenerAdded) {
-                    nsfwCheckbox.addEventListener("change", function () {
-                        showNSFW = this.checked;
-        loadVideos();
-                    });
-                    nsfwCheckbox.dataset.listenerAdded = "true";
-                }
-            }
-        }
-
-        // Після визначення віку завантажуємо відео
-        loadVideos();
-
-    }).catch(err => console.error("Помилка отримання даних користувача:", err));
-
-    updateUI(user);
-    toggleUploadVisibility();
-});
         // NSFW глобальний чекбокс
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
