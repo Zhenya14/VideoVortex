@@ -552,19 +552,20 @@ transform: scale(0.95); /* легке стиснення */
 }
 body.halloween {
   background: url('https://tickikids.ams3.cdn.digitaloceanspaces.com/z1.cache/gallery/activities/31203/image_5bd71b7f2e0287.38911859.jpg');
+  background-size: cover;        /* щоб займала весь екран */
+  background-repeat: no-repeat;
+  background-attachment: fixed;  /* фон "приклеєний" */
   color: #ff7518;
   transition: background 1s ease;
-  
-  /* Ефект руху */
-  animation: bodyShake 2s infinite ease-in-out;
+
+  /* Додаємо рух фону */
+  animation: backgroundMove 20s linear infinite;
 }
 
-@keyframes bodyShake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+@keyframes backgroundMove {
+  0% { background-position: 0 0; }
+  50% { background-position: 50px 20px; }
+  100% { background-position: 0 0; }
 }
 
 .halloween button {
