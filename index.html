@@ -914,21 +914,23 @@ bottom: 0;
 	</footer>
 
 	<script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
-  const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень
+  const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень, 11 = листопад
   const day = today.getDate();
 
   if (month === 10 && (day === 30 || day === 31)) {
-  activateHalloweenMode();
-}
+    activateHalloweenMode();
+  } else if (month === 11 && day === 1) {
+    deactivateHalloweenMode();
+  }
 });
 
 function activateHalloweenMode() {
   document.body.classList.add("halloween");
   console.log("🎃 Хелловінський режим активовано!");
 
-  // Додаємо літаючих кажанів
+  // Додаємо літаючих кажанів 🦇
   for (let i = 0; i < 5; i++) {
     const bat = document.createElement("div");
     bat.className = "bat";
@@ -938,52 +940,119 @@ function activateHalloweenMode() {
     bat.style.left = Math.random() * 100 + "%";
     bat.style.fontSize = Math.random() * 30 + 20 + "px";
     bat.style.opacity = 0.8;
+    bat.style.zIndex = 9999;
     document.body.appendChild(bat);
   }
-document.getElementById("agree-btn").style.backgroundColor = "orange";
-document.getElementById("agree-btn").style.color = "black";
-document.getElementById("button-name").style.backgroundColor = "orange";
-document.getElementById("button-name").style.color = "black";
-document.getElementById("button-supername").style.backgroundColor = "orange";
-document.getElementById("button-supername").style.color = "black";
-document.getElementById("save-name").style.backgroundColor = "orange";
-document.getElementById("save-name").style.color = "black";
-document.getElementById("save-supername").style.backgroundColor = "orange";
-document.getElementById("save-supername").style.color = "black";
-document.getElementById("delete-account").style.backgroundColor = "orange";
-document.getElementById("delete-account").style.color = "black";
-document.getElementById("upload-button").style.backgroundColor = "orange";
-document.getElementById("upload-button").style.color = "black";
-document.getElementById("upload-photo-button").style.backgroundColor = "orange";
-document.getElementById("upload-photo-button").style.color = "black";
-document.getElementById("edit-button").style.backgroundColor = "orange";
-document.getElementById("edit-button").style.color = "black";
-const profileIcon = document.getElementById("account-link");
-  if (profileIcon) profileIcon.innerHTML = `🕸️ <span class="icon-text" id="email">Завантаження...</span>`;
-    const logoutIcon = document.getElementById("logout-link");
-  if (logoutIcon) logoutIcon.innerHTML = `🚪 <span class="icon-text">Вийти</span>`;
-    const uploadIcon = document.getElementById("upload-link");
-  if (uploadIcon) uploadIcon.innerHTML = `🎃 <span class="icon-text">Завантажити відео</span>`;
-    const uploadPhotoIcon = document.getElementById("upload-link-photo");
-  if (uploadPhotoIcon) uploadPhotoIcon.innerHTML = `🎃 <span class="icon-text">Завантажити фото</span>`;
-    const postIcon = document.getElementById("post");
-  if (postIcon) postIcon.innerHTML = `👻 <span class="icon-text">Дописи</span>`;
-    const videoIcon = document.getElementById("video");
-  if (videoIcon) videoIcon.innerHTML = `🦇 <span class="icon-text">Відео</span>`;
-    const smartuploadIcon = document.getElementById("smart-upload-link");
-  if (smartuploadIcon) smartuploadIcon.innerHTML = `🎃 <span style="margin-left: 5px">Завантажити відео</span>`;
-    const smartuploadPhotoIcon = document.getElementById("smart-upload-link-photo");
-  if (smartuploadPhotoIcon) smartuploadPhotoIcon.innerHTML = `🎃 <span style="margin-left: 5px">Завантажити фото</span>`;
-    const smartpostIcon = document.getElementById("smart-post");
-  if (smartpostIcon) smartpostIcon.innerHTML = `👻 <span style="margin-left: 5px">Дописи</span>`;
-    const smartvideoIcon = document.getElementById("smart-video");
-  if (smartvideoIcon) smartvideoIcon.innerHTML = `🦇 <span style="margin-left: 5px">Відео</span>`;
-  // Додаємо туманний ефект
+
+  // Кольори кнопок
+  const buttonIds = [
+    "agree-btn",
+    "button-name",
+    "button-supername",
+    "save-name",
+    "save-supername",
+    "delete-account",
+    "upload-button",
+    "upload-photo-button",
+    "edit-button"
+  ];
+  buttonIds.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.dataset.originalBg = btn.style.backgroundColor;
+      btn.dataset.originalColor = btn.style.color;
+      btn.style.backgroundColor = "orange";
+      btn.style.color = "black";
+    }
+  });
+
+  // Іконки меню
+  const icons = {
+    "account-link": `🕸️ <span class="icon-text" id="email">Завантаження...</span>`,
+    "logout-link": `🚪 <span class="icon-text">Вийти</span>`,
+    "upload-link": `🎃 <span class="icon-text">Завантажити відео</span>`,
+    "upload-link-photo": `🎃 <span class="icon-text">Завантажити фото</span>`,
+    "post": `👻 <span class="icon-text">Дописи</span>`,
+    "video": `🦇 <span class="icon-text">Відео</span>`,
+    "smart-upload-link": `🎃 <span style="margin-left:5px">Завантажити відео</span>`,
+    "smart-upload-link-photo": `🎃 <span style="margin-left:5px">Завантажити фото</span>`,
+    "smart-post": `👻 <span style="margin-left:5px">Дописи</span>`,
+    "smart-video": `🦇 <span style="margin-left:5px">Відео</span>`
+  };
+
+  for (const [id, html] of Object.entries(icons)) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.dataset.originalHTML = el.innerHTML;
+      el.innerHTML = html;
+    }
+  }
+
+  // Туман
   const fog = document.createElement("div");
   fog.className = "fog";
+  fog.style.position = "fixed";
+  fog.style.top = "0";
+  fog.style.left = "0";
+  fog.style.width = "100%";
+  fog.style.height = "100%";
+  fog.style.background =
+    "radial-gradient(circle at 50% 50%, rgba(255,165,0,0.1), rgba(0,0,0,0.8))";
+  fog.style.pointerEvents = "none";
+  fog.style.zIndex = 999;
   document.body.appendChild(fog);
 }
-  </script>
+
+// 🧹 Повернення дизайну за замовчуванням (1 листопада)
+function deactivateHalloweenMode() {
+  console.log("🎃 Хелловінський режим вимкнено!");
+  document.body.classList.remove("halloween");
+
+  // Прибираємо кажанів і туман
+  document.querySelectorAll(".bat, .fog").forEach(el => el.remove());
+
+  // Повертаємо звичайні кольори кнопок
+  const buttonIds = [
+    "agree-btn",
+    "button-name",
+    "button-supername",
+    "save-name",
+    "save-supername",
+    "delete-account",
+    "upload-button",
+    "upload-photo-button",
+    "edit-button"
+  ];
+  buttonIds.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn && btn.dataset.originalBg) {
+      btn.style.backgroundColor = btn.dataset.originalBg;
+      btn.style.color = btn.dataset.originalColor;
+    }
+  });
+
+  // Повертаємо звичайні іконки
+  const allIcons = [
+    "account-link",
+    "logout-link",
+    "upload-link",
+    "upload-link-photo",
+    "post",
+    "video",
+    "smart-upload-link",
+    "smart-upload-link-photo",
+    "smart-post",
+    "smart-video"
+  ];
+
+  allIcons.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.dataset.originalHTML) {
+      el.innerHTML = el.dataset.originalHTML;
+    }
+  });
+}
+</script>
   <script>
 	  let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
