@@ -919,9 +919,9 @@ bottom: 0;
   const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень
   const day = today.getDate();
 
-  if (month === 10 && day === 7) {
-    activateHalloweenMode();
-  }
+  if (month === 10 && (day === 30 || day === 31)) {
+  activateHalloweenMode();
+}
 });
 
 function activateHalloweenMode() {
