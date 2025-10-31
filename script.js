@@ -1142,7 +1142,12 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
+const uid = firebase.auth().currentUser.uid;
 
+    // Беремо дані користувача з Firebase
+    database.ref("users/" + uid).once("value").then(snapshot => {
+        const userData = snapshot.val();
+        const photoAuthor = `${userData.name} ${userData.supername}`; // автоматично
     if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
@@ -1176,13 +1181,14 @@ function uploadPhoto() {
                         document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
                     });
-                });
             }
         );
-    } else {
-        alert("Будь ласка, виберіть фото для завантаження.");
-    }
+    }).catch(err => {
+        console.error("Помилка при отриманні даних користувача:", err);
+        alert("Не вдалося отримати дані профілю.");
+    });
 }
+
 // Завантаження налаштувань
 function loadSettings() {
     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
