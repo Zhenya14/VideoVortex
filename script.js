@@ -1142,47 +1142,63 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const uid = firebase.auth().currentUser.uid;
+
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        alert("Спочатку увійдіть у систему!");
+        return;
+    }
+
+    const uid = user.uid;
+    const currentUserEmail = user.email;
 
     // Беремо дані користувача з Firebase
     database.ref("users/" + uid).once("value").then(snapshot => {
         const userData = snapshot.val();
-        const photoAuthor = `${userData.name} ${userData.supername}`; // автоматично
-    if (photoFile) {
-        const storageRef = storage.ref(`photos/${photoFile.name}`);
-        const uploadTask = storageRef.put(photoFile);
+        const photoAuthor = `${userData.name || ""} ${userData.supername || ""}`.trim(); // автоматично
 
-    uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                uploadProgress.value = progress;
-                progressText.innerText = `${Math.round(progress)}%`;
-                progressContainer.style.display = "block";
-            }, 
-            (error) => {
-                alert("Сталася помилка при завантаженні фото." + error);
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    // Get current date
-                    const currentDate = new Date().toLocaleDateString();
+        if (photoFile) {
+            // Додаємо унікальне ім’я файлу (часовий штамп)
+            const storageRef = storage.ref(`photos/${Date.now()}_${photoFile.name}`);
+            const uploadTask = storageRef.put(photoFile);
 
-                    // Save video info to database
-                    database.ref("photos").push({
-                        title: photoTitle,
-                        author: photoAuthor,
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: photoDescription,
-                        publishDate: currentDate // Save the publish date
-                    }).then(() => {
-                        alert("Фото завантажено!");
-                        loadPhotos(); // Reload videos
-                        document.getElementById("upload-photo-form").reset();
-                        progressContainer.style.display = "none"; // Hide progress
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploadProgress.value = progress;
+                    progressText.innerText = `${Math.round(progress)}%`;
+                    progressContainer.style.display = "block";
+                }, 
+                (error) => {
+                    alert("Сталася помилка при завантаженні фото: " + error.message);
+                    console.error("Помилка:", error);
+                    progressContainer.style.display = "none";
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        // Поточна дата
+                        const currentDate = new Date().toLocaleDateString();
+
+                        // Зберігаємо дані фото у базу
+                        database.ref("photos").push({
+                            title: photoTitle,
+                            author: photoAuthor,
+                            email: currentUserEmail,
+                            url: downloadURL,
+                            description: photoDescription,
+                            publishDate: currentDate
+                        }).then(() => {
+                            alert("Фото завантажено!");
+                            loadPhotos(); // Оновлюємо список фото
+                            document.getElementById("upload-photo-form").reset();
+                            progressContainer.style.display = "none"; // Ховаємо прогрес
+                            uploadProgress.value = 0;
+                            progressText.innerText = "0%";
+                        });
                     });
-            }
-        );
+                }
+            );
+        }
     }).catch(err => {
         console.error("Помилка при отриманні даних користувача:", err);
         alert("Не вдалося отримати дані профілю.");
