@@ -933,7 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень, 11 = листопад
   const day = today.getDate();
 
-  if (month === 10 && (day === 30 || day === 31)) || (month === 11 && day === 1) {
+  if ((month === 10 && (day === 30 || day === 31)) || (month === 11 && day === 1)) {
     activateHalloweenMode();
   } else if (month === 11 && day === 2) {
     deactivateHalloweenMode();
