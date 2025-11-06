@@ -19,10 +19,13 @@ const messaging = firebase.messaging();
 // ==========================
 // Фонові push повідомлення
 // ==========================
-messaging.onBackgroundMessage(function(payload) {
+messaging.setBackgroundMessageHandler(function (payload) {
   console.log('[SW] Фонове повідомлення:', payload);
   const { title, body, icon } = payload.notification;
-  self.registration.showNotification(title, { body, icon: icon || "/VideoVortex_logo.ico" });
+  return self.registration.showNotification(title, {
+    body,
+    icon: icon || "/VideoVortex_logo.ico",
+  });
 });
 
 // ==========================
