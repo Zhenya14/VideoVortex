@@ -25,6 +25,11 @@
     navigator.serviceWorker.register("service-worker.js")
       .then(() => console.log("✅ SW зареєстровано"))
       .catch(err => console.error("❌ Помилка SW:", err));
+
+navigator.serviceWorker.register("/firebase-messaging-sw.js")
+      .then(() => console.log("✅ Firebase SW зареєстровано"))
+      .catch(err => console.error("❌ Firebase SW помилка:", err));
+  }
   }
 </script>
 	<script>
