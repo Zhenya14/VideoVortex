@@ -1,4 +1,40 @@
-// Генерація сніжинок
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();  // Забираємо стандартний банер
+  deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
+  installBtn.style.display = 'flex'; // Показуємо кнопку
+});
+
+installBtn.addEventListener('click', async () => {
+  installBtn.style.display = 'none'; // Ховаємо кнопку після кліку
+  if (deferredPrompt) {
+    deferredPrompt.prompt();          // Показуємо системний діалог встановлення
+    const choiceResult = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    console.log('Встановлення: ', choiceResult.outcome);
+  }
+});
+function showRulesModal() {
+  const modal = document.getElementById("rules-update-modal");
+  const lastAccepted = localStorage.getItem("rules_version");
+  const currentVersion = "2025-10";
+
+  if (lastAccepted !== currentVersion) {
+    modal.style.display = "flex";
+  }
+}
+
+function acceptRulesUpdate() {
+  localStorage.setItem("rules_version", "2025-10");
+  document.getElementById("rules-update-modal").style.display = "none";
+}
+
+window.addEventListener("load", showRulesModal);
+  </script>
+    <script>
+      // Генерація сніжинок
     // function createSnowflake() {
     //     const snowflake = document.createElement('div');
     //     snowflake.classList.add('snowflake');
@@ -107,7 +143,7 @@ messaging.onMessage((payload) => {
   new Notification(title, { body, icon });
 });
 
-        document.getElementById("auth-link").onclick = function() {
+         document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
             document.getElementById("register-form").style.display = "none";
@@ -119,14 +155,14 @@ messaging.onMessage((payload) => {
             document.getElementById("auth-form").style.display = "none";
         };
         document.getElementById("account-link").onclick = function() {
-           if (auth.currentUser) {
-            const accountForm = document.getElementById("account-form");
-            accountForm.style.display = accountForm.style.display === "none" ? "block" : "none";
-            document.getElementById("upload-form").style.display = "none";
-          } else {
-                alert("Будь ласка, увійдіть, щоб подивитися інформацію про акаунт.");
-            }
-        };
+if (auth.currentUser) {
+const accountForm = document.getElementById("account-form");
+accountForm.style.display = accountForm.style.display === "none" ? "block" : "none";
+document.getElementById("upload-form").style.display = "none";
+} else {
+alert("Будь ласка, увійдіть, щоб подивитися інформацію про акаунт.");
+}
+};
         document.getElementById("upload-link").onclick = function() {
             if (auth.currentUser) {
                 const uploadVideoForm = document.getElementById("upload-form");
@@ -310,57 +346,60 @@ alert("Сталася помилка при увімкненні функції 
 }
     });
 
- function loadVideos() {
+function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
+    const currentGender = window.userGender || "Усі"; // Стать користувача або "Усі"
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
+            // 🔹 1. ФІЛЬТРИ ВІДОБРАЖЕННЯ
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
+            // 🔹 3. СТВОРЕННЯ ВІДЕО
             const videoElement = document.createElement("video");
             videoElement.src = videoData.url;
             videoElement.classList.add("video-item");
 
-            // Коментарі
+            // 🔹 4. Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
-if (videoData.disabledComments == true) {
-commentSection.innerHTML = `💬 Коментарі вимкнені для цього відео.`;
-} else {
-            commentSection.innerHTML = `
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <div class="comment-section" id="comment-section-${videoKey}">
-                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
-                    <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
-                    <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-                        <i class="material-icons">send</i>
-                    </button>
-                    <label id="private-checkbox-${videoKey}" style="display: none;">
-                        <input type="checkbox" id="private-comment-${videoKey}">
-                        Приватний
-                    </label>
-                </div>
-            `;
-}
-videoElement.onclick = () => {
 
+            if (videoData.disabledComments === true) {
+                commentSection.innerHTML = `💬 Коментарі вимкнені для цього відео.`;
+            } else {
+                commentSection.innerHTML = `
+                    <h3 style="color: white; text-align: left;">Коментарі:</h3>
+                    <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+                    <div class="comment-section" id="comment-section-${videoKey}">
+                        <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
+                        <input type="text" id="comment-input-${videoKey}" class="comment-input" placeholder="Ваш коментар">
+                        <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+                            <i class="material-icons">send</i>
+                        </button>
+                        <label id="private-checkbox-${videoKey}" style="display: none;">
+                            <input type="checkbox" id="private-comment-${videoKey}">
+                            Приватний
+                        </label>
+                    </div>
+                `;
+            }
+
+            // 🔹 5. Обробка кліку по відео
+            videoElement.onclick = () => {
                 const viewedKey = `viewed_${videoKey}`;
                 if (!localStorage.getItem(viewedKey)) {
                     const newViewCount = (videoData.views || 0) + 1;
                     database.ref("videos/" + videoKey).update({ views: newViewCount })
-                        .then(() => {
-                            localStorage.setItem(viewedKey, true);
-                        })
+                        .then(() => localStorage.setItem(viewedKey, true))
                         .catch(error => console.error("Помилка оновлення переглядів:", error));
                 }
 
@@ -377,7 +416,7 @@ videoElement.onclick = () => {
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
-            // Приватні коментарі
+            // 🔹 6. Приватні коментарі (віковий фільтр)
             const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
             const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
             if (privateComment && privateCheckbox) {
@@ -386,13 +425,13 @@ videoElement.onclick = () => {
                 privateCheckbox.disabled = !showPrivate;
             }
 
-            // Інформація про відео
+            // 🔹 7. Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
-            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "???";
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
             avatar.onclick = () => {
                 const infoParams = new URLSearchParams({
                     avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
@@ -403,15 +442,16 @@ videoElement.onclick = () => {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const privateLabel = videoData.private ? " <span style='color: orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? " <span style='color: red;'> NSFW</span>" : "";
-            detailsElement.innerText = `
-                ${videoData.title}${privateLabel}${nsfwLabel}
-                Автор: ${videoData.author || "Анонім"}
-                Переглядів: ${videoData.views || 0}
+            const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
+            detailsElement.innerHTML = `
+                <strong>${videoData.title}</strong>${privateLabel}${nsfwLabel}<br>
+                Автор: ${videoData.author || "Анонім"}<br>
+                Переглядів: ${videoData.views || 0}<br>
                 Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
 
+            // 🔹 8. Меню дій
             const moreBtn = document.createElement("button");
             moreBtn.classList.add("more-btn");
             moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
@@ -422,27 +462,29 @@ videoElement.onclick = () => {
 
             if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deleteButton = document.createElement("button");
-                deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">delete</i>Видалити</a>`;
+                deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">
+                    <i class="material-icons">delete</i>Видалити</a>`;
                 deleteButton.style.backgroundColor = "red";
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
                 deleteButton.addEventListener("click", () => {
-                actionMenu.style.display = "none";
-            });
+                    actionMenu.style.display = "none";
+                });
                 actionMenu.appendChild(deleteButton);
             }
 
             if (currentUserEmail === videoData.email) {
                 const editButton = document.createElement("button");
-                editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;"><i class="material-icons">edit</i>Редагувати</a>`;
+                editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">
+                    <i class="material-icons">edit</i>Редагувати</a>`;
                 editButton.style.backgroundColor = "blue";
                 editButton.style.color = "white";
                 editButton.style.marginTop = "10px";
                 editButton.onclick = () => editVideo(videoKey, videoData);
                 editButton.addEventListener("click", () => {
-                actionMenu.style.display = "none";
-            });
+                    actionMenu.style.display = "none";
+                });
                 actionMenu.appendChild(editButton);
             }
 
@@ -455,6 +497,7 @@ videoElement.onclick = () => {
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
 
+            // 🔹 9. Додаємо все у контейнер
             const container = document.createElement("div");
             container.classList.add("video-container");
             container.appendChild(videoElement);
@@ -463,6 +506,7 @@ videoElement.onclick = () => {
 
             videoGallery.appendChild(container);
 
+            // 🔹 10. Завантаження коментарів
             loadComments(videoKey, videoData.email);
         });
     });
@@ -894,9 +938,11 @@ function updateUI(user) {
 
 auth.onAuthStateChanged((user) => {
     if (!user) return;
-enablePushNotifications(user.uid);
+
+    enablePushNotifications(user.uid);
     currentUserEmail = user.email;
-    // Перевірка email
+
+    // 🔹 Перевірка підтвердження email
     if (!user.emailVerified) {
         blockScreenForVerification();
         const verificationInterval = setInterval(() => {
@@ -909,18 +955,19 @@ enablePushNotifications(user.uid);
         }, 10000);
     }
 
-    // Отримання даних користувача
+    // 🔹 Отримання даних користувача
     const uid = user.uid;
     database.ref("users/" + uid).once("value").then(snapshot => {
         const userData = snapshot.val();
         const birthStr = userData?.birthdate;
 
+        // 🔹 Якщо немає email або дати народження — показати модальне вікно
         if (!userData?.email || !birthStr) {
             const modal = document.getElementById("birthdate-modal");
             if (modal) modal.style.display = "flex";
         }
 
-        // Обчислюємо вік
+        // 🔹 Обчислення віку
         if (birthStr) {
             let birthDate;
             const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
@@ -940,16 +987,17 @@ enablePushNotifications(user.uid);
             }
         }
 
-        // Відображення даних користувача
+        // 🔹 Оновлення UI
         const viewBirthdate = document.getElementById("view");
         if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr || "не вказано"}`;
         const emailEl = document.getElementById("email");
-const avatarProfile = document.querySelector(".avatar");
-       avatarProfile.innerText = userData.name ? userData.name.charAt(0).toUpperCase() : "?";
+        const avatarProfile = document.querySelector(".avatar");
+        if (avatarProfile) avatarProfile.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
-document.getElementById("name").innerHTML = `Ім'я: ${userData?.name}`;
-document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
-        // NSFW глобальний чекбокс
+        document.getElementById("name").innerHTML = `Ім'я: ${userData?.name || ""}`;
+        document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
+
+        // 🔹 Обробка NSFW фільтру
         const nsfwCheckbox = document.getElementById('show-nsfw-videos');
         const nsfwSlider = document.getElementById("slidernsfw");
         const nsfwInfo = document.getElementById("information-nsfw");
@@ -970,14 +1018,14 @@ document.getElementById("supername").innerHTML = `Прізвище: ${userData?.
                 if (!nsfwCheckbox.dataset.listenerAdded) {
                     nsfwCheckbox.addEventListener("change", function () {
                         showNSFW = this.checked;
-        loadVideos();
+                        loadVideos();
                     });
                     nsfwCheckbox.dataset.listenerAdded = "true";
                 }
             }
         }
 
-        // Після визначення віку завантажуємо відео
+        // 🔹 Завантаження відео з фільтром за статтю
         loadVideos();
 
     }).catch(err => console.error("Помилка отримання даних користувача:", err));
@@ -1143,68 +1191,46 @@ function uploadPhoto() {
         return;
     }
 
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        alert("Спочатку увійдіть у систему!");
-        return;
-    }
+    if (photoFile) {
+        const storageRef = storage.ref(`photos/${photoFile.name}`);
+        const uploadTask = storageRef.put(photoFile);
 
-    const uid = user.uid;
-    const currentUserEmail = user.email;
+    uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                uploadProgress.value = progress;
+                progressText.innerText = `${Math.round(progress)}%`;
+                progressContainer.style.display = "block";
+            }, 
+            (error) => {
+                alert("Сталася помилка при завантаженні фото." + error);
+            }, 
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    // Get current date
+                    const currentDate = new Date().toLocaleDateString();
 
-    // Беремо дані користувача з Firebase
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const photoAuthor = `${userData.name || ""} ${userData.supername || ""}`.trim(); // автоматично
-
-        if (photoFile) {
-            // Додаємо унікальне ім’я файлу (часовий штамп)
-            const storageRef = storage.ref(`photos/${Date.now()}_${photoFile.name}`);
-            const uploadTask = storageRef.put(photoFile);
-
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    uploadProgress.value = progress;
-                    progressText.innerText = `${Math.round(progress)}%`;
-                    progressContainer.style.display = "block";
-                }, 
-                (error) => {
-                    alert("Сталася помилка при завантаженні фото: " + error.message);
-                    console.error("Помилка:", error);
-                    progressContainer.style.display = "none";
-                }, 
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        // Поточна дата
-                        const currentDate = new Date().toLocaleDateString();
-
-                        // Зберігаємо дані фото у базу
-                        database.ref("photos").push({
-                            title: photoTitle,
-                            author: photoAuthor,
-                            email: currentUserEmail,
-                            url: downloadURL,
-                            description: photoDescription,
-                            publishDate: currentDate
-                        }).then(() => {
-                            alert("Фото завантажено!");
-                            loadPhotos(); // Оновлюємо список фото
-                            document.getElementById("upload-photo-form").reset();
-                            progressContainer.style.display = "none"; // Ховаємо прогрес
-                            uploadProgress.value = 0;
-                            progressText.innerText = "0%";
-                        });
+                    // Save video info to database
+                    database.ref("photos").push({
+                        title: photoTitle,
+                        author: photoAuthor,
+                        email: currentUserEmail,
+                        url: downloadURL,
+                        description: photoDescription,
+                        publishDate: currentDate // Save the publish date
+                    }).then(() => {
+                        alert("Фото завантажено!");
+                        loadPhotos(); // Reload videos
+                        document.getElementById("upload-photo-form").reset();
+                        progressContainer.style.display = "none"; // Hide progress
                     });
-                }
-            );
-        }
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+                });
+            }
+        );
+    } else {
+        alert("Будь ласка, виберіть фото для завантаження.");
+    }
 }
-
 // Завантаження налаштувань
 function loadSettings() {
     const savedMaxTime = localStorage.getItem('maxTimeInMinutes');
