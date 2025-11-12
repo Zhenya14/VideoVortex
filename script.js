@@ -1,39 +1,4 @@
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();  // Забираємо стандартний банер
-  deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
-  installBtn.style.display = 'flex'; // Показуємо кнопку
-});
-
-installBtn.addEventListener('click', async () => {
-  installBtn.style.display = 'none'; // Ховаємо кнопку після кліку
-  if (deferredPrompt) {
-    deferredPrompt.prompt();          // Показуємо системний діалог встановлення
-    const choiceResult = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    console.log('Встановлення: ', choiceResult.outcome);
-  }
-});
-function showRulesModal() {
-  const modal = document.getElementById("rules-update-modal");
-  const lastAccepted = localStorage.getItem("rules_version");
-  const currentVersion = "2025-10";
-
-  if (lastAccepted !== currentVersion) {
-    modal.style.display = "flex";
-  }
-}
-
-function acceptRulesUpdate() {
-  localStorage.setItem("rules_version", "2025-10");
-  document.getElementById("rules-update-modal").style.display = "none";
-}
-
-window.addEventListener("load", showRulesModal);
-  </script>
-    <script>
       // Генерація сніжинок
     // function createSnowflake() {
     //     const snowflake = document.createElement('div');
