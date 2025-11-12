@@ -2,7 +2,6 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="UTF-8">
     <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
@@ -25,10 +24,6 @@
     navigator.serviceWorker.register("service-worker.js")
       .then(() => console.log("✅ SW зареєстровано"))
       .catch(err => console.error("❌ Помилка SW:", err));
-
-navigator.serviceWorker.register("/VideoVortex/firebase-messaging-sw.js")
-      .then(() => console.log("✅ Firebase SW зареєстровано"))
-      .catch(err => console.error("❌ Firebase SW помилка:", err));
   }
 </script>
 	<script>
@@ -39,7 +34,9 @@ navigator.serviceWorker.register("/VideoVortex/firebase-messaging-sw.js")
   gtag('config', 'G-JQTQ0P69EF');
 </script>
 <style>
-
+#photo-file, #video-file {
+  display: none;
+}
 /* Стиль повзунка */
 .switch {
   position: relative;
@@ -300,16 +297,68 @@ border: 2px solid #333333;
         }
         button:hover { 
             border-color: #f472b6; /* підсвічування рамки блакитним */
-  
+
 box-shadow: 0 0 15px #f472b6; /* світіння */
-  
+
 transform: translateY(-2px); /* легке підняття */
         }
 button:active {
 border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
-  
+
 box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
-  
+
+transform: scale(0.95); /* легке стиснення */
+}
+.photo-label { 
+            display: inline-block;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        .photo-label:hover { 
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.photo-label:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.video-label { 
+            display: inline-block;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        .video-label:hover { 
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.video-label:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
 transform: scale(0.95); /* легке стиснення */
 }
         .video-container {
@@ -328,7 +377,7 @@ transform: scale(0.95); /* легке стиснення */
             color: #b0bec5; 
             padding: 5px;
         }
-	    .video-comment {
+            .video-comment {
     border-radius: 20px;
     margin-left: 0.5px;
     display: inline-table;
@@ -427,14 +476,14 @@ border: 2px solid #333333;
 #delete-account:hover {
 border-color: red;
 box-shadow: 0 0 15px red; /* світіння */
-  
+
 transform: translateY(-2px);
 }
 #delete-account:active {
 border-color: red; /* рамка рожевого кольору при натисканні */
-  
+
 box-shadow: 0 0 10px red; /* світіння при натисканні */
-  
+
 transform: scale(0.95); /* легке стиснення */
 }
 .nsfw-label {
@@ -494,16 +543,16 @@ display: none;
 
 .menu a:hover {
     border-color: #f472b6; /* підсвічування рамки блакитним */
-  
+
 box-shadow: 0 0 15px #f472b6; /* світіння */
-  
+
 transform: translateY(-2px); /* легке підняття */
         }
 .menu a:active {
 border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
-  
+
 box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
-  
+
 transform: scale(0.95); /* легке стиснення */
 }
 .content {
@@ -519,7 +568,7 @@ transform: scale(0.95); /* легке стиснення */
   margin-left: 240px;
 }
 #open-menu {
-	display: flex;
+        display: flex;
 }
 .action-menu {
 bottom: 9%;
@@ -546,9 +595,9 @@ border-color: red; /* підсвічування рамки червоним */
 }
 .action-menu .delete-button:active {
 border-color: red; /* рамка рожевого кольору при натисканні */
-  
+
 box-shadow: 0 0 10px red; /* світіння при натисканні */
-  
+
 transform: scale(0.95); /* легке стиснення */
 }
 #photo-container {
@@ -639,22 +688,22 @@ display: flex;
         }
         nav a:hover {
             border-color: #f472b6; /* підсвічування рамки блакитним */
-  
+
 box-shadow: 0 0 15px #f472b6; /* світіння */
-  
+
 transform: translateY(-2px); /* легке підняття */
         }
 nav a:active {
 border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
-  
+
 box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
-  
+
 transform: scale(0.95); /* легке стиснення */
 }
         .icon-text {
             margin-left: 5px;
         }
-        
+
         @media (max-width: 768px) {
             .icon-text {
                 display: none;
@@ -668,7 +717,7 @@ transform: scale(0.95); /* легке стиснення */
     #smart-upload-link {
         display: none;
     }
-		.modal {
+                .modal {
   display: none;
   position: fixed;
   left: 0;
@@ -706,7 +755,7 @@ text-decoration: none;
   transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
 
-	.smart-menu {
+        .smart-menu {
     display: flex;
 bottom: 0;
     left: 0;
@@ -749,7 +798,7 @@ bottom: 0;
  #nsfw-toggle {
         display: none;
 }
-	    }
+            }
     </style>
 </head>
 <body> 
@@ -759,7 +808,8 @@ bottom: 0;
             <a href="#" id="open-menu" onclick="toggleSidebar()">
     <i class="material-icons">menu</i>
 </a>
-            <a href="index.html"><img src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+<img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
+            <a href="index.html">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup><sup><div id="timer"></div></sup></a>
         </div>
         <div style="display: flex; gap: 15px; margin-left: auto;">
@@ -811,7 +861,7 @@ bottom: 0;
 <button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
 </div>
             <p id="user-info"></p>
-<p id="view">Дата народження: Невідома</p>
+<p id="view">Дата народження: Завантаження...</p>
 	<div id="requests-container"></div>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
         <label>
@@ -836,15 +886,24 @@ bottom: 0;
             <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
-            <input type="file" id="video-file" accept="video/*"> 
+        <p id="video-file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
+  <label for="video-file" class="video-label">
+  <i class="material-icons">cloud_upload</i> Завантажити відео
+</label>
+<input type="file" id="video-file" accept="video/*">
+<br>
      <span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>	
+     <br>
+     <br>
    <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
 <div id="domain-restrict-container" style="display: none; margin-top: 10px;">
-    
+    <br>
         <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
         <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
 </div>
+<br>
            <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW</label>
+           <br>
             <div id="progress-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
@@ -866,13 +925,17 @@ bottom: 0;
             <h2>Завантажити фото</h2>
             <input type="text" id="photo-title" placeholder="Назва Фото">
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
-            <input type="file" id="photo-file" accept="image/*"> 
-            
+            <p id="file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
+<label for="photo-file" class="photo-label">
+  <i class="material-icons">cloud_upload</i> Завантажити фото
+</label>
+<input type="file" id="photo-file" accept="image/*">
+            <br>
             <div id="progress-photo-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-progress" value="0" max="100"></progress>
                 <span id="progress-text">0%</span>
             </div>
-            <button id="upload-photo-button" onclick="uploadPhoto()">Завантажити</button>
+            <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
 	<div  class="smart-menu">
 
@@ -917,6 +980,7 @@ bottom: 0;
   <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
   <button onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
 </div>
+
     <div class="container" id="video-container">
         <div class="video-container" id="video-gallery"></div>
          
@@ -930,8 +994,25 @@ bottom: 0;
 		<h3>Версія додатка:</h3>
 		<p>3.0.0</p>
 	</footer>
-
 	<script>
+const fileInput = document.getElementById("photo-file");
+const fileName = document.getElementById("file-name");
+
+fileInput.addEventListener("change", () => {
+  const name = fileInput.files.length ? fileInput.files[0].name : "Файл не вибрано";
+  fileName.textContent = "📸 " + name;
+});
+</script>
+	<script>
+const videoInput = document.getElementById("video-file");
+const videofileName = document.getElementById("video-file-name");
+
+videoInput.addEventListener("change", () => {
+  const name = videoInput.files.length ? videoInput.files[0].name : "Файл не вибрано";
+  videofileName.textContent = "📽 " + name;
+});
+</script>
+	        <script>
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень, 11 = листопад
@@ -1071,42 +1152,222 @@ function deactivateHalloweenMode() {
   });
 }
 </script>
-  <script>
-	  let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();  // Забираємо стандартний банер
-  deferredPrompt = e;   // Зберігаємо подію для виклику пізніше
-  installBtn.style.display = 'flex'; // Показуємо кнопку
-});
-
-installBtn.addEventListener('click', async () => {
-  installBtn.style.display = 'none'; // Ховаємо кнопку після кліку
-  if (deferredPrompt) {
-    deferredPrompt.prompt();          // Показуємо системний діалог встановлення
-    const choiceResult = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    console.log('Встановлення: ', choiceResult.outcome);
+    <!-- 🔰 РЕЖИМ ДЛЯ ЛЮДЕЙ ІЗ ЗМР -->
+<script>
+// === Надійна заміна текстів (вузли + атрибути) для ЗМР-режиму ===
+document.addEventListener("DOMContentLoaded", () => {
+  // 🔘 Додаємо перемикач у налаштування акаунта
+  const accountForm = document.getElementById("account-form");
+  if (accountForm && !document.getElementById("zmr-mode-toggle")) {
+    const zmrToggleContainer = document.createElement("div");
+    zmrToggleContainer.innerHTML = `
+      <label style="display:flex;align-items:center;gap:10px;margin-top:15px;">
+        <span>Режим для людей із ЗМР</span>
+        <label class="switch">
+          <input type="checkbox" id="zmr-mode-toggle">
+          <span class="slider round"></span>
+        </label>
+      </label>`;
+    accountForm.appendChild(zmrToggleContainer);
   }
-});
-function showRulesModal() {
-  const modal = document.getElementById("rules-update-modal");
-  const lastAccepted = localStorage.getItem("rules_version");
-  const currentVersion = "2025-10";
 
-  if (lastAccepted !== currentVersion) {
-    modal.style.display = "flex";
+  const toggle = document.getElementById("zmr-mode-toggle");
+  if (!toggle) return;
+
+  // Відновлення попереднього стану
+  const saved = localStorage.getItem("zmrMode") === "true";
+  toggle.checked = saved;
+  applyZMRMode(saved);
+
+  toggle.addEventListener("change", function() {
+    const enabled = this.checked;
+    localStorage.setItem("zmrMode", enabled);
+    applyZMRMode(enabled);
+  });
+});
+// Якщо вже є словник, можна його оновити тут
+const simpleTextMap = {
+  "Завантажити відео": "Додати відео",
+  "Завантажити фото": "Додати фото",
+  "Інформація про акаунт": "Мій профіль",
+  "Видалити акаунт": "Видалити профіль",
+  "Редагувати відео": "Змінити відео",
+  "Назва відео": "Назва",
+  "Опис відео": "Опис",
+  "Вийти": "Вихід",
+  "Реєстрація": "Створити акаунт",
+  "Увійти": "Вхід",
+  "Дописи": "Фото",
+  "Коментарі вимкнені для цього відео": "Відгуки вимкнено",
+  "Вимкнути коментарі": "Вимкнути відгуки",
+  "Видалений акаунт": "Видалений профіль",
+  "Дата народження": "День нар.",
+  "Стать": "Стать",
+  "Зберегти налаштування": "ОК",
+  "Зберегти": "OK",
+  "Зрозуміло": "Добре",
+  "Показувати відео позначенні як NSFW": "Дорослі відео",
+  "Налаштування обмеження екранного часу": "Обмеження часу",
+   "Коментарі": "Відгуки",
+  "Вкажіть, скільки хвилин на день ви хочете бути на сторінці:": "Скільки хвилин сидіти тут:",
+  "Вкажіть час сну (наприклад, 21:00 - 07:00):": "Коли лягати спати:",
+  "Приватне відео": "Лише для себе",
+  "Вам повинно бути щонайменше 18 років, щоб переглядати NSFW Відео.": "Ця функція лише для дорослих.",
+  "Позначити відео як NSFW": "Позначити як доросле"
+};
+
+// Пре-компілюємо масив пар RegExp щоб було швидше
+const replacePairs = Object.entries(simpleTextMap).map(([from, to]) => {
+  return { re: new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "gi"), to };
+});
+
+// --- Функція: заміна у текстовому вузлі ---
+function replaceInTextNode(textNode) {
+  const original = textNode._origText ?? textNode.nodeValue;
+  if (textNode._origText === undefined) textNode._origText = original;
+  let newText = original;
+  replacePairs.forEach(({re, to}) => {
+    newText = newText.replace(re, to);
+  });
+  if (newText !== textNode.nodeValue) textNode.nodeValue = newText;
+}
+
+// --- Функція: відновлення текстового вузла ---
+function restoreTextNode(textNode) {
+  if (textNode._origText !== undefined) {
+    textNode.nodeValue = textNode._origText;
+    delete textNode._origText;
   }
 }
 
-function acceptRulesUpdate() {
-  localStorage.setItem("rules_version", "2025-10");
-  document.getElementById("rules-update-modal").style.display = "none";
+// --- Обробка атрибутів ключових типів ---
+const ATTRS = ['value','placeholder','title','aria-label','alt'];
+
+function replaceAttributes(el) {
+  ATTRS.forEach(attr => {
+    if (!el.hasAttribute || !el.hasAttribute(attr)) return;
+    const key = `_orig_attr_${attr}`;
+    const cur = el.getAttribute(attr);
+    if (el[key] === undefined) el[key] = cur; // зберігаємо оригінал
+    let newVal = el[key];
+    replacePairs.forEach(({re, to}) => newVal = newVal.replace(re, to));
+    if (newVal !== cur) el.setAttribute(attr, newVal);
+  });
 }
 
-window.addEventListener("load", showRulesModal);
-  </script>
-    <script src="script.js"></script>
+function restoreAttributes(el) {
+  ATTRS.forEach(attr => {
+    const key = `_orig_attr_${attr}`;
+    if (el[key] !== undefined) {
+      el.setAttribute(attr, el[key]);
+      delete el[key];
+    }
+  });
+}
+
+// --- Проходження по всіх текстовим вузлам в елементі ---
+function processTextNodes(root, fn) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: node => {
+      // пропускаємо текст у <script> та <style>
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      const tag = parent.tagName && parent.tagName.toLowerCase();
+      if (tag === 'script' || tag === 'style' || tag === 'textarea') return NodeFilter.FILTER_REJECT;
+      // не чіпаємо чисто пробіли
+      if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  }, false);
+
+  let node;
+  while ((node = walker.nextNode())) {
+    try { fn(node); } catch(e){ console.warn("replace text node error", e); }
+  }
+}
+
+// --- Спрощення всієї сторінки ---
+function simplifyAllTextsAdvanced(root = document.body) {
+  // текстові вузли
+  processTextNodes(root, replaceInTextNode);
+  // атрибути
+  root.querySelectorAll('*').forEach(el => {
+    try { replaceAttributes(el); } catch(e){ /* ignore */ }
+  });
+}
+
+// --- Відновлення всіх оригіналів ---
+function restoreAllOriginals(root = document.body) {
+  processTextNodes(root, restoreTextNode);
+  root.querySelectorAll('*').forEach(el => {
+    try { restoreAttributes(el); } catch(e){ /* ignore */ }
+  });
+}
+
+// --- MutationObserver для динаміки ---
+function observeDOMChangesAdvanced() {
+  if (window.zmrAdvancedObserver) return;
+  window.zmrAdvancedObserver = new MutationObserver(mutations => {
+    // для швидкості: обробляємо лише додані/змінені вузли
+    mutations.forEach(m => {
+      if (m.addedNodes && m.addedNodes.length) {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            simplifyAllTextsAdvanced(node);
+          } else if (node.nodeType === Node.TEXT_NODE) {
+            replaceInTextNode(node);
+          }
+        });
+      }
+      if (m.type === 'attributes' && m.target) {
+        // якщо атрибут змінився — спробуємо замінити його теж
+        replaceAttributes(m.target);
+      }
+    });
+  });
+
+  window.zmrAdvancedObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ATTRS
+  });
+}
+
+function disconnectObserverAdvanced() {
+  if (window.zmrAdvancedObserver) {
+    window.zmrAdvancedObserver.disconnect();
+    window.zmrAdvancedObserver = null;
+  }
+}
+
+// --- Публічні функції вмик/вимик ---
+function enableZMRAdvanced() {
+  simplifyAllTextsAdvanced(document.body);
+  observeDOMChangesAdvanced();
+  document.body.classList.add('zmr-mode');
+}
+
+function disableZMRAdvanced() {
+  disconnectObserverAdvanced();
+  restoreAllOriginals(document.body);
+  document.body.classList.remove('zmr-mode');
+}
+
+// --- Якщо у тебе є перемикач #zmr-mode-toggle, підключаємо його ---
+document.addEventListener('DOMContentLoaded', () => {
+  const t = document.getElementById('zmr-mode-toggle');
+  if (!t) return;
+  const saved = localStorage.getItem('zmrMode') === 'true';
+  t.checked = saved;
+  if (saved) enableZMRAdvanced();
+
+  t.addEventListener('change', () => {
+    const on = t.checked;
+    localStorage.setItem('zmrMode', on);
+    if (on) enableZMRAdvanced(); else disableZMRAdvanced();
+  });
+});
+</script>
 </body>                                                          
 	</html>
