@@ -1155,7 +1155,12 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
+const uid = firebase.auth().currentUser.uid;
 
+    // Беремо дані користувача з Firebase
+    database.ref("users/" + uid).once("value").then(snapshot => {
+        const userData = snapshot.val();
+        const photoAuthor = `${userData.name} ${userData.supername}`; // автоматично
     if (photoFile) {
         const storageRef = storage.ref(`photos/${photoFile.name}`);
         const uploadTask = storageRef.put(photoFile);
