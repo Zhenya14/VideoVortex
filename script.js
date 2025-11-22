@@ -1193,13 +1193,14 @@ const uid = firebase.auth().currentUser.uid;
                         loadPhotos(); // Reload videos
                         document.getElementById("upload-photo-form").reset();
                         progressContainer.style.display = "none"; // Hide progress
-                    });
+                   });
                 });
             }
         );
-    } else {
-        alert("Будь ласка, виберіть фото для завантаження.");
-    }
+    }).catch(err => {
+        console.error("Помилка при отриманні даних користувача:", err);
+        alert("Не вдалося отримати дані профілю.");
+    });
 }
 // Завантаження налаштувань
 function loadSettings() {
