@@ -1155,52 +1155,53 @@ function uploadPhoto() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const uid = firebase.auth().currentUser.uid;
 
-    // Беремо дані користувача з Firebase
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const photoAuthor = `${userData.name} ${userData.supername}`; // автоматично
-    if (photoFile) {
-        const storageRef = storage.ref(`photos/${photoFile.name}`);
-        const uploadTask = storageRef.put(photoFile);
+    const uid = firebase.auth().currentUser.uid;
+    const currentUserEmail = firebase.auth().currentUser.email;
 
-    uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                uploadProgress.value = progress;
-                progressText.innerText = `${Math.round(progress)}%`;
-                progressContainer.style.display = "block";
-            }, 
-            (error) => {
-                alert("Сталася помилка при завантаженні фото." + error);
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    // Get current date
-                    const currentDate = new Date().toLocaleDateString();
+    database.ref("users/" + uid).once("value")
+        .then(snapshot => {
+            const userData = snapshot.val();
+            const photoAuthor = `${userData.name} ${userData.supername}`;
 
-                    // Save video info to database
-                    database.ref("photos").push({
-                        title: photoTitle,
-                        author: photoAuthor,
-                        email: currentUserEmail,
-                        url: downloadURL,
-                        description: photoDescription,
-                        publishDate: currentDate // Save the publish date
-                    }).then(() => {
-                        alert("Фото завантажено!");
-                        loadPhotos(); // Reload videos
-                        document.getElementById("upload-photo-form").reset();
-                        progressContainer.style.display = "none"; // Hide progress
-                   });
-                });
-            }
-        );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+            const storageRef = storage.ref(`photos/${photoFile.name}`);
+            const uploadTask = storageRef.put(photoFile);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploadProgress.value = progress;
+                    progressText.innerText = `${Math.round(progress)}%`;
+                    progressContainer.style.display = "block";
+                }, 
+                (error) => {
+                    alert("Сталася помилка при завантаженні фото: " + error);
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        const currentDate = new Date().toLocaleDateString();
+
+                        database.ref("photos").push({
+                            title: photoTitle,
+                            author: photoAuthor,
+                            email: currentUserEmail,
+                            url: downloadURL,
+                            description: photoDescription,
+                            publishDate: currentDate
+                        }).then(() => {
+                            alert("Фото завантажено!");
+                            loadPhotos();
+                            document.getElementById("upload-photo-form").reset();
+                            progressContainer.style.display = "none";
+                        });
+                    });
+                }
+            );
+        })
+        .catch(err => {
+            console.error("Помилка при отриманні даних користувача:", err);
+            alert("Не вдалося отримати дані профілю.");
+        });
 }
 // Завантаження налаштувань
 function loadSettings() {
