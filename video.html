@@ -322,7 +322,7 @@ document.title = title;
 const videoElement = document.getElementById("video-player");
 videoElement.src = videoUrl;
 
-document.getElementById("details").innerHTML = `
+document.getElementById("details").textContent = `
     <h2>${title}</h2>
     <p><strong>Автор:</strong> ${author}</p>
     <p><strong>Дата публікації:</strong> ${publishDate}</p>
