@@ -404,18 +404,18 @@ function loadVideos() {
                 });
                 window.location.href = `profile.html?${infoParams.toString()}`;
             };
-
+const videoTitle = document.createElement("div");
+videoTitle.innerText = `${videoData.title}`;
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
             const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
-            detailsElement.textContent = `
-               ${videoData.title
-${privateLabel}${nsfwLabel}
-                Автор: ${videoData.author || "Анонім"}
-                Переглядів: ${videoData.views || 0}
-                Дата публікації: ${videoData.publishDate || "Не вказана"}
-            `;
+            detailsElement.innerHTML = `
+  ${privateLabel} ${nsfwLabel}<br>
+   Автор: ${videoData.author || "Анонім"}<br>
+   Переглядів: ${videoData.views || 0}<br>
+   Дата публікації: ${videoData.publishDate || "Не вказана"}
+`;
 
             // 🔹 8. Меню дій
             const moreBtn = document.createElement("button");
@@ -459,6 +459,7 @@ ${privateLabel}${nsfwLabel}
             });
 
             infoElement.appendChild(avatar);
+            infoElement.appendChild(videoTitle);
             infoElement.appendChild(detailsElement);
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
