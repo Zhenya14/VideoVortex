@@ -410,8 +410,9 @@ function loadVideos() {
             const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
             detailsElement.textContent = `
-                <strong>${videoData.title}</strong>${privateLabel}${nsfwLabel}
-                Автор: ${videoData.author || "Анонім"}<br>
+               ${videoData.title
+${privateLabel}${nsfwLabel}
+                Автор: ${videoData.author || "Анонім"}
                 Переглядів: ${videoData.views || 0}<br>
                 Дата публікації: ${videoData.publishDate || "Не вказана"}
             `;
