@@ -409,7 +409,7 @@ function loadVideos() {
             detailsElement.classList.add("video-details");
             const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
             const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
-            detailsElement.innerText = `
+            detailsElement.textContent = `
                 <strong>${videoData.title}</strong>${privateLabel}${nsfwLabel}
                 Автор: ${videoData.author || "Анонім"}<br>
                 Переглядів: ${videoData.views || 0}<br>
