@@ -407,15 +407,19 @@ function loadVideos() {
 
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-            const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
-            const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
-            detailsElement.textContent = `
-               ${videoData.title
-${privateLabel}${nsfwLabel}
-                Автор: ${videoData.author || "Анонім"}
-                Переглядів: ${videoData.views || 0}<br>
-                Дата публікації: ${videoData.publishDate || "Не вказана"}
-            `;
+const titleEl = document.createElement("div");
+titleEl.classList.add("video-title");
+titleEl.textContent = videoData.title || "Без назви";
+
+            const infoEl = document.createElement("div");
+infoEl.classList.add("video-meta");
+infoEl.innerHTML = `
+    ${videoData.private ? "<span style='color:orange;'>🔒 Приватне</span> " : ""}
+    ${videoData.nsfw ? "<span style='color:red;'>NSFW</span><br>" : "<br>"}
+    Автор: ${videoData.author || "Анонім"}<br>
+    Переглядів: ${videoData.views || 0}<br>
+    Дата публікації: ${videoData.publishDate || "Не вказана"}
+`;
 
             // 🔹 8. Меню дій
             const moreBtn = document.createElement("button");
@@ -460,6 +464,8 @@ ${privateLabel}${nsfwLabel}
 
             infoElement.appendChild(avatar);
             infoElement.appendChild(detailsElement);
+             detailsElement.appendChild(titleEl);
+             detailsElement.appendChild(infoEl);
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
 
