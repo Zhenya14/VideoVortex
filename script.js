@@ -317,7 +317,7 @@ function loadVideos() {
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
-    const currentGender = window.userGender || "Усі"; // Стать користувача або "Усі"
+    
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
