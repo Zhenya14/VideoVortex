@@ -1806,15 +1806,6 @@ messaging.onMessage((payload) => {
             registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
             document.getElementById("auth-form").style.display = "none";
         };
-        document.getElementById("account-link").onclick = function() {
-if (auth.currentUser) {
-const accountForm = document.getElementById("account-form");
-accountForm.style.display = accountForm.style.display === "none" ? "block" : "none";
-document.getElementById("upload-form").style.display = "none";
-} else {
-alert("Будь ласка, увійдіть, щоб подивитися інформацію про акаунт.");
-}
-};
         
           
         document.getElementById("post").onclick = function() {
