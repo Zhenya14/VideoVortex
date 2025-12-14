@@ -1353,6 +1353,9 @@ text-decoration: none;
 	</footer>
 	<script>
 const modal = document.getElementById("upload-modal");
+const accountModal = document.getElementById("account-modal");
+const buttonAccountModal = document.getElementById("account-link");
+const closeAccountModal = document.getElementById("close-account-modal");
 const plus = document.getElementById("plus-button");
 const closeBtn = document.querySelector(".close-modal");
 const tabButtons = document.querySelectorAll(".tab-button");
@@ -1368,7 +1371,18 @@ plus.onclick = () => {
 
   modal.style.display = "flex";
 };
+buttonAccountModal.onclick = () => {
+  if (!auth.currentUser) {
+    alert("Щоб переглянути інформацію, увійдіть у акаунт.");
+    window.location.href = "auth.html";
+    return;
+  }
 
+  accountModal.style.display = "flex";
+};
+closeAccountModal.onclick = () => {
+  accountModal.style.display = "none";
+};
 // Закриття по кнопці ❌
 closeBtn.onclick = () => {
   modal.style.display = "none";
@@ -1378,7 +1392,9 @@ closeBtn.onclick = () => {
 modal.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
-
+accountModal.addEventListener("click", (e) => {
+  if (e.target === accountModal) accountModal.style.display = "none";
+});
 // Перемикання вкладок
 tabButtons.forEach(btn => {
   btn.addEventListener("click", () => {
