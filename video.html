@@ -388,39 +388,34 @@ function loadSimilarVideos(currentVideo) {
     container.innerHTML = "";
 
     let found = false;
+snapshot.forEach(child => {
+    const v = child.val();
+    if (!v || v.nsfw || v.title === currentVideo.title) return;
+    if (v.private && v.email !== currentUserEmail) return;
+    if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
-    database.ref("videos").once("value").then(snapshot => {
-        snapshot.forEach(child => {
-            const v = child.val();
+    // Створення відео-карточки
+    const wrap = document.createElement("div");
+    wrap.style.marginBottom = "20px";
 
-            if (!v || v.nsfw) return;
-            if (v.title === currentVideo.title) return;
-            if (v.private && v.email !== currentUserEmail) return;
-            if (v.views === currentVideo.views) {
-                found = true;
-            if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
-                const wrap = document.createElement("div");
-                wrap.style.marginBottom = "20px";
+    const title = document.createElement("h3");
+    title.innerText = v.title;
+    title.style.color = "white";
 
-                const title = document.createElement("h3");
-                title.innerText = v.title;
-                title.style.color = "white";
+    const vid = document.createElement("video");
+    vid.src = v.url;
+    vid.muted = true;
+    vid.loop = true;
+    vid.autoplay = true;
+    vid.style.width = "100%";
+    vid.onclick = () => { location.href = `video.html?key=${child.key}`; };
 
-                const vid = document.createElement("video");
-                vid.src = v.url;
-                vid.muted = true;
-                vid.loop = true;
-                vid.autoplay = true;
-                vid.style.width = "100%";
-                vid.onclick = () => {
-                    location.href = `video.html?key=${child.key}`;
-                };
+    wrap.appendChild(title);
+    wrap.appendChild(vid);
+    container.appendChild(wrap);
 
-                wrap.appendChild(title);
-                wrap.appendChild(vid);
-                container.appendChild(wrap);
-            }
-        });
+    found = true;
+});
 
         if (!found && message) {
             message.style.display = "block";
