@@ -363,7 +363,7 @@ if (!videoKey) {
 /* ================= LOAD VIDEO ================= */
 const videoPlayer = document.getElementById("video-player");
 const detailsEl = document.getElementById("details");
-
+const avatar = document.getElementById("avatar");
 database.ref("videos/" + videoKey).once("value").then(snapshot => {
     if (!snapshot.exists()) {
         showNotFound();
@@ -375,7 +375,7 @@ database.ref("videos/" + videoKey).once("value").then(snapshot => {
     /* ===== BASIC RENDER ===== */
     document.title = sanitize(video.title);
     videoPlayer.src = video.url;
-
+            avatar.innerText = videoData.author ? videoData.author.charAt(0).toUpperCase() : "?";
     detailsEl.innerHTML = `
         <h2>${sanitize(video.title)}</h2>
         <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
