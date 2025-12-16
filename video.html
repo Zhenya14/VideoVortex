@@ -395,7 +395,7 @@ function loadSimilarVideos(currentVideo) {
 
             if (!v || v.nsfw) return;
             if (v.title === currentVideo.title) return;
-
+            if (v.private && v.email !== currentUserEmail) return;
             if (v.views === currentVideo.views) {
                 found = true;
             if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
