@@ -31,18 +31,19 @@
     width: 50px;
     border-radius: 80px;
         }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(to bottom right, #0d324d, #7f5a83);
-            color: #ffffff; 
-            text-align: center; 
-            padding: 20px; 
+                body { 
             margin: 0;
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
+    color: #e2e8f0;
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
         .container { 
             max-width: 800px; 
             margin: 0 auto; 
@@ -230,29 +231,47 @@ img.photo-item {
 }
 
 nav {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            background: #1c1e22;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    padding: 0px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
         }
         nav a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: color 0.3s ease, background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+height: 50px;
+align-items: center;
+    justify-content: center;
+display: flex;
+    padding: 0px 5px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
         }
         nav a:hover {
-            background-color: #4facfe;
-            color: #1c1e22;
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
         }
+nav a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
         .icon-text {
             margin-left: 5px;
         }
