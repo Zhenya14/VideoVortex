@@ -279,9 +279,9 @@ nav {
     </nav>
     <div id="video-container">
         <video id="video-player" controls></video>
-        <div сlass="video-info" id="video-info">
-            <div сlass="avatar" id="avatar"></div>
-            <div сlass="details" id="details"></div>
+        <div class="video-info" id="video-info">
+<div class="avatar" id="avatar"></div>
+<div class="details" id="details"></div>p
             <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
         </div>
     </div>
@@ -289,7 +289,10 @@ nav {
 <div id="target-videos">
 <p id="message" style="display: none;">Схожих відео немає 😔</p>
 </div>
+
+    <p><strong>Опис:</strong> ${description}</p>
 <script>
+/* ================= FIREBASE INIT ================= */
 const firebaseConfig = {
     apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
     authDomain: "videovortex-235cd.firebaseapp.com",
@@ -300,89 +303,131 @@ const firebaseConfig = {
     appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
 };
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const database = firebase.database();
-const storage = firebase.storage();
 
-// Отримуємо дані відео з URL
-const urlParams = new URLSearchParams(window.location.search);
-const videoKey = urlParams.get("key");
-const videoUrl = urlParams.get("url");
-const title = urlParams.get("title");
-const author = urlParams.get("author");
-const publishDate = urlParams.get("publishDate");
-const description = urlParams.get("description");
-let views = parseInt(urlParams.get("views")) || 0;
-const avatar = urlParams.get("avatar");
+/* ================= HELPERS ================= */
+function sanitize(text) {
+    return String(text ?? "")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
 
-// Встановлюємо назву сторінки
-document.title = title;
+function showNotFound() {
+    document.body.innerHTML = `
+        <div style="
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            background:#0d1117;
+            color:white;
+            text-align:center;
+        ">
+            <h1>🎬 Відео не знайдено</h1>
+            <p>Воно було видалене або недоступне</p>
+            <a href="index.html" style="color:#4facfe;">⬅ На головну</a>
+        </div>
+    `;
+}
 
-// Рендеримо поточне відео та деталі
-const videoElement = document.getElementById("video-player");
-videoElement.src = videoUrl;
+/* ================= GET VIDEO KEY ================= */
+const params = new URLSearchParams(location.search);
+const videoKey = params.get("key");
 
-document.getElementById("details").textContent = `
-    <h2>${title}</h2>
-    <p><strong>Автор:</strong> ${author}</p>
-    <p><strong>Дата публікації:</strong> ${publishDate}</p>
-    <p><strong>Перегляди:</strong> <span id="view-count">${views}</span></p>
-    <p><strong>Опис:</strong> ${description}</p>
-`;
-// Функція для завантаження схожих відео
-function loadSimilarVideos(currentVideoData) {
+if (!videoKey) {
+    showNotFound();
+    throw new Error("No video key");
+}
+
+/* ================= LOAD VIDEO ================= */
+const videoPlayer = document.getElementById("video-player");
+const detailsEl = document.getElementById("details");
+
+database.ref("videos/" + videoKey).once("value").then(snapshot => {
+    if (!snapshot.exists()) {
+        showNotFound();
+        return;
+    }
+
+    const video = snapshot.val();
+
+    /* ===== BASIC RENDER ===== */
+    document.title = sanitize(video.title);
+    videoPlayer.src = video.url;
+
+    detailsEl.innerHTML = `
+        <h2>${sanitize(video.title)}</h2>
+        <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
+        <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
+        <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
+        <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
+    `;
+
+    /* ===== UPDATE VIEWS (ONCE PER USER) ===== */
+    const viewedKey = "viewed_" + videoKey;
+    if (!localStorage.getItem(viewedKey)) {
+        database.ref("videos/" + videoKey + "/views")
+            .transaction(v => (v || 0) + 1);
+        localStorage.setItem(viewedKey, "1");
+    }
+
+    /* ===== SIMILAR VIDEOS ===== */
+    loadSimilarVideos(video);
+
+}).catch(err => {
+    console.error(err);
+    showNotFound();
+});
+
+/* ================= SIMILAR VIDEOS ================= */
+function loadSimilarVideos(currentVideo) {
     const container = document.getElementById("target-videos");
-    container.innerHTML = ""; // Очищаємо контейнер
+    const message = document.getElementById("message");
+    container.innerHTML = "";
+
+    let found = false;
 
     database.ref("videos").once("value").then(snapshot => {
-        snapshot.forEach(childSnapshot => {
-            const videoData = childSnapshot.val();
+        snapshot.forEach(child => {
+            const v = child.val();
 
-            // Пропускаємо поточне відео по назві
-            if (videoData.title === currentVideoData.title) return;
-if(videoData.nsfw) {
-return;
-}
-            // Показуємо відео з такою ж кількістю переглядів
-            if (videoData.views === currentVideoData.views) {
-found = true;
-                const videoContainer = document.createElement("div");
-                videoContainer.classList.add("video-item-container");
+            if (!v || v.nsfw) return;
+            if (v.title === currentVideo.title) return;
 
-                const similarVideo = document.createElement("video");
-                similarVideo.src = videoData.url;
-                similarVideo.autoplay = true;
-                similarVideo.muted = true;
-                similarVideo.loop = true;
-                similarVideo.controls = false;
+            if (v.views === currentVideo.views) {
+                found = true;
 
-                const titleElement = document.createElement("h3");
-                titleElement.innerText = videoData.title;
-                titleElement.style.color = "white";
+                const wrap = document.createElement("div");
+                wrap.style.marginBottom = "20px";
 
-                videoContainer.appendChild(titleElement);
-                videoContainer.appendChild(similarVideo);
-                container.appendChild(videoContainer);
+                const title = document.createElement("h3");
+                title.innerText = v.title;
+                title.style.color = "white";
+
+                const vid = document.createElement("video");
+                vid.src = v.url;
+                vid.muted = true;
+                vid.loop = true;
+                vid.autoplay = true;
+                vid.style.width = "100%";
+                vid.onclick = () => {
+                    location.href = `video.html?key=${child.key}`;
+                };
+
+                wrap.appendChild(title);
+                wrap.appendChild(vid);
+                container.appendChild(wrap);
             }
         });
-if (!found) {
-            document.getElementById("message").style.display = "block";
+
+        if (!found && message) {
+            message.style.display = "block";
         }
-    }).catch(error => {
-        console.error("Помилка при завантаженні схожих відео:", error);
     });
 }
-
-// Створюємо об’єкт поточного відео для схожих
-const currentVideoData = {
-    title: title,
-    views: views
-};
-
-// Завантажуємо схожі відео після завантаження сторінки
-window.addEventListener("DOMContentLoaded", () => {
-    loadSimilarVideos(currentVideoData);
-});
 </script>
 
 </body>
