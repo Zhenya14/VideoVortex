@@ -289,8 +289,6 @@ nav {
 <div id="target-videos">
 <p id="message" style="display: none;">Схожих відео немає 😔</p>
 </div>
-
-    <p><strong>Опис:</strong> ${description}</p>
 <script>
 /* ================= FIREBASE INIT ================= */
 const firebaseConfig = {
@@ -399,7 +397,7 @@ function loadSimilarVideos(currentVideo) {
 
             if (v.views === currentVideo.views) {
                 found = true;
-
+            if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
                 const wrap = document.createElement("div");
                 wrap.style.marginBottom = "20px";
 
