@@ -375,7 +375,7 @@ database.ref("videos/" + videoKey).once("value").then(snapshot => {
     /* ===== BASIC RENDER ===== */
     document.title = sanitize(video.title);
     videoPlayer.src = video.url;
-            avatar.innerText = v.author ? v.author.charAt(0).toUpperCase() : "?";
+            avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
     detailsEl.innerHTML = `
         <h2>${sanitize(video.title)}</h2>
         <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
