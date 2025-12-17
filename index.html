@@ -1645,8 +1645,11 @@ function applyIcons(set) {
 
     if (!el.dataset.originalHTML) el.dataset.originalHTML = el.innerHTML;
 
-    const text = el.textContent.trim();
-    el.innerHTML = `${icon} <span class="icon-text"> ${text}</span>`;
+    // Беремо ключ для перекладу з data-i18n
+    const i18nKey = el.getAttribute("data-i18n");
+    const translatedText = i18nKey && translations[i18nKey] ? translations[i18nKey] : el.textContent.trim();
+
+    el.innerHTML = `${icon} <span class="icon-text">${translatedText}</span>`;
   }
 }
 
