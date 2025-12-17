@@ -1752,7 +1752,19 @@ const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
 
 // Create a `GenerativeModel` instance with a model that supports your use case
 const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+async function run() {
+  // Provide a prompt that contains text
+  const prompt = "Write a story about a magic backpack."
 
+  // To generate text output, call generateContent with the text input
+  const result = await model.generateContent(prompt);
+
+  const response = result.response;
+  const text = response.text();
+  console.log(text);
+}
+
+run();
 // ==========================
 // Реєстрація Service Worker
 // ==========================
