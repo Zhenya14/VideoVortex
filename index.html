@@ -45,7 +45,7 @@
     </filter>
   </defs>
 </svg>
-	<script>
+        <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -489,7 +489,7 @@ img.photo-item {
   word-wrap: break-word;      /* Перенос слів */
   overflow-wrap: break-word;  /* Сучасний перенос */
   white-space: normal;    
-  
+
 }
 
         .photo-info { 
@@ -514,7 +514,7 @@ img.photo-item {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            
+
             align-items: center;
             background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
             justify-content: center;
@@ -765,7 +765,7 @@ display: none;
   border: none;
   outline: none;
   font-size: 18px;
-  
+
 }
 
 /* Кнопка закриття */
@@ -843,7 +843,7 @@ display: none;
 }
 
 .close-modal, .close-account-modal {
-  
+
   cursor: pointer;
   color: #fff;
   font-size: 20px;
@@ -946,7 +946,7 @@ transform: scale(0.95); /* легке стиснення */
   border-radius: 10px;
 }
 
-  
+
 .delete-button {
 display: flex;
 padding: 3px 8px;
@@ -1070,7 +1070,7 @@ text-decoration: none;
             <a href="#" id="account-link" onclick="openAccountModal()" style="display: none;">
                 <i class="material-icons">person</i><span class="icon-text" id="email">Завантаження...</span>
             </a>
-		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
+                    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
     <div id="search-box" class="search-box">
@@ -1084,8 +1084,9 @@ text-decoration: none;
     <h2>🔔 Оновлені правила</h2>
     <p>Ми оновили правила спільноти VideoVortex:</p>
     <ul>
-      <li>🚫 Заборонено викладати особисті дані інших людей без їх дозволу.</li>
-<li>🔐 Ваш акаунт повинен бути захищений надійним паролем.</li>
+      <li>🚫 Заборонено фейки та образи.</li>
+      <li>🔒 Посилено правила приватності.</li>
+      <li>🧒 Обмеження для користувачів до 16 років.</li>
     </ul>
     <div class="modal-divider"></div>
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
@@ -1113,7 +1114,7 @@ text-decoration: none;
 </label>
 <input type="file" id="video-file" accept="video/*">
 <br>
-<span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>	
+<span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>        
      <br>
      <br>
    <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
@@ -1221,7 +1222,7 @@ text-decoration: none;
 
 </div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
-<label>Публікуючи відео, ви погоджуєтеся з <a href="https://www.notion.so/VideoVortex-283beb289348809183e8e8d185b3c469?source=copy_link" target="_blank">правилами спільноти.</a></label>
+<label>Публікуючи відео, ви погоджуєтеся з <a href="https://telegra.ph/Pravila-sp%D1%96lnoti-VideoVortex-09-14-2" target="_blank">правилами спільноти.</a></label>
 </div>
       </div>
 
@@ -1242,7 +1243,6 @@ text-decoration: none;
                 <span id="progress-text">0%</span>
             </div>
             <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
-<label>Публікуючи фото, ви погоджуєтеся з <a href="https://www.notion.so/VideoVortex-283beb289348809183e8e8d185b3c469?source=copy_link" target="_blank">правилами спільноти.</a></label>
         </div>
       </div>
     </div>
@@ -1269,7 +1269,7 @@ text-decoration: none;
 </div>
             <p id="user-info"></p>
 <p id="view">Дата народження: Завантаження...</p>
-	<div id="requests-container"></div>
+        <div id="requests-container"></div>
 <button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
         <label>
        <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
@@ -1279,11 +1279,11 @@ text-decoration: none;
     <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
     <input type="number" id="maxTimeInput" value="45" min="1" />
     <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
-    
+
     <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
     <label for="sleepStart">Час початку сну:</label>
     <input type="time" id="sleepStart" value="21:00">
-    
+
     <label for="sleepEnd">Час закінчення сну:</label>
     <input type="time" id="sleepEnd" value="07:00">
                 </div>
@@ -1299,8 +1299,8 @@ text-decoration: none;
             <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
         </div>
 
-       
-	<div  class="smart-menu">
+
+        <div  class="smart-menu">
  <a href="#" id="smart-video" onclick="video()">
         <i class="material-icons">movie</i><span>Відео</span>
     </a>
@@ -1340,18 +1340,18 @@ text-decoration: none;
 
     <div class="container" id="video-container">
         <div class="video-container" id="video-gallery"></div>
-         
+
     </div>
 
     <div class="container" id="photo-container">
         <div class="photo-container" id="photo-gallery"></div>
-         
+
     </div>
-	<footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
-		<h3>Версія додатка:</h3>
-		<p>4.0.0</p>
-	</footer>
-	<script>
+        <footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
+                <h3>Версія додатка:</h3>
+                <p>4.0.0</p>
+        </footer>
+        <script>
 const modal = document.getElementById("upload-modal");
 const accountModal = document.getElementById("account-modal");
 const buttonAccountModal = document.getElementById("account-link");
@@ -1404,8 +1404,8 @@ tabButtons.forEach(btn => {
     });
 });
 </script>
-	<script>
-	  const searchBox = document.getElementById("search-box");
+        <script>
+          const searchBox = document.getElementById("search-box");
 const closeSearch = document.getElementById("close-search");
 const searchInput = document.getElementById("search-input");
 
@@ -1436,8 +1436,8 @@ function searchVideos() {
         }
     });
 }
-	</script>
-	<script>
+        </script>
+        <script>
 const fileInput = document.getElementById("photo-file");
 const fileName = document.getElementById("file-name");
 
@@ -1446,7 +1446,7 @@ fileInput.addEventListener("change", () => {
   fileName.textContent = "📸 " + name;
 });
 </script>
-	<script>
+        <script>
 const videoInput = document.getElementById("video-file");
 const videofileName = document.getElementById("video-file-name");
 
@@ -1456,7 +1456,7 @@ videoInput.addEventListener("change", () => {
 });
 
 </script>
-	        <script>
+                <script>
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -1667,7 +1667,7 @@ function resetButtonColors() {
 }
 </script>
   <script>
-	  let deferredPrompt;
+          let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -1688,7 +1688,7 @@ installBtn.addEventListener('click', async () => {
 function showRulesModal() {
   const modal = document.getElementById("rules-update-modal");
   const lastAccepted = localStorage.getItem("rules_version");
-  const currentVersion = "2025-12";
+  const currentVersion = "2025-10";
 
   if (lastAccepted !== currentVersion) {
     modal.style.display = "flex";
@@ -1696,7 +1696,7 @@ function showRulesModal() {
 }
 
 function acceptRulesUpdate() {
-  localStorage.setItem("rules_version", "2025-12");
+  localStorage.setItem("rules_version", "2025-10");
   document.getElementById("rules-update-modal").style.display = "none";
 }
 
@@ -1748,7 +1748,23 @@ const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
 const messaging = firebase.messaging();
+const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
 
+// Create a `GenerativeModel` instance with a model that supports your use case
+const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+async function run() {
+  // Provide a prompt that contains text
+  const prompt = "Write a story about a magic backpack."
+
+  // To generate text output, call generateContent with the text input
+  const result = await model.generateContent(prompt);
+
+  const response = result.response;
+  const text = response.text();
+  console.log(text);
+}
+
+run();
 // ==========================
 // Реєстрація Service Worker
 // ==========================
@@ -1760,6 +1776,41 @@ if ('serviceWorker' in navigator) {
     })
     .catch(err => console.error('❌ Помилка реєстрації SW:', err));
 }
+
+// ==========================
+// Запит дозволу на пуші
+// ==========================
+async function enablePushNotifications(userId) {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.log("❌ Користувач не дозволив сповіщення");
+      return;
+    }
+
+    const token = await messaging.getToken({
+      vapidKey: "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4"
+    });
+
+    console.log("✅ Push токен:", token);
+
+    // Збереження токена у Firebase
+    database.ref("users/" + userId + "/pushToken").set(token);
+
+  } catch (err) {
+    console.error("❌ Помилка отримання токена:", err);
+  }
+}
+
+// ==========================
+// Отримання повідомлень коли сайт відкритий
+// ==========================
+messaging.onMessage((payload) => {
+  console.log("📬 Нове повідомлення:", payload);
+  const { title, body, icon } = payload.notification;
+  new Notification(title, { body, icon });
+});
+
          document.getElementById("auth-link").onclick = function() {
             const authForm = document.getElementById("auth-form");
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
@@ -1771,8 +1822,8 @@ if ('serviceWorker' in navigator) {
             registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
             document.getElementById("auth-form").style.display = "none";
         };
-        
-          
+
+
         document.getElementById("post").onclick = function() {
            document.getElementById("video-container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
@@ -1789,7 +1840,7 @@ if ('serviceWorker' in navigator) {
            document.getElementById("video-container").style.display = 'flex';
         document.getElementById("photo-container").style.display = 'none';
         }
-    
+
             function blockScreenForVerification() {
     document.body.innerHTML = `
                 <h1>Підтвердьте вашу електронну пошту</h1>
@@ -2586,7 +2637,7 @@ auth.onAuthStateChanged((user) => {
         const birthStr = userData?.birthdate;
         const role = userData?.role || "user";
 
-    
+
 
         // 🔹 Якщо немає email або дати народження — показати модальне вікно
         if (!userData?.email || !birthStr) {
@@ -3210,4 +3261,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>                                                          
-	</html>
+        </html>
