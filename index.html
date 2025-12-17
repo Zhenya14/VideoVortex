@@ -6,6 +6,7 @@
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
+<script src="i18n.js" defer></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -1058,19 +1059,19 @@ text-decoration: none;
 </button>
         <div style="display: flex; gap: 15px; margin-left: auto;">
            <a href="#" id="plus-desktop-button"><i class="material-icons">add</i></a>
-            <a href="auth.html" id="auth-link">
+            <a href="auth.html" data-i18n="auth-link" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
-            <a href="auth.html" id="register-link">
+            <a href="auth.html" data-i18n="register-link" id="register-link">
                 <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
             </a>
-            <a href="#" id="logout-link" style="display: none;">
+            <a href="#" data-i18n="logout-link" id="logout-link" style="display: none;">
                 <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
                 </a>
-            <a href="#" id="account-link" onclick="openAccountModal()" style="display: none;">
+            <a href="#" data-i18n="account-link" id="account-link" onclick="openAccountModal()" style="display: none;">
                 <i class="material-icons">person</i><span class="icon-text" id="email">Завантаження...</span>
             </a>
-		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
+		    <button data-i18n="installBtn" id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
     <div id="search-box" class="search-box">
@@ -1096,8 +1097,8 @@ text-decoration: none;
 <div id="upload-modal" class="modal-overlay">
   <div class="modal-window">
     <div class="modal-header">
-      <span class="tab-button active" data-tab="video-tab">Відео</span>
-      <span class="tab-button" data-tab="photo-tab">Фото</span>
+      <span data-i18n="tab-button active" class="tab-button active" data-tab="video-tab">Відео</span>
+      <span data-i18n="tab-button" class="tab-button" data-tab="photo-tab">Фото</span>
       <span class="close-modal">✖</span>
     </div>
 
@@ -1105,7 +1106,7 @@ text-decoration: none;
       <!-- Вкладка "Відео" -->
       <div id="video-tab" class="tab-content active">
                 <div class="upload-form" id="upload-form">
-            <h2>Завантажити відео</h2>
+            <h2data-i18n="label-video">Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
         <p id="video-file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
@@ -1229,7 +1230,7 @@ text-decoration: none;
       <!-- Вкладка "Фото" -->
       <div id="photo-tab" class="tab-content">
 <div class="upload-photo-form" id="upload-photo-form">
-            <h2>Завантажити фото</h2>
+            <h2 data-i18n="label-photo">Завантажити фото</h2>
             <input type="text" id="photo-title" placeholder="Назва Фото">
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
             <p id="file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
@@ -1267,6 +1268,10 @@ text-decoration: none;
 <input type="text" id="edit-supername">
 <button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
 </div>
+<select id="language-select">
+  <option value="en">English</option>
+  <option value="ua">Українська</option>
+</select>
             <p id="user-info"></p>
 <p id="view">Дата народження: Завантаження...</p>
 	<div id="requests-container"></div>
@@ -1351,6 +1356,11 @@ text-decoration: none;
 		<h3>Версія додатка:</h3>
 		<p>4.0.0</p>
 	</footer>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    initLanguageSwitcher("language-select");
+});
+</script>
 	<script>
 const modal = document.getElementById("upload-modal");
 const accountModal = document.getElementById("account-modal");
