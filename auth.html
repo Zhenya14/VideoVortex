@@ -42,7 +42,15 @@ body.newyear {
 }
 
 .snowflake {
-  user-select: none;
+    position: fixed;
+    top: -30px;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+}
+@keyframes fall {
+    0% { transform: translateX(0) translateY(0); opacity: 1; }
+    100% { transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh); opacity: 0; }
 }
 .tab button {
   background-color: inherit;
@@ -237,53 +245,76 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script>
+// ===================== Сніг =====================
 let snowInterval = null;
 
-function startSnow() {
-  if (snowInterval) return;
+function createSnowflake() {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.textContent = ["❄️","❅","❆"][Math.floor(Math.random()*3)];
+    snowflake.style.left = Math.random()*100 + "vw";
+    snowflake.style.fontSize = (Math.random()*15+10) + "px";
+    snowflake.style.opacity = Math.random()*0.8+0.2;
+    snowflake.style.setProperty('--x', Math.random());
 
-  snowInterval = setInterval(() => {
-    const flake = document.createElement("div");
-    flake.className = "snowflake";
-    flake.textContent = ["❄️","❅","❆"][Math.floor(Math.random() * 3)];
-    flake.style.position = "fixed";
-    flake.style.left = Math.random() * 100 + "vw";
-    flake.style.top = "-10px";
-    flake.style.fontSize = Math.random() * 22 + 10 + "px";
-    flake.style.opacity = Math.random() * 0.7 + 0.3;
-    flake.style.pointerEvents = "none";
-    flake.style.zIndex = 9999;
-    flake.style.animation = "fall 5s linear forwards";
-    document.body.appendChild(flake);
+    const duration = Math.random()*3+4; // 4–7 сек
+    snowflake.style.animation = `fall ${duration}s linear forwards`;
 
-    setTimeout(() => flake.remove(), 6000);
-  }, 200);
+    document.body.appendChild(snowflake);
+    setTimeout(()=>snowflake.remove(), duration*1000);
 }
-</script>
-<script>
+
+function startSnow() {
+    if(snowInterval) return;
+    snowInterval = setInterval(createSnowflake, 150);
+}
+
+function stopSnow() {
+    clearInterval(snowInterval);
+    snowInterval = null;
+    document.querySelectorAll(".snowflake").forEach(f=>f.remove());
+}
+
+// ===================== Пасхалка потрійного кліку =====================
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function launchNewYearEasterEgg() {
+    // Додатковий сніг на пасхалку
+    startSnow();
+    alert("🎉 Пасхалка Нового Року! Сніг йде! 🎉");
+}
+
+// ===================== Ініціалізація =====================
 document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date();
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
+    const logo = document.getElementById("logo");
+    const today = new Date();
+    const month = today.getMonth()+1;
+    const day = today.getDate();
 
-  // ❄️ ТІЛЬКИ 1 СІЧНЯ
-  const isJanFirst = month === 1 && day === 1;
+    // Новорічний період (1 січня)
+    if(month === 1 && day === 1) {
+        startSnow();
+        if(logo && !logo.dataset.originalSrc) {
+            logo.dataset.originalSrc = logo.src;
+            logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
+        }
+    }
 
-  if (!isJanFirst) return;
-
-  document.body.classList.add("newyear");
-
-  // 🎅 Логотип
-  const logo = document.getElementById("logo");
-  if (logo) {
-    logo.dataset.originalSrc = logo.src;
-    logo.src = "VideoVortex_new_year's_logo.jpg";
-  }
-
-  // ❄️ Сніг
-  startSnow();
-
-  console.log("🎄 New Year mode (auth.html)");
+    // Потрійний клік для пасхалки
+    if(logo) {
+        logo.addEventListener("click", () => {
+            logoClickCount++;
+            if(logoClickCount === 1) {
+                logoClickTimer = setTimeout(()=>{logoClickCount=0;},1200);
+            }
+            if(logoClickCount===3){
+                clearTimeout(logoClickTimer);
+                logoClickCount=0;
+                launchNewYearEasterEgg();
+            }
+        });
+    }
 });
 </script>
 <script>
