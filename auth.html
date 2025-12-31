@@ -293,15 +293,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const day = today.getDate();
 
     // Новорічний період (1 січня)
-    if(month === 1 && day === 1) {
-        startSnow();
-        if(logo && !logo.dataset.originalSrc) {
-            logo.dataset.originalSrc = logo.src;
-            logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
-        }
+    const isNewYearPeriod = (month === 12 && day >= 15) || (month === 1 && day <= 14);
+    if(isNewYearPeriod && logo && !logo.dataset.originalSrc) {
+        logo.dataset.originalSrc = logo.src;
+        logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
     }
 
-    // Потрійний клік для пасхалки
+    // ---------- СНІГ 1 СІЧНЯ ----------
+    if(month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- Потрійний клік для пасхалки ----------
     if(logo) {
         logo.addEventListener("click", () => {
             logoClickCount++;
