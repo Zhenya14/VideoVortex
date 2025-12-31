@@ -1899,32 +1899,32 @@ window.addEventListener("load", () => {
 });
 </script>
 <script>
-  let logoClickCount = 0;
+let logoClickCount = 0;
 let logoClickTimer = null;
 let easterEggTimeout = null;
+let snowInterval = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   const month = today.getMonth() + 1;
   const day = today.getDate();
 
-  // 🎃 Halloween 30–31 жовтня
+  const logo = document.getElementById("logo"); // Отримуємо логотип
+
+  // 🎃 HALLOWEEN: 30-31 жовтня
   if (month === 10 && (day === 30 || day === 31)) {
     activateHalloweenMode();
     applyIcons(halloweenIcons);
-    return;
   }
 
   // Вимкнення Halloween 1 листопада
   if (month === 11 && day === 1) {
     deactivateHalloweenMode();
     restoreIcons();
-    return;
   }
 
-  // 🎄 Новий рік — 25 грудня → 14 січня
-  const isNewYear =
-    (month === 12 && day >= 15) ||
-    (month === 1 && day <= 14);
+  // 🎄 NEW YEAR: 25 грудня → 14 січня
+  const isNewYear = (month === 12 && day >= 25) || (month === 1 && day <= 14);
 
   if (isNewYear) {
     activateGirland();
@@ -1935,12 +1935,30 @@ document.addEventListener("DOMContentLoaded", () => {
     deactivateNewYearMode();
     restoreIcons();
   }
+
+  // 🔔 Easter egg по потрійному кліку на логотип
+  if (logo) {
+    logo.addEventListener("click", () => {
+      logoClickCount++;
+
+      if (logoClickCount === 1) {
+        logoClickTimer = setTimeout(() => {
+          logoClickCount = 0;
+        }, 1200);
+      }
+
+      if (logoClickCount === 3) {
+        clearTimeout(logoClickTimer);
+        logoClickCount = 0;
+        launchNewYearEasterEgg();
+      }
+    });
+  }
 });
 
 /* ================================
    🎃 HALLOWEEN
    ================================ */
-
 function activateHalloweenMode() {
   document.body.classList.add("halloween");
   console.log("🎃 Halloween увімкнено!");
@@ -1982,9 +2000,6 @@ function deactivateHalloweenMode() {
 /* ================================
    🎄 NEW YEAR
    ================================ */
-
-let snowInterval = null;
-
 function activateGirland() {
   const girland = document.getElementById("girland");
   if (girland) {
@@ -2024,26 +2039,8 @@ function deactivateNewYearMode() {
 }
 
 /* ================================
-   ❄️ SNOWFALL
+   ❄️ SNOWFALL & Easter Egg
    ================================ */
-function launchNewYearEasterEgg() {
-  startSnow(); // ❄️ сніг по всій сторінці
-
-  const popup = document.getElementById("newyear-easter-egg");
-  if (!popup) return;
-
-  popup.style.display = "flex";
-
-  // 🧹 якщо пасхалку відкрили повторно — скидаємо таймер
-  if (easterEggTimeout) {
-    clearTimeout(easterEggTimeout);
-  }
-
-  // ⏳ автозакриття через 2 хвилини
-  easterEggTimeout = setTimeout(() => {
-    popup.style.display = "none";
-  }, 120000); // 2 хв
-}
 function startSnow() {
   if (snowInterval) return;
 
@@ -2070,13 +2067,28 @@ function stopSnow() {
   document.querySelectorAll(".snowflake").forEach(f => f.remove());
 }
 
+function launchNewYearEasterEgg() {
+  startSnow();
+
+  const popup = document.getElementById("newyear-easter-egg");
+  if (!popup) return;
+
+  popup.style.display = "flex";
+
+  if (easterEggTimeout) {
+    clearTimeout(easterEggTimeout);
+  }
+
+  easterEggTimeout = setTimeout(() => {
+    popup.style.display = "none";
+  }, 120000);
+}
+
 /* ================================
    🔳 ICON SYSTEM
    ================================ */
-
 const halloweenIcons = {
-  "account-link": (user) =>
-  `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-link": (user) => `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🕸",
   "logout-link": "🚪",
   "auth-link": "🚪",
@@ -2089,11 +2101,10 @@ const halloweenIcons = {
 };
 
 const newyearIcons = {
-  "account-link": (user) =>
-    `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-link": (user) => `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "⛄",
   "logout-link": "🚪",
-   "auth-link": "🚪",
+  "auth-link": "🚪",
   "smart-post": "❄️<span>Дописи</span>",
   "smart-video": "🎬<span>Відео</span>",
   "post": "❄️<span>Дописи</span>",
@@ -2111,15 +2122,10 @@ function applyIcons(set, user = null) {
       el.dataset.originalHtml = el.innerHTML;
     }
 
-    // прибираємо material-icons
     el.querySelectorAll("i.material-icons, .material-icons").forEach(i => i.remove());
 
-    // 🔑 якщо іконка — функція
     if (typeof icon === "function") {
-      if (!user) {
-        console.warn("User data not loaded yet for", id);
-        continue; // ⬅️ ОЦЕ ГОЛОВНЕ
-      }
+      if (!user) continue;
       el.innerHTML = icon(user);
       continue;
     }
@@ -2130,14 +2136,13 @@ function applyIcons(set, user = null) {
 
 function restoreIcons() {
   document.querySelectorAll("[data-original-html]").forEach(el => {
-    el.innerHTML = el.dataset.originalHTML;
+    el.innerHTML = el.dataset.originalHtml;
   });
 }
 
 /* ================================
    🎨 BUTTON COLORS
    ================================ */
-
 function styleButtons(bg, color) {
   document.querySelectorAll("button, .btn").forEach(btn => {
     btn.dataset.originalBg = btn.style.backgroundColor;
@@ -2153,24 +2158,6 @@ function resetButtonColors() {
     if (btn.dataset.originalColor) btn.style.color = btn.dataset.originalColor;
   });
 }
-logo.addEventListener("click", () => {
-    logoClickCount++;
-
-    // ⏳ якщо перший клік — запускаємо таймер
-    if (logoClickCount === 1) {
-      logoClickTimer = setTimeout(() => {
-        logoClickCount = 0;
-      }, 1200); // 1.2 сек на 3 кліки
-    }
-
-    // 🎯 потрійний клік
-    if (logoClickCount === 3) {
-      clearTimeout(logoClickTimer);
-      logoClickCount = 0;
-      launchNewYearEasterEgg();
-    }
-  });
-});
 </script>
   <script>
 	  let deferredPrompt;
