@@ -323,25 +323,46 @@ transform: scale(0.95); /* легке стиснення */
 let snowInterval = null;
 
 function startSnow() {
-  if (snowInterval) return;
+  if (snowInterval) return; // Якщо сніг вже йде, нічого не робимо
 
   snowInterval = setInterval(() => {
-    const container = document.getElementById("video-container");
-    const flake = document.createElement("div");
-    flake.className = "snowflake";
-    flake.textContent = ["❄️","❅","❆"][Math.floor(Math.random() * 3)];
-    flake.style.position = "fixed";
-    flake.style.left = Math.random() * 100 + "vw";
-    flake.style.top = "-10px";
-    flake.style.fontSize = Math.random() * 22 + 10 + "px";
-    flake.style.opacity = Math.random() * 0.8 + 0.2;
-    flake.style.pointerEvents = "none";
-    flake.style.zIndex = 9999;
-    flake.style.animation = "fall 5s linear forwards";
-    container.appendChild(flake);
+    createSnowflake();
+  }, 150); // додаємо сніжинку кожні 150 мс
+}
 
-    setTimeout(() => flake.remove(), 6000);
-  }, 180);
+function stopSnow() {
+  clearInterval(snowInterval);
+  snowInterval = null;
+  document.querySelectorAll(".snowflake").forEach(f => f.remove());
+}
+
+function createSnowflake() {
+  const snowflake = document.createElement("div");
+  snowflake.className = "snowflake";
+
+  // Випадковий символ сніжинки
+  snowflake.textContent = ["❄️", "❅", "❆"][Math.floor(Math.random() * 3)];
+
+  // Початкове положення
+  snowflake.style.position = "fixed";
+  snowflake.style.top = "-30px";
+  snowflake.style.left = Math.random() * 100 + "vw";
+
+  // Розмір та прозорість
+  const size = Math.random() * 15 + 10; // 10–25px
+  snowflake.style.fontSize = size + "px";
+  snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+  snowflake.style.pointerEvents = "none";
+  snowflake.style.zIndex = 9999;
+
+  // Анімація падіння
+  const duration = Math.random() * 3 + 4; // 4–7 секунд
+  snowflake.style.animation = `fall ${duration}s linear forwards`;
+
+  document.body.appendChild(snowflake);
+
+  // Видаляємо сніжинку після анімації
+  setTimeout(() => snowflake.remove(), duration * 1000);
 }
 </script>
 <script>
