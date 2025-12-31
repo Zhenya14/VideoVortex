@@ -6,15 +6,14 @@
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
-<script src="i18n.js" defer></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-        <!-- Google tag (gtag.js) -->
+	<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
@@ -27,25 +26,6 @@
       .catch(err => console.error("❌ Помилка SW:", err));
   }
 </script>
-<!-- SVG Filter (для анімації рідкого скла) -->
-<svg width="0" height="0" style="position: absolute;">
-  <defs>
-    <filter id="glass-distortion-animated" x="0%" y="0%" width="100%" height="100%">
-      <feTurbulence 
-        id="turbulence" 
-        type="fractalNoise" 
-        baseFrequency="0.012 0.012" 
-        numOctaves="2" 
-        seed="92" 
-        result="noise"
-      >
-        <animate attributeName="baseFrequency" dur="5s" values="0.012;0.018;0.012" repeatCount="indefinite" />
-      </feTurbulence>
-      <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
-      <feDisplacementMap in="SourceGraphic" in2="blurred" scale="35" xChannelSelector="R" yChannelSelector="G" />
-    </filter>
-  </defs>
-</svg>
 	<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -131,6 +111,27 @@ input:checked + .slider:before {
     max-width: 350px;
     margin-top: -3px;
 }
+.video-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-wrap: break-word;
+    white-space: normal;
+    text-align: left;
+}
+
+.video-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: white;
+}
+
+.video-meta {
+    font-size: 14px;
+    color: #b0bec5;
+    line-height: 1.3em;
+}
 .ios-modal {
   display: none;
   position: fixed;
@@ -189,37 +190,7 @@ margin: 0;
   cursor: pointer;
   transition: background 0.3s;
 }
-/* Новорічні стилі */
-body.newyear {
-  background: radial-gradient(circle at top left, #071233, #031028);
-  color: #f8fafc;
-  transition: background .6s ease;
-}
-.logo-newyear {
-  filter: drop-shadow(0 6px 20px rgba(255,220,120,0.12)) hue-rotate(10deg);
-  transform-origin: center;
-  animation: jingle 5s ease-in-out infinite;
-}
-@keyframes jingle {
-  0% { transform: rotate(-2deg); }
-  50% { transform: rotate(2deg); }
-  100% { transform: rotate(-2deg); }
-}
-/* стиль для сніжинки (використовується елемент .snowflake) */
-.snowflake {
-  position: fixed;
-  top: -10px;
-  color: white;
-  font-size: 16px;
-  animation: fall linear infinite;
-  pointer-events: none;
-  z-index: 99999;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-@keyframes fall {
-  0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
-  100% { transform: translateY(110vh) translateX(30vw); opacity: 0; }
-}
+
 .ios-modal-content button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -259,7 +230,7 @@ text-align: center;
         }
         .container {
     margin-top: 130px;
-    width: 10%;
+    width: 59%;
     background: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
@@ -300,7 +271,7 @@ height: 10px;
         opacity: 0;
     }
 }
-        .form, .auth-form, .register-form, .edit-form, .version-form { 
+        .form, .upload-form, .auth-form, .register-form, .account-form, .edit-form, .version-form, .upload-photo-form { 
             display: none; 
             background: rgba(255, 255, 255, 0.1); 
             padding: 20px; 
@@ -322,7 +293,7 @@ height: 10px;
 position: absolute;
     right: 20px;
 }
-.random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
+#upload-button, #upload-photo-button, .random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
 width: 100%; 
             background-color: black;
 border: 2px solid #333333;
@@ -415,11 +386,9 @@ transform: scale(0.95); /* легке стиснення */
             display: flex;
             margin-top: 20px;
            flex-direction: column-reverse; 
-           border-bottom: solid gray;
-           padding-bottom: 20px;
         }
         video { 
-            width: 80%; 
+            width: 100%; 
             margin: 10px auto; 
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -428,7 +397,6 @@ transform: scale(0.95); /* легке стиснення */
             text-align: left; 
             color: #b0bec5; 
             padding: 5px;
-            display: flex;
         }
             .video-comment {
     border-radius: 20px;
@@ -438,7 +406,6 @@ transform: scale(0.95); /* легке стиснення */
 }
 #video-container {
 margin-top: 50px;
-width: 90%;
 display: flex;
 flex-direction: column-reverse;
         }
@@ -471,11 +438,7 @@ img.photo-item {
     color: #333;
     box-sizing: border-box;  /* Враховує padding в ширину */
 }
-.video-details {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-}
+
 .comment-button {
     width: 50px;
     height: 40px;  /* Встановлюємо висоту кнопки */
@@ -484,14 +447,7 @@ img.photo-item {
     border-radius: 35px;
     cursor: pointer;
 }
-.video-title {
-  display: flex;
-  flex-direction: column;     /* Вирівнюємо елементи вертикально */
-  word-wrap: break-word;      /* Перенос слів */
-  overflow-wrap: break-word;  /* Сучасний перенос */
-  white-space: normal;    
-  
-}
+
 
         .photo-info { 
             text-align: left; 
@@ -510,12 +466,11 @@ img.photo-item {
             font-weight: bold;
             color: #ffffff;
         }
-
 #account-form .avatar {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            
+            display: inline-flex;
             align-items: center;
             background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
             justify-content: center;
@@ -524,9 +479,10 @@ img.photo-item {
             color: #ffffff;
         }
         .video-details {
-  width: 100%;
-  display: block;
-}
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
         #delete-account { 
             width: 100%;
     background-color: black;
@@ -636,22 +592,14 @@ transform: scale(0.95); /* легке стиснення */
         display: flex;
 }
 .action-menu {
-    bottom: 9%;
+bottom: 9%;
     left: 12%;
     position: fixed;
-
-    background: rgba(255, 255, 255, 0.08); /* прозоре біле */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 18px;
-
-    padding: 10px;
-    z-index: 9999;
-
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    animation: scaleIn 0.25s ease;
+    background: #1c1e22;
+    border: 1px solid #4facfe;
+    border-radius: 8px;
+    padding: 5px;
+    z-index: 10;
 }
 
 .action-menu button {
@@ -731,141 +679,6 @@ body.halloween {
 .hidden {
 display: none;
 }
-/* 🔍 Пошуковий блок */
-.search-box {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0;                      /* початково схований */
-  height: 60px;
-  background: aqua;
-  color: black;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  transition: width 0.3s ease,   /* плавне розгортання */
-              opacity 0.3s ease; /* плавна поява */
-  opacity: 0;
-  z-index: 9999;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-/* Коли відкритий */
-.search-box.open {
-  width: 100%; 
-  opacity: 1;
-}
-
-/* Поле вводу */
-#search-input {
-  flex: 1;
-  color: : black;
-  border: none;
-  outline: none;
-  font-size: 18px;
-  
-}
-
-/* Кнопка закриття */
-.search-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-}
-
-.search-close i {
-  font-size: 28px;
-  color: black;
-}
-
-/* Кнопка пошуку у navbar (опціонально) */
-.open--btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.modal-overlay, .modal-account-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(8px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
-}
-
-.modal-window {
-  width: 90%;
-  max-width: 450px;
-  background: rgba(255,255,255,0.1);
-  padding: 0;
-  border-radius: 18px;
-  max-height: 90vh;        /* щоб не виходила за екран */
-    overflow: hidden;        /* ховаємо зовнішній скрол */
-    display: flex;
-    flex-direction: column;
-  border: 1px solid rgba(255,255,255,0.25);
-  animation: scaleIn .3s ease;
-}
-.modal-account-body, .modal-body {
-    overflow-y: auto;        /* вертикальний скрол */
-    max-height: 100%;        /* повна висота */
-    padding-right: 10px;     /* щоб скрол не перекривав контент */
-}
-/* Робимо фіксовану модалку */
-
-/* Прокрутка тільки всередині контенту */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-.modal-account-header {
-  display: flex;
-  justify-content: right;
-  padding: 12px 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-.tab-button {
-  cursor: pointer;
-  font-weight: 600;
-  color: #aaa;
-}
-
-.tab-button.active {
-  color: #fff;
-  border-bottom: 2px solid #fff;
-}
-
-.close-modal, .close-account-modal {
-  
-  cursor: pointer;
-  color: #fff;
-  font-size: 20px;
-}
-
-.tab-content {
-  display: none;
-  padding: 15px;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.8); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-.open--btn i {
-  font-size: 28px;
-}
 nav {
     display: flex;
     justify-content: center;
@@ -919,9 +732,6 @@ transform: scale(0.95); /* легке стиснення */
         #upload-link {
         display: none;
     }
-    #plus-desktop-button {
-      display: none;
-    }
     #upload-link-photo {
         display: none;
     }
@@ -947,7 +757,9 @@ transform: scale(0.95); /* легке стиснення */
   border-radius: 10px;
 }
 
-  
+    #smart-upload-link-photo {
+        display: none;
+    }
 .delete-button {
 display: flex;
 padding: 3px 8px;
@@ -963,53 +775,20 @@ text-decoration: none;
   font-weight: 600;
   transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
-#plus-button {
-  width: 10%;
- height: 10%;
-  font-size: 32px;
-  border-radius: 89px;
-  border: 2px solid white;
-  transition: 0.3s;
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#plus-button.open {
-  transform: rotate(45deg);
-  border-color: red;
-  box-shadow: 0 0 15px red;
-}
-.comments * {
-    white-space: normal;
-    word-break: break-word;
-}
-      .smart-menu {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 600px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 12px 20px;
-  border-radius: 65px;
-  isolation: isolate;
 
-  /* Скляний ефект */
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  filter: url(#glass-distortion);
-  -webkit-filter: url(#glass-distortion);
-
-  /* Тінь і обведення для глибини */
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  z-index: 100;
+        .smart-menu {
+    display: flex;
+bottom: 0;
+    left: 0;
+    border-radius: 16px 16px 0 0;
+    justify-content: space-around;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 100%;
 }
 #timer {
             font-size: 20px;
@@ -1054,11 +833,14 @@ text-decoration: none;
             <a href="index.html">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup><sup><div id="timer"></div></sup></a>
         </div>
-        <button onclick="openSearch()">
-  <i class="material-icons">search</i>
-</button>
         <div style="display: flex; gap: 15px; margin-left: auto;">
-           <a href="#" id="plus-desktop-button"><i class="material-icons">add</i></a>
+            <a href="#" id="upload-link" style="display: none;">
+                <i class="material-icons">upload</i><span class="icon-text">Завантажити відео</span>
+            </a>
+            <div style="display: flex; gap: 15px; margin-left: auto;">
+            <a href="#" id="upload-link-photo" style="display: none;">
+                <i class="material-icons">upload</i><span class="icon-text">Завантажити фото</span>
+            </a>
             <a href="auth.html" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
@@ -1067,19 +849,12 @@ text-decoration: none;
             </a>
             <a href="#" id="logout-link" style="display: none;">
                 <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
-                </a>
-            <a href="#" id="account-link" onclick="openAccountModal()" style="display: none;">
+            <a href="#" id="account-link" style="display: none;">
                 <i class="material-icons">person</i><span class="icon-text" id="email">Завантаження...</span>
             </a>
-		    <button data-i18n="installBtn" id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
+		    <button id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
         </div>
     </nav>
-    <div id="search-box" class="search-box">
-  <input type="text" id="search-input" placeholder="Пошук..." oninput="searchVideos()">
-  <button id="close-search" class="search-close">
-    <i class="material-icons">close</i>
-  </button>
-  </div>
 <div id="rules-update-modal" class="ios-modal">
   <div class="ios-modal-content">
     <h2>🔔 Оновлені правила</h2>
@@ -1093,20 +868,43 @@ text-decoration: none;
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
   </div>
 </div>
+<div class="account-form" id="account-form">
+            <h2>Інформація про акаунт</h2>
+<div class="avatar"></div>
+<p id="name">Ім'я: Завантаження...</p><button id="button-name" onclick="editName()"><i class="material-icons">edit</i>Змінити</button>
+<div id="form-edit-name" style="display:none;">
+<input type="text" id="edit-name">
+<button id="save-name" onclick="saveEditName()">Зберегти</button>
+</div>
+<p id="supername">Прізвище: Завантаження...</p><button href="#" id="button-supername" onclick="editSuperName()"><i class="material-icons">edit</i>Змінити</button>
+<div id="form-edit-supername" style="display:none;">
+<input type="text" id="edit-supername">
+<button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
+</div>
+            <p id="user-info"></p>
+<p id="view">Дата народження: Завантаження...</p>
+	<div id="requests-container"></div>
+<button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
+        <label>
+       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
+          <input type="checkbox" id="show-nsfw-videos"><span id="slidernsfw" class="slider round"></span></label>
+        <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
 
-<div id="upload-modal" class="modal-overlay">
-  <div class="modal-window">
-    <div class="modal-header">
-      <span data-i18n="tab-button active" class="tab-button active" data-tab="video-tab">Відео</span>
-      <span data-i18n="tab-button" class="tab-button" data-tab="photo-tab">Фото</span>
-      <span class="close-modal">✖</span>
-    </div>
+<h1>Налаштування обмеження екранного часу</h1>
+    <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
+    <input type="number" id="maxTimeInput" value="45" min="1" />
+    <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
+    
+    <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
+    <label for="sleepStart">Час початку сну:</label>
+    <input type="time" id="sleepStart" value="21:00">
+    
+    <label for="sleepEnd">Час закінчення сну:</label>
+    <input type="time" id="sleepEnd" value="07:00">
+        </div>
 
-    <div class="modal-body">
-      <!-- Вкладка "Відео" -->
-      <div id="video-tab" class="tab-content active">
-                <div class="upload-form" id="upload-form">
-            <h2 data-i18n="label-video">Завантажити відео</h2>
+        <div class="upload-form" id="upload-form">
+            <h2>Завантажити відео</h2>
             <input type="text" id="video-title" placeholder="Назва відео">
             <textarea id="video-description" placeholder="Опис відео"></textarea>
         <p id="video-file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
@@ -1115,7 +913,7 @@ text-decoration: none;
 </label>
 <input type="file" id="video-file" accept="video/*">
 <br>
-<span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>	
+     <span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>	
      <br>
      <br>
    <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
@@ -1132,105 +930,20 @@ text-decoration: none;
                 <span id="progress-text">0%</span>
 <span id="time-left"></span>
             </div>
-           <div id="bandura-options" style="display:none; margin-top:10px;">
-  <h3>🎵 Налаштування бандури</h3>
-
-  <label>
-    <input type="checkbox" id="bandura-video">
-    Це бандурне відео
-  </label>
-
-  <br><br>
-
-  <label>
-    Тип виконання:
-    <select id="bandura-style">
-      <option value="Соло">Соло</option>
-      <option value="Дует">Дует</option>
-      <option value="Ансамбль">Ансамбль</option>
-    </select>
-  </label>
-
-  <br><br>
-
-  <label>
-    Тональність:
-    <input type="text" id="bandura-key" placeholder="Напр. D minor">
-  </label>
-
-  <br><br>
-
-  <label>
-    Рівень складності:
-    <select id="bandura-difficulty">
-      <option value="Початковий">Початковий</option>
-      <option value="Середній">Середній</option>
-      <option value="Високий">Високий</option>
-    </select>
-  </label>
-
-  <br><br>
-  <!-- Додаткові аудіо/відео опції -->
-  <label>
-    Темп (BPM):
-    <input type="number" id="bandura-tempo" min="40" max="240" placeholder="120">
-  </label>
-
-  <br><br>
-
-  <label>
-    Режим сповільненого відтворення:
-    <input type="checkbox" id="bandura-slow">
-    Доступний для навчання
-  </label>
-
-  <br><br>
-
-  <!-- Інформація про запис -->
-  <label>
-    Місце/подія виконання:
-    <input type="text" id="bandura-event" placeholder="Концерт, студія, онлайн">
-  </label>
-
-  <br><br>
-
-  <label>
-    Рік запису:
-    <input type="number" id="bandura-year" min="1900" max="2100" placeholder="2025">
-  </label>
-
-  <br><br>
-
-  <label>
-    Виконавець / Аранжувальник:
-    <input type="text" id="bandura-performer" placeholder="Ім'я виконавця або ансамблю">
-  </label>
-
-  <br><br>
-
-  <label>
-    Ключові слова / теги:
-    <input type="text" id="bandura-tags" placeholder="бандура, етно, концерт">
-  </label>
-
-  <br><br>
-
-  <!-- Маркери для навчання -->
-  <label>
-    Маркери розділів (куплет, приспів, соло):
-    <input type="text" id="bandura-markers" placeholder="0:00 - вступ, 0:30 - куплет">
-  </label>
-
-</div>
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
 <label>Публікуючи відео, ви погоджуєтеся з <a href="https://telegra.ph/Pravila-sp%D1%96lnoti-VideoVortex-09-14-2" target="_blank">правилами спільноти.</a></label>
 </div>
-      </div>
 
-      <!-- Вкладка "Фото" -->
-      <div id="photo-tab" class="tab-content">
-<div class="upload-photo-form" id="upload-photo-form">
-            <h2 data-i18n="label-photo">Завантажити фото</h2>
+<div class="edit-form" id="edit-form" style="display: none;">
+            <h2>Редагувати відео</h2>
+            <input type="text" id="edit-video-title" placeholder="Назва відео">
+            <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
+ <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
+            <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
+        </div>
+
+        <div class="upload-photo-form" id="upload-photo-form">
+            <h2>Завантажити фото</h2>
             <input type="text" id="photo-title" placeholder="Назва Фото">
             <textarea id="photo-description" placeholder="Опис Фото"></textarea>
             <p id="file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
@@ -1245,73 +958,19 @@ text-decoration: none;
             </div>
             <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="account-modal" class="modal-account-overlay">
-  <div class="modal-window">
-    <div class="modal-account-header">
-      <span class="close-account-modal">✖</span>
-    </div>
-    <div class="modal-account-body">
-<div class="account-form" id="account-form">
-            <h2>Інформація про акаунт</h2>
-<div class="avatar" id="profile-avatar"></div>
-<p id="name">Ім'я: Завантаження...</p><button id="button-name" onclick="editName()"><i class="material-icons">edit</i>Змінити</button>
-<div id="form-edit-name" style="display:none;">
-<input type="text" id="edit-name">
-<button id="save-name" onclick="saveEditName()">Зберегти</button>
-</div>
-<p id="supername">Прізвище: Завантаження...</p><button href="#" id="button-supername" onclick="editSuperName()"><i class="material-icons">edit</i>Змінити</button>
-<div id="form-edit-supername" style="display:none;">
-<input type="text" id="edit-supername">
-<button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
-</div>
-<select id="language-select">
-  <option value="en">English</option>
-  <option value="ua">Українська</option>
-</select>
-            <p id="user-info"></p>
-<p id="view">Дата народження: Завантаження...</p>
-	<div id="requests-container"></div>
-<button id="delete-account" onclick="deleteAccount()"><i class="material-icons">person_remove</i><span style="margin-left: 5px;">Видалити акаунт</span></button>
-        <label>
-       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
-          <input type="checkbox" id="show-nsfw-videos"><span id="slidernsfw" class="slider round"></span></label>
-        <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
-<h1>Налаштування обмеження екранного часу</h1>
-    <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
-    <input type="number" id="maxTimeInput" value="45" min="1" />
-    <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
-    
-    <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
-    <label for="sleepStart">Час початку сну:</label>
-    <input type="time" id="sleepStart" value="21:00">
-    
-    <label for="sleepEnd">Час закінчення сну:</label>
-    <input type="time" id="sleepEnd" value="07:00">
-                </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="edit-form" id="edit-form" style="display: none;">
-            <h2>Редагувати відео</h2>
-            <input type="text" id="edit-video-title" placeholder="Назва відео">
-            <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
- <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
-            <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
-        </div>
-
-       
 	<div  class="smart-menu">
- <a href="#" id="smart-video" onclick="video()">
-        <i class="material-icons">movie</i><span>Відео</span>
-    </a>
-<a href="#" id="plus-button"><i class="material-icons">add</i></a>
-       <a href="#" id="smart-post" onclick="post()">
+
+    <a href="#" id="smart-post" onclick="post()">
         <i class="material-icons">photo</i><span>Дописи</span>
+    </a>
+<a href="#" id="smart-upload-link">
+                <i class="material-icons">upload</i><span>Завантажити відео</span>
+            </a>
+<a href="#" id="smart-upload-link-photo">
+                <i class="material-icons">upload</i><span>Завантажити фото</span>
+            </a>
+    <a href="#" id="smart-video" onclick="video()">
+        <i class="material-icons">movie</i><span>Відео</span>
     </a>
 </div>
                 <div class="menu" style="align-items: center;">
@@ -1354,99 +1013,8 @@ text-decoration: none;
     </div>
 	<footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
 		<h3>Версія додатка:</h3>
-		<p>4.0.0</p>
+		<p>3.1.0</p>
 	</footer>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    initLanguageSwitcher("language-select");
-});
-</script>
-	<script>
-const modal = document.getElementById("upload-modal");
-const accountModal = document.getElementById("account-modal");
-const buttonAccountModal = document.getElementById("account-link");
-const closeAccountModal = document.querySelector(".close-account-modal");
-const plus = document.getElementById("plus-button");
-const closeBtn = document.querySelector(".close-modal");
-const tabButtons = document.querySelectorAll(".tab-button");
-const tabContents = document.querySelectorAll(".tab-content");
-
-function requireAuth(action) {
-    if (!auth.currentUser) {
-        alert("Щоб виконати цю дію, увійдіть у акаунт.");
-        window.location.href = "auth.html";
-        return false;
-    }
-    return true;
-}
-
-// Відкриття модалок
-plus?.addEventListener("click", () => {
-    if (!requireAuth()) return;
-    modal.style.display = "flex";
-});
-
-buttonAccountModal?.addEventListener("click", () => {
-    if (!requireAuth()) return;
-    accountModal.style.display = "flex";
-});
-
-// Закриття модалок
-closeAccountModal?.addEventListener("click", () => accountModal.style.display = "none");
-closeBtn?.addEventListener("click", () => modal.style.display = "none");
-
-// Закриття при кліку поза модалкою
-[modal, accountModal].forEach(m => {
-    m?.addEventListener("click", e => {
-        if (e.target === m) m.style.display = "none";
-    });
-});
-
-// Перемикання вкладок
-tabButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        tabContents.forEach(c => c.classList.remove("active"));
-
-        btn.classList.add("active");
-        const tabId = btn.dataset.tab;
-        document.getElementById(tabId)?.classList.add("active");
-    });
-});
-</script>
-	<script>
-	  const searchBox = document.getElementById("search-box");
-const closeSearch = document.getElementById("close-search");
-const searchInput = document.getElementById("search-input");
-
-function openSearch() {
-    searchBox.classList.add("open");
-    setTimeout(() => searchInput.focus(), 150);
-}
-
-closeSearch.addEventListener("click", () => {
-    searchBox.classList.remove("open");
-    searchInput.value = "";
-    searchVideos();
-});
-function searchVideos() {
-    const query = document.getElementById("search-input").value.toLowerCase();
-
-    const videos = document.querySelectorAll(".video-item");
-
-    videos.forEach(video => {
-        const title = video.dataset.title.toLowerCase();
-        const description = video.dataset.description.toLowerCase();
-        const author = video.dataset.author.toLowerCase();
-
-        if (title.includes(query) || description.includes(query) || author.includes(query)) {
-            video.parentElement.style.display = "block"; // показуємо картку
-        } else {
-            video.parentElement.style.display = "none"; // ховаємо всю картку
-        }
-    });
-}
-	</script>
 	<script>
 const fileInput = document.getElementById("photo-file");
 const fileName = document.getElementById("file-name");
@@ -1464,54 +1032,25 @@ videoInput.addEventListener("change", () => {
   const name = videoInput.files.length ? videoInput.files[0].name : "Файл не вибрано";
   videofileName.textContent = "📽 " + name;
 });
-
 </script>
 	        <script>
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
-  const month = today.getMonth() + 1;
+  const month = today.getMonth() + 1; // 1 = січень, 10 = жовтень, 11 = листопад
   const day = today.getDate();
 
-  // 🎃 Halloween 30–31 жовтня
   if (month === 10 && (day === 30 || day === 31)) {
     activateHalloweenMode();
-    applyIcons(halloweenIcons);
-    return;
-  }
-
-  // Вимкнення Halloween 1 листопада
-  if (month === 11 && day === 1) {
+  } else if (month === 11 && day === 1) {
     deactivateHalloweenMode();
-    restoreIcons();
-    return;
-  }
-
-  // 🎄 Новий рік — 25 грудня → 14 січня
-  const isNewYear =
-    (month === 12 && day >= 15) ||
-    (month === 1 && day <= 14);
-
-  if (isNewYear) {
-    activateNewYearMode();
-    applyIcons(newyearIcons);
-  } else {
-    deactivateNewYearMode();
-    restoreIcons();
   }
 });
 
-/* ================================
-   🎃 HALLOWEEN
-   ================================ */
-
 function activateHalloweenMode() {
   document.body.classList.add("halloween");
-  console.log("🎃 Halloween увімкнено!");
+  console.log("🎃 Хелловінський режим активовано!");
 
-  // Кожна кнопка, яку знайду, — перефарбую
-  styleButtons("#ff7518", "black");
-
-  // Додаємо 5 кажанів
+  // Додаємо літаючих кажанів 🦇
   for (let i = 0; i < 5; i++) {
     const bat = document.createElement("div");
     bat.className = "bat";
@@ -1525,6 +1064,50 @@ function activateHalloweenMode() {
     document.body.appendChild(bat);
   }
 
+  // Кольори кнопок
+  const buttonIds = [
+    "agree-btn",
+    "button-name",
+    "button-supername",
+    "save-name",
+    "save-supername",
+    "delete-account",
+    "upload-button",
+    "upload-photo-button",
+    "edit-button"
+  ];
+  buttonIds.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.dataset.originalBg = btn.style.backgroundColor;
+      btn.dataset.originalColor = btn.style.color;
+      btn.style.backgroundColor = "#ff7518";
+      btn.style.color = "black";
+    }
+  });
+
+  // Іконки меню
+  const icons = {
+    "account-link": `🕸️ <span class="icon-text" id="email">Завантаження...</span>`,
+    "logout-link": `🚪 <span class="icon-text">Вийти</span>`,
+    "upload-link": `🎃 <span class="icon-text">Завантажити відео</span>`,
+    "upload-link-photo": `🎃 <span class="icon-text">Завантажити фото</span>`,
+    "post": `👻 <span class="icon-text">Дописи</span>`,
+    "video": `🦇 <span class="icon-text">Відео</span>`,
+    "smart-upload-link": `🎃 <span style="margin-left:5px">Завантажити відео</span>`,
+    "smart-upload-link-photo": `🎃 <span style="margin-left:5px">Завантажити фото</span>`,
+    "smart-post": `👻 <span style="margin-left:5px">Дописи</span>`,
+    "smart-video": `🦇 <span style="margin-left:5px">Відео</span>`
+  };
+
+  for (const [id, html] of Object.entries(icons)) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.dataset.originalHTML = el.innerHTML;
+      el.innerHTML = html;
+    }
+  }
+
   // Туман
   const fog = document.createElement("div");
   fog.className = "fog";
@@ -1534,148 +1117,59 @@ function activateHalloweenMode() {
   fog.style.width = "100%";
   fog.style.height = "100%";
   fog.style.background =
-    "radial-gradient(circle, rgba(255,165,0,0.1), rgba(0,0,0,0.8))";
+    "radial-gradient(circle at 50% 50%, rgba(255,165,0,0.1), rgba(0,0,0,0.8))";
   fog.style.pointerEvents = "none";
   fog.style.zIndex = 999;
   document.body.appendChild(fog);
 }
 
+// 🧹 Повернення дизайну за замовчуванням (1 листопада)
 function deactivateHalloweenMode() {
+  console.log("🎃 Хелловінський режим вимкнено!");
   document.body.classList.remove("halloween");
+
+  // Прибираємо кажанів і туман
   document.querySelectorAll(".bat, .fog").forEach(el => el.remove());
-  resetButtonColors();
-}
 
-/* ================================
-   🎄 NEW YEAR
-   ================================ */
+  // Повертаємо звичайні кольори кнопок
+  const buttonIds = [
+    "agree-btn",
+    "button-name",
+    "button-supername",
+    "save-name",
+    "save-supername",
+    "delete-account",
+    "upload-button",
+    "upload-photo-button",
+    "edit-button"
+  ];
+  buttonIds.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn && btn.dataset.originalBg) {
+      btn.style.backgroundColor = btn.dataset.originalBg;
+      btn.style.color = btn.dataset.originalColor;
+    }
+  });
 
-let snowInterval = null;
+  // Повертаємо звичайні іконки
+  const allIcons = [
+    "account-link",
+    "logout-link",
+    "upload-link",
+    "upload-link-photo",
+    "post",
+    "video",
+    "smart-upload-link",
+    "smart-upload-link-photo",
+    "smart-post",
+    "smart-video"
+  ];
 
-function activateNewYearMode() {
-  document.body.classList.add("newyear");
-  console.log("🎄 Новий Рік увімкнено!");
-
-  // ❄️ Сніг
-  startSnow();
-
-  // 🎁 Логотип
-  const logo = document.getElementById("logo");
-  if (logo) {
-    if (!logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-    logo.src = "VideoVortex_new_year's_logo.jpg";
-  }
-
-  // Кнопки – зимові кольори
-  styleButtons("#b0e6ff", "#00344f");
-}
-      // Генерація сніжинок
-
-    // // Додавання сніжинок кожні 100 мс
-    // setInterval(createSnowflake, 100);
-function deactivateNewYearMode() {
-  document.body.classList.remove("newyear");
-
-  stopSnow();
-
-  const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) {
-    logo.src = logo.dataset.originalSrc;
-  }
-
-  resetButtonColors();
-}
-
-/* ================================
-   ❄️ SNOWFALL
-   ================================ */
-
-function startSnow() {
-  if (snowInterval) return;
-
-  snowInterval = setInterval(() => {
-    const flake = document.createElement("div");
-    flake.className = "snowflake";
-    flake.textContent = ["❄️", "❅", "❆"][Math.floor(Math.random() * 3)];
-    flake.style.position = "fixed";
-    flake.style.left = Math.random() * 100 + "vw";
-    flake.style.top = "-10px";
-    flake.style.fontSize = Math.random() * 25 + 10 + "px";
-    flake.style.opacity = Math.random() * 0.8 + 0.2;
-    flake.style.animation = "fall 4s linear forwards";
-    flake.style.pointerEvents = "none";
-    flake.style.zIndex = 9999;
-    document.body.appendChild(flake);
-    setTimeout(() => flake.remove(), 5000);
-  }, 150);
-}
-
-function stopSnow() {
-  clearInterval(snowInterval);
-  snowInterval = null;
-  document.querySelectorAll(".snowflake").forEach(f => f.remove());
-}
-
-/* ================================
-   🔳 ICON SYSTEM
-   ================================ */
-
-const halloweenIcons = {
-  "account-link": "🕸️",
-  "logout-link": "🚪",
-  "smart-post": "👻 <span>Дописи</span>",
-  "smart-video": "🦇 <span>Відео</span>",
-  "plus-button": "🎃",
-  "plus-desktop-button": "🎃"
-};
-
-const newyearIcons = {
-  "account-link": "🎄",
-  "logout-link": "🚪",
-  "smart-post": "❄️ <span>Дописи</span>",
-  "smart-video": "🎬 <span>Відео</span>",
-  "plus-button": "🎄",
-  "plus-desktop-button": "🎄"
-};
-
-function applyIcons(set) {
-  for (const [id, icon] of Object.entries(set)) {
+  allIcons.forEach(id => {
     const el = document.getElementById(id);
-    if (!el) continue;
-
-    if (!el.dataset.originalHTML) el.dataset.originalHTML = el.innerHTML;
-
-    // Беремо ключ для перекладу з data-i18n
-    const i18nKey = el.getAttribute("data-i18n");
-    const translatedText = i18nKey && translations[i18nKey] ? translations[i18nKey] : el.textContent.trim();
-
-    el.innerHTML = `${icon} <span class="icon-text">${translatedText}</span>`;
-  }
-}
-
-function restoreIcons() {
-  document.querySelectorAll("[data-original-html]").forEach(el => {
-    el.innerHTML = el.dataset.originalHTML;
-  });
-}
-
-/* ================================
-   🎨 BUTTON COLORS
-   ================================ */
-
-function styleButtons(bg, color) {
-  document.querySelectorAll("button, .btn").forEach(btn => {
-    btn.dataset.originalBg = btn.style.backgroundColor;
-    btn.dataset.originalColor = btn.style.color;
-    btn.style.backgroundColor = bg;
-    btn.style.color = color;
-  });
-}
-
-function resetButtonColors() {
-  document.querySelectorAll("button, .btn").forEach(btn => {
-    if (btn.dataset.originalBg) btn.style.backgroundColor = btn.dataset.originalBg;
-    if (btn.dataset.originalColor) btn.style.color = btn.dataset.originalColor;
+    if (el && el.dataset.originalHTML) {
+      el.innerHTML = el.dataset.originalHTML;
+    }
   });
 }
 </script>
@@ -1717,6 +1211,24 @@ window.addEventListener("load", showRulesModal);
   </script>
     <script>
 
+      // Генерація сніжинок
+    // function createSnowflake() {
+    //     const snowflake = document.createElement('div');
+    //     snowflake.classList.add('snowflake');
+    //     snowflake.textContent = '?';
+    //     snowflake.style.left = Math.random() * 100 + 'vw';
+    //     snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+    //     snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+    //     snowflake.style.setProperty('--x', Math.random());
+    //     document.body.appendChild(snowflake);
+
+    //     setTimeout(() => {
+    //         snowflake.remove();
+    //     }, 5000);
+    // }
+
+    // // Додавання сніжинок кожні 100 мс
+    // setInterval(createSnowflake, 100);
 function toggleSidebar() {
     var sidebar = document.querySelector('.menu');
     var content = document.querySelector('.content');
@@ -1813,14 +1325,41 @@ messaging.onMessage((payload) => {
             authForm.style.display = authForm.style.display === "none" ? "block" : "none";
             document.getElementById("register-form").style.display = "none";
         };
-
+        
         document.getElementById("register-link").onclick = function() {
             const registerForm = document.getElementById("register-form");
             registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
             document.getElementById("auth-form").style.display = "none";
         };
-        
-          
+        document.getElementById("account-link").onclick = function() {
+if (auth.currentUser) {
+const accountForm = document.getElementById("account-form");
+accountForm.style.display = accountForm.style.display === "none" ? "block" : "none";
+document.getElementById("upload-form").style.display = "none";
+} else {
+alert("Будь ласка, увійдіть, щоб подивитися інформацію про акаунт.");
+}
+};
+        document.getElementById("upload-link").onclick = function() {
+            if (auth.currentUser) {
+                const uploadVideoForm = document.getElementById("upload-form");
+                uploadVideoForm.style.display = uploadVideoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("account-form").style.display = "none";
+                document.getElementById("upload-photo-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
+            }
+        };
+	    document.getElementById("smart-upload-link").onclick = function() {
+            if (auth.currentUser) {
+                const uploadVideoForm = document.getElementById("upload-form");
+                uploadVideoForm.style.display = uploadVideoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("account-form").style.display = "none";
+                document.getElementById("upload-photo-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити відео.");
+            }
+        };
         document.getElementById("post").onclick = function() {
            document.getElementById("video-container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
@@ -1837,8 +1376,27 @@ messaging.onMessage((payload) => {
            document.getElementById("video-container").style.display = 'flex';
         document.getElementById("photo-container").style.display = 'none';
         }
-    
-            function blockScreenForVerification() {
+        document.getElementById("upload-link-photo").onclick = function() {
+            if (auth.currentUser) {
+                const uploadPhotoForm = document.getElementById("upload-photo-form");
+                uploadPhotoForm.style.display = uploadPhotoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("upload-form").style.display = "none";
+                document.getElementById("account-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити фото.");
+            }
+        };
+ document.getElementById("smart-upload-link-photo").onclick = function() {
+            if (auth.currentUser) {
+                const uploadPhotoForm = document.getElementById("upload-photo-form");
+                uploadPhotoForm.style.display = uploadPhotoForm.style.display === "none" ? "block" : "none";
+                document.getElementById("upload-form").style.display = "none";
+                document.getElementById("account-form").style.display = "none";
+            } else {
+                alert("Будь ласка, увійдіть, щоб завантажити фото.");
+            }
+        };
+	    function blockScreenForVerification() {
     document.body.innerHTML = `
                 <h1>Підтвердьте вашу електронну пошту</h1>
                 <p>Ми надіслали вам лист на пошту. Підтвердіть свій акаунт! Якщо не бачите, то перевірте папку "Спам".</p>
@@ -1954,8 +1512,8 @@ function deleteAccount() {
 }
 
 
-
-
+        
+      
     document.getElementById("show-nsfw-videos").addEventListener("change", function() {
 if (auth.currentUser) {
         showNSFW = this.checked;  // Update the variable based on the checkbox state
@@ -1964,38 +1522,6 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
-    function enableBanduraUI(role) {
-    const banduraBlock = document.getElementById("bandura-options");
-    if (!banduraBlock) return;
-
-    if (role === "bandura" || role === "moderator") {
-        banduraBlock.style.display = "block";
-    } else {
-        banduraBlock.style.display = "none";
-    }
-}
-function sanitizeHTML(str) {
-    const div = document.createElement("div");
-    div.innerText = str;
-    return div.innerHTML;
-}
-
-function getSafeBanduraHTML(banduraExtra) {
-    if (!banduraExtra) return "";
-    const s = str => str ? sanitizeHTML(str) : "";
-
-    let html = `<span style="color:#ffd700;">🎵 Бандура</span>`;
-    html += `<span style="opacity:0.7;"> (${s(banduraExtra.style)}, ${s(banduraExtra.difficulty)})</span>`;
-
-    if (banduraExtra.tempo) html += `<br>Темп: ${s(banduraExtra.tempo.toString())} BPM`;
-    if (banduraExtra.event) html += `<br>Подія: ${s(banduraExtra.event)}`;
-    if (banduraExtra.year) html += `<br>Рік: ${s(banduraExtra.year.toString())}`;
-    if (banduraExtra.performer) html += `<br>Виконавець: ${s(banduraExtra.performer)}`;
-    if (banduraExtra.tags) html += `<br>Теги: ${s(banduraExtra.tags)}`;
-    if (banduraExtra.markers) html += `<br>Маркери: ${s(banduraExtra.markers)}`;
-
-    return html;
-}
 
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
@@ -2003,27 +1529,24 @@ function loadVideos() {
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
+    
 
     database.ref("videos").once("value").then(snapshot => {
         snapshot.forEach(childSnapshot => {
             const videoData = childSnapshot.val();
             const videoKey = childSnapshot.key;
 
-            // 🔹 1. Фільтри
+            // 🔹 1. ФІЛЬТРИ ВІДОБРАЖЕННЯ
             if (videoData.nsfw && !showNSFWGlobal) return;
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
-            // 🔹 2. Створення відео
+            // 🔹 3. СТВОРЕННЯ ВІДЕО
             const videoElement = document.createElement("video");
-            videoElement.classList.add("video-item");
             videoElement.src = videoData.url;
-            videoElement.dataset.title = videoData.title || "";  
-            videoElement.dataset.description = videoData.description || "";  
-            videoElement.dataset.author = videoData.author || "";  
-            videoElement.controls = false;  
+            videoElement.classList.add("video-item");
 
-            // 🔹 3. Коментарі
+            // 🔹 4. Коментарі
             const commentSection = document.createElement("div");
             commentSection.classList.add("video-comment");
 
@@ -2047,7 +1570,7 @@ function loadVideos() {
                 `;
             }
 
-            // 🔹 4. Клік по відео
+            // 🔹 5. Обробка кліку по відео
             videoElement.onclick = () => {
                 const viewedKey = `viewed_${videoKey}`;
                 if (!localStorage.getItem(viewedKey)) {
@@ -2070,7 +1593,7 @@ function loadVideos() {
                 window.location.href = `video.html?${videoParams.toString()}`;
             };
 
-            // 🔹 5. Приватні коментарі
+            // 🔹 6. Приватні коментарі (віковий фільтр)
             const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
             const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
             if (privateComment && privateCheckbox) {
@@ -2079,7 +1602,7 @@ function loadVideos() {
                 privateCheckbox.disabled = !showPrivate;
             }
 
-            // 🔹 6. Інформація про відео
+            // 🔹 7. Інформація про відео
             const infoElement = document.createElement("div");
             infoElement.classList.add("video-info");
 
@@ -2093,25 +1616,20 @@ function loadVideos() {
                 });
                 window.location.href = `profile.html?${infoParams.toString()}`;
             };
-
+const videoTitle = document.createElement("div");
+videoTitle.innerText = `${videoData.title}`;
             const detailsElement = document.createElement("div");
             detailsElement.classList.add("video-details");
-
-            const safeTitle = sanitizeHTML(videoData.title || "Без назви");
-            const safeAuthor = sanitizeHTML(videoData.author || "Анонім");
-            const safeBanduraHTML = getSafeBanduraHTML(videoData.banduraExtra);
-
+            const privateLabel = videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : "";
+            const nsfwLabel = videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : "";
             detailsElement.innerHTML = `
-                ${safeTitle}
-                ${videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : ""}
-                ${videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : ""}
-                <br>${safeBanduraHTML}<br>
-                Автор: ${safeAuthor}<br>
-                Переглядів: ${videoData.views || 0}<br>
-                Дата публікації: ${videoData.publishDate || "Не вказана"}
-            `;
+  ${privateLabel} ${nsfwLabel}<br>
+   Автор: ${videoData.author || "Анонім"}<br>
+   Переглядів: ${videoData.views || 0}<br>
+   Дата публікації: ${videoData.publishDate || "Не вказана"}
+`;
 
-            // 🔹 7. Меню дій
+            // 🔹 8. Меню дій
             const moreBtn = document.createElement("button");
             moreBtn.classList.add("more-btn");
             moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
@@ -2128,7 +1646,9 @@ function loadVideos() {
                 deleteButton.style.color = "white";
                 deleteButton.style.marginTop = "10px";
                 deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-                deleteButton.addEventListener("click", () => actionMenu.style.display = "none");
+                deleteButton.addEventListener("click", () => {
+                    actionMenu.style.display = "none";
+                });
                 actionMenu.appendChild(deleteButton);
             }
 
@@ -2140,7 +1660,9 @@ function loadVideos() {
                 editButton.style.color = "white";
                 editButton.style.marginTop = "10px";
                 editButton.onclick = () => editVideo(videoKey, videoData);
-                editButton.addEventListener("click", () => actionMenu.style.display = "none");
+                editButton.addEventListener("click", () => {
+                    actionMenu.style.display = "none";
+                });
                 actionMenu.appendChild(editButton);
             }
 
@@ -2149,20 +1671,21 @@ function loadVideos() {
             });
 
             infoElement.appendChild(avatar);
+            infoElement.appendChild(videoTitle);
             infoElement.appendChild(detailsElement);
             infoElement.appendChild(moreBtn);
             infoElement.appendChild(actionMenu);
 
-            // 🔹 8. Контейнер відео
+            // 🔹 9. Додаємо все у контейнер
             const container = document.createElement("div");
             container.classList.add("video-container");
-            container.appendChild(infoElement);
-            container.appendChild(commentSection);
             container.appendChild(videoElement);
+            container.appendChild(commentSection);
+            container.appendChild(infoElement);
 
             videoGallery.appendChild(container);
 
-            // 🔹 9. Завантаження коментарів
+            // 🔹 10. Завантаження коментарів
             loadComments(videoKey, videoData.email);
         });
     });
@@ -2258,21 +1781,6 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
 // Функція для генерації секретного ключа
 function uploadVideo() {
 const startTime = Date.now();
-const isBandura = document.getElementById("bandura-video")?.checked || false;
-
-
-const banduraExtra = isBandura ? {
-    style: document.getElementById("bandura-style").value || "Соло",
-    key: document.getElementById("bandura-key").value || "",
-    difficulty: document.getElementById("bandura-difficulty").value || "Початковий",
-    tempo: document.getElementById("bandura-tempo").value || "",
-    slowMode: document.getElementById("bandura-slow").checked,
-    event: document.getElementById("bandura-event").value || "",
-    year: document.getElementById("bandura-year").value || "",
-    performer: document.getElementById("bandura-performer").value || "",
-    tags: document.getElementById("bandura-tags").value || "",
-    markers: document.getElementById("bandura-markers").value || ""
-} : null;
     const videoTitle = document.getElementById("video-title").value;
     const videoDescription = document.getElementById("video-description").value;
     const videoFile = document.getElementById("video-file").files[0];
@@ -2330,8 +1838,7 @@ const banduraExtra = isBandura ? {
                         private: privateVideo,
                         domainRestrict: domainRestrict,
                         nsfw: isNSFW,
-                        publishDate: currentDate,
-                        banduraExtra
+                        publishDate: currentDate
                     }).then(() => {
                         alert("Відео завантажено!");
                         loadVideos(); 
@@ -2632,9 +2139,6 @@ auth.onAuthStateChanged((user) => {
     database.ref("users/" + uid).once("value").then(snapshot => {
         const userData = snapshot.val();
         const birthStr = userData?.birthdate;
-        const role = userData?.role || "user";
-
-    
 
         // 🔹 Якщо немає email або дати народження — показати модальне вікно
         if (!userData?.email || !birthStr) {
@@ -2702,8 +2206,9 @@ auth.onAuthStateChanged((user) => {
 
         // 🔹 Завантаження відео з фільтром за статтю
         loadVideos();
-        enableBanduraUI(role);
+
     }).catch(err => console.error("Помилка отримання даних користувача:", err));
+
     updateUI(user);
     toggleUploadVisibility();
 });
@@ -2806,13 +2311,10 @@ function loadPhotos() {
             const avatar = document.createElement("div");
             avatar.classList.add("avatar");
             avatar.innerText = photoData.author ? photoData.author.charAt(0).toUpperCase() : "???";
-
+            
             const detailsphotoElement = document.createElement("div");
             detailsphotoElement.classList.add("photo-details");
-           const safephotoTitle = sanitizeHTML(photoData.title || "Без назви");
-const safephotoAuthor = sanitizeHTML(photoData.author || "Анонім");
-const safephotoDescription = sanitizeHTML(photoData.description || "Анонім");
-            detailsphotoElement.innerHTML = `<strong>${safephotoTitle}</strong><br>Автор: ${safephotoAuthor}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${safephotoDescription}`;
+            detailsphotoElement.innerHTML = `<strong>${photoData.title || "Анонімний користувач"}</strong><br>Автор: ${photoData.author}<br>Дата публікації: ${photoData.publishDate || "Не вказана"}<br>Опис:${photoData.description || "Не вказано"}`;
 
              if (currentUserEmail === photoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
                 const deletePhotoButton = document.createElement("button");
@@ -2830,7 +2332,7 @@ const safephotoDescription = sanitizeHTML(photoData.description || "Анонім
             Photocontainer.classList.add("photo-container");
             Photocontainer.appendChild(photoElement);
             Photocontainer.appendChild(infophotoElement);
-
+            
             photoGallery.appendChild(Photocontainer);
         });
     });
@@ -3030,9 +2532,9 @@ setInterval(updateTimer, 1000);
 
 
         // Завантажуємо налаштування при завантаженні сторінки
-
+        
 window.onload = function() {
-        loadSettings();
+	loadSettings();
         loadVideos();
         loadPhotos();
         const commentsContainer = document.getElementById('comments');
@@ -3040,6 +2542,7 @@ window.onload = function() {
     loadComments();
   }
     };
+
     </script>
     <!-- 🔰 РЕЖИМ ДЛЯ ЛЮДЕЙ ІЗ ЗМР -->
 <script>
@@ -3050,8 +2553,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (accountForm && !document.getElementById("zmr-mode-toggle")) {
     const zmrToggleContainer = document.createElement("div");
     zmrToggleContainer.innerHTML = `
-      <label style="display:flex;align-items:center;gap:10px;margin-top:15px;">
-        <span>Режим для людей із ЗМР</span>
+      <label style="display:flex; text-align: center; gap:10px;margin-top:15px;">
+        <span>Режим для людей із ЗМР <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span>
         <label class="switch">
           <input type="checkbox" id="zmr-mode-toggle">
           <span class="slider round"></span>
@@ -3091,6 +2594,7 @@ const simpleTextMap = {
   "Вимкнути коментарі": "Вимкнути відгуки",
   "Видалений акаунт": "Видалений профіль",
   "Дата народження": "День нар.",
+  "Стать": "Стать",
   "Зберегти налаштування": "ОК",
   "Зберегти": "OK",
   "Зрозуміло": "Добре",
