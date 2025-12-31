@@ -26,7 +26,19 @@ text-align: center;
   margin-top: 120px;
   width:100%;
 }
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
 
+body.newyear {
+  background: linear-gradient(180deg, #001a2e, #003d66);
+}
+
+.snowflake {
+  user-select: none;
+}
 .tab button {
   background-color: inherit;
   border: none;
@@ -217,6 +229,56 @@ function openTab(evt, tabName) {
 document.addEventListener("DOMContentLoaded", () => {
     const defaultTab = document.getElementById("defaultOpen");
     if (defaultTab) defaultTab.click();
+});
+</script>
+<script>
+let snowInterval = null;
+
+function startSnow() {
+  if (snowInterval) return;
+
+  snowInterval = setInterval(() => {
+    const flake = document.createElement("div");
+    flake.className = "snowflake";
+    flake.textContent = ["❄️","❅","❆"][Math.floor(Math.random() * 3)];
+    flake.style.position = "fixed";
+    flake.style.left = Math.random() * 100 + "vw";
+    flake.style.top = "-10px";
+    flake.style.fontSize = Math.random() * 22 + 10 + "px";
+    flake.style.opacity = Math.random() * 0.7 + 0.3;
+    flake.style.pointerEvents = "none";
+    flake.style.zIndex = 9999;
+    flake.style.animation = "fall 5s linear forwards";
+    document.body.appendChild(flake);
+
+    setTimeout(() => flake.remove(), 6000);
+  }, 200);
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+
+  // ❄️ ТІЛЬКИ 1 СІЧНЯ
+  const isJanFirst = month === 1 && day === 1;
+
+  if (!isJanFirst) return;
+
+  document.body.classList.add("newyear");
+
+  // 🎅 Логотип
+  const logo = document.getElementById("logo");
+  if (logo) {
+    logo.dataset.originalSrc = logo.src;
+    logo.src = "VideoVortex_new_year's_logo.jpg";
+  }
+
+  // ❄️ Сніг
+  startSnow();
+
+  console.log("🎄 New Year mode (auth.html)");
 });
 </script>
 <script>
