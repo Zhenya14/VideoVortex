@@ -331,6 +331,7 @@ function startSnow() {
   if (snowInterval) return;
 
   snowInterval = setInterval(() => {
+    const container = document.getElementById("video-container");
     const flake = document.createElement("div");
     flake.className = "snowflake";
     flake.textContent = ["❄️","❅","❆"][Math.floor(Math.random() * 3)];
@@ -342,7 +343,7 @@ function startSnow() {
     flake.style.pointerEvents = "none";
     flake.style.zIndex = 9999;
     flake.style.animation = "fall 5s linear forwards";
-    document.body.appendChild(flake);
+    container.appendChild(flake);
 
     setTimeout(() => flake.remove(), 6000);
   }, 180);
