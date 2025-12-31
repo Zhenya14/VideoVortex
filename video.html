@@ -311,6 +311,58 @@ transform: scale(0.95); /* легке стиснення */
 <p id="message" style="display: none;">Схожих відео немає 😔</p>
 </div>
 <script>
+let snowInterval = null;
+
+function startSnow() {
+  if (snowInterval) return;
+
+  snowInterval = setInterval(() => {
+    const flake = document.createElement("div");
+    flake.className = "snowflake";
+    flake.textContent = ["❄️","❅","❆"][Math.floor(Math.random() * 3)];
+    flake.style.position = "fixed";
+    flake.style.left = Math.random() * 100 + "vw";
+    flake.style.top = "-10px";
+    flake.style.fontSize = Math.random() * 22 + 10 + "px";
+    flake.style.opacity = Math.random() * 0.8 + 0.2;
+    flake.style.pointerEvents = "none";
+    flake.style.zIndex = 9999;
+    flake.style.animation = "fall 5s linear forwards";
+    document.body.appendChild(flake);
+
+    setTimeout(() => flake.remove(), 6000);
+  }, 180);
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
+  const month = today.getMonth() + 1; // 1–12
+  const day = today.getDate();
+
+  // ❄️ ТІЛЬКИ 1 СІЧНЯ
+  const isJanFirst = month === 12 && day === 31;
+
+  if (isJanFirst) {
+    document.body.classList.add("newyear");
+
+    // ❄️ запускаємо сніг, якщо функція існує
+    if (typeof startSnow === "function") {
+      startSnow();
+    }
+
+    // 🎅 міняємо логотип
+    const logo = document.getElementById("logo");
+    if (logo && !logo.dataset.originalSrc) {
+      logo.dataset.originalSrc = logo.src;
+      logo.src = "VideoVortex_new_year's_logo.jpg";
+    }
+
+    console.log("❄️ Новий рік (1 січня) — сніг увімкнено у video.html");
+  }
+});
+</script>
+<script>
     let currentUserEmail = null;
 /* ================= FIREBASE INIT ================= */
 const firebaseConfig = {
