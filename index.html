@@ -1774,6 +1774,7 @@ const accountModal = document.getElementById("account-modal");
 const buttonAccountModal = document.getElementById("account-link");
 const closeAccountModal = document.querySelector(".close-account-modal");
 const plus = document.getElementById("plus-button");
+const plusDesktop = document.getElementById("plus-desktop-button");
 const closeBtn = document.querySelector(".close-modal");
 const tabButtons = document.querySelectorAll(".tab-button");
 const tabContents = document.querySelectorAll(".tab-content");
@@ -1789,6 +1790,10 @@ function requireAuth(action) {
 
 // Відкриття модалок
 plus?.addEventListener("click", () => {
+    if (!requireAuth()) return;
+    modal.style.display = "flex";
+});
+plusDesktop?.addEventListener("click", () => {
     if (!requireAuth()) return;
     modal.style.display = "flex";
 });
