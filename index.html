@@ -2509,24 +2509,33 @@ videoElement.controls = false;
 videoElement.preload = "metadata";
 videoElement.playsInline = true;
 
-videoElement.dataset.title = videoData.title || "";  
-videoElement.dataset.description = videoData.description || "";  
-videoElement.dataset.author = videoData.author || "";  
-
-// 🔹 source замість прямого src
+// 🔹 source ПЕРШИМ
 const source = document.createElement("source");
 source.src = videoData.url;
 source.type = "video/mp4";
 videoElement.appendChild(source);
 
-// 🔁 fallback: якщо браузер визначив як аудіо
-videoElement.addEventListener("error", () => {
-    const audio = document.createElement("audio");
-    audio.controls = true;
-    audio.src = videoData.url;
-    audio.style.width = "100%";
-    videoElement.replaceWith(audio);
+// 🔹 тепер можна слухати metadata
+videoElement.addEventListener("loadedmetadata", () => {
+    // якщо немає відео-доріжки
+    if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.src = videoData.url;
+        audio.className = "audio-item";
+        audio.style.width = "100%";
+
+        videoElement.replaceWith(audio);
+    }
 });
+
+// datasets
+videoElement.dataset.title = videoData.title || "";  
+videoElement.dataset.description = videoData.description || "";  
+videoElement.dataset.author = videoData.author || "";
+
+
+
 
             // 🔹 3. Коментарі
             const commentSection = document.createElement("div");
@@ -2845,9 +2854,11 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-
+const metadata = {
+    contentType: "video/mp4"
+};
     const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
-    const uploadTask = storageRef.put(videoFile);
+    const uploadTask = storageRef.put(videoFile, metadata);
 
     uploadTask.on("state_changed",
         (snapshot) => {
