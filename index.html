@@ -19,7 +19,13 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
-
+<script defer>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("✅ SW зареєстровано"))
+      .catch(err => console.error("❌ Помилка SW:", err));
+  }
+</script>
 
 <!-- SVG Filter (для анімації рідкого скла) -->
 <!-- SVG Filter (для анімації рідкого скла) -->
@@ -38,13 +44,6 @@
         />
     </filter>
 </svg>
-<script defer>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("✅ SW зареєстровано"))
-      .catch(err => console.error("❌ Помилка SW:", err));
-  }
-</script>
 <style>
     .bg-liquid-glass {
   position: fixed;
