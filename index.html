@@ -5,7 +5,9 @@
     <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
-    <link rel="icon" href="VideoVortex_logo.ico">
+    <link rel="" href="VideoVortex_logo.ico">
+<script src="i18n.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any/dist/heic2any.min.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -17,7 +19,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-" href="s/-192.png">
 
 <script defer>
   if ("serviceWorker" in navigator) {
@@ -2244,6 +2246,9 @@ const database = firebase.database();
 const storage = firebase.storage();
 const messaging = firebase.messaging();
 
+// ==========================
+// Реєстрація Service Worker
+// ==========================
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
     .then(registration => {
@@ -2283,8 +2288,8 @@ async function enablePushNotifications(userId) {
 // ==========================
 messaging.onMessage((payload) => {
   console.log("📬 Нове повідомлення:", payload);
-  const { title, body, icon } = payload.notification;
-  new Notification(title, { body, icon });
+  const { title, body,  } = payload.notification;
+  new Notification(title, { body,  });
 });
 
          document.getElementById("auth-link").onclick = function() {
@@ -2498,39 +2503,14 @@ function loadVideos() {
             if (videoData.private && videoData.email !== currentUserEmail) return;
             if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
-        const videoElement = document.createElement("video");
-videoElement.classList.add("video-item");
-videoElement.controls = false;
-videoElement.preload = "metadata";
-videoElement.playsInline = true;
-
-// 🔹 source ПЕРШИМ
-const source = document.createElement("source");
-source.src = videoData.url;
-source.type = "video/mp4";
-videoElement.appendChild(source);
-
-// 🔹 тепер можна слухати metadata
-videoElement.addEventListener("loadedmetadata", () => {
-    // якщо немає відео-доріжки
-    if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
-        const audio = document.createElement("audio");
-        audio.controls = true;
-        audio.src = videoData.url;
-        audio.className = "audio-item";
-        audio.style.width = "100%";
-
-        videoElement.replaceWith(audio);
-    }
-});
-
-// datasets
-videoElement.dataset.title = videoData.title || "";  
-videoElement.dataset.description = videoData.description || "";  
-videoElement.dataset.author = videoData.author || "";
-
-
-
+            // 🔹 2. Створення відео
+            const videoElement = document.createElement("video");
+            videoElement.classList.add("video-item");
+            videoElement.src = videoData.url;
+            videoElement.dataset.title = videoData.title || "";  
+            videoElement.dataset.description = videoData.description || "";  
+            videoElement.dataset.author = videoData.author || "";  
+            videoElement.controls = false;  
 
             // 🔹 3. Коментарі
             const commentSection = document.createElement("div");
@@ -2849,11 +2829,9 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const fileName = `${Date.now()}_${videoFile.name}`;
-const storagePath = `videos/raw/${fileName}`;
 
-const storageRef = storage.ref(storagePath);
-const uploadTask = storageRef.put(videoFile);
+    const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
     uploadTask.on("state_changed",
         (snapshot) => {
@@ -2872,10 +2850,8 @@ const uploadTask = storageRef.put(videoFile);
             if (timeLeftEl) timeLeftEl.innerText = `${Math.ceil(timeLeft)}s`;
             if (progressContainer) progressContainer.style.display = "block";
         },
-                    (error) => {
-                alert("Помилка завантаження відео.");
-            },
-            () => {
+        () => alert("Помилка завантаження відео"),
+        () => {
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                 const currentDate = new Date().toLocaleDateString();
 
@@ -2883,9 +2859,6 @@ const uploadTask = storageRef.put(videoFile);
                     title: videoTitle,
                     description: videoDescription,
                     url: downloadURL,
-                    storagePath, 
-                    processed: false,        // ⬅️ ВАЖЛИВО
-                    processing: true, 
                     author: channel.name,
                     authorAvatar: channel.avatar,
                     channelKey: channel.key,
