@@ -11,13 +11,13 @@
   "lang": "uk",
   "icons": [
     {
-      "src": "/VideoVortex_logo_192x192.png",
+      "src": "/VideoVortex_logo_192×192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/VideoVortex_logo_512x512.png",
+      "src": "/VideoVortex_logo_512×512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
