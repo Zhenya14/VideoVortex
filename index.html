@@ -16,21 +16,21 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
         <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
-<link rel="manifest" href="manifest.json">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script><link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("service-worker.js")
-      .then(() => console.log("✅ VideoVortex PWA активовано"))
-      .catch(err => console.error("❌ SW помилка:", err));
-  });
-}
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Реєструємо SW з урахуванням підпапки
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('Service Worker зареєстровано! Область дії:', reg.scope))
+        .catch(err => console.log('Помилка реєстрації SW:', err));
+    });
+  }
 </script>
+
+
 <!-- SVG Filter (для анімації рідкого скла) -->
 <!-- SVG Filter (для анімації рідкого скла) -->
 <svg style="display: none">
