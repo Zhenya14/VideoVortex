@@ -5,17 +5,15 @@
     <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
-    <link rel="icon" href="VideoVortex_logo.ico" type="image/x-icon">
-<script src="i18n.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/heic2any/dist/heic2any.min.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <link rel="icon" href="VideoVortex_logo.ico">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-        <!-- Google tag (gtag.js) -->
+	<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1e22">
@@ -28,7 +26,13 @@
       .catch(err => console.error("❌ Помилка SW:", err));
   }
 </script>
+	<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'G-JQTQ0P69EF');
+</script>
 <!-- SVG Filter (для анімації рідкого скла) -->
 <!-- SVG Filter (для анімації рідкого скла) -->
 <svg style="display: none">
