@@ -2893,7 +2893,9 @@ const uploadTask = storageRef.put(videoFile);
                     title: videoTitle,
                     description: videoDescription,
                     url: downloadURL,
-                    storagePath: storagePath, 
+                    storagePath, 
+                    processed: false,        // ⬅️ ВАЖЛИВО
+                    processing: true, 
                     author: channel.name,
                     authorAvatar: channel.avatar,
                     channelKey: channel.key,
