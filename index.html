@@ -2853,11 +2853,11 @@ function uploadVideo() {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
-const metadata = {
-    contentType: "video/mp4"
-};
-    const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
-    const uploadTask = storageRef.put(videoFile, metadata);
+const fileName = `${Date.now()}_${videoFile.name}`;
+const storagePath = `videos/raw/${fileName}`;
+
+const storageRef = storage.ref(storagePath);
+const uploadTask = storageRef.put(videoFile);
 
     uploadTask.on("state_changed",
         (snapshot) => {
@@ -2885,6 +2885,7 @@ const metadata = {
                     title: videoTitle,
                     description: videoDescription,
                     url: downloadURL,
+                    storagePath: storagePath, 
                     author: channel.name,
                     authorAvatar: channel.avatar,
                     channelKey: channel.key,
