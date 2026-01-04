@@ -1,17 +1,19 @@
-const CACHE_NAME = "videovortex-cache-v2";
+const CACHE_NAME = "videovortex-cache-v3";
+
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/VideoVortex_logo_192x192.png",
-  "/VideoVortex_logo_512x512.png"
+  "./",
+  "index.html",
+  "manifest.json",
+  "VideoVortex_logo_192x192.png",
+  "VideoVortex_logo_512x512.png"
 ];
 
 self.addEventListener("install", event => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      // Додаємо файли по одному, щоб один битий файл не зупинив увесь процес
+      return cache.addAll(ASSETS_TO_CACHE).catch(err => console.error("Помилка кешування:", err));
     })
   );
 });
@@ -35,6 +37,6 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
-      .catch(() => caches.match("/index.html"))
+      .catch(() => caches.match("index.html"))
   );
 });
