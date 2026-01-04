@@ -21,12 +21,15 @@
 <meta name="theme-color" content="#1c1e22">
 <link rel="apple-touch-" href="s/-192.png">
 
-<script defer>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("✅ SW зареєстровано"))
-      .catch(err => console.error("❌ Помилка SW:", err));
-  }
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then(() => console.log("✅ VideoVortex PWA активовано"))
+      .catch(err => console.error("❌ SW помилка:", err));
+  });
+}
 </script>
 <!-- SVG Filter (для анімації рідкого скла) -->
 <!-- SVG Filter (для анімації рідкого скла) -->
