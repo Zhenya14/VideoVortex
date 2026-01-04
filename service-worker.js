@@ -4,8 +4,8 @@ const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/VideoVortex_logo_192x192.png",
-  "/VideoVortex_logo_512x512.png"
+  "/VideoVortex_logo_192×192.png",
+  "/VideoVortex_logo_512×512.png"
 ];
 
 // Встановлення
