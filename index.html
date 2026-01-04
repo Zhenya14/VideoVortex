@@ -2878,7 +2878,7 @@ const uploadTask = storageRef.put(videoFile);
             if (timeLeftEl) timeLeftEl.innerText = `${Math.ceil(timeLeft)}s`;
             if (progressContainer) progressContainer.style.display = "block";
         },
-        () => alert("Помилка завантаження відео"),
+        () => alert("Помилка завантаження відео" + error.message),
         () => {
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                 const currentDate = new Date().toLocaleDateString();
