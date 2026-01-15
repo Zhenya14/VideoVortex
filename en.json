@@ -3,5 +3,6 @@
   "label-photo": "Upload photo",
   "label-video": "Upload video",
   "tab-button active": "Video",
-  "tab-button": "Photo"
+  "tab-button": "Photo",
+  "birthdate": "Enter your date of birth"
 }
