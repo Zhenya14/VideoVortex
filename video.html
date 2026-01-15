@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const day = today.getDate();
 
     // Новорічний період (1 січня)
-    const isNewYearPeriod = (month === 12 && day >= 25) || (month === 1 && day <= 21);
+    const isNewYearPeriod = (month === 12 && day >= 15) || (month === 1 && day <= 21);
     if(isNewYearPeriod && logo && !logo.dataset.originalSrc) {
         logo.dataset.originalSrc = logo.src;
         logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
