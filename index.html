@@ -3229,24 +3229,27 @@ loadChannelSelect();
   const today = new Date();
       const m = today.getMonth() + 1;
       const d = today.getDate();
+const isHalloween = m === 10 && (d === 30 || d === 31);
+const isNewYear =
+  (m === 12 && d >= 15) ||
+  (m === 1 && d <= 21);
 
-      // 🎃 Halloween
-      if (m === 10 && (d === 30 || d === 31)) {
-        activateHalloweenMode();
-        applyIcons(halloweenIcons, userData);
-        return;
-      }
+if (isHalloween) {
+  activateHalloweenMode();
+  applyIcons(halloweenIcons, userData);
+} else {
+  deactivateHalloweenMode();
+}
 
-      // 🎄 New Year
-      const isNewYear =
-        (m === 12 && d >= 15) ||
-        (m === 1 && d <= 21);
-
-      if (isNewYear) {
-        activateGirland();
-        activateNewYearMode();
-        applyIcons(newyearIcons, userData);
-      }
+if (isNewYear) {
+  activateGirland();
+  activateNewYearMode();
+  applyIcons(newyearIcons, userData);
+} else {
+  deactivateGirland();
+  deactivateNewYearMode();
+  restoreIcons();
+}
         // 🔹 Якщо немає email або дати народження — показати модальне вікно
         if (!userData?.email || !birthStr) {
             const modal = document.getElementById("birthdate-modal");
