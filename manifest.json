@@ -1,0 +1,32 @@
+{
+  "name": "VideoVortex",
+  "short_name": "Vortex",
+  "description": "VideoVortex — незалежна платформа для відео без цензури",
+  "start_url": "/VideoVortex/",
+  "scope": "/VideoVortex/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1c1e22",
+  "orientation": "any",
+  "lang": "uk",
+  "icons": [
+    {
+      "src": "VideoVortex_logo_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "VideoVortex_logo_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "VideoVortex_logo_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

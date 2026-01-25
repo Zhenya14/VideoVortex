@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+.btn-container {
+    display: flex;
+    flex-basis: auto;
+    justify-content: center;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+.downloads-list {
+    font-size: 30px;
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+    width: 100%;
+    max-width: 350px;
+    margin-top: -3px;
+}
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
+        }
+                body { 
+            margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
+    color: #e2e8f0;
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .photo-container-title { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .snowflake {
+    position: fixed;
+    top: -30px;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+}
+@keyframes fall {
+    0% { transform: translateX(0) translateY(0); opacity: 1; }
+    100% { transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh); opacity: 0; }
+}
+::-webkit-scrollbar {
+width: 10px;
+background-color: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background-color: #888;
+border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}
+::-webkit-scrollbar {
+height: 10px;
+}
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
+        .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+            width: 100%; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+        button { 
+            background: #4facfe; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+        button:hover { 
+            background: #00f2fe;
+        }
+        #video-player {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+    
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .photo-container {
+            display: flex;
+            margin-top: 20px;
+           flex-direction: column-reverse; 
+        }
+        /* Стилі для зображень з класом .photo-item */
+img.photo-item {
+    width: 100%;  /* Зображення заповнює ширину контейнера */
+    height: auto; /* Пропорції зображення зберігаються */
+    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+    border-radius: 8px; /* Округлення кутів зображення */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
+    }
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+             .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+        #delete-account { 
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: color 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: red; 
+            color: white; 
+            cursor: pointer;
+        }
+.nsfw-label {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
+    display: inline-block;
+}
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #1c1e22;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
+
+.menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: #4facfe;
+}
+
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 0px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+        nav a {
+height: 50px;
+align-items: center;
+    justify-content: center;
+display: flex;
+    padding: 0px 5px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        nav a:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+nav a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+        .icon-text {
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .icon-text {
+                display: none;
+            }
+        }
+ #nsfw-toggle {
+        display: none;
+}
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <nav>
+            <a href="index.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+        </div>
+    </nav>
+    <div id="video-container">
+        <video id="video-player" controls></video>
+        <div class="video-info" id="video-info">
+<div class="avatar" id="avatar"></div>
+<div class="details" id="details"></div>
+            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
+        </div>
+    </div>
+<h3>Схожі відео:</h3>
+<div id="target-videos">
+<p id="message" style="display: none;">Схожих відео немає 😔</p>
+</div>
+<script>
+// ===================== Сніг =====================
+let snowInterval = null;
+
+function createSnowflake() {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.textContent = ["❄️","❅","❆"][Math.floor(Math.random()*3)];
+    snowflake.style.left = Math.random()*100 + "vw";
+    snowflake.style.fontSize = (Math.random()*15+10) + "px";
+    snowflake.style.opacity = Math.random()*0.8+0.2;
+    snowflake.style.setProperty('--x', Math.random());
+
+    const duration = Math.random()*3+4; // 4–7 сек
+    snowflake.style.animation = `fall ${duration}s linear forwards`;
+
+    document.body.appendChild(snowflake);
+    setTimeout(()=>snowflake.remove(), duration*1000);
+}
+
+function startSnow() {
+    if(snowInterval) return;
+    snowInterval = setInterval(createSnowflake, 150);
+}
+
+function stopSnow() {
+    clearInterval(snowInterval);
+    snowInterval = null;
+    document.querySelectorAll(".snowflake").forEach(f=>f.remove());
+}
+
+// ===================== Пасхалка потрійного кліку =====================
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function launchNewYearEasterEgg() {
+    // Додатковий сніг на пасхалку
+    startSnow();
+    alert("🎉 Пасхалка Нового Року! Сніг йде! 🎉");
+}
+
+// ===================== Ініціалізація =====================
+document.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logo");
+    const today = new Date();
+    const month = today.getMonth()+1;
+    const day = today.getDate();
+
+    // Новорічний період (1 січня)
+    const isNewYearPeriod = (month === 12 && day >= 15) || (month === 1 && day <= 25);
+    if(isNewYearPeriod && logo && !logo.dataset.originalSrc) {
+        logo.dataset.originalSrc = logo.src;
+        logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
+    }
+
+    // ---------- СНІГ 1 СІЧНЯ ----------
+    if(month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- Потрійний клік для пасхалки ----------
+    if(logo) {
+        logo.addEventListener("click", () => {
+            logoClickCount++;
+            if(logoClickCount === 1) {
+                logoClickTimer = setTimeout(()=>{logoClickCount=0;},1200);
+            }
+            if(logoClickCount===3){
+                clearTimeout(logoClickTimer);
+                logoClickCount=0;
+                launchNewYearEasterEgg();
+            }
+        });
+    }
+});
+</script>
+<script>
+    let currentUserEmail = null;
+/* ================= FIREBASE INIT ================= */
+const firebaseConfig = {
+    apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+    authDomain: "videovortex-235cd.firebaseapp.com",
+    databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "videovortex-235cd",
+    storageBucket: "videovortex-235cd.appspot.com",
+    messagingSenderId: "681594250269",
+    appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const database = firebase.database();
+
+/* ================= HELPERS ================= */
+function sanitize(text) {
+    return String(text ?? "")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function showNotFound() {
+    document.body.innerHTML = `
+        <div style="
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            background:#0d1117;
+            color:white;
+            text-align:center;
+        ">
+            <h1>🎬 Відео не знайдено</h1>
+            <p>Можливо, було видалене або недоступне.</p>
+            <a href="index.html" style="color:#4facfe;">⬅ На головну</a>
+        </div>
+    `;
+}
+
+/* ================= GET VIDEO KEY ================= */
+const params = new URLSearchParams(location.search);
+const videoKey = params.get("key");
+
+if (!videoKey) {
+    showNotFound();
+    throw new Error("No video key");
+}
+
+/* ================= LOAD VIDEO ================= */
+const videoPlayer = document.getElementById("video-player");
+const detailsEl = document.getElementById("details");
+const avatar = document.getElementById("avatar");
+database.ref("videos/" + videoKey).once("value").then(snapshot => {
+    if (!snapshot.exists()) {
+        showNotFound();
+        return;
+    }
+
+    const video = snapshot.val();
+
+    /* ===== BASIC RENDER ===== */
+    document.title = sanitize(video.title);
+    videoPlayer.src = video.url;
+            avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
+    detailsEl.innerHTML = `
+        <h2>${sanitize(video.title)}</h2>
+        <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
+        <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
+        <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
+        <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
+    `;
+
+    /* ===== UPDATE VIEWS (ONCE PER USER) ===== */
+    const viewedKey = "viewed_" + videoKey;
+    if (!localStorage.getItem(viewedKey)) {
+        database.ref("videos/" + videoKey + "/views")
+            .transaction(v => (v || 0) + 1);
+        localStorage.setItem(viewedKey, "1");
+    }
+
+    /* ===== SIMILAR VIDEOS ===== */
+    loadSimilarVideos(video);
+
+}).catch(err => {
+    console.error(err);
+    showNotFound();
+});
+
+/* ================= SIMILAR VIDEOS ================= */
+function loadSimilarVideos(currentVideo) {
+    const container = document.getElementById("target-videos");
+    const message = document.getElementById("message");
+    container.innerHTML = "";
+
+    let found = false;
+
+    database.ref("videos").once("value").then(snapshot => {
+        snapshot.forEach(child => {
+            const v = child.val();
+
+            if (!v || v.nsfw) return;
+            if (v.title === currentVideo.title) return;
+            if (v.private && v.email !== currentUserEmail) return;
+            if (v.views === currentVideo.views) {
+                found = true;
+            if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
+                const wrap = document.createElement("div");
+                wrap.style.marginBottom = "20px";
+
+                const title = document.createElement("h3");
+                title.innerText = v.title;
+                title.style.color = "white";
+
+                const vid = document.createElement("video");
+                vid.src = v.url;
+                vid.muted = true;
+                vid.loop = true;
+                vid.autoplay = true;
+                vid.style.width = "100%";
+                vid.onclick = () => {
+                    location.href = `video.html?key=${child.key}`;
+                };
+
+                wrap.appendChild(title);
+                wrap.appendChild(vid);
+                container.appendChild(wrap);
+            }
+        });
+
+        if (!found && message) {
+            message.style.display = "block";
+        }
+    });
+}
+</script>
+</body>
+    </html>
