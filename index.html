@@ -3043,86 +3043,94 @@ document.getElementById("video-file").addEventListener("change", async (e) => {
 });
 
 function uploadVideo() {
-const startTime = Date.now();
-const isBandura = document.getElementById("bandura-video")?.checked || false;
+    const startTime = Date.now();
+    const storage = firebase.storage();
 
+    const isBandura = document.getElementById("bandura-video")?.checked || false;
 
-const banduraExtra = isBandura ? {
-    style: document.getElementById("bandura-style").value || "Соло",
-    key: document.getElementById("bandura-key").value || "",
-    difficulty: document.getElementById("bandura-difficulty").value || "Початковий",
-    tempo: document.getElementById("bandura-tempo").value || "",
-    slowMode: document.getElementById("bandura-slow").checked,
-    event: document.getElementById("bandura-event").value || "",
-    year: document.getElementById("bandura-year").value || "",
-    performer: document.getElementById("bandura-performer").value || "",
-    tags: document.getElementById("bandura-tags").value || "",
-    markers: document.getElementById("bandura-markers").value || ""
-} : null;
-    const videoTitle = document.getElementById("video-title").value;
-    const videoDescription = document.getElementById("video-description").value;
-    const videoFile = document.getElementById("video-file").files[0];
-    const isNSFW = document.getElementById("nsfw-checkbox").checked;
-    const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
-    const privateVideo = document.getElementById("private-checkbox").checked;
-     const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+    const banduraExtra = isBandura ? {
+        style: document.getElementById("bandura-style")?.value || "Соло",
+        key: document.getElementById("bandura-key")?.value || "",
+        difficulty: document.getElementById("bandura-difficulty")?.value || "Початковий",
+        tempo: document.getElementById("bandura-tempo")?.value || "",
+        slowMode: document.getElementById("bandura-slow")?.checked || false,
+        event: document.getElementById("bandura-event")?.value || "",
+        year: document.getElementById("bandura-year")?.value || "",
+        performer: document.getElementById("bandura-performer")?.value || "",
+        tags: document.getElementById("bandura-tags")?.value || "",
+        markers: document.getElementById("bandura-markers")?.value || ""
+    } : null;
+
+    const videoTitle = document.getElementById("video-title")?.value;
+    const videoDescription = document.getElementById("video-description")?.value;
+    const videoFile = document.getElementById("video-file")?.files[0];
+    const isNSFW = document.getElementById("nsfw-checkbox")?.checked || false;
+    const disabledComments = document.getElementById("disabled-comments-checkbox")?.checked || false;
+    const privateVideo = document.getElementById("private-checkbox")?.checked || false;
+    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
     if (!videoTitle || !videoFile) {
         alert("Будь ласка, заповніть всі поля!");
         return;
     }
 
-    // Отримуємо UID поточного користувача
-    const uid = firebase.auth().currentUser.uid;
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        alert("Будь ласка, увійдіть, щоб завантажити відео!");
+        return;
+    }
+    const uid = user.uid;
 
-    // Беремо дані користувача з Firebase
     database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val();
-        const videoAuthor = `${userData.name} ${userData.supername}`; // автоматично
+        const userData = snapshot.val() || {};
+        const videoAuthor = `${userData.name || ""} ${userData.supername || ""}`.trim();
+        const email = user.email || "";
 
-        // Завантаження відео у Firebase Storage
         const storageRef = storage.ref(`videos/${videoFile.name}`);
         const uploadTask = storageRef.put(videoFile);
 
         uploadTask.on('state_changed',
-            (snapshot) => {
-                // Прогрес завантаження
+            snapshot => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          const timeElapsed = (Date.now() - startTime) / 1000;
-            const speed = snapshot.bytesTransferred / timeElapsed;
-            const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
-            const timeLeft = remainingBytes / speed;
-      document.getElementById("time-left").innerText =`${(timeLeft)}s`;
-      document.getElementById("upload-progress").value = progress;
+                const timeElapsed = (Date.now() - startTime) / 1000;
+                const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 0.01);
+                const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
+                const timeLeft = isFinite(remainingBytes / speed) ? (remainingBytes / speed) : 0;
+
+                document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
+                document.getElementById("upload-progress").value = progress;
                 document.getElementById("progress-text").innerText = `Конвертується: ${Math.round(progress)}%`;
                 document.getElementById("progress-container").style.display = "block";
             },
-            (error) => {
+            error => {
+                console.error(error);
                 alert("Помилка завантаження відео.");
             },
             () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
                     const currentDate = new Date().toLocaleDateString();
 
-                    // Запис у базу
                     database.ref("videos").push({
                         title: videoTitle,
-                        author: videoAuthor,       // Ім'я і прізвище з профілю
-                        email: currentUserEmail,
-                        disabledComments: disabledComments,
+                        author: videoAuthor,
+                        email: email,
+                        disabledComments,
                         url: downloadURL,
                         description: videoDescription,
                         views: 0,
                         private: privateVideo,
-                        domainRestrict: domainRestrict,
+                        domainRestrict,
                         nsfw: isNSFW,
                         publishDate: currentDate,
                         banduraExtra
                     }).then(() => {
                         alert("Відео завантажено!");
-                        loadVideos(); 
                         document.getElementById("upload-form").reset();
                         document.getElementById("progress-container").style.display = "none";
+                        loadVideos();
+                    }).catch(err => {
+                        console.error("Помилка запису відео у БД:", err);
+                        alert("Не вдалося зберегти відео.");
                     });
                 });
             }
@@ -3132,7 +3140,6 @@ const banduraExtra = isBandura ? {
         alert("Не вдалося отримати дані профілю.");
     });
 }
-
 
 // Генеруємо або отримуємо ключ для відео
 function getVideoKey(videoKey) {
