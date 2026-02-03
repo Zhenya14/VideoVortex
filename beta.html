@@ -1510,7 +1510,7 @@ text-decoration: none;
     <i class="material-icons">menu</i>
 </a>
 <img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
-            <a href="index.html">
+            <a href="beta.html">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup><sup><div id="timer"></div></sup></a>
         </div>
         <button onclick="openSearch()">
@@ -1518,10 +1518,10 @@ text-decoration: none;
 </button>
         <div style="display: flex; gap: 15px; margin-left: auto;">
            <a href="#" id="plus-desktop-button"><i class="material-icons">add</i></a>
-            <a href="auth.html" id="auth-link">
+            <a href="auth-beta.html" id="auth-link">
                 <i class="material-icons">login</i><span class="icon-text">Увійти</span>
             </a>
-            <a href="auth.html" id="register-link">
+            <a href="auth-beta.html" id="register-link">
                 <i class="material-icons">person_add</i><span class="icon-text">Реєстрація</span>
             </a>
             <a href="#" id="logout-link" style="display: none;">
@@ -1881,7 +1881,7 @@ const tabContents = document.querySelectorAll(".tab-content");
 function requireAuth(action) {
     if (!auth.currentUser) {
         alert("Щоб виконати цю дію, увійдіть у акаунт.");
-        window.location.href = "auth.html";
+        window.location.href = "auth-beta.html";
         return false;
     }
     return true;
@@ -2781,7 +2781,7 @@ function loadVideos() {
                 avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?",
                 author: videoData.author
             });
-            window.location.href = `profile.html?${infoParams.toString()}`;
+            window.location.href = `profile-beta.html?${infoParams.toString()}`;
         };
 
         const detailsElement = document.createElement("div");
