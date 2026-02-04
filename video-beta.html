@@ -979,34 +979,35 @@ auth.onAuthStateChanged(user => {
     listenUserReaction();
     
     database.ref("users/" + currentUid).once("value").then(async snapshot => {
-        const userData = snapshot.val();
-        const birthStr = userData?.birthdate;
-        
-                // 🔹 Обчислення віку
-        if (birthStr) {
-            let birthDate;
-            const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-            if (match) {
-                const [, d, m, y] = match;
-                birthDate = new Date(`${y}-${m}-${d}`);
-            } else {
-                birthDate = new Date(birthStr);
-            }
+      const userData = snapshot.val();
+      const birthStr = userData?.birthdate;
+      
+      // 🔹 Обчислення віку
+      if (birthStr) {
+        let birthDate;
+        const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+        if (match) {
+          const [, d, m, y] = match;
+          birthDate = new Date(`${y}-${m}-${d}`);
+        } else {
+          birthDate = new Date(birthStr);
+        }
 
-            if (!isNaN(birthDate)) {
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const mm = today.getMonth() - birthDate.getMonth();
-                if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
-                userAge = age;
-                
-              renderCommentSection(currentVideo, videoKey);
+        if (!isNaN(birthDate)) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const mm = today.getMonth() - birthDate.getMonth();
+          if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
+          userAge = age;
+
+          renderCommentSection(currentVideo, videoKey);
           updatePrivateCheckbox(videoKey);
           if (currentVideo) loadComments(videoKey, currentVideo.email);
         }
+      }
+    });
   }
 });
-
 /* ---------- USER REACTION ---------- */
 function listenUserReaction() {
   const ref = database.ref(`reactions/${videoKey}/${currentUid}`);
