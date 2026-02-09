@@ -2606,6 +2606,21 @@ if (auth.currentUser) {
 alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
 }
     });
+    async function isUserBlockedByMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${me.uid}/blockedUsers/${targetUid}`).once("value");
+  return snap.exists();
+}
+
+async function didUserBlockMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${targetUid}/blockedUsers/${me.uid}`).once("value");
+  return snap.exists();
+}
     function enableBanduraUI(role) {
     const banduraBlock = document.getElementById("bandura-options");
     if (!banduraBlock) return;
@@ -2671,6 +2686,14 @@ function loadVideos() {
 
         // 🔹 1. Фільтри
         if (videoData.nsfw && !showNSFWGlobal) return;
+          if (firebase.auth().currentUser && video.authorUid) {
+    const iBlocked = isUserBlockedByMe(video.authorUid);
+    const heBlockedMe = didUserBlockMe(video.authorUid);
+
+    if (iBlocked || heBlockedMe) {
+      return;
+    }
+  }
         if (videoData.private && videoData.email !== currentUserEmail) return;
         if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
@@ -3414,7 +3437,7 @@ async function uploadComment(videoKey, videoOwnerEmail) {
 
 
 function toggleUploadVisibility() {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 968;
     const upload = document.getElementById("upload-link");
     const photoUpload = document.getElementById("upload-link-photo");
     const smartPhotoUpload = document.getElementById("smart-upload-link-photo");
@@ -3502,7 +3525,42 @@ function updateUI(user) {
     });
   }
 }
+async function backfillAuthorUidForUser() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
+  const uid = user.uid;
+  const email = user.email;
+
+  const paths = ["videos", "photos", "comments"];
+
+  for (const path of paths) {
+    const snap = await database.ref(path).once("value");
+
+    const updates = [];
+
+    snap.forEach(child => {
+      const data = child.val();
+
+      // Знаходимо ТІЛЬКИ контент цього користувача
+      if (data.email === email) {
+        // Якщо ще нема authorUid — додаємо
+        if (!data.authorUid) {
+          updates.push(
+            database.ref(`${path}/${child.key}`).update({
+              authorUid: uid
+            })
+          );
+        }
+      }
+    });
+
+    if (updates.length > 0) {
+      await Promise.all(updates);
+      console.log(`Оновлено ${updates.length} записів у ${path}`);
+    }
+  }
+}
 // Слухач стану автентифікації
 
 const avatarEl = document.querySelector(".avatar");
@@ -3516,6 +3574,7 @@ auth.onAuthStateChanged(async (user) => {
     if (!user) return;
 loadPhotoChannelSelect();
 loadChannelSelect();
+backfillAuthorUidForUser();
     enablePushNotifications(user.uid);
     currentUserEmail = user.email;
 
