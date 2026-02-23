@@ -815,7 +815,7 @@ width: 80%;  /* Ширина поля вводу */
   </div>
 </div>
     <div id="video-container">
-        <video id="video-player" controls preload="auto"></video>
+        <video id="video-player" controls preload="none"></video>
         <div class="video-info" id="video-info">
 <div class="avatar" id="avatar"></div>
 <div class="details" id="details"></div>
@@ -1134,7 +1134,6 @@ async function didUserBlockMe(targetUid) {
   return snap.exists();
 }
 /* ================= LOAD VIDEO ================= */
-/* ================= LOAD VIDEO ================= */
 const videoPlayer = document.getElementById("video-player");
 const detailsEl = document.getElementById("details");
 const avatar = document.getElementById("avatar");
@@ -1153,22 +1152,31 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
 
     const urlObj = new URL(url);
     const pathParts = urlObj.pathname.split("/");
-    const filename = pathParts.pop(); // ім'я файлу.mp4
-    const dir = pathParts.join("/");  // шлях до директорії
+    const filename = pathParts.pop();
+    const dir = pathParts.join("/");
     const fastFilename = filename.replace(".mp4", "_fast.mp4");
     const fastUrl = urlObj.origin + dir + "/videos_fast/" + fastFilename;
 
     try {
       const res = await fetch(fastUrl, { method: "HEAD" });
-      if (res.ok) return fastUrl; // fast файл існує
+      if (res.ok) return fastUrl;
     } catch (e) {
       console.warn("Fast video не знайдено:", e);
     }
-    return url; // fallback на оригінал
+    return url;
   }
 
   videoPlayer.src = await getVideoUrl(video.url);
+  videoPlayer.preload = "none"; // починаємо завантаження
   videoPlayer.load();
+
+  // -------------------------------
+  // Чекати, поки можна буде повністю програти
+  // -------------------------------
+  videoPlayer.addEventListener("canplaythrough", () => {
+    console.log("Відео повністю завантажено, можна відтворювати");
+    videoPlayer.play().catch(err => console.warn("Автовідтворення заблоковано:", err));
+  });
 
   // -------------------------------
   // Деталі відео
