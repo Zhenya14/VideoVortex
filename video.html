@@ -28,7 +28,34 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   animation: scaleIn 0.25s ease;
 }
-
+#notification-modal {
+  display: none;
+  position: fixed;
+  z-index: 100000000000;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.modal-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
 .ios-modal-header {
   padding: 16px;
   text-align: center;
@@ -711,13 +738,13 @@ width: 80%;  /* Ширина поля вводу */
     padding: 8px 12px;
 }
 
-.comments {
+.comment {
   overflow-y: auto;        /* вертикальний скрол */
     max-height: 100%;        /* повна висота */
     padding-right: 10px; 
     text-align: left;
 }
-.comments * {
+.comment * {
     white-space: normal;
     word-break: break-word;
 }
@@ -779,6 +806,14 @@ width: 80%;  /* Ширина поля вводу */
     </div>
   </div>
 </ios-modal>
+<div id="notification-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+  </div>
+</div>
     <div id="video-container">
         <video id="video-player" controls></video>
         <div class="video-info" id="video-info">
@@ -808,7 +843,7 @@ width: 80%;  /* Ширина поля вводу */
                 <div id="comments-root"></div>
 <h3>Схожі відео:</h3>
 <div id="target-videos">
-<p id="message">Схожих відео немає 😔</p>
+<p id="similar-message">Схожих відео немає 😔</p>
 </div>
 <script src="i18n.js"></script>
 <script>
@@ -909,7 +944,15 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const database = firebase.database();
+const message = document.getElementById("message");
+const notification = document.getElementById("notification-modal");
 
+function showNotificationModal() {
+  notification.style.display = "flex";
+}
+function closeNotificationModal() {
+  notification.style.display = "none";
+}
 /* ================= HELPERS ================= */
 function sanitize(text) {
   return String(text ?? "")
@@ -994,9 +1037,11 @@ async function uploadComment(videoKey, videoOwnerEmail) {
     const commentText = commentInput.value.trim();
     const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
-    if (!commentText) return showNotificationModal();
+    if (!commentText) {
+    applyTranslations();
     message.innerHTML = "Коментар не може бути порожнім.";
-
+    return
+}
     let commentData = commentText;
     if (isPrivate) {
         const videoKeyLocal = getVideoKey(videoKey);
@@ -1061,6 +1106,8 @@ if (!videoKey) {
 
   root.innerHTML = "";
   root.appendChild(commentSection);
+  updatePrivateCheckbox();
+  loadComments(videoKey, videoData.email);
   }
 function updatePrivateCheckbox(videoKey) {
     const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
@@ -1099,16 +1146,6 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
 
   const video = snapshot.val();
   currentVideo = video;
-
-  if (firebase.auth().currentUser && video.authorUid) {
-    const iBlocked = await isUserBlockedByMe(video.authorUid);
-    const heBlockedMe = await didUserBlockMe(video.authorUid);
-
-    if (iBlocked || heBlockedMe) {
-      showNotFound();
-      return;
-    }
-  }
 
 
   document.title = sanitize(video.title);
@@ -1170,7 +1207,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
         }
 
         const commentDiv = document.createElement("div");
-        commentDiv.className = "comments";
+        commentDiv.className = "comment";
 const avatarComment = document.createElement("div");
 avatarComment.className = "avatar";
 avatarComment.title = data.commentAuthor;
@@ -1184,6 +1221,7 @@ if (data.commentAuthor == "Видалений акаунт") {
         const userEl = document.createElement("strong");
         if (data.commentAuthor == "Видалений акаунт") {
  userEl.setAttribute('data-i18n', 'account-deleted');
+ userEl.textContent = "Видалений акаунт";
 } else {
  userEl.textContent = data.commentAuthor;
 }
@@ -1204,8 +1242,14 @@ if (data.commentAuthor == "Видалений акаунт") {
         commentDiv.appendChild(textEl);
         commentDiv.appendChild(br);
         commentDiv.appendChild(dateEl);
-        applyTranslations();
-        commentsContainer.appendChild(commentDiv);
+        
+        for (const data of commentsArray) {
+
+commentsContainer.appendChild(commentDiv);
+
+}
+
+applyTranslations();
     }
 }
 function showModalBlocked() {
@@ -1247,7 +1291,7 @@ async function confirmBlockUser() {
 /* ================= SIMILAR VIDEOS ================= */
 function loadSimilarVideos(currentVideo) {
   const container = document.getElementById("target-videos");
-  const message = document.getElementById("message");
+  const message = document.getElementById("similar-message");
   container.innerHTML = "";
 
   let found = false;
