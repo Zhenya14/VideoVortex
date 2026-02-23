@@ -20,3 +20,11 @@ function initLanguageSwitcher(selectId) {
 
     select.addEventListener("change", e => loadLanguage(e.target.value));
 }
+function applyTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[key]) {
+            el.innerText = translations[key];
+        }
+    });
+}
