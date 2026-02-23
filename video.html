@@ -1167,16 +1167,8 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
   }
 
   videoPlayer.src = await getVideoUrl(video.url);
-  videoPlayer.preload = "none"; // починаємо завантаження
-  videoPlayer.load();
-
-  // -------------------------------
-  // Чекати, поки можна буде повністю програти
-  // -------------------------------
-  videoPlayer.addEventListener("canplaythrough", () => {
-    console.log("Відео повністю завантажено, можна відтворювати");
-    videoPlayer.play().catch(err => console.warn("Автовідтворення заблоковано:", err));
-  });
+videoPlayer.preload = "auto";
+videoPlayer.load();
 
   // -------------------------------
   // Деталі відео
@@ -1223,6 +1215,7 @@ function getVideoKey(videoKey) {
 
 // Просте шифрування/дешифрування (можна замінити на AES)
 async function loadComments(videoKey, videoOwnerEmail) { 
+
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     commentsContainer.innerHTML = "";
 
@@ -1237,45 +1230,56 @@ async function loadComments(videoKey, videoOwnerEmail) {
     }
 
     const videoKeyLocal = getVideoKey(videoKey);
-    const commentsArray = [];
 
-    snapshot.forEach(childSnapshot => {
-        commentsArray.push(childSnapshot.val());
-    });
+    snapshot.forEach(async childSnapshot => {
 
-    for (const data of commentsArray) {
-        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
-            continue; // Пропускаємо приватні коментарі, якщо користувач не автор або власник відео
+        const data = childSnapshot.val();
+
+        if (data.isPrivate &&
+            !(data.email === currentUserEmail ||
+              videoOwnerEmail === currentUserEmail)) {
+            return;
         }
 
         const commentDiv = document.createElement("div");
         commentDiv.className = "comment";
-const avatarComment = document.createElement("div");
-avatarComment.className = "avatar";
-avatarComment.title = data.commentAuthor;
 
-if (data.commentAuthor == "Видалений акаунт") {
- avatarComment.textContent = "👻";
- 
-} else {
-  avatarComment.textContent = getInitials(data.commentAuthor);
-}
+        const avatarComment = document.createElement("div");
+        avatarComment.className = "avatar";
+
+        avatarComment.textContent =
+            data.commentAuthor == "Видалений акаунт"
+            ? "👻"
+            : getInitials(data.commentAuthor);
+
         const userEl = document.createElement("strong");
+
         if (data.commentAuthor == "Видалений акаунт") {
- userEl.setAttribute('data-i18n', 'account-deleted');
- userEl.textContent = "Видалений акаунт";
-} else {
- userEl.textContent = data.commentAuthor;
-}
+
+            userEl.setAttribute('data-i18n','account-deleted');
+            userEl.textContent = "Видалений акаунт";
+
+        } else {
+
+            userEl.textContent = data.commentAuthor;
+
+        }
 
         const textEl = document.createElement("span");
+
         if (data.isPrivate) {
-            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
+
+            textEl.textContent =
+              ": " + await decryptText(data.comment, videoKeyLocal);
+
         } else {
+
             textEl.textContent = ": " + data.comment;
+
         }
 
         const br = document.createElement("br");
+
         const dateEl = document.createElement("small");
         dateEl.textContent = data.publishDate;
 
@@ -1284,15 +1288,12 @@ if (data.commentAuthor == "Видалений акаунт") {
         commentDiv.appendChild(textEl);
         commentDiv.appendChild(br);
         commentDiv.appendChild(dateEl);
-        
-        for (const data of commentsArray) {
 
-commentsContainer.appendChild(commentDiv);
+        commentsContainer.appendChild(commentDiv);
 
-}
+    });
 
-applyTranslations();
-    }
+    applyTranslations();
 }
 function showModalBlocked() {
   document.getElementById("block-user-modal").style.display = "flex";
