@@ -62,18 +62,38 @@
     </filter>
 </svg>
 <style>
+.btn-liquid-glass {
+  position: fixed;
+  bottom: 20px;
+  left: 92%;
+  transform: translateX(-80%);
+  width: 20%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 0px;
+  border-radius: 89px;
+  background: rgba(255, 255, 255, 0.1);
+  /* Тінь і обведення для глибини */
+  z-index: 1000;
+  isolation: isolate;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        @apply bg-muted/25;
+    }
     .bg-liquid-glass {
   position: fixed;
   bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
+  left: 38%;
+  transform: translateX(-52%);
+  width: 70%;
   max-width: 600px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 0px 0px;
-  border-radius: 56px;
+  border-radius: 65px;
   background: rgba(255, 255, 255, 0.1);
   /* Тінь і обведення для глибини */
   z-index: 1000;
@@ -178,7 +198,7 @@ width: 80%;  /* Ширина поля вводу */
     }
 
     @supports not (hanging-punctuation:first) {
-        .bg-liquid-glass, .comment-liquid-glass, .tg-popup-card {
+        .bg-liquid-glass, .btn-liquid-glass, .comment-liquid-glass, .tg-popup-card {
             backdrop-filter: url(#displacementFilter) blur(2px);
         }
     }
@@ -272,6 +292,17 @@ input:checked + .slider:before {
   display: none;
   position: fixed;
   z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+#notification-modal {
+  display: none;
+  position: fixed;
+  z-index: 100000000000;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(20px);
@@ -638,7 +669,23 @@ transform: scale(0.95); /* легке стиснення */
   transform: translateY(-4px);
   box-shadow: 0 0 26px rgba(0, 255, 255, .18);
 }
+.photo-container {
+  background: rgba(8, 12, 20, 0.9);
+  border-radius: 18px;
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 255, .12);
+  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
+  transition: transform .2s ease, box-shadow .25s ease;
+  display: flex;
+  flex-direction: column-reverse;
+  position: relative;
+  z-index: 1;
+}
 
+.photo-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 26px rgba(0, 255, 255, .18);
+}
 video,
 audio {
   border-radius: 14px;
@@ -662,9 +709,9 @@ audio {
 margin-top: 50px;
 width: 90%;
         }
-        .photo-container {
+        #photo-container {
     margin-top: 50px;
-    flex-direction: column-reverse;
+    width: 90%;
         }
         /* Стилі для зображень з класом .photo-item */
 img.photo-item {
@@ -782,12 +829,42 @@ img.photo-item {
     opacity: 0;
     animation: fadeIn 0.5s forwards;
 }
+.smart-menu .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  margin-left: 32%;
+}
+
+.smart-menu .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+}
 
 /* Анімація появи */
 @keyframes fadeIn {
     to {
         opacity: 1;
     }
+}
+#update-app-btn {
+    display: none;
+    width: 90%;
+    padding: 10px 16px;
+    border-radius: 69px;
+    position: fixed;
+    bottom: 20px;
+    border: none;
+    background: linear-gradient(135deg, white, blue, black);
+    color: #fff;
+    font-weight: 600;
+    z-index: 100000000;
 }
         .video-details {
   width: 100%;
@@ -804,6 +881,36 @@ border: 2px solid #333333;
     outline: none;
     font-size: 1em;
         }
+        .media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.media-item {
+  position: relative;
+}
+
+.media-item img,
+.media-item video {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
 #delete-account:hover {
 border-color: red;
 box-shadow: 0 0 15px red; /* світіння */
@@ -904,7 +1011,7 @@ transform: scale(0.95); /* легке стиснення */
   margin-left: 240px;
 }
 #open-menu {
-        display: flex;
+        display: none;
 }
 .action-menu {
   position: absolute;
@@ -1417,22 +1524,36 @@ text-decoration: none;
   font-weight: 600;
   transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
+.icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
 #plus-button {
+  max-width 600px;
+  border-radius: 89px;
   width: 10%;
  height: 10%;
+ bottom: 10px;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ text-decoration: none;
+ 
+ padding: 30px 2px;
   font-size: 32px;
-  border-radius: 89px;
-  border: 2px solid white;
-  transition: 0.3s;
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#plus-button.open {
-  transform: rotate(45deg);
-  border-color: red;
-  box-shadow: 0 0 15px red;
+  z-index: 1000;
+  color: white;
+  
 }
 .comments * {
     white-space: normal;
@@ -1486,7 +1607,19 @@ text-decoration: none;
     </style>
 </head>
 <body> 
+<div id="cookieBanner" class="cookie-banner">
+  <div class="cookie-box">
+    <p>
+      Ми використовуємо cookies для роботи сайту та аналітики.
+      Детальніше в <a href=#" target="_blank">Privacy Policy</a>
+    </p>
 
+    <div class="cookie-buttons">
+      <button id="acceptCookies">Прийняти</button>
+      <button id="rejectCookies">Відхилити</button>
+    </div>
+  </div>
+</div>
  <nav>
         <div style="display: flex; align-items: center;">
             <a href="#" id="open-menu" onclick="toggleSidebar()">
@@ -1510,7 +1643,7 @@ text-decoration: none;
             <a href="#" id="logout-link" style="display: none;">
                 <i class="material-icons">logout</i><span class="icon-text">Вийти</span>
                 </a>
-            <a href="#" id="account-link" onclick="openAccountModal()" style="display: none;">
+            <a href="#" id="account-desktop-link" onclick="openAccountModal()" style="display: none;">
                 <i class="material-icons">person</i><span class="icon-text" id="email">Завантаження...</span>
             </a>
                     <button data-i18n="installBtn" id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
@@ -1535,8 +1668,45 @@ text-decoration: none;
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
   </div>
 </div>
+<div id="notification-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+  </div>
+</div>
+<div id="videoModal" class="ios-modal">
+  <div class="modal-window">
+    <h3>Вибір відео</h3>
 
-<div id="upload-modal" class="modal-overlay">
+    <button id="pickVideos">Обрати відео</button>
+    <input type="file" id="videoInput" accept="video/*" multiple hidden>
+
+    <div id="videoPreviewGrid" class="media-grid"></div>
+
+    <div class="modal-actions">
+      <button onclick="closeVideoModal()">Скасувати</button>
+
+    </div>
+  </div>
+</div>
+
+<div id="upload-modal" class="modal-overlay"><div id="photoModal" class="ios-modal">
+  <div class="modal-window">
+    <h3>Вибір фото</h3>
+
+    <button id="pickPhotos">Обрати фото</button>
+    <input type="file" id="photoInput" accept="image/*" multiple hidden>
+
+    <div id="photoPreviewGrid" class="media-grid"></div>
+
+    <div class="modal-actions">
+      <button onclick="closePhotoModal()">Скасувати</button>
+      <button id="uploadPhotosBtn">Завантажити</button>
+    </div>
+  </div>
+</div>
   <div class="modal-window">
     <div class="modal-header">
       <span data-i18n="tab-button active" class="tab-button active" data-tab="video-tab">Відео</span>
@@ -1556,6 +1726,7 @@ text-decoration: none;
   <label for="video-file" class="video-label">
   <i class="material-icons">cloud_upload</i> Завантажити відео
 </label>
+<button id="openVideoPicker" style="display: none;">📷 Додати фото</button>
 <input type="file" id="video-file" accept="video/*">
 <br>
 <select id="video-channel-select">
@@ -1573,15 +1744,14 @@ text-decoration: none;
         <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
 </div>
 <br>
-           <label id="nsfw"><input type="checkbox" id="nsfw-checkbox">Позначити відео як NSFW</label>
+<div id="nsfw-container" style="margin-top: 10px;">
+           <span>Позначити відео як NSFW</span><label class="switch">
+        <input type="checkbox" id="nsfw"><span class="slider round"></span></label>
            <br>
-            <div id="progress-container" style="display: none; margin-top: 10px;">
-                <progress id="upload-progress" value="0" max="100"></progress>
-                <span id="progress-text">0%</span>
-<span id="time-left"></span>
-            </div>
-           <div id="bandura-options" style="display:none; margin-top:10px;">
-  <h3>🎵 Налаштування бандури</h3>
+           </div>
+    <div id="bandura-options" style="display:none; margin-top:10px;">
+      
+      <h3>🎵 Налаштування бандури</h3>
 
   <label>
     <input type="checkbox" id="bandura-video">
@@ -1644,7 +1814,7 @@ text-decoration: none;
 
   <label>
     Рік запису:
-    <input type="number" id="bandura-year" min="1900" max="2100" placeholder="2025">
+    <input type="number" id="bandura-year" min="1900" max="2100" placeholder="2026">
   </label>
 
   <br><br>
@@ -1670,6 +1840,13 @@ text-decoration: none;
   </label>
 
 </div>
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+              <p id="progress-text"></p>
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progressicon-text">0%</span>
+<span id="time-left"></span>
+            </div>
+  
             <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
 <label>Публікуючи відео, ви погоджуєтеся з <a href="https://telegra.ph/Pravila-sp%D1%96lnoti-VideoVortex-09-14-2" target="_blank">правилами спільноти.</a></label>
 </div>
@@ -1685,16 +1862,17 @@ text-decoration: none;
 <label for="photo-file" class="photo-label">
   <i class="material-icons">cloud_upload</i><p data-i18n="label-photo">Завантажити фото</p>
 </label>
+<button id="openPhotoPicker" style="display: none;">📷 Додати фото</button>
 <input type="file" id="photo-file" accept="image/*">
             <br>
             <select id="photo-channel-select">
   <option value="main" data-i18n="main-channel">Основний канал</option>
-  <option value="second">Другий канал</option>
+  <option value="second" data-i18n="second-channel">Другий канал</option>
 </select>
 <br>
             <div id="progress-photo-container" style="display: none; margin-top: 10px;">
-                <progress id="upload-progress" value="0" max="100"></progress>
-                <span id="progress-text">0%</span>
+                <progress id="upload-photo-progress" value="0" max="100"></progress>
+                <span id="progressicon-photo-text">0%</span>
             </div>
             <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
@@ -1776,13 +1954,18 @@ text-decoration: none;
  <a class="button-liquid-glass" href="#" id="smart-video" onclick="video()">
         <i class="material-icons">movie</i><span>Відео</span>
     </a>
-<a  href="#" id="plus-button"><i class="material-icons">add</i></a>
        <a href="#" id="smart-post" onclick="post()">
         <i class="material-icons">photo</i><span>Дописи</span>
+        </a>
+        <a href="#" id="account-link" onclick="openAccountModal()">
+<i class="avatar" id="nav-avatar"></i><span>Ви</span>
     </a>
 </div>
 </div>
-
+          <div class="btn-liquid-glass">
+            <a href="#" id="plus-button"><i class="material-icons">add</i></a>
+          </div>
+<button id="update-app-btn">Оновити VideoVortex</button>
                 <div class="menu" style="align-items: center;">
     <a href="#" id="close-menu" onclick="closeSidebar()">
         <i class="material-icons">close</i>
@@ -1790,7 +1973,10 @@ text-decoration: none;
     <a href="#" id="post" onclick="post()">
         <i class="material-icons">photo</i><span style="margin-left: 5px">Дописи</span>
     </a>
-    <a class="bg-liquid-glass" href="#" id="video" onclick="video()">
+    <a href="#" id="account-link" onclick="openAccountModal()">
+<i class="avatar" id="nav-avatar"></i><span>Ви</span>
+    </a>
+    <a href="#" id="video" onclick="video()">
         <i class="material-icons">movie</i><span style="margin-left: 5px">Відео</span>
     </a>
 </div>
@@ -1807,9 +1993,9 @@ text-decoration: none;
 ">
   <input type="text" id="name-input" placeholder="Ім'я" style="padding: 10px; font-size: 1em;">
 <input type="text" id="supername-input" placeholder="Прізвище" style="padding: 10px; font-size: 1em;">
-<h2>Вкажіть дату народження</h2>
+<h2 data-i18n="birthdate">Вкажіть дату народження</h2>
   <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
-  <button onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
+  <button data-i18n="save" onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
 </div>
 <div id="newyear-easter-egg" class="ny-popup">
   <div class="ny-content">
@@ -1835,71 +2021,233 @@ text-decoration: none;
     </div>
         <footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
                 <h3>Версія додатка:</h3>
-                <p>4.1.1</p>
+                <p>5.0.0</p>
         </footer>
+<script src="i18n.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     initLanguageSwitcher("language-select");
 });
 </script>
+<script>
+  let APP_VERSION = "5.0.0"; // Поточна версія VideoVortex
+ function clearLocalStorageExceptAuth() {
+    const keepPrefixes = [
+        "firebase:authUser:",
+        "firebase:authEvent:",
+        "firebase:previous_websocket_failure",
+        "firebase:heartbeat"
+    ];
 
-        <script>
-const modal = document.getElementById("upload-modal");
-const accountModal = document.getElementById("account-modal");
-const buttonAccountModal = document.getElementById("account-link");
-const closeAccountModal = document.querySelector(".close-account-modal");
-const plus = document.getElementById("plus-button");
-const plusDesktop = document.getElementById("plus-desktop-button");
-const closeBtn = document.querySelector(".close-modal");
-const tabButtons = document.querySelectorAll(".tab-button");
-const tabContents = document.querySelectorAll(".tab-content");
+    Object.keys(localStorage).forEach(key => {
+        const keep = keepPrefixes.some(prefix => key.startsWith(prefix));
+        if (!keep) {
+            localStorage.removeItem(key);
+        }
+    });
+}
+function checkUpdateButton() {
 
-function requireAuth(action) {
-    if (!auth.currentUser) {
-        alert("Щоб виконати цю дію, увійдіть у акаунт.");
-        window.location.href = "auth.html";
-        return false;
+    const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.0";
+    const updateBtn = document.getElementById("update-app-btn");
+
+    if (!updateBtn) return;
+
+    if (lastVersion !== APP_VERSION) {
+        updateBtn.style.display = "block"; // показати
+    } else {
+        updateBtn.style.display = "none"; // приховати
     }
-    return true;
+}
+  function updateMenuPosition() {
+    const plusBtn = document.getElementById("plus-button");
+    const updateBtn = document.getElementById("update-app-btn");
+    const smartMenu = document.querySelector(".smart-menu");
+    const bgGlass = document.querySelector(".bg-liquid-glass");
+    const btnGlass = document.querySelector(".btn-liquid-glass");
+
+    if (!updateBtn || !btnGlass || !smartMenu || !bgGlass || !plusBtn) return;
+
+    if (updateBtn.style.display !== "none") {
+        // Кнопка видима → підняти меню
+        smartMenu.style.bottom = "30px";
+        bgGlass.style.bottom = "30px";
+        btnGlass.style.bottom = "60px";
+        plusBtn.style.bottom = "60px";
+    } else {
+        // Кнопка прихована → повернути меню на місце
+        smartMenu.style.bottom = "10px";
+        bgGlass.style.bottom = "10px";
+        btnGlass.style.bottom = "20px";
+        plusBtn.style.bottom = "20px";
+    }
 }
 
-// Відкриття модалок
-plus?.addEventListener("click", () => {
-    if (!requireAuth()) return;
-    modal.style.display = "flex";
+// Викликати після завантаження DOM
+window.addEventListener("DOMContentLoaded", () => {
+    checkUpdateButton();
+    updateMenuPosition();
 });
-plusDesktop?.addEventListener("click", () => {
-    if (!requireAuth()) return;
-    modal.style.display = "flex";
+// Викликати після показу / приховування кнопки
+function showUpdateButton() {
+    const btn = document.getElementById("update-app-btn");
+    if (!btn) return;
+    btn.style.display = "block";
+    updateMenuPosition();
+}
+
+function hideUpdateButton() {
+    const btn = document.getElementById("update-app-btn");
+    if (!btn) return;
+    btn.style.display = "none";
+    updateMenuPosition();
+}
+  document.getElementById("update-app-btn")?.addEventListener("click", () => {
+    clearLocalStorageExceptAuth();
+
+    localStorage.setItem("lastUpdateAt", new Date().toISOString());
+    localStorage.setItem("lastUpdateVersion", APP_VERSION);
+
+    hideUpdateButton(); // кнопка ховається, меню повертається
+
+    location.reload(true);
+});
+</script>
+<script>
+const banner = document.getElementById("cookieBanner");
+const consent = localStorage.getItem("cookieConsent");
+
+// показуємо тільки якщо користувач ще не відповів
+if(!consent){
+  banner.style.display = "block";
+}
+
+// прийняти
+document.getElementById("acceptCookies").onclick = () => {
+  localStorage.setItem("cookieConsent","accepted");
+  enableAnalytics();
+  banner.style.display="none";
+};
+
+// відхилити
+document.getElementById("rejectCookies").onclick = () => {
+  localStorage.setItem("cookieConsent","rejected");
+  disableAnalytics();
+  banner.style.display="none";
+};
+import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+
+function enableAnalytics(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  console.log("Firebase analytics enabled");
+}
+function disableAnalytics(){
+  // нічого не підключаємо
+  console.log("analytics disabled");
+}
+</script>
+<script>
+let selectedPhotos = [];
+let selectedVideos = [];
+
+// Відкрити модалки
+openPhotoPicker.onclick = () => document.getElementById("photoModal").style.display = "flex";
+openVideoPicker.onclick = () => document.getElementById("videoModal").style.display = "flex";
+
+function closePhotoModal() {
+  document.getElementById("photoModal").style.display = "none";
+}
+
+function closeVideoModal() {
+  document.getElementById("videoModal").style.display = "none";
+}
+
+// Кнопки вибору файлів
+pickPhotos.onclick = () => photoInput.click();
+pickVideos.onclick = () => videoInput.click();
+
+// Фото
+photoInput.addEventListener("change", e => {
+  for (const file of e.target.files) {
+    if (file.type.startsWith("image/")) {
+      selectedPhotos.push(file);
+    }
+  }
+  renderPhotoPreviews();
 });
 
-buttonAccountModal?.addEventListener("click", () => {
-    if (!requireAuth()) return;
-    accountModal.style.display = "flex";
+// Відео
+videoInput.addEventListener("change", e => {
+  for (const file of e.target.files) {
+    if (file.type.startsWith("video/")) {
+      selectedVideos.push(file);
+    }
+  }
+  renderVideoPreviews();
 });
 
-// Закриття модалок
-closeAccountModal?.addEventListener("click", () => accountModal.style.display = "none");
-closeBtn?.addEventListener("click", () => modal.style.display = "none");
+// Рендер прев’ю фото
+function renderPhotoPreviews() {
+  const grid = document.getElementById("photoPreviewGrid");
+  grid.innerHTML = "";
 
-// Закриття при кліку поза модалкою
-[modal, accountModal].forEach(m => {
-    m?.addEventListener("click", e => {
-        if (e.target === m) m.style.display = "none";
-    });
-});
+  selectedPhotos.forEach((file, index) => {
+    const url = URL.createObjectURL(file);
 
-// Перемикання вкладок
-tabButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        tabContents.forEach(c => c.classList.remove("active"));
+    const div = document.createElement("div");
+    div.className = "media-item";
 
-        btn.classList.add("active");
-        const tabId = btn.dataset.tab;
-        document.getElementById(tabId)?.classList.add("active");
-    });
-});
+    div.innerHTML = `
+      <img src="${url}">
+      <button class="remove-btn" onclick="removePhoto(${index})">✕</button>
+    `;
+
+    grid.appendChild(div);
+  });
+}
+
+function removePhoto(i) {
+  selectedPhotos.splice(i, 1);
+  renderPhotoPreviews();
+}
+
+// Рендер прев’ю відео
+function renderVideoPreviews() {
+  const grid = document.getElementById("videoPreviewGrid");
+  grid.innerHTML = "";
+
+  selectedVideos.forEach((file, index) => {
+    const url = URL.createObjectURL(file);
+
+    const div = document.createElement("div");
+    div.className = "media-item";
+
+    div.innerHTML = `
+      <video src="${url}" muted></video>
+      <button class="remove-btn" onclick="removeVideo(${index})">✕</button>
+    `;
+
+    grid.appendChild(div);
+  });
+}
+
+function removeVideo(i) {
+  selectedVideos.splice(i, 1);
+  renderVideoPreviews();
+}
 </script>
         <script>
           const searchBox = document.getElementById("search-box");
@@ -1955,7 +2303,7 @@ videoInput.addEventListener("change", () => {
 </script>
 <script>
 function isMobile() {
-  return window.innerWidth <= 768;
+  return window.innerWidth <= 968;
 }
 
 function showTgPopup() {
@@ -2169,20 +2517,20 @@ popupClose.style.display = "none";
    🔳 ICON SYSTEM
    ================================ */
 const halloweenIcons = {
-  "account-link": (user) => `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-desktop-link": (user) => `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🕸",
   "logout-link": "🚪",
   "auth-link": "🚪",
   "smart-post": "👻<span>Дописи</span>",
   "smart-video": "🦇<span>Відео</span>",
-  "post": "👻<span>Дописи</span>",
+  "": "👻<span>Дописи</span>",
   "video": "🦇<span>Відео</span>",
-  "plus-button": "🎃",
+  "plus-button": `<i class="icon">🎃</i>`,
   "plus-desktop-button": "🎃"
 };
 
 const newyearIcons = {
-  "account-link": (user) => `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-desktop-link": (user) => `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "⛄",
   "logout-link": "🚪",
   "auth-link": "🚪",
@@ -2190,11 +2538,11 @@ const newyearIcons = {
   "smart-video": "🎬<span>Відео</span>",
   "post": "❄️<span>Дописи</span>",
   "video": "🎬<span>Відео</span>",
-  "plus-button": "🎄",
+  "plus-button": `<i class="icon">🎄</i>`,
   "plus-desktop-button": "🎄"
 };
 const valentineIcons = {
-  "account-link": (user) =>
+  "account-desktop-link": (user) =>
     `❤️<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "💖",
   "logout-link": "🚪",
@@ -2203,11 +2551,11 @@ const valentineIcons = {
   "smart-video": "💞<span>Відео</span>",
   "post": "💌<span>Дописи</span>",
   "video": "💞<span>Відео</span>",
-  "plus-button": "💝",
+  "plus-button": `<i class="icon">💝</i>`,
   "plus-desktop-button": "💝"
 };
 const easterIcons = {
-  "account-link": (user) =>
+  "account-desktop-link": (user) =>
     `🐣<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🥚",
   "logout-link": "🚪",
@@ -2216,11 +2564,11 @@ const easterIcons = {
   "smart-video": "🐥<span>Відео</span>",
   "post": "🌸<span>Дописи</span>",
   "video": "🐥<span>Відео</span>",
-  "plus-button": "🧺",
+  "plus-button": `<i class="icon">🧺</i>`,
   "plus-desktop-button": "🧺"
 };
 const vyshyvankaIcons = {
-  "account-link": (user) =>
+  "account-desktop-link": (user) =>
     `🧵<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🪡",
   "logout-link": "🚪",
@@ -2229,11 +2577,11 @@ const vyshyvankaIcons = {
   "smart-video": "📽️<span>Відео</span>",
   "post": "🪢<span>Дописи</span>",
   "video": "📽️<span>Відео</span>",
-  "plus-button": "🧿",
+  "plus-button": `<i class="icon">🧿</i>`,
   "plus-desktop-button": "🧿"
 };
 const independenceIcons = {
-  "account-link": (user) =>
+  "account-desktop-link": (user) =>
     `🇺🇦<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "💙💛",
   "logout-link": "🚪",
@@ -2242,7 +2590,7 @@ const independenceIcons = {
   "smart-video": "📹<span>Відео</span>",
   "post": "📝<span>Дописи</span>",
   "video": "📹<span>Відео</span>",
-  "plus-button": "🌾",
+  "plus-button": `<i class="icon">🌾</i>`,
   "plus-desktop-button": "🌾"
 };
 function applyIcons(set, user = null) {
@@ -2329,6 +2677,75 @@ window.addEventListener("load", showRulesModal);
   </script>
 
     <script>
+const modal = document.getElementById("upload-modal");
+const accountModal = document.getElementById("account-modal");
+const message = document.getElementById("message");
+const notification = document.getElementById("notification-modal");
+const buttonAccountModal = document.getElementById("account-link");
+const buttonAccountDesktopModal = document.getElementById("account-desktop-link");
+const closeAccountModal = document.querySelector(".close-account-modal");
+const plus = document.getElementById("plus-button");
+const plusDesktop = document.getElementById("plus-desktop-button");
+const closeBtn = document.querySelector(".close-modal");
+const tabButtons = document.querySelectorAll(".tab-button");
+const tabContents = document.querySelectorAll(".tab-content");
+function showNotificationModal() {
+  notification.style.display = "flex";
+}
+function closeNotificationModal() {
+  notification.style.display = "none";
+}
+function requireAuth(action) {
+    if (!auth.currentUser) {
+      showNotificationModal();
+        message.innerHTML = "Щоб виконати цю дію, увійдіть у акаунт.";
+        window.location.href = "auth.html";
+        return false;
+    }
+    return true;
+}
+
+// Відкриття модалок
+plus?.addEventListener("click", () => {
+    if (!requireAuth()) return;
+    modal.style.display = "flex";
+});
+plusDesktop?.addEventListener("click", () => {
+    if (!requireAuth()) return;
+    modal.style.display = "flex";
+});
+
+buttonAccountModal?.addEventListener("click", () => {
+    if (!requireAuth()) return;
+    accountModal.style.display = "flex";
+});
+buttonAccountDesktopModal?.addEventListener("click", () => {
+    if (!requireAuth()) return;
+    accountModal.style.display = "flex";
+});
+
+// Закриття модалок
+closeAccountModal?.addEventListener("click", () => accountModal.style.display = "none");
+closeBtn?.addEventListener("click", () => modal.style.display = "none");
+
+// Закриття при кліку поза модалкою
+[modal, accountModal].forEach(m => {
+    m?.addEventListener("click", e => {
+        if (e.target === m) m.style.display = "none";
+    });
+});
+
+// Перемикання вкладок
+tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabContents.forEach(c => c.classList.remove("active"));
+
+        btn.classList.add("active");
+        const tabId = btn.dataset.tab;
+        document.getElementById(tabId)?.classList.add("active");
+    });
+});
 function toggleSidebar() {
     var sidebar = document.querySelector('.menu');
     var content = document.querySelector('.content');
@@ -2357,10 +2774,11 @@ let timeLeftInSeconds = null;
 let sleepStart = null;
 let sleepEnd = null;
 let userAge = null;
+
  // Конвертуємо час в секунди
     let currentUserEmail = null;
     let showNSFW = false; // Track whether the user wants to view NSFW content
-   
+
 firebase.initializeApp({
   apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
   authDomain: "videovortex-235cd.firebaseapp.com",
@@ -2485,10 +2903,12 @@ function resendVerification() {
     if (user) {
         user.sendEmailVerification()
             .then(() => {
-                alert("Лист підтвердження надіслано повторно!");
+                showNotificationModal();
+                message.innerHTML = "Лист підтвердження надіслано повторно!";
             })
             .catch((error) => {
-                alert("Помилка надсилання листа: " + error.message);
+              showNotificationModal();
+                message.innerHTML = "Помилка надсилання листа: " + error.message;
             });
     }
 }
@@ -2497,7 +2917,8 @@ function deleteAccount() {
     const user = firebase.auth().currentUser;
 
     if (!user) {
-        alert("Спочатку увійдіть у свій акаунт.");
+      showNotificationModal();
+        message.innerHTML = "Спочатку увійдіть у свій акаунт.";
         return;
     }
 
@@ -2557,16 +2978,19 @@ function deleteAccount() {
         .then(() => user.delete())
         // ?? 5. Повідомлення користувачу
         .then(() => {
-            alert("? Акаунт і всі пов’язані дані успішно видалено.");
+          showNotificationModal();
+            message.innerHTML = "? Акаунт і всі пов’язані дані успішно видалено.";
             location.reload();
         })
         .catch(error => {
             if (error.code === 'auth/requires-recent-login') {
-                alert("Будь ласка, увійдіть знову перед видаленням акаунту.");
+                message.innerHTML = "Будь ласка, увійдіть знову перед видаленням акаунту.";
+                showNotificationModal();
                 firebase.auth().signOut();
             } else {
                 console.error("? Помилка при видаленні акаунту:", error);
-                alert("Сталася помилка при видаленні акаунту: " + error.message);
+                showNotificationModal();
+                message.innerHTML = "Сталася помилка при видаленні акаунту: " + error.message;
             }
         });
 }
@@ -2579,9 +3003,25 @@ if (auth.currentUser) {
         showNSFW = this.checked;  // Update the variable based on the checkbox state
         loadVideos();  // Reload the videos with the updated setting
 } else {
-alert("Сталася помилка при увімкненні функції показувати відео позначення як NSFW.");
+  showNotificationModal();
+message.innerHTML = "Сталася помилка при увімкненні функції показувати відео позначення як NSFW.";
 }
     });
+    async function isUserBlockedByMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${me.uid}/blockedUsers/${targetUid}`).once("value");
+  return snap.exists();
+}
+
+async function didUserBlockMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${targetUid}/blockedUsers/${me.uid}`).once("value");
+  return snap.exists();
+}
     function enableBanduraUI(role) {
     const banduraBlock = document.getElementById("bandura-options");
     if (!banduraBlock) return;
@@ -2594,7 +3034,7 @@ alert("Сталася помилка при увімкненні функції 
 }
 document.getElementById("domain-restrict-checkbox").onclick = function(event) {
     if (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education")) {
-        alert('Сталася помилка');
+        message.innerHTML = "Сталася помилка. ACCOUNT_IS_NOT_DOMAIN_KFCCTE-NAU.UKR.EDUCATION";
         event.preventDefault(); // Prevents checkbox from being checked
     }
 }
@@ -2633,6 +3073,34 @@ function stringToColor(str) {
   }
   return `hsl(${hash % 360}, 65%, 55%)`;
 }
+function createVideoThumbnail(videoUrl) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video");
+    video.src = videoUrl;
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    video.addEventListener("loadeddata", () => {
+      video.currentTime = 1; // беремо кадр з 1 секунди
+    });
+
+    video.addEventListener("seeked", () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+      resolve(dataUrl);
+    });
+
+    video.addEventListener("error", reject);
+  });
+}
 function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
@@ -2647,11 +3115,21 @@ function loadVideos() {
 
         // 🔹 1. Фільтри
         if (videoData.nsfw && !showNSFWGlobal) return;
+          if (firebase.auth().currentUser && video.authorUid) {
+    const iBlocked = isUserBlockedByMe(video.authorUid);
+    const heBlockedMe = didUserBlockMe(video.authorUid);
+
+    if (iBlocked || heBlockedMe) {
+      return;
+    }
+  }
         if (videoData.private && videoData.email !== currentUserEmail) return;
         if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
         // 🔹 2. Відео елемент
-        const videoElement = document.createElement("video");
+        // 🔹 2. Прев’ю як IMG замість VIDEO
+// 🔹 2. Прев’ю з відео як IMG
+const videoElement = document.createElement("video");
         videoElement.classList.add("video-item");
         videoElement.controls = false;
         videoElement.preload = "metadata";
@@ -2678,28 +3156,6 @@ function loadVideos() {
         videoElement.dataset.author = videoData.author || "";
 
         // 🔹 3. Коментарі
-        const commentSection = document.createElement("div");
-        commentSection.classList.add("video-comment");
-
-        if (videoData.disabledComments === true) {
-            commentSection.innerHTML = `💬 Коментарі вимкнені для цього відео.`;
-        } else {
-            commentSection.innerHTML = `
-                <h3 style="color: white; text-align: left;">Коментарі:</h3>
-                <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
-                <input class="comment-liquid-glass" type="text" id="comment-input-${videoKey}" placeholder="Ваш коментар">
-                <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-                    <i class="material-icons">send</i>
-                </button>
-                <div class="comment-section" id="comment-section-${videoKey}">
-                    <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
-                    <label id="private-checkbox-${videoKey}" style="display: none;">
-                        <input type="checkbox" id="private-comment-${videoKey}">
-                        Приватний
-                    </label>
-                </div>
-            `;
-        }
 
         // 🔹 4. Клік по відео
         videoElement.onclick = () => {
@@ -2725,14 +3181,8 @@ function loadVideos() {
         };
 
         // 🔹 5. Приватні коментарі
-        const privateComment = commentSection.querySelector(`#private-checkbox-${videoKey}`);
-        const privateCheckbox = commentSection.querySelector(`#private-comment-${videoKey}`);
-        if (privateComment && privateCheckbox) {
-            const showPrivate = userAge >= 16;
-            privateComment.style.display = showPrivate ? "block" : "none";
-            privateCheckbox.disabled = !showPrivate;
-        }
-
+        // 🔹 5. Приватні коментарі
+// 🔹 5. Приватні коментарі
         // 🔹 6. Інформація про відео
         const infoElement = document.createElement("div");
         infoElement.classList.add("video-info");
@@ -2816,7 +3266,6 @@ function loadVideos() {
         container.classList.add("video-container");
         container.dataset.id = videoKey; // для реального часу
         container.appendChild(infoElement);
-        container.appendChild(commentSection);
         container.appendChild(videoElement);
 
         videoGallery.appendChild(container);
@@ -2859,7 +3308,7 @@ function insertRandomComment(videoKey) {
   }
 }
 function deleteVideo(videoKey, videoURL) {
-    if (!videoURL || !videoKey) return alert("Немає даних для видалення відео");
+    if (!videoURL || !videoKey) return showNotificationModal(); message.innerHTML = "Немає даних для видалення відео";
 
     if (confirm("Ви впевнені, що хочете видалити це відео?")) {
         const storageRef = storage.refFromURL(videoURL);
@@ -2868,18 +3317,21 @@ function deleteVideo(videoKey, videoURL) {
             return database.ref(`videos/${videoKey}`).remove();
         })
         .then(() => {
-            alert("Відео успішно видалено.");
+          showNotificationModal();
+            message.innerHTML = "Відео успішно видалено.";
             loadVideos();
         })
         .catch((error) => {
             console.error("Помилка при видаленні відео:", error);
-            alert("Помилка при видаленні відео: " + error.message);
+            showNotificationModal();
+            message.innerHTML = "Помилка при видаленні відео: " + error.message;
         });
     }
 }
 function createSecondChannel() {
   const name = document.getElementById("second-channel-name").value.trim();
-  if (!name) return alert("Введи назву");
+  if (!name) return showNotificationModal();
+  message.innerHTML = "Введи назву";
 
   const uid = auth.currentUser.uid;
 
@@ -2887,8 +3339,8 @@ function createSecondChannel() {
     name,
     avatar: name.charAt(0).toUpperCase()
   });
-
-  alert("Другий канал створено ✅");
+showNotificationModal();
+  message.innerHTML = "Другий канал створено ✅";
 }
 function editVideo(videoKey, videoData) {
   currentEditKey = videoKey;
@@ -2901,14 +3353,15 @@ document.getElementById("edit-private-checkbox").checked = videoData.private || 
 }
 
 function saveVideoChanges() {
-  if (!currentEditKey) return alert("Відео не вибрано.");
+  if (!currentEditKey) return showNotificationModal(); message.innerHTML = "Відео не вибрано.";
 
   const newTitle = document.getElementById("edit-video-title").value.trim();
 const newPrivate = document.getElementById("edit-private-checkbox").checked;
   const newDescription = document.getElementById("edit-video-description").value.trim();
 
   if (!newTitle) {
-    alert("Назва не може бути порожньою!");
+    showNotificationModal();
+    message.innerHTML = "Назва не може бути порожньою!";
     return;
   }
 
@@ -2918,12 +3371,14 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
     description: newDescription,
     private: newPrivate
   }).then(() => {
-    alert("? Відео оновлено!");
+    showNotificationModal();
+    message.innerHTML = "? Відео оновлено!";
     document.getElementById("edit-form").style.display = 'none';
     currentEditKey = null;
     loadVideos(); // перезавантаження списку
   }).catch(error => {
-    alert("? Помилка при оновленні відео: " + error.message);
+    showNotificationModal();
+    message.innerHTML = "? Помилка при оновленні відео: " + error.message;
   });
 }
 function loadChannelSelect() {
@@ -2979,7 +3434,8 @@ function getActiveChannelData() {
 function generateDescription() {
     const title = document.getElementById("video-title").value;
 
-    if (!title) return alert("Введіть назву відео");
+    if (!title) return showNotificationModal();
+    message.innerHTML = "Введіть назву відео";
 
     const functions = firebase.app().functions("europe-west1");
     const fn = functions.httpsCallable("generateDescription");
@@ -3038,183 +3494,142 @@ document.getElementById("video-file").addEventListener("change", async (e) => {
     statusEl.innerText = "Готово до завантаження ✔";
   } catch (err) {
     console.error("❌ Конвертація не вдалася:", err);
-    alert("Помилка конвертації відео");
+   showNotificationModal();
+    message.innerHTML = "Помилка конвертації відео";
   }
 });
 
 function uploadVideo() {
-    const startTime = Date.now();
-    const storage = firebase.storage();
+  const startTime = Date.now();
+  const isBandura = document.getElementById("bandura-video")?.checked || false;
 
-    const isBandura = document.getElementById("bandura-video")?.checked || false;
+  const banduraExtra = isBandura ? {
+    style: document.getElementById("bandura-style").value || "Соло",
+    key: document.getElementById("bandura-key").value || "",
+    difficulty: document.getElementById("bandura-difficulty").value || "Початковий",
+    tempo: document.getElementById("bandura-tempo").value || "",
+    slowMode: document.getElementById("bandura-slow").checked,
+    event: document.getElementById("bandura-event").value || "",
+    year: document.getElementById("bandura-year").value || "",
+    performer: document.getElementById("bandura-performer").value || "",
+    tags: document.getElementById("bandura-tags").value || "",
+    markers: document.getElementById("bandura-markers").value || ""
+  } : null;
 
-    const banduraExtra = isBandura ? {
-        style: document.getElementById("bandura-style")?.value || "Соло",
-        key: document.getElementById("bandura-key")?.value || "",
-        difficulty: document.getElementById("bandura-difficulty")?.value || "Початковий",
-        tempo: document.getElementById("bandura-tempo")?.value || "",
-        slowMode: document.getElementById("bandura-slow")?.checked || false,
-        event: document.getElementById("bandura-event")?.value || "",
-        year: document.getElementById("bandura-year")?.value || "",
-        performer: document.getElementById("bandura-performer")?.value || "",
-        tags: document.getElementById("bandura-tags")?.value || "",
-        markers: document.getElementById("bandura-markers")?.value || ""
-    } : null;
+  const videoTitle = document.getElementById("video-title").value;
+  const videoDescription = document.getElementById("video-description").value;
+  const videoFile = document.getElementById("video-file").files[0];
+  const isNSFW = document.getElementById("nsfw").checked;
+  const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
+  const privateVideo = document.getElementById("private-checkbox").checked;
+  const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
 
-    const videoTitle = document.getElementById("video-title")?.value;
-    const videoDescription = document.getElementById("video-description")?.value;
-    const videoFile = document.getElementById("video-file")?.files[0];
-    const isNSFW = document.getElementById("nsfw-checkbox")?.checked || false;
-    const disabledComments = document.getElementById("disabled-comments-checkbox")?.checked || false;
-    const privateVideo = document.getElementById("private-checkbox")?.checked || false;
-    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+  if (!videoTitle || !videoFile) {
+    showNotificationModal();
+    message.innerHTML = "Будь ласка, заповніть всі поля!";
+    return;
+  }
 
-    if (!videoTitle || !videoFile) {
-        alert("Будь ласка, заповніть всі поля!");
-        return;
-    }
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    showNotificationModal();
+    message.innerHTML = "Потрібно увійти в акаунт";
+    return;
+  }
 
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        alert("Будь ласка, увійдіть, щоб завантажити відео!");
-        return;
-    }
-    const uid = user.uid;
+  const uid = user.uid;
 
-    database.ref("users/" + uid).once("value").then(snapshot => {
-        const userData = snapshot.val() || {};
-        const videoAuthor = `${userData.name || ""} ${userData.supername || ""}`.trim();
-        const email = user.email || "";
+  database.ref("users/" + uid).once("value").then(snapshot => {
+    const userData = snapshot.val() || {};
 
-        const storageRef = storage.ref(`videos/${videoFile.name}`);
-        const uploadTask = storageRef.put(videoFile);
+    const authorName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+    const authorAvatar = userData.avatarUrl || null; // ✅ URL аватара
 
-        uploadTask.on('state_changed',
-            snapshot => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                const timeElapsed = (Date.now() - startTime) / 1000;
-                const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 0.01);
-                const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
-                const timeLeft = isFinite(remainingBytes / speed) ? (remainingBytes / speed) : 0;
+    const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
-                document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
-                document.getElementById("upload-progress").value = progress;
-                document.getElementById("progress-text").innerText = `Конвертується: ${Math.round(progress)}%`;
-                document.getElementById("progress-container").style.display = "block";
-            },
-            error => {
-                console.error(error);
-                alert("Помилка завантаження відео.");
-            },
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-                    const currentDate = new Date().toLocaleDateString();
+    // Зберігаємо стан у localStorage
+    localStorage.setItem("activeUpload", JSON.stringify({
+      fileName: videoFile.name,
+      fileSize: videoFile.size,
+      bytesTransferred: 0,
+      startedAt: Date.now(),
+      status: "uploading"
+    }));
 
-                    database.ref("videos").push({
-                        title: videoTitle,
-                        author: videoAuthor,
-                        email: email,
-                        disabledComments,
-                        url: downloadURL,
-                        description: videoDescription,
-                        views: 0,
-                        private: privateVideo,
-                        domainRestrict,
-                        nsfw: isNSFW,
-                        publishDate: currentDate,
-                        banduraExtra
-                    }).then(() => {
-                        alert("Відео завантажено!");
-                        document.getElementById("upload-form").reset();
-                        document.getElementById("progress-container").style.display = "none";
-                        loadVideos();
-                    }).catch(err => {
-                        console.error("Помилка запису відео у БД:", err);
-                        alert("Не вдалося зберегти відео.");
-                    });
-                });
-            }
-        );
-    }).catch(err => {
-        console.error("Помилка при отриманні даних користувача:", err);
-        alert("Не вдалося отримати дані профілю.");
-    });
+    uploadTask.on("state_changed",
+      snapshot => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
+        if (uploadData) {
+          uploadData.bytesTransferred = snapshot.bytesTransferred;
+          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
+        }
+
+        const timeElapsed = (Date.now() - startTime) / 1000;
+        const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 1);
+        const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
+        const timeLeft = remainingBytes / Math.max(speed, 1);
+
+        document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
+        document.getElementById("upload-progress").value = progress;
+        document.getElementById("progress-text").innerText = `Завантаження: ${Math.round(progress)}%`;
+        document.getElementById("progress-container").style.display = "block";
+      },
+      error => {
+        console.error(error);
+        showNotificationModal();
+        message.innerHTML = "Помилка завантаження відео.";
+      },
+      () => {
+        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
+        if (uploadData) {
+          uploadData.status = "processing";
+          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
+        }
+
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          const currentDate = new Date().toLocaleDateString();
+
+          database.ref("videos").push({
+            title: videoTitle,
+            author: authorName || "Анонім",
+            authorAvatar: authorAvatar, // ✅ зберігаємо аватар
+            email: user.email,
+            authorUid: user.uid, // ← ОБОВ'ЯЗКОВО
+            disabledComments: disabledComments,
+            url: downloadURL,
+            description: videoDescription,
+            views: 0,
+            private: privateVideo,
+            domainRestrict: domainRestrict,
+            nsfw: isNSFW,
+            publishDate: currentDate,
+            banduraExtra
+          }).then(() => {
+            localStorage.removeItem("activeUpload");
+            showNotificationModal();
+            message.innerHTML = "Відео завантажено!";
+            loadVideos();
+            document.getElementById("upload-form").reset();
+            document.getElementById("progress-container").style.display = "none";
+          });
+        });
+      }
+    );
+  }).catch(err => {
+    console.error("Помилка при отриманні даних користувача:", err);
+    showNotificationModal();
+    message.innerHTML = "Не вдалося отримати дані профілю.";
+  });
 }
 
-// Генеруємо або отримуємо ключ для відео
-function getVideoKey(videoKey) {
-    let key = localStorage.getItem(`videoKey-${videoKey}`);
-    if (!key) {
-        key = crypto.randomUUID(); // простий ключ, можна замінити на сильніше шифрування
-        localStorage.setItem(`videoKey-${videoKey}`, key);
-    }
-    return key;
-}
+
 
 // Просте шифрування/дешифрування (можна замінити на AES)
-async function encryptText(text, key) {
-    const enc = new TextEncoder();
-    const encoded = enc.encode(text + key); // дуже базово
-    return btoa(String.fromCharCode(...encoded));
-}
 
-async function decryptText(cipher, key) {
-    const decoded = atob(cipher);
-    const arr = Uint8Array.from(decoded, c => c.charCodeAt(0));
-    const dec = new TextDecoder();
-    const text = dec.decode(arr);
-    return text.replace(key, ''); // віднімаємо ключ
-}
-async function loadComments(videoKey, videoOwnerEmail) { 
-    const commentsContainer = document.getElementById(`comments-${videoKey}`);
-    commentsContainer.innerHTML = "";
 
-    const snapshot = await database.ref("comments")
-        .orderByChild("videoKey")
-        .equalTo(videoKey)
-        .once("value");
-
-    if (!snapshot.exists()) {
-        commentsContainer.textContent = "Ще немає коментарів...";
-        return;
-    }
-
-    const videoKeyLocal = getVideoKey(videoKey);
-    const commentsArray = [];
-
-    snapshot.forEach(childSnapshot => {
-        commentsArray.push(childSnapshot.val());
-    });
-
-    for (const data of commentsArray) {
-        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
-            continue; // Пропускаємо приватні коментарі, якщо користувач не автор або власник відео
-        }
-
-        const commentDiv = document.createElement("div");
-        commentDiv.className = "comments";
-
-        const userEl = document.createElement("strong");
-        userEl.textContent = data.commentAuthor || "Видалений акаунт";
-
-        const textEl = document.createElement("span");
-        if (data.isPrivate) {
-            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
-        } else {
-            textEl.textContent = ": " + data.comment;
-        }
-
-        const br = document.createElement("br");
-        const dateEl = document.createElement("small");
-        dateEl.textContent = data.publishDate;
-
-        commentDiv.appendChild(userEl);
-        commentDiv.appendChild(textEl);
-        commentDiv.appendChild(br);
-        commentDiv.appendChild(dateEl);
-        commentsContainer.appendChild(commentDiv);
-    }
-}
 // Відкрити форму редагування імені
 function editName() {
   document.getElementById("form-edit-name").style.display = "block";
@@ -3239,34 +3654,56 @@ function editSuperName() {
 function saveEditName() {
   const newName = document.getElementById("edit-name").value.trim();
   const user = firebase.auth().currentUser;
-  if (!user) return alert("Будь ласка, увійдіть.");
+
+  if (!user) {
+    showNotificationModal();
+    message.innerHTML = "Будь ласка, увійдіть.";
+    return;
+  }
 
   const uid = user.uid;
-  database.ref("users/" + uid).update({ name: newName }).then(() => {
-    alert("? Ім’я змінено!");
-    document.getElementById("form-edit-name").style.display = "none";
-    document.getElementById("name").style.display = "block";
-    document.getElementById("button-name").style.display = "block";
-    document.getElementById("name").textContent = "Ім'я: " + newName;
-    updateVideosAuthor();
-  }).catch(err => alert("? Помилка: " + err.message));
+  database.ref("users/" + uid).update({ name: newName })
+    .then(() => {
+      showNotificationModal();
+      message.innerHTML = "Ім’я змінено!";
+      document.getElementById("form-edit-name").style.display = "none";
+      document.getElementById("name").style.display = "block";
+      document.getElementById("button-name").style.display = "block";
+      document.getElementById("name").textContent = "Ім'я: " + newName;
+      updateVideosAuthor();
+    })
+    .catch(err => {
+      showNotificationModal();
+      message.innerHTML = "Помилка: " + err.message;
+    });
 }
 
 // Зберегти зміну прізвища
 function saveEditSuperName() {
   const newSuperName = document.getElementById("edit-supername").value.trim();
   const user = firebase.auth().currentUser;
-  if (!user) return alert("Будь ласка, увійдіть.");
+
+  if (!user) {
+    showNotificationModal();
+    message.innerHTML = "Будь ласка, увійдіть.";
+    return;
+  }
 
   const uid = user.uid;
-  database.ref("users/" + uid).update({ supername: newSuperName }).then(() => {
-    alert("? Прізвище змінено!");
-    document.getElementById("form-edit-supername").style.display = "none";
-    document.getElementById("supername").style.display = "block";
-    document.getElementById("button-supername").style.display = "block";
-    document.getElementById("supername").textContent = "Прізвище: " + newSuperName;
-    updateVideosAuthor();
-  }).catch(err => alert("? Помилка: " + err.message));
+  database.ref("users/" + uid).update({ supername: newSuperName })
+    .then(() => {
+      showNotificationModal();
+      message.innerHTML = "Прізвище змінено!";
+      document.getElementById("form-edit-supername").style.display = "none";
+      document.getElementById("supername").style.display = "block";
+      document.getElementById("button-supername").style.display = "block";
+      document.getElementById("supername").textContent = "Прізвище: " + newSuperName;
+      updateVideosAuthor();
+    })
+    .catch(err => {
+      showNotificationModal();
+      message.innerHTML = "Помилка: " + err.message;
+    });
 }
 function loadPhotoChannelSelect() {
     const select = document.getElementById("photo-channel-select");
@@ -3321,60 +3758,28 @@ function getActivePhotoChannelData() {
 // Оновлення авторів у відео та коментарях
 
 // Відправка коментаря
-async function uploadComment(videoKey, videoOwnerEmail) {
-    const commentInput = document.getElementById(`comment-input-${videoKey}`);
-    const commentText = commentInput.value.trim();
-    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
-    if (!commentText) return alert("Коментар не може бути порожнім.");
-
-    let commentData = commentText;
-    if (isPrivate) {
-        const videoKeyLocal = getVideoKey(videoKey);
-        commentData = await encryptText(commentText, videoKeyLocal);
-    }
-
-    const uid = firebase.auth().currentUser.uid;
-
-    // Беремо дані користувача з Firebase
-    const snapshot = await database.ref("users/" + uid).once("value");
-    const userData = snapshot.val();
-    const commentAuthor = `${userData.name} ${userData.supername}`;
-
-    // Додаємо коментар у базу
-    await database.ref("comments").push({
-        comment: commentData,
-        email: currentUserEmail,
-        commentAuthor: commentAuthor,
-        videoOwner: videoOwnerEmail,
-        isPrivate: isPrivate,
-        publishDate: new Date().toLocaleDateString(),
-        videoKey: videoKey
-    });
-
-    // Очищуємо поле та оновлюємо коментарі
-    commentInput.value = "";
-    await loadComments(videoKey, videoOwnerEmail);
-}
 
 
 function toggleUploadVisibility() {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 968;
     const upload = document.getElementById("upload-link");
     const photoUpload = document.getElementById("upload-link-photo");
     const smartPhotoUpload = document.getElementById("smart-upload-link-photo");
     const smartUpload = document.getElementById("smart-upload-link");
     const openMenu = document.getElementById("open-menu");
-
+const accountDesktopLink = document.getElementById("account-desktop-link");
     if (isMobile) {
         openMenu.style.display = "none";
         smartUpload.style.display = "grid";
+        accountDesktopLink.style.display = "none";
         smartPhotoUpload.style.display = "grid";
         if (auth.currentUser) {
             upload.style.display = "none";
             photoUpload.style.display = "none";
         }
     } else {
+      accountDesktopLink.style.display = "flex";
         openMenu.style.display = "flex";
         smartUpload.style.display = "none";
         smartPhotoUpload.style.display = "none";
@@ -3402,7 +3807,7 @@ function updateUI(user) {
     document.getElementById("auth-link")?.style?.setProperty("display", "none");
     document.getElementById("register-link")?.style?.setProperty("display", "none");
     document.getElementById("logout-link")?.style?.setProperty("display", "flex");
-    document.getElementById("account-link")?.style?.setProperty("display", "flex");
+    document.getElementById("account-desktop-link")?.style?.setProperty("display", "grid");
     document.getElementById("upload-link")?.style?.setProperty("display", "flex");
     document.getElementById("upload-link-photo")?.style?.setProperty("display", "flex");
     document.getElementById("smart-upload-link")?.style?.setProperty("display", "grid");
@@ -3435,7 +3840,7 @@ function updateUI(user) {
     document.getElementById("auth-link")?.style?.setProperty("display", "flex");
     document.getElementById("register-link")?.style?.setProperty("display", "flex");
     document.getElementById("logout-link")?.style?.setProperty("display", "none");
-    document.getElementById("account-link")?.style?.setProperty("display", "none");
+    document.getElementById("account-desktop-link")?.style?.setProperty("display", "none");
     document.getElementById("upload-link")?.style?.setProperty("display", "none");
     document.getElementById("upload-link-photo")?.style?.setProperty("display", "none");
     document.getElementById("smart-upload-link")?.style?.setProperty("display", "none");
@@ -3447,107 +3852,216 @@ function updateUI(user) {
     });
   }
 }
+async function backfillAuthorUidForUser() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
+  const uid = user.uid;
+  const email = user.email;
+
+  const paths = ["videos", "photos", "comments"];
+
+  for (const path of paths) {
+    const snap = await database.ref(path).once("value");
+
+    const updates = [];
+
+    snap.forEach(child => {
+      const data = child.val();
+
+      // Знаходимо ТІЛЬКИ контент цього користувача
+      if (data.email === email) {
+        // Якщо ще нема authorUid — додаємо
+        if (!data.authorUid) {
+          updates.push(
+            database.ref(`${path}/${child.key}`).update({
+              authorUid: uid
+            })
+          );
+        }
+      }
+    });
+
+    if (updates.length > 0) {
+      await Promise.all(updates);
+      console.log(`Оновлено ${updates.length} записів у ${path}`);
+    }
+  }
+}
 // Слухач стану автентифікації
 
 const avatarEl = document.querySelector(".avatar");
+const navAvatar = document.getElementById("nav-avatar");
 const input = document.getElementById("avatar-input");
 const btn = document.getElementById("change-avatar");
 
 btn.onclick = () => input.click();
+document.getElementById("nsfw").onclick = function(event) {
+  if (userAge < 18) {
+    showNotificationModal();
+    message.innerHTML = "Cталася помилка.";
+  document.getElementById("nsfw").checked = false;
+    
+  }
+  }
+  function configureAgeUI(age) {
 
+    const nsfwCheckbox = document.getElementById('show-nsfw-videos');
+    const nsfwSlider = document.getElementById("slidernsfw");
+    const nsfwInfo = document.getElementById("information-nsfw");
+    const NSFW = document.getElementById("nsfw");
+    const nsfwContainer = document.getElementById("nsfw-container");
+    const privateVideo = document.getElementById("private-checkbox");
+
+    if (!nsfwCheckbox) return;
+
+    // < 13
+    if (age < 13) {
+
+        if (privateVideo) privateVideo.checked = true;
+
+        nsfwCheckbox.checked = false;
+        nsfwCheckbox.disabled = true;
+
+        if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+        if (NSFW) NSFW.style.display = "none";
+        if (nsfwContainer) nsfwContainer.style.display = "none";
+        if (nsfwInfo) nsfwInfo.style.display = "block";
+
+        return;
+    }
+
+    // 13–17
+    if (age < 18) {
+
+        nsfwCheckbox.checked = false;
+        nsfwCheckbox.disabled = true;
+
+        if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
+        if (NSFW) NSFW.style.display = "none";
+        if (nsfwContainer) nsfwContainer.style.display = "none";
+        if (nsfwInfo) nsfwInfo.style.display = "block";
+
+        return;
+    }
+
+    // 18+
+    nsfwCheckbox.disabled = false;
+
+    if (NSFW) NSFW.style.display = "block";
+    if (nsfwContainer) nsfwContainer.style.display = "block";
+    if (nsfwInfo) nsfwInfo.style.display = "none";
+
+    if (!nsfwCheckbox.dataset.listenerAdded) {
+        nsfwCheckbox.addEventListener("change", function () {
+            showNSFW = this.checked;
+            loadVideos();
+        });
+        nsfwCheckbox.dataset.listenerAdded = "true";
+    }
+}
+function calculateAge(birthdate) {
+            if (!birthdate) return null;
+            const [day, month, year] = birthdate.split(".").map(Number);
+            const today = new Date();
+            let age = today.getFullYear() - year;
+            if (today.getMonth() + 1 < month || 
+               (today.getMonth() + 1 === month && today.getDate() < day)) {
+                age--;
+            }
+            return age;
+        }
 auth.onAuthStateChanged(async (user) => {
     if (!user) return;
-loadPhotoChannelSelect();
-loadChannelSelect();
+
+    loadPhotoChannelSelect();
+    loadChannelSelect();
+    backfillAuthorUidForUser();
     enablePushNotifications(user.uid);
     currentUserEmail = user.email;
 
-    // 🔹 Перевірка підтвердження email
+    // 🔹 Email verification
     if (!user.emailVerified) {
         blockScreenForVerification();
         const verificationInterval = setInterval(() => {
             user.reload().then(() => {
                 if (user.emailVerified) {
                     clearInterval(verificationInterval);
+                    unblockScreenForVerification();
                     updateUI(user);
                 }
             }).catch(err => console.error("Помилка перевірки email:", err));
-        }, 10000);
+        }, 5000);
     }
 
-    // 🔹 Отримання даних користувача
-    const uid = user.uid;
-    database.ref("users/" + uid).once("value").then(async snapshot => {
+    try {
+        const snapshot = await database.ref(`users/${user.uid}`).once("value");
         const userData = snapshot.val();
-        const birthStr = userData?.birthdate;
+
         const role = userData?.role || "user";
-  const today = new Date();
-      const m = today.getMonth() + 1;
-      const d = today.getDate();
+        let birthdateStr = userData?.birthdate; // "DD.MM.YYYY"
+        let birthYear = userData?.birthYear;
 
+        let age = null;
+if (birthdateStr) {
+    age = calculateAge(birthdateStr);
 
-  // Вимкнення Halloween 1 листопада
-      // 🎃 Halloween
-const isHalloween = m === 10 && (d === 30 || d === 31);
-const isValentineDay = m === 2 && (d === 13 || d === 14);
-const isNewYear = (m === 12 && d >= 15) || (m === 1 && d <= 25);
+    // Якщо birthYear відсутній, підтягуємо з birthdate
+    if (!birthYear) {
+        const [day, month, year] = birthdateStr.split(".").map(Number);
+        birthYear = year;
+        await database.ref(`users/${user.uid}`).update({ birthYear });
+    }
+}
 
-// 🎃 HALLOWEEN
-if (isHalloween) {
-  activateHalloweenMode();
-  applyIcons(halloweenIcons, userData);
+// 🔹 Вік відображаємо після обчислення
+if (age !== null) {
+    configureAgeUI(age);
 } else {
-  deactivateHalloweenMode();
+    const modal = document.getElementById("birthdate-modal");
+    if (modal) modal.style.display = "flex";
 }
 
-// 🎄 NEW YEAR
-if (isNewYear) {
-  activateGirland();
-  activateNewYearMode();
-  applyIcons(newyearIcons, userData);
-} else {
-  deactivateGirland();
-  deactivateNewYearMode();
-  // Відновлюємо стандартні іконки тільки якщо не Valentine
-  if (!isValentineDay) restoreIcons();
-}
+        // 🔹 Розрахунок віку з урахуванням дня народження
 
-// 💖 VALENTINE
-if (isValentineDay) {
-  applyIcons(valentineIcons, userData);
-}
-        // 🔹 Якщо немає email або дати народження — показати модальне вікно
-        if (!userData?.email || !birthStr) {
-            const modal = document.getElementById("birthdate-modal");
-            if (modal) modal.style.display = "flex";
+        // 🔹 Свята
+        const today = new Date();
+        const m = today.getMonth() + 1;
+        const d = today.getDate();
+
+        const isHalloween = m === 10 && (d === 30 || d === 31);
+        const isValentineDay = m === 2 && (d === 13 || d === 14);
+        const isNewYear = (m === 12 && d >= 15) || (m === 1 && d <= 25);
+
+        if (isHalloween) {
+            activateHalloweenMode();
+            applyIcons(halloweenIcons, userData);
+        } else deactivateHalloweenMode();
+
+        if (isNewYear) {
+            activateGirland();
+            activateNewYearMode();
+            applyIcons(newyearIcons, userData);
+        } else {
+            deactivateGirland();
+            deactivateNewYearMode();
+            if (!isValentineDay) restoreIcons();
         }
 
-        // 🔹 Обчислення віку
-        if (birthStr) {
-            let birthDate;
-            const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-            if (match) {
-                const [, d, m, y] = match;
-                birthDate = new Date(`${y}-${m}-${d}`);
-            } else {
-                birthDate = new Date(birthStr);
-            }
+        if (isValentineDay) applyIcons(valentineIcons, userData);
+        // 🔹 Аватар
 
-            if (!isNaN(birthDate)) {
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const mm = today.getMonth() - birthDate.getMonth();
-                if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
-                userAge = age;
-            }
-        }
 
-        // 🔹 Оновлення UI
+        // 🔹 Аватар  
+
+  
+        // 🔹 UI оновлення
         const viewBirthdate = document.getElementById("view");
-        if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthStr || "не вказано"}`;
+        if (viewBirthdate) viewBirthdate.innerHTML = `Дата народження: ${birthdateStr || "не вказано"}`;
+
         const emailEl = document.getElementById("email");
         if (emailEl) emailEl.innerHTML = `${userData?.name || ""} ${userData?.supername || ""}`;
+
         document.getElementById("name").innerHTML = `Ім'я: ${userData?.name || ""}`;
         document.getElementById("supername").innerHTML = `Прізвище: ${userData?.supername || ""}`;
 
@@ -3556,58 +4070,28 @@ if (isValentineDay) {
             try {
                 const url = await firebase.storage().ref(`avatars/${userData.avatarId}.webp`).getDownloadURL();
                 avatarEl.innerHTML = "";
+                navAvatar.innerHTML = "";
                 const img = document.createElement("img");
                 img.src = url;
                 img.alt = "Аватар користувача";
                 avatarEl.appendChild(img);
-                
+                navAvatar.prepend(img.cloneNode(true));
             } catch {
                 avatarEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+                navAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
             }
         } else {
             avatarEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+            navAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
         }
 
-        // 🔹 Обробка NSFW фільтру
-        const nsfwCheckbox = document.getElementById('show-nsfw-videos');
-        const nsfwSlider = document.getElementById("slidernsfw");
-        const nsfwInfo = document.getElementById("information-nsfw");
-        const NSFW = document.getElementById("nsfw");
-        const privateVideo = document.getElementById("private-checkbox");
-        const privatePhoto = document.getElementById("private-checkbox");
-        if (nsfwCheckbox) {
-            if (userAge < 13) {
-                privateVideo.checked = true;
-                if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
-                nsfwCheckbox.checked = false;
-                nsfwCheckbox.disabled = true;
-                if (NSFW) NSFW.style.display = "none";
-                if (nsfwInfo) nsfwInfo.style.display = "block";
-            } else if (userAge < 18) {
-              if (nsfwSlider) nsfwSlider.style.backgroundColor = "gray";
-                nsfwCheckbox.checked = false;
-                nsfwCheckbox.disabled = true;
-                if (NSFW) NSFW.style.display = "none";
-                if (nsfwInfo) nsfwInfo.style.display = "block";
-            } else {
-                nsfwCheckbox.disabled = false;
-                if (NSFW) NSFW.style.display = "block";
-                if (nsfwInfo) nsfwInfo.style.display = "none";
 
-                if (!nsfwCheckbox.dataset.listenerAdded) {
-                    nsfwCheckbox.addEventListener("change", function () {
-                        showNSFW = this.checked;
-                        loadVideos();
-                    });
-                    nsfwCheckbox.dataset.listenerAdded = "true";
-                }
-            }
-        }
-
-        // 🔹 Завантаження відео з фільтром за статтю
         loadVideos();
         enableBanduraUI(role);
-    }).catch(err => console.error("Помилка отримання даних користувача:", err));
+
+    } catch (err) {
+        console.error("Помилка отримання даних користувача:", err);
+    }
 
     updateUI(user);
     toggleUploadVisibility();
@@ -3627,13 +4111,14 @@ input.onchange = async () => {
             uploadFile = new File([blob], file.name.replace(/\.heic$/i, ".webp"), { type: "image/webp" });
         } catch (err) {
             console.error("Помилка конвертації HEIC:", err);
-            return alert("Не вдалося конвертувати HEIC");
+            return showNotificationModal(); message.innerHTML = "Не вдалося конвертувати HEIC";
         }
     }
 
     // Далі завантаження як раніше
     const user = firebase.auth().currentUser;
-    if (!user) return alert("Не авторизований");
+    if (!user) return showNotificationModal();
+    message.innerHTML = "Не авторизований";
 
     try {
         const avatarId = `${user.uid}_${Date.now()}`;
@@ -3644,85 +4129,99 @@ input.onchange = async () => {
 
         const url = await ref.getDownloadURL();
         avatarEl.innerHTML = "";
+        navAvatar.innerHTML = "";
         const img = document.createElement("img");
         img.src = url;
         img.alt = "Аватар користувача";
         avatarEl.appendChild(img);
+        navAvatar.prepend(img.cloneNode(true));
     } catch (err) {
         console.error(err);
-        alert("Не вдалося завантажити аватар");
+        showNotificationModal();
+        message.innerHTML = "Не вдалося завантажити аватар";
     }
 };
 updateVideosAuthor();
 function submitBirthdate() {
-  const user = firebase.auth().currentUser;
-  const input = document.getElementById("birthdate-input").value;
-  const nameInput = document.getElementById("name-input").value;
-  const supernameInput = document.getElementById("supername-input").value;
+    const user = firebase.auth().currentUser;
+    const input = document.getElementById("birthdate-input").value; // "YYYY-MM-DD"
+    const nameInput = document.getElementById("name-input").value;
+    const supernameInput = document.getElementById("supername-input").value;
 
+    if (!input || !nameInput || !supernameInput) {
+        showNotificationModal();
+        message.innerHTML = "Будь ласка, заповніть всі поля.";
+        return;
+    }
 
-  if (!input || !nameInput || !supernameInput) {
-    alert("Будь ласка, введіть дату народження.");
-    return;
-  }
+    const [year, month, day] = input.split("-");
+    const formattedDate = `${day}.${month}.${year}`; // "DD.MM.YYYY"
+    const age = calculateAge(formattedDate);
 
-  const [year, month, day] = input.split("-");
-  const formattedDate = `${day}.${month}.${year}`;
+    firebase.database().ref("users/" + user.uid).update({
+        birthdate: formattedDate,
+        email: user.email,
+        name: nameInput,
+        supername: supernameInput
+    }).then(() => {
+        showNotificationModal();
+        message.innerHTML = "Дата збережена.";
+        if (age !== null) configureAgeUI(age);
+        updateVideosAuthor();
+    }).catch(err => console.error("Помилка збереження даних:", err));
+}
 
-  firebase.database().ref("users/" + user.uid).update({
-    birthdate: formattedDate,
-    email: user.email,
-    name: nameInput,
-    supername: supernameInput
-  }).then(() => {
-    alert("Дата збережена.");
-   updateVideosAuthor();
-  });
+// 🔹 Використовуємо calculateAge і в onAuthStateChanged
+function calculateAge(birthdate) {
+    if (!birthdate) return null;
+    const [day, month, year] = birthdate.split(".").map(Number);
+    const today = new Date();
+    let age = today.getFullYear() - year;
+    if (today.getMonth() + 1 < month || 
+       (today.getMonth() + 1 === month && today.getDate() < day)) {
+        age--;
+    }
+    return age;
 }
 function updateVideosAuthor() {
   const user = firebase.auth().currentUser;
   if (!user) return;
+
   const uid = user.uid;
 
   database.ref("users/" + uid).once("value").then(snapshot => {
     const userData = snapshot.val() || {};
-    const namePart = userData.name ? userData.name : "";
-    const avatar = userData.avatarId ? userData.avatarId : "";
-    const supernamePart = userData.supername ? userData.supername : "";
-    const fullName = namePart + " " + supernamePart;
 
-    // ?? Оновлення відео
+    const fullName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+    const avatarUrl = userData.avatarUrl || "";
+
     const videoUpdates = [];
-    database.ref("videos").once("value").then(videoSnap => {
+
+    return database.ref("videos").once("value").then(videoSnap => {
       videoSnap.forEach(child => {
         const video = child.val();
         if (video.email === user.email) {
-          videoUpdates.push(database.ref("videos/" + child.key).update({ author: fullName, authorAvatar: avatar }));
+          videoUpdates.push(
+            database.ref("videos/" + child.key).update({
+              author: fullName || "Анонім",
+              authorAvatar: avatarUrl
+            })
+          );
         }
       });
       return Promise.all(videoUpdates);
-    }).then(() => {
-      // ?? Оновлення коментарів
-      const commentUpdates = [];
-      return database.ref("comments").once("value").then(commentSnap => {
-        commentSnap.forEach(child => {
-          const comment = child.val();
-          if (comment.email === user.email) {
-            commentUpdates.push(database.ref("comments/" + child.key).update({ commentAuthor: fullName }));
-          }
-        });
-        return Promise.all(commentUpdates);
-      });
-    }).then(() => {
-      location.reload(); // ?? Тепер перезавантажуємо тільки після завершення оновлення
-    }).catch(err => {
-      console.error("Помилка оновлення:", err);
     });
+  }).then(() => {
+    console.log("Відео оновлено");
+    location.reload();
+  }).catch(err => {
+    console.error("Помилка оновлення:", err);
   });
 }
 document.getElementById("logout-link").onclick = function() {
             auth.signOut().then(() => {
-                alert("Ви вийшли з акаунту.");
+              showNotificationModal();
+                message.innerHTML = "Ви вийшли з акаунту.";
                 location.reload();
             });
         };
@@ -3799,9 +4298,9 @@ function loadPhotos() {
         // 🔹 Контейнер фото
         const Photocontainer = document.createElement("div");
         Photocontainer.classList.add("photo-container");
-        Photocontainer.appendChild(photoElement);
         Photocontainer.appendChild(infophotoElement);
-
+        Photocontainer.appendChild(photoElement);
+        
         photoGallery.appendChild(Photocontainer);
     });
 }
@@ -3813,13 +4312,16 @@ function deletePhoto(photoKey, photoURL) {
         storageRef.delete().then(() => {
             // Видалення запису з бази даних
             database.ref(`photos/${photoKey}`).remove().then(() => {
-                alert("Фото успішно видалено.");
+              showNotificationModal();
+                message.innerHTML = "Фото успішно видалено.";
                 loadPhotos(); // Оновлюємо список відео
             }).catch((error) => {
-                alert("Помилка при видаленні фото з бази даних: " + error.message);
+              showNotificationModal();
+                message.innerHTML = "Помилка при видаленні фото з бази даних: " + error.message;
             });
         }).catch((error) => {
-            alert("Помилка при видаленні фото зі сховища: " + error.message);
+          showNotificationModal();
+            message.innerHTML = "Помилка при видаленні фото зі сховища: " + error.message;
         });
     }
 }
@@ -3863,10 +4365,12 @@ function loadPhotoChannelSelect() {
     // Example of how video data might be stored with an 'nsfw' attribute
 function uploadPhoto() {
     const user = firebase.auth().currentUser;
-    if (!user) return alert("Увійдіть в акаунт");
+    if (!user) return showNotificationModal();
+    message.innerHTML = "Увійдіть в акаунт";
 
     const channel = getActiveChannelData();
-    if (!channel) return alert("Не вибрано канал");
+    if (!channel) return showNotificationModal();
+    message.innerHTML = "Не вибрано канал";
 
     const photoDescription = document.getElementById("photo-description")?.value || "";
     const photoTitle = document.getElementById("photo-title")?.value || "";
@@ -3877,7 +4381,8 @@ function uploadPhoto() {
     const progressContainer = document.getElementById("progress-photo-container");
 
     if (!photoTitle || !photoFile) {
-        alert("Будь ласка, заповніть всі поля!");
+      showNotificationModal();
+        message.innerHTML = "Будь ласка, заповніть всі поля!";
         return;
     }
 
@@ -3894,7 +4399,8 @@ function uploadPhoto() {
             }
         },
         (error) => {
-            alert("Помилка завантаження фото: " + error.message);
+          showNotificationModal();
+            message.innerHTML = "Помилка завантаження фото: " + error.message;
         },
         () => {
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
@@ -3908,9 +4414,11 @@ function uploadPhoto() {
                     authorAvatar: channel.avatar,
                     channelKey: channel.key,
                     email: user.email,
+                    authorUid: user.uid, // ← ОБОВ'ЯЗКОВО
                     publishDate: currentDate
                 }).then(() => {
-                    alert("Фото завантажено!");
+                  showNotificationModal();
+                    message.innerHTML = "Фото завантажено!";
                     loadPhotos();
                     document.getElementById("upload-photo-form")?.reset();
                     if (progressContainer) progressContainer.style.display = "none";
