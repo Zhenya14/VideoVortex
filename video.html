@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title></title>
+    <style>
+    ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-window {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(30,30,30,0.85);
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+
+.ios-modal-header {
+  padding: 16px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ios-modal-body {
+  padding: 16px;
+  font-size: 14px;
+}
+
+.ios-modal-body select,
+.ios-modal-body textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  outline: none;
+}
+
+.ios-modal-footer {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.ios-modal-footer button {
+  background: transparent;
+  border: none;
+padding: 14px;
+  border-radius: 0 0 20px 20px;
+margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.ios-modal-footer button.danger {
+  color: #ff453a;
+  border-radius: 0 0 20px 0;
+  font-weight: bold;
+}
+.ios-modal-footer button.cancel {
+  border-radius: 0 0 0 20px;
+}
+.ios-modal-footer button.cancel:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+border-radius: 0 0 0 20px;
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+        .ios-modal-footer button.cancel:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+border-radius: 0 0 0 20px;
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.ios-modal-footer button.danger:hover {
+            border-color: #ff453a; /* підсвічування рамки блакитним */
+border-radius: 0 0 20px 0;
+box-shadow: 0 0 15px #ff453a; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+        .ios-modal-footer button.danger:active {
+border-color: #ff453a; /* рамка рожевого кольору при натисканні */
+border-radius: 0 0 20px 0;
+box-shadow: 0 0 10px #ff453a; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.ios-modal-footer button:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.btn-container {
+    display: flex;
+    flex-basis: auto;
+    justify-content: center;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+.downloads-list {
+    font-size: 30px;
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+    width: 100%;
+    max-width: 350px;
+    margin-top: -3px;
+}
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
+        }
+                body { 
+            margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
+    color: #e2e8f0;
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .photo-container-title { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.7); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        } 
+        .snowflake {
+    position: fixed;
+    top: -30px;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+}
+@keyframes fall {
+    0% { transform: translateX(0) translateY(0); opacity: 1; }
+    100% { transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh); opacity: 0; }
+}
+::-webkit-scrollbar {
+width: 10px;
+background-color: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background-color: #888;
+border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}
+::-webkit-scrollbar {
+height: 10px;
+}
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
+        .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"], button, #video-description, #photo-description { 
+            width: 100%; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+                .random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
+width: 100%; 
+            background-color: black;
+border: 2px solid #333333;
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+}
+        button { 
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 999px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+
+  background: #0b0b0b;
+  border: 2px solid #2a2a2a;
+
+  cursor: pointer;
+
+  transition:
+    box-shadow .25s ease,
+    transform .2s ease,
+    border-color .25s ease,
+    background .25s ease,
+    color .25s ease;
+
+  box-shadow: 0 0 0 rgba(244, 114, 182, 0);
+}
+
+/* 🔮 підсвічування при наведенні */
+button:hover { 
+  border-color: #f472b6;
+  box-shadow: 0 0 18px rgba(244, 114, 182, .65);
+  transform: translateY(-2px);
+}
+
+/* ❇️ при кліку */
+button:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 12px rgba(6, 182, 212, .75);
+  transform: scale(0.96);
+}
+.comment-button {
+    width: 50px;
+    height: 40px;  /* Встановлюємо висоту кнопки */
+    color: white;
+    border: none;
+    border-radius: 35px;
+    cursor: pointer;
+}
+        #video-player {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .photo-container {
+            display: flex;
+            margin-top: 20px;
+           flex-direction: column-reverse; 
+        }
+        /* Стилі для зображень з класом .photo-item */
+img.photo-item {
+    width: 100%;  /* Зображення заповнює ширину контейнера */
+    height: auto; /* Пропорції зображення зберігаються */
+    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+    border-radius: 8px; /* Округлення кутів зображення */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
+    }
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+             .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .video-details {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+        #delete-account { 
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: color 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: red; 
+            color: white; 
+            cursor: pointer;
+        }
+.nsfw-label {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
+    display: inline-block;
+}
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #1c1e22;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
+
+.menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: #4facfe;
+}
+
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
+
+nav {
+    display: flex;
+    justify-content: left;
+    padding: 0px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+        nav a {
+height: 50px;
+align-items: center;
+    justify-content: center;
+display: flex;
+    padding: 0px 5px;
+    border-radius: 50px;
+    text-align: left;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        nav a:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+nav a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.like {
+  height: 5%;
+  width: 20%;
+  padding: 0;
+  border-radius: 50px 0 0 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .like:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.like:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.shareBtn {
+  height: 5%;
+  width: 100%;
+  padding: 0;
+  border-radius: 50px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .shareBtn:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.shareBtn:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.moreBtn {
+  
+  padding: 0;
+  border-radius: 50px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .moreBtn:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.moreBtn:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.action-menu {
+
+  padding: 12px 14px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+  z-index: 10000;
+
+  animation: menuFadeScale .25s ease forwards;
+
+  /* щоб контент не липнув */
+  display: inline-flex;
+}
+
+/* 🌫️ м’яка анімація появи */
+@keyframes menuFadeScale {
+  from {
+    opacity: 0;
+    transform: scale(.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 🖱️ hover по кнопках всередині меню */
+.action-menu button {
+  border-radius: 42px;
+  background: rgba(0,0,0,0.25);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 8px 12px;
+  transition: .2s;
+}
+
+.action-menu .block-button:hover {
+border-color: red; /* підсвічування рамки червоним */
+border-radius: 42px;
+  box-shadow: 0 0 10px red; /* легке світіння */
+  transform: translateY(-2px); /* легке підняття */
+}
+.action-menu .block-button:active {
+border-color: red; /* рамка рожевого кольору при натисканні */
+border-radius: 42px;
+box-shadow: 0 0 10px red; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.dislike {
+  height: 5%;
+  width: 20%;
+  padding: 0;
+  border-radius: 0 50px 50px 0;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .dislike:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+      
+.dislike:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+        .dislike:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.reactions {
+display: flex;
+text-align: left;
+}
+.comment-liquid-glass {
+width: 80%;  /* Ширина поля вводу */
+    padding: 10px;
+    margin-right: 10px;  /* Відступ між полем вводу та кнопкою */
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+      isolation: isolate;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        @apply bg-muted/25;
+    }
+  
+.video-comment {
+    border-radius: 20px;
+    margin-left: 0.5px;
+    overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px; 
+}
+ .comment-section {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: block;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 16px;
+}
+.comment-input {
+    background: transparent;
+    position: absolute;
+    bottom: 220px;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.comments {
+  overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px; 
+    text-align: left;
+}
+.comments * {
+    white-space: normal;
+    word-break: break-word;
+}
+.like.liked {
+  background: #3b82f6;
+  box-shadow: 0 0 16px rgba(59,130,246,.6);
+}
+
+.dislike.disliked {
+  background: #ef4444;
+  box-shadow: 0 0 16px rgba(239,68,68,.6);
+}
+        .icon-text {
+            margin-left: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .icon-text {
+                display: none;
+            }
+        }
+ #nsfw-toggle {
+        display: none;
+}
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <nav>
+            <a href="beta.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+
+    </nav>
+    <ios-modal id="block-user-modal">
+  <div class="ios-modal-window">
+    <div class="ios-modal-header">
+      Заблокувати користувача
+    </div>
+
+    <div class="ios-modal-body">
+      <p id="blocked-information">Ви впевнені, що хочете заблокувати цього користувача?</p>
+
+      <select id="block-reason">
+        <option value="spam">Спам</option>
+        <option value="abuse">Образи / токсична поведінка</option>
+        <option value="nsfw">Заборонений контент</option>
+        <option value="other">Інше</option>
+      </select>
+
+      <textarea id="block-comment" placeholder="Коментар (необовʼязково)"></textarea>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
+      <button class="danger" onclick="confirmBlockUser()">Заблокувати</button>
+    </div>
+  </div>
+</ios-modal>
+    <div id="video-container">
+        <video id="video-player" controls></video>
+        <div class="video-info" id="video-info">
+<div class="avatar" id="avatar"></div>
+<div class="details" id="details"></div>
+<hr>
+<div class="reactions">
+<a class="like" id="like">
+  <i class="material-icons">thumb_up</i>
+  <p id="likeCount" style="padding: 5px;">0</p>
+</a>
+
+<a class="dislike" id="dislike">
+  <i class="material-icons">thumb_down</i>
+  <p id="dislikeCount" style="padding: 5px;">0</p>
+</a>
+<a class="shareBtn" id="shareBtn">
+  <i class="material-icons">share</i><p style="padding: 5px;">Поділитися</p>  
+    </a>
+</div>
+
+<hr>
+            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
+
+        </div>
+    </div>
+                <div id="comments-root"></div>
+<h3>Схожі відео:</h3>
+<div id="target-videos">
+<p id="message">Схожих відео немає 😔</p>
+</div>
+<script src="i18n.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    initLanguageSwitcher("language-select");
+});
+</script>
+<script>
+// ===================== Сніг =====================
+let snowInterval = null;
+
+function createSnowflake() {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.textContent = ["❄️","❅","❆"][Math.floor(Math.random()*3)];
+    snowflake.style.left = Math.random()*100 + "vw";
+    snowflake.style.fontSize = (Math.random()*15+10) + "px";
+    snowflake.style.opacity = Math.random()*0.8+0.2;
+    snowflake.style.setProperty('--x', Math.random());
+
+    const duration = Math.random()*3+4; // 4–7 сек
+    snowflake.style.animation = `fall ${duration}s linear forwards`;
+
+    document.body.appendChild(snowflake);
+    setTimeout(()=>snowflake.remove(), duration*1000);
+}
+
+function startSnow() {
+    if(snowInterval) return;
+    snowInterval = setInterval(createSnowflake, 150);
+}
+
+function stopSnow() {
+    clearInterval(snowInterval);
+    snowInterval = null;
+    document.querySelectorAll(".snowflake").forEach(f=>f.remove());
+}
+
+// ===================== Пасхалка потрійного кліку =====================
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function launchNewYearEasterEgg() {
+    // Додатковий сніг на пасхалку
+    startSnow();
+    alert("🎉 Пасхалка Нового Року! Сніг йде! 🎉");
+}
+
+// ===================== Ініціалізація =====================
+document.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logo");
+    const today = new Date();
+    const month = today.getMonth()+1;
+    const day = today.getDate();
+
+    // Новорічний період (1 січня)
+    const isNewYearPeriod = (month === 12 && day >= 15) || (month === 1 && day <= 25);
+    if(isNewYearPeriod && logo && !logo.dataset.originalSrc) {
+        logo.dataset.originalSrc = logo.src;
+        logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
+    }
+
+    // ---------- СНІГ 1 СІЧНЯ ----------
+    if(month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- Потрійний клік для пасхалки ----------
+    if(logo) {
+        logo.addEventListener("click", () => {
+            logoClickCount++;
+            if(logoClickCount === 1) {
+                logoClickTimer = setTimeout(()=>{logoClickCount=0;},1200);
+            }
+            if(logoClickCount===3){
+                clearTimeout(logoClickTimer);
+                logoClickCount=0;
+                launchNewYearEasterEgg();
+            }
+        });
+    }
+});
+</script>
+<script>
+/* ================= FIREBASE INIT ================= */
+let currentUserEmail = null;
+let currentVideo = null;
+let userAge = null;
+// Глобальні змінні для блокування
+let blockedUserUid = null;
+let blockedUserName = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const database = firebase.database();
+
+/* ================= HELPERS ================= */
+function sanitize(text) {
+  return String(text ?? "")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function showNotFound() {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:#0d1117;
+      color:white;
+      text-align:center;
+    ">
+      <h1>🎬 Відео не знайдено</h1>
+      <p>Можливо, було видалене або недоступне.</p>
+      <a href="beta.html" style="color:#4facfe;">⬅ На головну</a>
+    </div>
+  `;
+}
+function getInitials(name) {
+  if (!name) return "?";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return `hsl(${hash % 360}, 65%, 55%)`;
+}
+const randomComments = [
+  "Класне відео! 🎬👍",
+  "Дуже цікаво 🤓✨",
+  "Дякую за контент 🙏💖",
+  "Супер пояснення!👌📚",
+  "Підтримую 💪🔥",
+  "Топчик!⭐😎"
+];
+function insertRandomComment(videoKey) {
+  const inputId = `comment-input-${videoKey}`;
+  const input = document.getElementById(inputId);
+
+  if (input) {
+    const randomIndex = Math.floor(Math.random() * randomComments.length);
+    input.value = randomComments[randomIndex];
+  }
+}
+function getVideoKey(videoKey) {
+    let key = localStorage.getItem(`videoKey-${videoKey}`);
+    if (!key) {
+        key = crypto.randomUUID(); // простий ключ, можна замінити на сильніше шифрування
+        localStorage.setItem(`videoKey-${videoKey}`, key);
+    }
+    return key;
+}
+
+// Просте шифрування/дешифрування (можна замінити на AES)
+async function encryptText(text, key) {
+    const enc = new TextEncoder();
+    const encoded = enc.encode(text + key); // дуже базово
+    return btoa(String.fromCharCode(...encoded));
+}
+
+async function decryptText(cipher, key) {
+    const decoded = atob(cipher);
+    const arr = Uint8Array.from(decoded, c => c.charCodeAt(0));
+    const dec = new TextDecoder();
+    const text = dec.decode(arr);
+    return text.replace(key, ''); // віднімаємо ключ
+}
+
+async function uploadComment(videoKey, videoOwnerEmail) {
+    const commentInput = document.getElementById(`comment-input-${videoKey}`);
+    const commentText = commentInput.value.trim();
+    const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
+
+    if (!commentText) return showNotificationModal();
+    message.innerHTML = "Коментар не може бути порожнім.";
+
+    let commentData = commentText;
+    if (isPrivate) {
+        const videoKeyLocal = getVideoKey(videoKey);
+        commentData = await encryptText(commentText, videoKeyLocal);
+    }
+
+    const uid = firebase.auth().currentUser.uid;
+
+    // Беремо дані користувача з Firebase
+    const snapshot = await database.ref("users/" + uid).once("value");
+    const userData = snapshot.val();
+    const commentAuthor = `${userData.name} ${userData.supername}`;
+
+    // Додаємо коментар у базу
+    await database.ref("comments").push({
+        comment: commentData,
+        email: currentUserEmail,
+        commentAuthor: commentAuthor,
+        videoOwner: videoOwnerEmail,
+        isPrivate: isPrivate,
+        publishDate: new Date().toLocaleDateString(),
+        videoKey: videoKey
+    });
+
+    // Очищуємо поле та оновлюємо коментарі
+    commentInput.value = "";
+    await loadComments(videoKey, videoOwnerEmail);
+}
+/* ================= GET VIDEO KEY ================= */
+const params = new URLSearchParams(location.search);
+const videoKey = params.get("key");
+
+if (!videoKey) {
+  showNotFound();
+  throw new Error("No video key");
+}
+  function renderCommentSection(videoData, videoKey) {
+  const root = document.getElementById("comments-root");
+
+  const commentSection = document.createElement("div");
+  commentSection.classList.add("video-comment");
+
+  if (videoData.disabledComments === true) {
+    commentSection.innerHTML = `💬 Коментарі вимкнені для цього відео.`;
+  } else {
+    commentSection.innerHTML = `
+      <h3 style="color: white; text-align: left;">Коментарі:</h3>
+      <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
+      <input class="comment-liquid-glass" type="text" id="comment-input-${videoKey}" placeholder="Ваш коментар">
+      <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
+        <i class="material-icons">send</i>
+      </button>
+      <div class="comment-section" id="comment-section-${videoKey}">
+        <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
+        <label id="private-checkbox-${videoKey}" style="display: none;">
+          <input type="checkbox" id="private-comment-${videoKey}">
+          Приватний
+        </label>
+      </div>
+    `;
+  }
+
+  root.innerHTML = "";
+  root.appendChild(commentSection);
+  }
+function updatePrivateCheckbox(videoKey) {
+    const privateComment = document.getElementById(`private-checkbox-${videoKey}`);
+    const privateCheckbox = document.getElementById(`private-comment-${videoKey}`);
+    if (!privateComment || !privateCheckbox) return;
+
+    const showPrivate = userAge >= 16;
+    privateComment.style.display = showPrivate ? "block" : "none";
+    privateCheckbox.disabled = !showPrivate;
+}
+async function isUserBlockedByMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${me.uid}/blockedUsers/${targetUid}`).once("value");
+  return snap.exists();
+}
+
+async function didUserBlockMe(targetUid) {
+  const me = firebase.auth().currentUser;
+  if (!me || !targetUid) return false;
+
+  const snap = await database.ref(`users/${targetUid}/blockedUsers/${me.uid}`).once("value");
+  return snap.exists();
+}
+/* ================= LOAD VIDEO ================= */
+const videoPlayer = document.getElementById("video-player");
+const detailsEl = document.getElementById("details");
+const avatar = document.getElementById("avatar");
+
+database.ref("videos/" + videoKey).once("value").then(async snapshot => {
+  if (!snapshot.exists()) {
+    showNotFound();
+    return;
+  }
+
+  const video = snapshot.val();
+  currentVideo = video;
+
+  if (firebase.auth().currentUser && video.authorUid) {
+    const iBlocked = await isUserBlockedByMe(video.authorUid);
+    const heBlockedMe = await didUserBlockMe(video.authorUid);
+
+    if (iBlocked || heBlockedMe) {
+      showNotFound();
+      return;
+    }
+  }
+
+
+  document.title = sanitize(video.title);
+  videoPlayer.src = video.url;
+  avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
+
+  detailsEl.innerHTML = `
+    <h2>${sanitize(video.title)}</h2>
+    <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
+    <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
+    <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
+    <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
+  `;
+
+  const viewedKey = "viewed_" + videoKey;
+  if (!localStorage.getItem(viewedKey)) {
+    database.ref("videos/" + videoKey + "/views")
+      .transaction(v => (v || 0) + 1);
+    localStorage.setItem(viewedKey, "1");
+  }
+  renderCommentSection(currentVideo, videoKey);
+  loadComments(videoKey, video.email);
+loadSimilarVideos(video);
+});
+function getVideoKey(videoKey) {
+    let key = localStorage.getItem(`videoKey-${videoKey}`);
+    if (!key) {
+        key = crypto.randomUUID(); // простий ключ, можна замінити на сильніше шифрування
+        localStorage.setItem(`videoKey-${videoKey}`, key);
+    }
+    return key;
+}
+
+// Просте шифрування/дешифрування (можна замінити на AES)
+async function loadComments(videoKey, videoOwnerEmail) { 
+    const commentsContainer = document.getElementById(`comments-${videoKey}`);
+    commentsContainer.innerHTML = "";
+
+    const snapshot = await database.ref("comments")
+        .orderByChild("videoKey")
+        .equalTo(videoKey)
+        .once("value");
+
+    if (!snapshot.exists()) {
+        commentsContainer.textContent = "Ще немає коментарів...";
+        return;
+    }
+
+    const videoKeyLocal = getVideoKey(videoKey);
+    const commentsArray = [];
+
+    snapshot.forEach(childSnapshot => {
+        commentsArray.push(childSnapshot.val());
+    });
+
+    for (const data of commentsArray) {
+        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
+            continue; // Пропускаємо приватні коментарі, якщо користувач не автор або власник відео
+        }
+
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comments";
+const avatarComment = document.createElement("div");
+avatarComment.className = "avatar";
+avatarComment.title = data.commentAuthor;
+
+if (data.commentAuthor == "Видалений акаунт") {
+ avatarComment.textContent = "👻";
+ 
+} else {
+  avatarComment.textContent = getInitials(data.commentAuthor);
+}
+        const userEl = document.createElement("strong");
+        if (data.commentAuthor == "Видалений акаунт") {
+ userEl.setAttribute('data-i18n', 'account-deleted');
+} else {
+ userEl.textContent = data.commentAuthor;
+}
+
+        const textEl = document.createElement("span");
+        if (data.isPrivate) {
+            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
+        } else {
+            textEl.textContent = ": " + data.comment;
+        }
+
+        const br = document.createElement("br");
+        const dateEl = document.createElement("small");
+        dateEl.textContent = data.publishDate;
+
+        commentDiv.appendChild(avatarComment);
+        commentDiv.appendChild(userEl);
+        commentDiv.appendChild(textEl);
+        commentDiv.appendChild(br);
+        commentDiv.appendChild(dateEl);
+        applyTranslations();
+        commentsContainer.appendChild(commentDiv);
+    }
+}
+function showModalBlocked() {
+  document.getElementById("block-user-modal").style.display = "flex";
+  document.getElementById("blocked-information").textContent =
+    `Ви впевнені, що хочете заблокувати користувача ${blockedUserName}?`;
+}
+
+function closeBlockModal() {
+  document.getElementById("block-user-modal").style.display = "none";
+}
+
+async function confirmBlockUser() {
+  const currentUser = firebase.auth().currentUser;
+  if (!currentUser) return;
+
+  if (!blockedUserUid) {
+    alert("Не вдалося визначити користувача");
+    return;
+  }
+
+  if (currentUser.uid === blockedUserUid) {
+    alert("Не можна заблокувати самого себе");
+    return;
+  }
+
+  await firebase.database()
+    .ref(`users/${currentUser.uid}/blockedUsers/${blockedUserUid}`)
+    .set(true);
+
+  closeBlockModal();
+
+  alert("Користувача заблоковано");
+
+  if (currentVideo) {
+    await loadComments(videoKey, currentVideo.email);
+  }
+}
+/* ================= SIMILAR VIDEOS ================= */
+function loadSimilarVideos(currentVideo) {
+  const container = document.getElementById("target-videos");
+  const message = document.getElementById("message");
+  container.innerHTML = "";
+
+  let found = false;
+  const currentTitleWords = currentVideo.title.toLowerCase().split(" ");
+
+  database.ref("videos").once("value").then(snapshot => {
+    snapshot.forEach(child => {
+      const v = child.val();
+      if (!v || v.nsfw) return;
+      if (v.title === currentVideo.title) return;
+      if (v.private && v.email !== currentUserEmail) return;
+
+      const similar = currentTitleWords.some(word => v.title.toLowerCase().includes(word));
+      if (!similar) return;
+
+      if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
+
+      found = true;
+
+      const wrap = document.createElement("div");
+      wrap.style.marginBottom = "20px";
+
+      const title = document.createElement("h3");
+      title.innerText = v.title;
+      title.style.color = "white";
+
+      const vid = document.createElement("video");
+      vid.src = v.url;
+      vid.muted = true;
+      vid.loop = true;
+      vid.autoplay = true;
+      vid.style.width = "100%";
+      vid.onclick = () => location.href = `video.html?key=${child.key}`;
+
+      wrap.appendChild(title);
+      wrap.appendChild(vid);
+      container.appendChild(wrap);
+    });
+
+    if (!found && message) message.style.display = "block";
+  });
+}
+/* ================= REACTIONS (LIKE / DISLIKE) ================= */
+const likeBtn = document.getElementById("like");
+const dislikeBtn = document.getElementById("dislike");
+const likeCountEl = likeBtn.querySelector("p");
+const dislikeCountEl = dislikeBtn.querySelector("p");
+
+let currentReaction = null;
+let currentUid = null;
+
+/* ---------- AUTH ---------- */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUid = user.uid;
+    currentUserEmail = user.email;
+    listenUserReaction();
+    
+    database.ref("users/" + currentUid).once("value").then(async snapshot => {
+      const userData = snapshot.val();
+      const birthStr = userData?.birthdate;
+      
+      // 🔹 Обчислення віку
+      if (birthStr) {
+        let birthDate;
+        const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+        if (match) {
+          const [, d, m, y] = match;
+          birthDate = new Date(`${y}-${m}-${d}`);
+        } else {
+          birthDate = new Date(birthStr);
+        }
+
+        if (!isNaN(birthDate)) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const mm = today.getMonth() - birthDate.getMonth();
+          if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
+          userAge = age;
+
+          updatePrivateCheckbox(videoKey);
+          if (currentVideo) loadComments(videoKey, currentVideo.email);
+        }
+      }
+    });
+  }
+});
+/* ---------- USER REACTION ---------- */
+function listenUserReaction() {
+  const ref = database.ref(`reactions/${videoKey}/${currentUid}`);
+  ref.on("value", snap => {
+    currentReaction = snap.val();
+    updateReactionUI();
+  });
+}
+
+/* ---------- COUNTS ---------- */
+database.ref(`reactions/${videoKey}`).on("value", snap => {
+  let likes = 0, dislikes = 0;
+  snap.forEach(c => {
+    if (c.val() === "like") likes++;
+    if (c.val() === "dislike") dislikes++;
+  });
+  likeCountEl.innerText = likes;
+  dislikeCountEl.innerText = dislikes;
+});
+
+/* ---------- CLICK ---------- */
+likeBtn.onclick = () => toggleReaction("like");
+dislikeBtn.onclick = () => toggleReaction("dislike");
+
+function toggleReaction(type) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Увійди, щоб ставити реакції");
+    return;
+  }
+
+  const ref = database.ref(`reactions/${videoKey}/${user.uid}`);
+  currentReaction === type ? ref.remove() : ref.set(type);
+}
+
+/* ---------- UI ---------- */
+function updateReactionUI() {
+  likeBtn.classList.remove("liked");
+  dislikeBtn.classList.remove("disliked");
+
+  if (currentReaction === "like") likeBtn.classList.add("liked");
+  
+  if (currentReaction === "dislike") dislikeBtn.classList.add("disliked");
+}
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  if (!currentVideo) {
+    alert('Відео ще не завантажене');
+    return;
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'VideoVortex',
+        text: `${sanitize(currentVideo.title)}\n${sanitize(currentVideo.description)}`,
+        url: window.location.href, // або конкретний URL на твоєму хості
+      });
+      console.log('Поділено успішно');
+    } catch (err) {
+      console.error('Помилка при поділі:', err);
+    }
+  } else {
+    alert('Ваш браузер не підтримує цю функцію');
+  }
+});
+</script>
+
+</body>
+    </html>
