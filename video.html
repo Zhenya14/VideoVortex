@@ -1134,6 +1134,7 @@ async function didUserBlockMe(targetUid) {
   return snap.exists();
 }
 /* ================= LOAD VIDEO ================= */
+/* ================= LOAD VIDEO ================= */
 const videoPlayer = document.getElementById("video-player");
 const detailsEl = document.getElementById("details");
 const avatar = document.getElementById("avatar");
@@ -1145,23 +1146,35 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
   currentVideo = video;
 
   // -------------------------------
-  // Підставляємо faststart версію для всіх
+  // Підготовка URL faststart з fallback
   // -------------------------------
-  if (video.url.includes(".mp4")) {
-    const parts = video.url.split("/");
-    const filename = parts.pop();
-    const fastUrl = parts.join("/") + "/videos_fast/" + filename.replace(".mp4", "_fast.mp4");
-    videoPlayer.src = fastUrl;
-  } else {
-    videoPlayer.src = video.url;
+  async function getVideoUrl(url) {
+    if (!url.includes(".mp4")) return url;
+
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split("/");
+    const filename = pathParts.pop(); // ім'я файлу.mp4
+    const dir = pathParts.join("/");  // шлях до директорії
+    const fastFilename = filename.replace(".mp4", "_fast.mp4");
+    const fastUrl = urlObj.origin + dir + "/videos_fast/" + fastFilename;
+
+    try {
+      const res = await fetch(fastUrl, { method: "HEAD" });
+      if (res.ok) return fastUrl; // fast файл існує
+    } catch (e) {
+      console.warn("Fast video не знайдено:", e);
+    }
+    return url; // fallback на оригінал
   }
 
+  videoPlayer.src = await getVideoUrl(video.url);
   videoPlayer.load();
 
   // -------------------------------
   // Деталі відео
   // -------------------------------
   document.title = sanitize(video.title);
+
   avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
 
   detailsEl.innerHTML = `
@@ -1172,15 +1185,24 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
     <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
   `;
 
+  // -------------------------------
+  // Лічильник переглядів
+  // -------------------------------
   const viewedKey = "viewed_" + videoKey;
   if (!localStorage.getItem(viewedKey)) {
     database.ref("videos/" + videoKey + "/views").transaction(v => (v || 0) + 1);
     localStorage.setItem(viewedKey, "1");
   }
 
+  // -------------------------------
+  // Коментарі та схожі відео
+  // -------------------------------
   renderCommentSection(currentVideo, videoKey);
   loadComments(videoKey, video.email);
   loadSimilarVideos(video);
+}).catch(err => {
+  console.error("Помилка завантаження відео:", err);
+  showNotFound();
 });
 function getVideoKey(videoKey) {
     let key = localStorage.getItem(`videoKey-${videoKey}`);
