@@ -777,7 +777,7 @@ width: 80%;  /* Ширина поля вводу */
 </head>
 <body>
     <nav>
-            <a href="beta.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <a href="index.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
             <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
 
     </nav>
@@ -815,7 +815,7 @@ width: 80%;  /* Ширина поля вводу */
   </div>
 </div>
     <div id="video-container">
-       <video id="video-player" controls preload="auto"></video>
+        <video id="video-player" controls preload="auto"></video>
         <div class="video-info" id="video-info">
 <div class="avatar" id="avatar"></div>
 <div class="details" id="details"></div>
@@ -845,22 +845,6 @@ width: 80%;  /* Ширина поля вводу */
 <div id="target-videos">
 <p id="similar-message">Схожих відео немає 😔</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script>
-  const video = document.getElementById('video-player');
-  const videoSrc = 'https://your-bucket/video.m3u8';
-
-  if(Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(videoSrc);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.play();
-    });
-  } else {
-    video.src = videoSrc; // fallback для Safari
-  }
-</script>
 <script src="i18n.js"></script>
 <script>
 // ===================== Сніг =====================
@@ -1155,17 +1139,29 @@ const detailsEl = document.getElementById("details");
 const avatar = document.getElementById("avatar");
 
 database.ref("videos/" + videoKey).once("value").then(async snapshot => {
-  if (!snapshot.exists()) {
-    showNotFound();
-    return;
-  }
+  if (!snapshot.exists()) { showNotFound(); return; }
 
   const video = snapshot.val();
   currentVideo = video;
 
+  // -------------------------------
+  // Підставляємо faststart версію для всіх
+  // -------------------------------
+  if (video.url.includes(".mp4")) {
+    const parts = video.url.split("/");
+    const filename = parts.pop();
+    const fastUrl = parts.join("/") + "/videos_fast/" + filename.replace(".mp4", "_fast.mp4");
+    videoPlayer.src = fastUrl;
+  } else {
+    videoPlayer.src = video.url;
+  }
 
+  videoPlayer.load();
+
+  // -------------------------------
+  // Деталі відео
+  // -------------------------------
   document.title = sanitize(video.title);
-  videoPlayer.src = video.url;
   avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
 
   detailsEl.innerHTML = `
@@ -1178,13 +1174,13 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
 
   const viewedKey = "viewed_" + videoKey;
   if (!localStorage.getItem(viewedKey)) {
-    database.ref("videos/" + videoKey + "/views")
-      .transaction(v => (v || 0) + 1);
+    database.ref("videos/" + videoKey + "/views").transaction(v => (v || 0) + 1);
     localStorage.setItem(viewedKey, "1");
   }
+
   renderCommentSection(currentVideo, videoKey);
   loadComments(videoKey, video.email);
-loadSimilarVideos(video);
+  loadSimilarVideos(video);
 });
 function getVideoKey(videoKey) {
     let key = localStorage.getItem(`videoKey-${videoKey}`);
