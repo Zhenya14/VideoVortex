@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
+    <title>VideoVortex beta</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
@@ -3828,7 +3828,7 @@ function updateUI(user) {
     document.getElementById("auth-link")?.style?.setProperty("display", "none");
     document.getElementById("register-link")?.style?.setProperty("display", "none");
     document.getElementById("logout-link")?.style?.setProperty("display", "flex");
-    document.getElementById("account-desktop-link")?.style?.setProperty("display", "grid");
+    document.getElementById("account-desktop-link")?.style?.setProperty("display", "none");
     document.getElementById("upload-link")?.style?.setProperty("display", "flex");
     document.getElementById("upload-link-photo")?.style?.setProperty("display", "flex");
     document.getElementById("smart-upload-link")?.style?.setProperty("display", "grid");
@@ -3858,8 +3858,8 @@ function updateUI(user) {
 
     // Кнопки/посилання
     document.getElementById("signup")?.style?.setProperty("display", "flex");
-    document.getElementById("auth-link")?.style?.setProperty("display", "flex");
-    document.getElementById("register-link")?.style?.setProperty("display", "flex");
+    document.getElementById("auth-link")?.style?.setProperty("display", "none");
+    document.getElementById("register-link")?.style?.setProperty("display", "none");
     document.getElementById("logout-link")?.style?.setProperty("display", "none");
     document.getElementById("account-desktop-link")?.style?.setProperty("display", "none");
     document.getElementById("upload-link")?.style?.setProperty("display", "none");
