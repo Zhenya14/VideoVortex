@@ -1217,6 +1217,8 @@ function getVideoKey(videoKey) {
 async function loadComments(videoKey, videoOwnerEmail) { 
 
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
+    if (!commentsContainer) return;
+
     commentsContainer.innerHTML = "";
 
     const snapshot = await database.ref("comments")
@@ -1226,19 +1228,24 @@ async function loadComments(videoKey, videoOwnerEmail) {
 
     if (!snapshot.exists()) {
         commentsContainer.textContent = "Ще немає коментарів...";
+        applyTranslations();
         return;
     }
 
     const videoKeyLocal = getVideoKey(videoKey);
 
-    snapshot.forEach(async childSnapshot => {
+    const comments = [];
 
-        const data = childSnapshot.val();
+    snapshot.forEach(child => {
+        comments.push(child.val());
+    });
+
+    for (const data of comments) {
 
         if (data.isPrivate &&
             !(data.email === currentUserEmail ||
               videoOwnerEmail === currentUserEmail)) {
-            return;
+            continue;
         }
 
         const commentDiv = document.createElement("div");
@@ -1257,7 +1264,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
         if (data.commentAuthor == "Видалений акаунт") {
 
             userEl.setAttribute('data-i18n','account-deleted');
-            userEl.textContent = "Видалений акаунт";
+            userEl.textContent = "";
 
         } else {
 
@@ -1281,7 +1288,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
         const br = document.createElement("br");
 
         const dateEl = document.createElement("small");
-        dateEl.textContent = data.publishDate;
+        dateEl.textContent = data.publishDate || "";
 
         commentDiv.appendChild(avatarComment);
         commentDiv.appendChild(userEl);
@@ -1290,8 +1297,7 @@ async function loadComments(videoKey, videoOwnerEmail) {
         commentDiv.appendChild(dateEl);
 
         commentsContainer.appendChild(commentDiv);
-
-    });
+    }
 
     applyTranslations();
 }
