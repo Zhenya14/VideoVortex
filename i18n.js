@@ -28,3 +28,11 @@ function applyTranslations() {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const savedLang = localStorage.getItem("language") || "ua";
+
+    loadLanguage(savedLang);
+
+});
