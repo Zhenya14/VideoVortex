@@ -974,7 +974,7 @@ function showNotFound() {
     ">
       <h1>🎬 Відео не знайдено</h1>
       <p>Можливо, було видалене або недоступне.</p>
-      <a href="beta.html" style="color:#4facfe;">⬅ На головну</a>
+      <a href="index.html" style="color:#4facfe;">⬅ На головну</a>
     </div>
   `;
 }
@@ -1106,7 +1106,7 @@ if (!videoKey) {
 
   root.innerHTML = "";
   root.appendChild(commentSection);
-  updatePrivateCheckbox();
+  updatePrivateCheckbox(videoKey);
   loadComments(videoKey, videoData.email);
   }
 function updatePrivateCheckbox(videoKey) {
@@ -1365,7 +1365,7 @@ function loadSimilarVideos(currentVideo) {
       vid.src = v.url;
       vid.muted = true;
       vid.loop = true;
-      vid.autoplay = true;
+      vid.autoplay = false;
       vid.style.width = "100%";
       vid.onclick = () => location.href = `video.html?key=${child.key}`;
 
