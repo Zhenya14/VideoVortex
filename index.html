@@ -3226,40 +3226,61 @@ const videoElement = document.createElement("video");
         `;
 
         // 🔹 7. Меню дій
-        const moreBtn = document.createElement("button");
-        moreBtn.classList.add("more-btn");
-        moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
+        // 🔹 7. Меню дій
+const moreBtn = document.createElement("button");
+moreBtn.classList.add("more-btn");
+moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
 
-        const actionMenu = document.createElement("div");
-        actionMenu.classList.add("action-menu");
+const actionMenu = document.createElement("div");
+actionMenu.classList.add("action-menu");
+actionMenu.style.display = "none";
+
+// Кнопки видалення та редагування
+if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+    const deleteButton = document.createElement("button");
+    deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">  
+                <i class="material-icons">delete</i>Видалити</a>`;  
+    deleteButton.onclick = () => {
+        deleteVideo(videoKey, videoData.url);
         actionMenu.style.display = "none";
+    };
+    actionMenu.appendChild(deleteButton);
+}
 
-        if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-            const deleteButton = document.createElement("button");
-            deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">
-                <i class="material-icons">delete</i>Видалити</a>`;
-            deleteButton.onclick = () => deleteVideo(videoKey, videoData.url);
-            deleteButton.addEventListener("click", () => actionMenu.style.display = "none");
-            actionMenu.appendChild(deleteButton);
-        }
+if (currentUserEmail === videoData.email) {
+    const editButton = document.createElement("button");
+    editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">  
+                <i class="material-icons">edit</i>Редагувати</a>`;  
+    editButton.onclick = () => {
+        editVideo(videoKey, videoData);
+        actionMenu.style.display = "none";
+    };
+    actionMenu.appendChild(editButton);
+}
 
-        if (currentUserEmail === videoData.email) {
-            const editButton = document.createElement("button");
-            editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">
-                <i class="material-icons">edit</i>Редагувати</a>`;
-            editButton.onclick = () => editVideo(videoKey, videoData);
-            editButton.addEventListener("click", () => actionMenu.style.display = "none");
-            actionMenu.appendChild(editButton);
-        }
+// Показ/приховування меню по кліку на кнопку
+moreBtn.onclick = e => {
+    e.stopPropagation(); // щоб клік на кнопці не закривав меню
+    // закриваємо всі інші меню
+    document.querySelectorAll(".action-menu").forEach(m => {
+        if (m !== actionMenu) m.style.display = "none";
+    });
+    // перемикаємо власне меню
+    actionMenu.style.display = actionMenu.style.display === "block" ? "none" : "block";
+};
 
-        moreBtn.addEventListener("click", () => {
-            actionMenu.style.display = (actionMenu.style.display === "block") ? "none" : "block";
-        });
+// Закриваємо меню при кліку поза ним
+document.getElementById("video-gallery").addEventListener("click", e => {
+    // якщо клік не на меню і не на кнопку
+    if (!e.target.closest(".action-menu") && !e.target.closest(".more-btn")) {
+        document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
+    }
+});
 
-        infoElement.appendChild(avatar);
-        infoElement.appendChild(detailsElement);
-        infoElement.appendChild(moreBtn);
-        infoElement.appendChild(actionMenu);
+infoElement.appendChild(avatar);
+infoElement.appendChild(detailsElement);
+infoElement.appendChild(moreBtn);
+infoElement.appendChild(actionMenu);
 
         // 🔹 8. Контейнер відео
         const container = document.createElement("div");
