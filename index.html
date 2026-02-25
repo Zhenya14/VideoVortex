@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
+    <title>VideoVortex beta</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
@@ -3452,20 +3452,20 @@ function getActiveChannelData() {
         avatar: option.dataset.avatar || ""
     };
 }
-function generateDescription() {
+async function generateDescription() {
     const title = document.getElementById("video-title").value;
+    if (!title) return alert("Введіть текст");
 
-    if (!title) return showNotificationModal();
-    message.innerHTML = "Введіть назву відео";
+    const response = await fetch('https://video-vortex1.vercel.app/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `Згенеруй короткий опис
+  українською мовою для відео з назвою:
+  "${title}".` })
+    });
 
-    const functions = firebase.app().functions("europe-west1");
-    const fn = functions.httpsCallable("generateDescription");
-
-    fn({ title })
-        .then(res => {
-            document.getElementById("video-description").value = res.data.description;
-        })
-        .catch(err => console.error("AI error:", err));
+    const data = await response.json();
+    document.getElementById("video-description").innerText = data.result;
 }
 async function convertToMp4(file, onStatus) {
   if (!window.ffmpeg.loaded) {
