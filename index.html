@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
+    <title>VideoVortex beta</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
@@ -3308,7 +3308,7 @@ if (videoData.authorUid) {
   // 🔹 Статичне прев’ю через img
   videoElement = document.createElement("img");
   videoElement.classList.add("video-item");
-  videoElement.src = videoData.thumbnail;
+  videoElement.src = videoData.thumbnail || "default.jpg";
 
 
         videoElement.dataset.title = videoData.title || "";  
