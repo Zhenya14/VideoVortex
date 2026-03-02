@@ -1367,11 +1367,8 @@ function loadSimilarVideos(currentVideo) {
       title.innerText = v.title;
       title.style.color = "white";
 
-      const vid = document.createElement("video");
-      vid.src = v.url;
-      vid.muted = true;
-      vid.loop = true;
-      vid.autoplay = false;
+     const vid = document.createElement("img");
+      vid.src = v.thumbnail || "default.jpg";
       vid.style.width = "100%";
       vid.onclick = () => location.href = `video.html?key=${child.key}`;
 
