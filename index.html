@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
+    <title>VideoVortex beta</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
@@ -1581,6 +1581,11 @@ text-decoration: none;
     white-space: normal;
     word-break: break-word;
 }
+.donate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
       .smart-menu {
   position: fixed;
   bottom: 10px;
@@ -1642,6 +1647,7 @@ text-decoration: none;
     </div>
   </div>
 </div>
+<button class="donate" href="https://www.privat24.ua/send/iwcz8" target="_blank"><i class="material-icons">favorite</i>Підтримати проект</button>
  <nav>
         <div style="display: flex; align-items: center;">
             <a href="#" id="open-menu" onclick="toggleSidebar()">
@@ -2079,7 +2085,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 function checkUpdateButton() {
 
-    const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.0";
+    const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.1";
     const updateBtn = document.getElementById("update-app-btn");
 
     if (!updateBtn) return;
