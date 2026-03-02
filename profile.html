@@ -138,10 +138,10 @@ color: #ffffff;
         // Показуємо лише відео, створені цим автором
         if (videoData.author !== author) return;
 
-        const videoElement = document.createElement("video");
-        videoElement.src = videoData.url;
-        videoElement.classList.add("video-item");
-        videoElement.controls = true;
+        const videoElement = document.createElement("img");
+      videoElement.src = v.thumbnail || "default.jpg";
+      videoElement.style.width = "100%";
+      videoElement.onclick = () => location.href = `video.html?key=${child.key}`;
 
         if (videoData.nsfw || videoData.password) {
           videoElement.style.filter = 'blur(30px)';
