@@ -2,13 +2,13 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex beta</title>
+    <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
@@ -687,10 +687,16 @@ transform: scale(0.95); /* легке стиснення */
   transform: translateY(-4px);
   box-shadow: 0 0 26px rgba(0, 255, 255, .18);
 }
-video,
-audio {
+
+img.video-item {
   border-radius: 14px;
   width: 100%;
+  height: auto;
+}
+video.video-item {
+  border-radius: 14px;
+  width: 100%;
+  height: auto;
 }
         .video-info { 
             text-align: left; 
@@ -1135,7 +1141,22 @@ transform: scale(0.95); /* легке стиснення */
   top: -4.66667px;
   left: 1px;
 }
-
+.notification-popup {
+  display: none;
+  width: 87%;
+  text-align: left;
+position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: black;
+      padding: 20px;
+      border-radius: 69px;
+      border: 1px solid rgba(0, 255, 255, .12);
+  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
+      animation: fadeInOut 3s ease-out;
+      animation: fadeInOut 3s ease-out;
+    }
 .lightrope li:after {
   content: "";
   top: -14px;
@@ -1881,6 +1902,8 @@ text-decoration: none;
     </div>
   </div>
 </div>
+<div class="notification-popup">
+123</div>
       <ul id="girland">
   <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
 </ul>
@@ -1926,6 +1949,13 @@ text-decoration: none;
        <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
           <input type="checkbox" id="show-nsfw-videos"><span id="slidernsfw" class="slider round"></span></label>
         <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
+        
+        <button id="generate-thumbnails-btn">Генерувати превю для старих відео</button>
+        <div id="thumbnail-progress-container" style="display:none; margin-top:10px;">
+  <progress id="thumbnail-progress" value="0" max="100" style="width:300px;"></progress>
+  <span id="thumbnail-progress-text">0%</span>
+</div>
+<div id="thumbnail-status" style="margin-top:10px; color:green;"></div>
 <h1>Налаштування обмеження екранного часу</h1>
     <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
     <input type="number" id="maxTimeInput" value="45" min="1" />
@@ -2022,7 +2052,7 @@ text-decoration: none;
     </div>
         <footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
                 <h3>Версія додатка:</h3>
-                <p>5.0.0</p>
+                <p>5.0.1</p>
         </footer>
 <script src="i18n.js"></script>
 <script>
@@ -2031,7 +2061,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script>
-  let APP_VERSION = "5.0.0"; // Поточна версія VideoVortex
+  let APP_VERSION = "5.1.0"; // Поточна версія VideoVortex
  function clearLocalStorageExceptAuth() {
     const keepPrefixes = [
         "firebase:authUser:",
@@ -3008,20 +3038,52 @@ if (auth.currentUser) {
 message.innerHTML = "Сталася помилка при увімкненні функції показувати відео позначення як NSFW.";
 }
     });
-    async function isUserBlockedByMe(targetUid) {
-  const me = firebase.auth().currentUser;
-  if (!me || !targetUid) return false;
+async function isUserBlockedByMe(targetUid) {
 
-  const snap = await database.ref(`users/${me.uid}/blockedUsers/${targetUid}`).once("value");
-  return snap.exists();
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${me.uid}/blockedUsers/${targetUid}`)
+      .once("value");
+
+    return snap.exists();
+
+  } catch {
+
+    return false;
+
+  }
+
 }
 
-async function didUserBlockMe(targetUid) {
-  const me = firebase.auth().currentUser;
-  if (!me || !targetUid) return false;
 
-  const snap = await database.ref(`users/${targetUid}/blockedUsers/${me.uid}`).once("value");
-  return snap.exists();
+
+async function didUserBlockMe(targetUid) {
+
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${targetUid}/blockedUsers/${me.uid}`)
+      .once("value");
+
+    return snap.exists();
+
+  } catch {
+
+    return false;
+
+  }
+
 }
     function enableBanduraUI(role) {
     const banduraBlock = document.getElementById("bandura-options");
@@ -3033,6 +3095,116 @@ async function didUserBlockMe(targetUid) {
         banduraBlock.style.display = "none";
     }
 }
+async function generateThumbnailFirstFrame(videoUrl) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous"; // тільки для CORS
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.src = videoUrl;
+
+    // додаємо приховано в DOM
+    video.style.position = "absolute";
+    video.style.left = "-9999px";
+    video.style.width = "1px";
+    video.style.height = "1px";
+    document.body.appendChild(video);
+
+    const timeout = setTimeout(() => {
+      document.body.removeChild(video);
+      reject(new Error("Timeout: frame not decoded"));
+    }, 10000);
+
+    video.addEventListener("loadeddata", () => {
+      video.currentTime = 0;
+    }, { once: true });
+
+    video.addEventListener("seeked", () => {
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        clearTimeout(timeout);
+        document.body.removeChild(video);
+        reject(new Error("No decoded frame"));
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+
+      canvas.toBlob(blob => {
+        clearTimeout(timeout);
+        document.body.removeChild(video);
+        if (!blob) {
+          reject(new Error("Canvas tainted"));
+        } else {
+          resolve(blob);
+        }
+      }, "image/jpeg", 0.7);
+    }, { once: true });
+
+    video.addEventListener("error", () => {
+      clearTimeout(timeout);
+      document.body.removeChild(video);
+      reject(new Error("Video load error"));
+    }, { once: true });
+  });
+}
+document.getElementById("generate-thumbnails-btn").addEventListener("click", async () => {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    alert("Потрібно увійти!");
+    return;
+  }
+
+  const progressContainer = document.getElementById("thumbnail-progress-container");
+  const progressBar = document.getElementById("thumbnail-progress");
+  const progressText = document.getElementById("thumbnail-progress-text");
+  const statusText = document.getElementById("thumbnail-status");
+
+  if (progressContainer) progressContainer.style.display = "block";
+  if (progressBar) progressBar.value = 0;
+  if (progressText) progressText.innerText = "0%";
+  if (statusText) statusText.innerText = "";
+
+  try {
+    const snapshot = await database.ref('videos').once('value');
+    const videos = snapshot.val() || {};
+    const videoKeys = Object.keys(videos);
+
+    for (let i = 0; i < videoKeys.length; i++) {
+      const videoKey = videoKeys[i];
+      const videoData = videos[videoKey];
+
+      if (!videoData?.url) {
+        console.warn("Пропускаємо відео без URL:", videoKey);
+        continue;
+      }
+
+      try {
+        const blob = await generateThumbnailFirstFrame(videoData.url);
+        const ref = firebase.storage().ref(`thumbnails/${videoKey}.jpg`);
+        await ref.put(blob);
+        const url = await ref.getDownloadURL();
+        await database.ref(`videos/${videoKey}`).update({ thumbnail: url });
+      } catch (e) {
+        console.warn(`Не вдалося згенерувати thumbnail для ${videoKey}:`, e.message);
+      }
+
+      // оновлюємо прогрес
+      const percent = Math.round(((i + 1) / videoKeys.length) * 100);
+      if (progressBar) progressBar.value = percent;
+      if (progressText) progressText.innerText = `${percent}%`;
+    }
+
+    if (statusText) statusText.innerText = "Генерація thumbnail завершена!";
+    console.log("Генерація thumbnail завершена!");
+  } catch (err) {
+    console.error("Помилка при отриманні відео з бази:", err);
+    alert("Сталася помилка. Перевірте консоль.");
+  }
+});
 document.getElementById("domain-restrict-checkbox").onclick = function(event) {
     if (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education")) {
         message.innerHTML = "Сталася помилка. ACCOUNT_IS_NOT_DOMAIN_KFCCTE-NAU.UKR.EDUCATION";
@@ -3074,35 +3246,36 @@ function stringToColor(str) {
   }
   return `hsl(${hash % 360}, 65%, 55%)`;
 }
-function createVideoThumbnail(videoUrl) {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement("video");
-    video.src = videoUrl;
-    video.crossOrigin = "anonymous";
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = "metadata";
 
-    video.addEventListener("loadeddata", () => {
-      video.currentTime = 1; // беремо кадр з 1 секунди
-    });
+function createThumbnail(file) {
 
-    video.addEventListener("seeked", () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+ return new Promise(resolve => {
 
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const video = document.createElement("video");
+  video.src = URL.createObjectURL(file);
+  video.currentTime = 1;
 
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-      resolve(dataUrl);
-    });
+  video.addEventListener("loadeddata", () => {
 
-    video.addEventListener("error", reject);
+    const canvas = document.createElement("canvas");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob(blob => {
+        resolve(blob);
+    }, "image/jpeg", 0.7);
+
   });
+
+ });
 }
-function loadVideos() {
+const videosLoaded = new Set(); // зверху скрипта
+async function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
     videoGallery.innerHTML = "";
@@ -3110,47 +3283,33 @@ function loadVideos() {
     const showNSFWGlobal = showNSFW;
 
     // 🔹 Слухаємо нові відео в реальному часі
-    database.ref("videos").on("child_added", snapshot => {
+    database.ref("videos").on("child_added", async snapshot => {
         const videoData = snapshot.val();
         const videoKey = snapshot.key;
 
         // 🔹 1. Фільтри
         if (videoData.nsfw && !showNSFWGlobal) return;
-          if (firebase.auth().currentUser && video.authorUid) {
-    const iBlocked = isUserBlockedByMe(video.authorUid);
-    const heBlockedMe = didUserBlockMe(video.authorUid);
 
-    if (iBlocked || heBlockedMe) {
-      return;
-    }
-  }
+if (videoData.authorUid) {
+
+            const blockedMe =
+                await didUserBlockMe(videoData.authorUid);
+
+            if (blockedMe) return;
+
+        }
+
         if (videoData.private && videoData.email !== currentUserEmail) return;
         if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
         // 🔹 2. Відео елемент
         // 🔹 2. Прев’ю як IMG замість VIDEO
-// 🔹 2. Прев’ю з відео як IMG
-const videoElement = document.createElement("video");
-        videoElement.classList.add("video-item");
-        videoElement.controls = false;
-        videoElement.preload = "metadata";
-        videoElement.playsInline = true;
 
-        const source = document.createElement("source");
-        source.src = videoData.url;
-        source.type = "video/mp4";
-        videoElement.appendChild(source);
+  // 🔹 Статичне прев’ю через img
+  videoElement = document.createElement("img");
+  videoElement.classList.add("video-item");
+  videoElement.src = videoData.thumbnail;
 
-        videoElement.addEventListener("loadedmetadata", () => {
-            if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
-                const audio = document.createElement("audio");
-                audio.controls = true;
-                audio.src = videoData.url;
-                audio.className = "audio-item";
-                audio.style.width = "100%";
-                videoElement.replaceWith(audio);
-            }
-        });
 
         videoElement.dataset.title = videoData.title || "";  
         videoElement.dataset.description = videoData.description || "";  
@@ -3457,7 +3616,7 @@ async function generateDescription() {
     const title = document.getElementById("video-title").value;
     if (!title) return alert("Введіть текст");
 
-    const response = await fetch('https://video-vortex1.vercel.app/api/generate', {
+    const response = await fetch('https://video-vortex1.vercel.app/api/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: `Згенеруй короткий опис
@@ -3521,7 +3680,7 @@ document.getElementById("video-file").addEventListener("change", async (e) => {
   }
 });
 
-function uploadVideo() {
+async function uploadVideo() {
   const startTime = Date.now();
   const isBandura = document.getElementById("bandura-video")?.checked || false;
 
@@ -3561,16 +3720,15 @@ function uploadVideo() {
 
   const uid = user.uid;
 
-  database.ref("users/" + uid).once("value").then(snapshot => {
+  try {
+    const snapshot = await database.ref("users/" + uid).once("value");
     const userData = snapshot.val() || {};
-
     const authorName = `${userData.name || ""} ${userData.supername || ""}`.trim();
-    const authorAvatar = userData.avatarUrl || null; // ✅ URL аватара
+    const authorAvatar = userData.avatarUrl || null;
 
     const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
     const uploadTask = storageRef.put(videoFile);
 
-    // Зберігаємо стан у localStorage
     localStorage.setItem("activeUpload", JSON.stringify({
       fileName: videoFile.name,
       fileSize: videoFile.size,
@@ -3582,17 +3740,16 @@ function uploadVideo() {
     uploadTask.on("state_changed",
       snapshot => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const timeElapsed = (Date.now() - startTime) / 1000;
+        const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 1);
+        const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
+        const timeLeft = remainingBytes / Math.max(speed, 1);
 
         const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
         if (uploadData) {
           uploadData.bytesTransferred = snapshot.bytesTransferred;
           localStorage.setItem("activeUpload", JSON.stringify(uploadData));
         }
-
-        const timeElapsed = (Date.now() - startTime) / 1000;
-        const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 1);
-        const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
-        const timeLeft = remainingBytes / Math.max(speed, 1);
 
         document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
         document.getElementById("upload-progress").value = progress;
@@ -3604,24 +3761,34 @@ function uploadVideo() {
         showNotificationModal();
         message.innerHTML = "Помилка завантаження відео.";
       },
-      () => {
+      async () => {
         const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
         if (uploadData) {
           uploadData.status = "processing";
           localStorage.setItem("activeUpload", JSON.stringify(uploadData));
         }
 
-        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          const currentDate = new Date().toLocaleDateString();
+        try {
+          const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
 
-          database.ref("videos").push({
+          // Створюємо та завантажуємо мініатюру
+          const thumbnailBlob = await createThumbnail(videoFile);
+          const thumbRef = storage.ref(`thumbnails/${Date.now()}_${videoFile.name}.jpg`);
+          await thumbRef.put(thumbnailBlob);
+          const thumbnailURL = await thumbRef.getDownloadURL();
+
+          const now = new Date();
+          const currentDate = `${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+
+          await database.ref("videos").push({
             title: videoTitle,
             author: authorName || "Анонім",
-            authorAvatar: authorAvatar, // ✅ зберігаємо аватар
+            authorAvatar: authorAvatar,
             email: user.email,
-            authorUid: user.uid, // ← ОБОВ'ЯЗКОВО
+            authorUid: uid,
             disabledComments: disabledComments,
             url: downloadURL,
+            thumbnail: thumbnailURL,
             description: videoDescription,
             views: 0,
             private: privateVideo,
@@ -3629,22 +3796,27 @@ function uploadVideo() {
             nsfw: isNSFW,
             publishDate: currentDate,
             banduraExtra
-          }).then(() => {
-            localStorage.removeItem("activeUpload");
-            showNotificationModal();
-            message.innerHTML = "Відео завантажено!";
-            loadVideos();
-            document.getElementById("upload-form").reset();
-            document.getElementById("progress-container").style.display = "none";
           });
-        });
+
+          localStorage.removeItem("activeUpload");
+          showNotificationModal();
+          message.innerHTML = "Відео завантажено!";
+          loadVideos();
+          document.getElementById("progress-container").style.display = "none";
+
+        } catch (err) {
+          console.error(err);
+          showNotificationModal();
+          message.innerHTML = "Помилка при завантаженні відео або мініатюри." + err.message;
+        }
       }
     );
-  }).catch(err => {
+
+  } catch (err) {
     console.error("Помилка при отриманні даних користувача:", err);
     showNotificationModal();
     message.innerHTML = "Не вдалося отримати дані профілю.";
-  });
+  }
 }
 
 
@@ -3993,9 +4165,9 @@ function calculateAge(birthdate) {
             }
             return age;
         }
+
 auth.onAuthStateChanged(async (user) => {
     if (!user) return;
-
     loadPhotoChannelSelect();
     loadChannelSelect();
     backfillAuthorUidForUser();
@@ -4106,7 +4278,6 @@ if (age !== null) {
             avatarEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
             navAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
         }
-
 
         loadVideos();
         enableBanduraUI(role);
@@ -4426,7 +4597,12 @@ function uploadPhoto() {
         },
         () => {
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                const currentDate = new Date().toLocaleDateString();
+                const now = new Date();
+const day = now.getDate().toString().padStart(2, '0');
+const month = (now.getMonth() + 1).toString().padStart(2, '0');
+const year = now.getFullYear();
+
+const currentDate = `${day}.${month}.${year}`; // Наприклад, "02.03.2026"
 
                 database.ref("photos").push({
                     title: photoTitle,
