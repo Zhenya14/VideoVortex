@@ -3525,7 +3525,9 @@ if (videoData.authorUid) {
         const detailsElement = document.createElement("div");
         detailsElement.classList.add("video-details");
         let statusBadge = "";
-
+if (videoData.march8Special) {
+    statusBadge += "<span style='color:#ff4da6;font-weight:bold;'>🌸 8 Березня</span>";
+}
 
         detailsElement.innerHTML = `
             ${sanitizeHTML(videoData.title || "Без назви")}
@@ -3833,142 +3835,213 @@ document.getElementById("video-file").addEventListener("change", async (e) => {
 });
 
 async function uploadVideo() {
+
   const startTime = Date.now();
-  const isBandura = document.getElementById("bandura-video")?.checked || false;
-
-  const banduraExtra = isBandura ? {
-    style: document.getElementById("bandura-style").value || "Соло",
-    key: document.getElementById("bandura-key").value || "",
-    difficulty: document.getElementById("bandura-difficulty").value || "Початковий",
-    tempo: document.getElementById("bandura-tempo").value || "",
-    slowMode: document.getElementById("bandura-slow").checked,
-    event: document.getElementById("bandura-event").value || "",
-    year: document.getElementById("bandura-year").value || "",
-    performer: document.getElementById("bandura-performer").value || "",
-    tags: document.getElementById("bandura-tags").value || "",
-    markers: document.getElementById("bandura-markers").value || ""
-  } : null;
-
-  const videoTitle = document.getElementById("video-title").value;
-  const videoDescription = document.getElementById("video-description").value;
-  const videoFile = document.getElementById("video-file").files[0];
-  const isNSFW = document.getElementById("nsfw").checked;
-  const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
-  const privateVideo = document.getElementById("private-checkbox").checked;
-  const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
-
-  if (!videoTitle || !videoFile) {
-    showNotificationModal();
-    message.innerHTML = "Будь ласка, заповніть всі поля!";
-    return;
-  }
-
-  const user = firebase.auth().currentUser;
-  if (!user) {
-    showNotificationModal();
-    message.innerHTML = "Потрібно увійти в акаунт";
-    return;
-  }
-
-  const uid = user.uid;
 
   try {
-    const snapshot = await database.ref("users/" + uid).once("value");
-    const userData = snapshot.val() || {};
-    const authorName = `${userData.name || ""} ${userData.supername || ""}`.trim();
-    const authorAvatar = userData.avatarUrl || null;
 
-    const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
-    const uploadTask = storageRef.put(videoFile);
+    const user = firebase.auth().currentUser;
 
-    localStorage.setItem("activeUpload", JSON.stringify({
-      fileName: videoFile.name,
-      fileSize: videoFile.size,
-      bytesTransferred: 0,
-      startedAt: Date.now(),
-      status: "uploading"
-    }));
+    if (!user) {
+      showNotificationModal();
+      message.innerHTML = "Потрібно увійти в акаунт";
+      return;
+    }
+
+    const uid = user.uid;
+
+    const videoTitle = document.getElementById("video-title").value.trim();
+    const videoDescription = document.getElementById("video-description").value.trim();
+    const videoFile = document.getElementById("video-file").files[0];
+
+    const isNSFW = document.getElementById("nsfw").checked;
+    const saveVideo = document.getElementById("save-video-checkbox").checked;
+    const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
+    const privateVideo = document.getElementById("private-checkbox").checked;
+
+    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+
+    if (!videoTitle || !videoFile) {
+      showNotificationModal();
+      message.innerHTML = "Будь ласка, заповніть всі поля!";
+      return;
+    }
+
+    /* -------- Перевірка 8 березня -------- */
+
+    const today = new Date();
+    const isMarch8 = today.getDate() === 8 && today.getMonth() === 2;
+
+    /* -------- Bandura Mode -------- */
+
+    const isBandura = document.getElementById("bandura-video")?.checked || false;
+
+    let banduraExtra = null;
+
+    if (isBandura) {
+
+      banduraExtra = {
+        style: document.getElementById("bandura-style")?.value || "Соло",
+        key: document.getElementById("bandura-key")?.value || "",
+        difficulty: document.getElementById("bandura-difficulty")?.value || "Початковий",
+        tempo: document.getElementById("bandura-tempo")?.value || "",
+        slowMode: document.getElementById("bandura-slow")?.checked || false,
+        event: document.getElementById("bandura-event")?.value || "",
+        year: document.getElementById("bandura-year")?.value || "",
+        performer: document.getElementById("bandura-performer")?.value || "",
+        tags: document.getElementById("bandura-tags")?.value || "",
+        markers: document.getElementById("bandura-markers")?.value || ""
+      };
+
+      if (isMarch8) {
+        banduraExtra.tags += " #8березня";
+      }
+
+    }
+
+    /* -------- Дані користувача -------- */
+
+    const userSnapshot = await database.ref("users/" + uid).once("value");
+    const userData = userSnapshot.val() || {};
+
+    const authorName =
+      `${userData.name || ""} ${userData.supername || ""}`.trim() || "Анонім";
+
+    const authorAvatar = userData.avatarId || null;
+
+    /* -------- Upload -------- */
+
+    const fileId = Date.now();
+
+    const videoRef = storage.ref(`videos/${fileId}_${videoFile.name}`);
+
+    const uploadTask = videoRef.put(videoFile);
+
+    document.getElementById("progress-container").style.display = "block";
 
     uploadTask.on("state_changed",
+
       snapshot => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        const timeElapsed = (Date.now() - startTime) / 1000;
-        const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 1);
-        const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
-        const timeLeft = remainingBytes / Math.max(speed, 1);
 
-        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
-        if (uploadData) {
-          uploadData.bytesTransferred = snapshot.bytesTransferred;
-          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
-        }
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-        document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speed = snapshot.bytesTransferred / Math.max(elapsed, 1);
+
+        const remaining = snapshot.totalBytes - snapshot.bytesTransferred;
+        const timeLeft = remaining / Math.max(speed, 1);
+
         document.getElementById("upload-progress").value = progress;
-        document.getElementById("progress-text").innerText = `Завантаження: ${Math.round(progress)}%`;
-        document.getElementById("progress-container").style.display = "block";
+
+        document.getElementById("progress-text").innerText =
+          `Завантаження: ${Math.round(progress)}%`;
+
+        document.getElementById("time-left").innerText =
+          `${Math.round(timeLeft)}s`;
+
       },
+
       error => {
+
         console.error(error);
+
         showNotificationModal();
         message.innerHTML = "Помилка завантаження відео.";
+
       },
+
       async () => {
-        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
-        if (uploadData) {
-          uploadData.status = "processing";
-          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
-        }
 
         try {
-          const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
 
-          // Створюємо та завантажуємо мініатюру
+          const downloadURL =
+            await uploadTask.snapshot.ref.getDownloadURL();
+
+          /* -------- Thumbnail -------- */
+
           const thumbnailBlob = await createThumbnail(videoFile);
-          const thumbRef = storage.ref(`thumbnails/${Date.now()}_${videoFile.name}.jpg`);
+
+          const thumbRef =
+            storage.ref(`thumbnails/${fileId}_${videoFile.name}.jpg`);
+
           await thumbRef.put(thumbnailBlob);
+
           const thumbnailURL = await thumbRef.getDownloadURL();
 
+          /* -------- Дата -------- */
+
           const now = new Date();
-          const currentDate = `${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+
+          const publishDate =
+            now.getDate().toString().padStart(2, "0") + "." +
+            (now.getMonth() + 1).toString().padStart(2, "0") + "." +
+            now.getFullYear();
+
+          /* -------- Запис у базу -------- */
 
           await database.ref("videos").push({
+
             title: videoTitle,
-            author: authorName || "Анонім",
-            authorAvatar: authorAvatar,
-            email: user.email,
-            authorUid: uid,
-            disabledComments: disabledComments,
+            description: videoDescription,
+
             url: downloadURL,
             thumbnail: thumbnailURL,
-            description: videoDescription,
+
+            author: authorName,
+            authorAvatar: authorAvatar,
+            authorUid: uid,
+            email: user.email,
+
+            publishDate: publishDate,
+
             views: 0,
+
+            nsfw: isNSFW,
+            saveVideo: saveVideo,
+
+            disabledComments: disabledComments,
             private: privateVideo,
             domainRestrict: domainRestrict,
-            nsfw: isNSFW,
-            publishDate: currentDate,
-            banduraExtra
+
+            march8Special: isMarch8,
+
+            banduraExtra: banduraExtra
+
           });
 
-          localStorage.removeItem("activeUpload");
-          showNotificationModal();
-          message.innerHTML = "Відео завантажено!";
-          loadVideos();
           document.getElementById("progress-container").style.display = "none";
 
-        } catch (err) {
-          console.error(err);
           showNotificationModal();
-          message.innerHTML = "Помилка при завантаженні відео або мініатюри." + err.message;
+
+          if (isMarch8) {
+            message.innerHTML = "🌸 Відео опубліковано! З 8 березня!";
+          } else {
+            message.innerHTML = "Відео успішно опубліковано!";
+          }
+
+        } catch (err) {
+
+          console.error(err);
+
+          showNotificationModal();
+          message.innerHTML = "Помилка при обробці відео.";
+
         }
+
       }
+
     );
 
   } catch (err) {
-    console.error("Помилка при отриманні даних користувача:", err);
+
+    console.error(err);
+
     showNotificationModal();
-    message.innerHTML = "Не вдалося отримати дані профілю.";
+    message.innerHTML = "Сталася помилка.";
+
   }
+
 }
 
 
