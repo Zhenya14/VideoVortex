@@ -2198,7 +2198,7 @@ document.getElementById("march8-banner").classList.remove("show");
 document.getElementById("march8-upload").onclick = () =>{
 
 // відкриває форму завантаження відео
-document.getElementById("upload-form").style.display = "block";
+document.querySelector("modal-window").style.display = "block";
 
 };
 function flowersEffect(){
@@ -3381,7 +3381,7 @@ function getSafeBanduraHTML(banduraExtra) {
     if (banduraExtra.year) html += `<br>Рік: ${s(banduraExtra.year.toString())}`;
     if (banduraExtra.performer) html += `<br>Виконавець: ${s(banduraExtra.performer)}`;
     if (banduraExtra.tags) html += `<br>Теги: ${s(banduraExtra.tags)}`;
-    if (banduraExtra.markers) html += `<br>Маркери: ${s(banduraExtra.markers)}`;
+    if (banduraExtra.markers) html += `<br>Маркери: $duraExtra.markers)}`;
 
     return html;
 }
