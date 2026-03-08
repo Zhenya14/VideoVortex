@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoVortex</title>
+    <title>VideoVortex beta</title>
 <meta name="description" content="VideoVortex — незалежна платформа для відео без цензури. Альтернатива YouTube.">
 <meta name="keywords" content="відеохостинг, відео онлайн, відеосервіс, альтернатива youtube, VideoVortex">
     <link rel="icon" href="VideoVortex_logo.ico">
@@ -1755,15 +1755,6 @@ text-decoration: none;
     <i class="material-icons">close</i>
   </button>
   </div>
-<div id="march8-banner" class="march8-banner">
-  <div class="march8-box">
-    🌸 З 8 Березня!  
-    Поділіться святковим відео 💐
-
-    <button id="march8-upload">📹 Опублікувати відео</button>
-    <button id="march8-close">✖</button>
-  </div>
-</div>
 <div id="rules-update-modal" class="ios-modal">
   <div class="ios-modal-content">
     <h2>🔔 Оновлені правила</h2>
@@ -1783,6 +1774,15 @@ text-decoration: none;
     <p id="message"></p>
     <div class="modal-divider"></div>
     <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+  </div>
+</div>
+<div id="march8-banner" class="march8-banner">
+  <div class="march8-box">
+    🌸 З 8 Березня!  
+    Поділіться святковим відео 💐
+
+    <button id="march8-upload">📹 Опублікувати відео</button>
+    <button id="march8-close">✖</button>
   </div>
 </div>
 <div id="videoModal" class="ios-modal">
@@ -1845,8 +1845,9 @@ text-decoration: none;
 <br>
 <span>Вимкнути коментарі <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>        
      <br>
-     <br>
+     <p style="text-align: center;">Налаштування приватності:</p>
    <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
+<span>Заборонити збереження відео</span><label class="switch" for="save-video-checkbox"><input type="checkbox" id="save-video-checkbox"><span class="slider round"></span></label>
 <div id="domain-restrict-container" style="margin-top: 10px;">
     <br>
         <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
@@ -2140,7 +2141,7 @@ text-decoration: none;
     </div>
         <footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
                 <h3>Версія додатка:</h3>
-                <p>5.0.1</p>
+                <p>5.1.0 beta</p>
         </footer>
 <script src="i18n.js"></script>
 <script>
@@ -3184,7 +3185,7 @@ function deleteAccount() {
     document.getElementById("show-nsfw-videos").addEventListener("change", function() {
 if (auth.currentUser) {
         showNSFW = this.checked;  // Update the variable based on the checkbox state
-        loadVideos();  // Reload the videos with the updated setting
+        loadVideos();
 } else {
   showNotificationModal();
 message.innerHTML = "Сталася помилка при увімкненні функції показувати відео позначення як NSFW.";
@@ -3381,7 +3382,7 @@ function getSafeBanduraHTML(banduraExtra) {
     if (banduraExtra.year) html += `<br>Рік: ${s(banduraExtra.year.toString())}`;
     if (banduraExtra.performer) html += `<br>Виконавець: ${s(banduraExtra.performer)}`;
     if (banduraExtra.tags) html += `<br>Теги: ${s(banduraExtra.tags)}`;
-    if (banduraExtra.markers) html += `<br>Маркери: $duraExtra.markers)}`;
+    if (banduraExtra.markers) html += `<br>Маркери: ${s(banduraExtra.markers)}`;
 
     return html;
 }
@@ -3427,9 +3428,11 @@ function createThumbnail(file) {
  });
 }
 const videosLoaded = new Set(); // зверху скрипта
+
 async function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
+
     videoGallery.innerHTML = "";
 
     const showNSFWGlobal = showNSFW;
@@ -3439,35 +3442,27 @@ async function loadVideos() {
         const videoData = snapshot.val();
         const videoKey = snapshot.key;
 
+        // 🔹 Запобігання дублюванню
+
         // 🔹 1. Фільтри
         if (videoData.nsfw && !showNSFWGlobal) return;
 
-if (videoData.authorUid) {
-
-            const blockedMe =
-                await didUserBlockMe(videoData.authorUid);
-
+        if (videoData.authorUid) {
+            const blockedMe = await didUserBlockMe(videoData.authorUid);
             if (blockedMe) return;
-
         }
 
         if (videoData.private && videoData.email !== currentUserEmail) return;
         if (videoData.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
-        // 🔹 2. Відео елемент
-        // 🔹 2. Прев’ю як IMG замість VIDEO
-
-  // 🔹 Статичне прев’ю через img
-  videoElement = document.createElement("img");
-  videoElement.classList.add("video-item");
-  videoElement.src = videoData.thumbnail || "default.jpg";
-
-
-        videoElement.dataset.title = videoData.title || "";  
-        videoElement.dataset.description = videoData.description || "";  
+        // 🔹 2. Відео елемент (IMG для прев’ю)
+        const videoElement = document.createElement("img");
+        videoElement.classList.add("video-item");
+        videoElement.src = videoData.thumbnail || "default.jpg";
+        videoElement.dataset.title = videoData.title || "";
+        videoElement.dataset.description = videoData.description || "";
         videoElement.dataset.author = videoData.author || "";
-
-        // 🔹 3. Коментарі
+        videoElement.style.filter = videoData.nsfw ? "blur(20px)" : "none";
 
         // 🔹 4. Клік по відео
         videoElement.onclick = () => {
@@ -3480,21 +3475,11 @@ if (videoData.authorUid) {
             }
 
             const videoParams = new URLSearchParams({
-                key: videoKey,
-                url: videoData.url,
-                title: videoData.title,
-                author: videoData.author,
-                publishDate: videoData.publishDate,
-                description: videoData.description || "Без опису",
-                views: videoData.views || 0,
-                avatar: videoData.author ? videoData.author.charAt(0).toUpperCase() : "?"
+                key: videoKey
             });
             window.location.href = `video.html?${videoParams.toString()}`;
         };
 
-        // 🔹 5. Приватні коментарі
-        // 🔹 5. Приватні коментарі
-// 🔹 5. Приватні коментарі
         // 🔹 6. Інформація про відео
         const infoElement = document.createElement("div");
         infoElement.classList.add("video-info");
@@ -3503,16 +3488,17 @@ if (videoData.authorUid) {
         avatar.className = "avatar";
         avatar.title = videoData.author || "Анонім";
 
-        if (videoData.authorAvatar) {
-            firebase.storage().ref(`avatars/${videoData.authorAvatar}.webp`).getDownloadURL()
-                .then(url => {
-                    avatar.style.backgroundImage = `url(${url})`;
-                    avatar.classList.add("avatar-image");
-                });
-        } else {
-            avatar.innerText = getInitials(videoData.author);
-            avatar.style.backgroundColor = stringToColor(videoData.author || "?");
-        }
+        if (videoData.authorAvatarUrl) {
+
+    avatar.style.backgroundImage = `url(${videoData.authorAvatarUrl})`;
+    avatar.classList.add("avatar-image");
+
+} else {
+
+    avatar.innerText = getInitials(videoData.author);
+    avatar.style.backgroundColor = stringToColor(videoData.author || "?");
+
+}
 
         avatar.onclick = () => {
             const infoParams = new URLSearchParams({
@@ -3525,14 +3511,11 @@ if (videoData.authorUid) {
         const detailsElement = document.createElement("div");
         detailsElement.classList.add("video-details");
         let statusBadge = "";
-if (videoData.march8Special) {
-    statusBadge += "<span style='color:#ff4da6;font-weight:bold;'>🌸 8 Березня</span>";
-}
 
         detailsElement.innerHTML = `
             ${sanitizeHTML(videoData.title || "Без назви")}
             ${videoData.private ? "<span style='color: orange;'>🔒 Приватне</span>" : ""}
-               ${statusBadge ? `<div class="video-status">${statusBadge}</div>` : ""}
+            ${statusBadge ? `<div class="video-status">${statusBadge}</div>` : ""}
             ${videoData.nsfw ? "<span style='color: red;'>NSFW</span>" : ""}
             <br>Автор: ${sanitizeHTML(videoData.author || "Анонім")}<br>
             Переглядів: ${videoData.views || 0}<br>
@@ -3540,73 +3523,63 @@ if (videoData.march8Special) {
         `;
 
         // 🔹 7. Меню дій
-        // 🔹 7. Меню дій
-const moreBtn = document.createElement("button");
-moreBtn.classList.add("more-btn");
-moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
+        const moreBtn = document.createElement("button");
+        moreBtn.classList.add("more-btn");
+        moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
 
-const actionMenu = document.createElement("div");
-actionMenu.classList.add("action-menu");
-actionMenu.style.display = "none";
-
-// Кнопки видалення та редагування
-if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-    const deleteButton = document.createElement("button");
-    deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">  
-                <i class="material-icons">delete</i>Видалити</a>`;  
-    deleteButton.onclick = () => {
-        deleteVideo(videoKey, videoData.url);
+        const actionMenu = document.createElement("div");
+        actionMenu.classList.add("action-menu");
         actionMenu.style.display = "none";
-    };
-    actionMenu.appendChild(deleteButton);
-}
 
-if (currentUserEmail === videoData.email) {
-    const editButton = document.createElement("button");
-    editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">  
-                <i class="material-icons">edit</i>Редагувати</a>`;  
-    editButton.onclick = () => {
-        editVideo(videoKey, videoData);
-        actionMenu.style.display = "none";
-    };
-    actionMenu.appendChild(editButton);
-}
+        if (currentUserEmail === videoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+            const deleteButton = document.createElement("button");
+            deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">  
+                        <i class="material-icons">delete</i>Видалити</a>`;  
+            deleteButton.onclick = () => {
+                deleteVideo(videoKey, videoData.url);
+                actionMenu.style.display = "none";
+            };
+            actionMenu.appendChild(deleteButton);
+        }
 
-// Показ/приховування меню по кліку на кнопку
-moreBtn.onclick = e => {
-    e.stopPropagation(); // щоб клік на кнопці не закривав меню
-    // закриваємо всі інші меню
-    document.querySelectorAll(".action-menu").forEach(m => {
-        if (m !== actionMenu) m.style.display = "none";
-    });
-    // перемикаємо власне меню
-    actionMenu.style.display = actionMenu.style.display === "block" ? "none" : "block";
-};
+        if (currentUserEmail === videoData.email) {
+            const editButton = document.createElement("button");
+            editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">  
+                        <i class="material-icons">edit</i>Редагувати</a>`;  
+            editButton.onclick = () => {
+                editVideo(videoKey, videoData);
+                actionMenu.style.display = "none";
+            };
+            actionMenu.appendChild(editButton);
+        }
 
-// Закриваємо меню при кліку поза ним
-document.getElementById("video-gallery").addEventListener("click", e => {
-    // якщо клік не на меню і не на кнопку
-    if (!e.target.closest(".action-menu") && !e.target.closest(".more-btn")) {
-        document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
-    }
-});
+        moreBtn.onclick = e => {
+            e.stopPropagation();
+            document.querySelectorAll(".action-menu").forEach(m => {
+                if (m !== actionMenu) m.style.display = "none";
+            });
+            actionMenu.style.display = actionMenu.style.display === "block" ? "none" : "block";
+        };
 
-infoElement.appendChild(avatar);
-infoElement.appendChild(detailsElement);
-infoElement.appendChild(moreBtn);
-infoElement.appendChild(actionMenu);
+        document.getElementById("video-gallery").addEventListener("click", e => {
+            if (!e.target.closest(".action-menu") && !e.target.closest(".more-btn")) {
+                document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
+            }
+        });
+
+        infoElement.appendChild(avatar);
+        infoElement.appendChild(detailsElement);
+        infoElement.appendChild(moreBtn);
+        infoElement.appendChild(actionMenu);
 
         // 🔹 8. Контейнер відео
         const container = document.createElement("div");
         container.classList.add("video-container");
-        container.dataset.id = videoKey; // для реального часу
+        container.dataset.id = videoKey;
         container.appendChild(infoElement);
         container.appendChild(videoElement);
 
         videoGallery.appendChild(container);
-
-        // 🔹 9. Завантаження коментарів
-        loadComments(videoKey, videoData.email);
     });
 }
 const randomComments = [
@@ -3710,7 +3683,7 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
     message.innerHTML = "? Відео оновлено!";
     document.getElementById("edit-form").style.display = 'none';
     currentEditKey = null;
-    loadVideos(); // перезавантаження списку
+    loadVideos();
   }).catch(error => {
     showNotificationModal();
     message.innerHTML = "? Помилка при оновленні відео: " + error.message;
@@ -3835,213 +3808,154 @@ document.getElementById("video-file").addEventListener("change", async (e) => {
 });
 
 async function uploadVideo() {
-
   const startTime = Date.now();
+  const isBandura = document.getElementById("bandura-video")?.checked || false;
+
+  const banduraExtra = isBandura ? {
+    style: document.getElementById("bandura-style").value || "Соло",
+    key: document.getElementById("bandura-key").value || "",
+    difficulty: document.getElementById("bandura-difficulty").value || "Початковий",
+    tempo: document.getElementById("bandura-tempo").value || "",
+    slowMode: document.getElementById("bandura-slow").checked,
+    event: document.getElementById("bandura-event").value || "",
+    year: document.getElementById("bandura-year").value || "",
+    performer: document.getElementById("bandura-performer").value || "",
+    tags: document.getElementById("bandura-tags").value || "",
+    markers: document.getElementById("bandura-markers").value || ""
+  } : null;
+
+  const videoTitle = document.getElementById("video-title").value;
+  const videoDescription = document.getElementById("video-description").value;
+  const videoFile = document.getElementById("video-file").files[0];
+  const isNSFW = document.getElementById("nsfw").checked;
+  const safeVideo = document.getElementById("save-video-checkbox").checked;
+  const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
+  const privateVideo = document.getElementById("private-checkbox").checked;
+  const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
+
+  if (!videoTitle || !videoFile) {
+    showNotificationModal();
+    message.innerHTML = "Будь ласка, заповніть всі поля!";
+    return;
+  }
+
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    showNotificationModal();
+    message.innerHTML = "Потрібно увійти в акаунт";
+    return;
+  }
+
+  const uid = user.uid;
 
   try {
-
-    const user = firebase.auth().currentUser;
-
-    if (!user) {
-      showNotificationModal();
-      message.innerHTML = "Потрібно увійти в акаунт";
-      return;
-    }
-
-    const uid = user.uid;
-
-    const videoTitle = document.getElementById("video-title").value.trim();
-    const videoDescription = document.getElementById("video-description").value.trim();
-    const videoFile = document.getElementById("video-file").files[0];
-
-    const isNSFW = document.getElementById("nsfw").checked;
-    const saveVideo = document.getElementById("save-video-checkbox").checked;
-    const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
-    const privateVideo = document.getElementById("private-checkbox").checked;
-
-    const domainRestrict = document.getElementById("domain-restrict-checkbox")?.checked || false;
-
-    if (!videoTitle || !videoFile) {
-      showNotificationModal();
-      message.innerHTML = "Будь ласка, заповніть всі поля!";
-      return;
-    }
-
-    /* -------- Перевірка 8 березня -------- */
-
-    const today = new Date();
-    const isMarch8 = today.getDate() === 8 && today.getMonth() === 2;
-
-    /* -------- Bandura Mode -------- */
-
-    const isBandura = document.getElementById("bandura-video")?.checked || false;
-
-    let banduraExtra = null;
-
-    if (isBandura) {
-
-      banduraExtra = {
-        style: document.getElementById("bandura-style")?.value || "Соло",
-        key: document.getElementById("bandura-key")?.value || "",
-        difficulty: document.getElementById("bandura-difficulty")?.value || "Початковий",
-        tempo: document.getElementById("bandura-tempo")?.value || "",
-        slowMode: document.getElementById("bandura-slow")?.checked || false,
-        event: document.getElementById("bandura-event")?.value || "",
-        year: document.getElementById("bandura-year")?.value || "",
-        performer: document.getElementById("bandura-performer")?.value || "",
-        tags: document.getElementById("bandura-tags")?.value || "",
-        markers: document.getElementById("bandura-markers")?.value || ""
-      };
-
-      if (isMarch8) {
-        banduraExtra.tags += " #8березня";
-      }
-
-    }
-
-    /* -------- Дані користувача -------- */
-
-    const userSnapshot = await database.ref("users/" + uid).once("value");
-    const userData = userSnapshot.val() || {};
-
-    const authorName =
-      `${userData.name || ""} ${userData.supername || ""}`.trim() || "Анонім";
-
+    const snapshot = await database.ref("users/" + uid).once("value");
+    const userData = snapshot.val() || {};
+    const authorName = `${userData.name || ""} ${userData.supername || ""}`.trim();
     const authorAvatar = userData.avatarId || null;
 
-    /* -------- Upload -------- */
+  let authorAvatarUrl = null;
 
-    const fileId = Date.now();
+if (authorAvatar) {
+  try {
+    authorAvatarUrl = await storage
+      .ref(`avatars/${authorAvatar}.webp`)
+      .getDownloadURL();
+  } catch (e) {
+    console.warn("Аватар не знайдено");
+  }
+}
+    const storageRef = storage.ref(`videos/${Date.now()}_${videoFile.name}`);
+    const uploadTask = storageRef.put(videoFile);
 
-    const videoRef = storage.ref(`videos/${fileId}_${videoFile.name}`);
-
-    const uploadTask = videoRef.put(videoFile);
-
-    document.getElementById("progress-container").style.display = "block";
+    localStorage.setItem("activeUpload", JSON.stringify({
+      fileName: videoFile.name,
+      fileSize: videoFile.size,
+      bytesTransferred: 0,
+      startedAt: Date.now(),
+      status: "uploading"
+    }));
 
     uploadTask.on("state_changed",
-
       snapshot => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const timeElapsed = (Date.now() - startTime) / 1000;
+        const speed = snapshot.bytesTransferred / Math.max(timeElapsed, 1);
+        const remainingBytes = snapshot.totalBytes - snapshot.bytesTransferred;
+        const timeLeft = remainingBytes / Math.max(speed, 1);
 
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-        const elapsed = (Date.now() - startTime) / 1000;
-        const speed = snapshot.bytesTransferred / Math.max(elapsed, 1);
-
-        const remaining = snapshot.totalBytes - snapshot.bytesTransferred;
-        const timeLeft = remaining / Math.max(speed, 1);
-
-        document.getElementById("upload-progress").value = progress;
-
-        document.getElementById("progress-text").innerText =
-          `Завантаження: ${Math.round(progress)}%`;
-
-        document.getElementById("time-left").innerText =
-          `${Math.round(timeLeft)}s`;
-
-      },
-
-      error => {
-
-        console.error(error);
-
-        showNotificationModal();
-        message.innerHTML = "Помилка завантаження відео.";
-
-      },
-
-      async () => {
-
-        try {
-
-          const downloadURL =
-            await uploadTask.snapshot.ref.getDownloadURL();
-
-          /* -------- Thumbnail -------- */
-
-          const thumbnailBlob = await createThumbnail(videoFile);
-
-          const thumbRef =
-            storage.ref(`thumbnails/${fileId}_${videoFile.name}.jpg`);
-
-          await thumbRef.put(thumbnailBlob);
-
-          const thumbnailURL = await thumbRef.getDownloadURL();
-
-          /* -------- Дата -------- */
-
-          const now = new Date();
-
-          const publishDate =
-            now.getDate().toString().padStart(2, "0") + "." +
-            (now.getMonth() + 1).toString().padStart(2, "0") + "." +
-            now.getFullYear();
-
-          /* -------- Запис у базу -------- */
-
-          await database.ref("videos").push({
-
-            title: videoTitle,
-            description: videoDescription,
-
-            url: downloadURL,
-            thumbnail: thumbnailURL,
-
-            author: authorName,
-            authorAvatar: authorAvatar,
-            authorUid: uid,
-            email: user.email,
-
-            publishDate: publishDate,
-
-            views: 0,
-
-            nsfw: isNSFW,
-            saveVideo: saveVideo,
-
-            disabledComments: disabledComments,
-            private: privateVideo,
-            domainRestrict: domainRestrict,
-
-            march8Special: isMarch8,
-
-            banduraExtra: banduraExtra
-
-          });
-
-          document.getElementById("progress-container").style.display = "none";
-
-          showNotificationModal();
-
-          if (isMarch8) {
-            message.innerHTML = "🌸 Відео опубліковано! З 8 березня!";
-          } else {
-            message.innerHTML = "Відео успішно опубліковано!";
-          }
-
-        } catch (err) {
-
-          console.error(err);
-
-          showNotificationModal();
-          message.innerHTML = "Помилка при обробці відео.";
-
+        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
+        if (uploadData) {
+          uploadData.bytesTransferred = snapshot.bytesTransferred;
+          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
         }
 
-      }
+        document.getElementById("time-left").innerText = `${Math.round(timeLeft)}s`;
+        document.getElementById("upload-progress").value = progress;
+        document.getElementById("progress-text").innerText = `Завантаження: ${Math.round(progress)}%`;
+        document.getElementById("progress-container").style.display = "block";
+      },
+      error => {
+        console.error(error);
+        showNotificationModal();
+        message.innerHTML = "Помилка завантаження відео.";
+      },
+      async () => {
+        const uploadData = JSON.parse(localStorage.getItem("activeUpload"));
+        if (uploadData) {
+          uploadData.status = "processing";
+          localStorage.setItem("activeUpload", JSON.stringify(uploadData));
+        }
 
+        try {
+          const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+
+          // Створюємо та завантажуємо мініатюру
+          const thumbnailBlob = await createThumbnail(videoFile);
+          const thumbRef = storage.ref(`thumbnails/${Date.now()}_${videoFile.name}.jpg`);
+          await thumbRef.put(thumbnailBlob);
+          const thumbnailURL = await thumbRef.getDownloadURL();
+
+          const now = new Date();
+          const currentDate = `${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()}`;
+
+          await database.ref("videos").push({
+            title: videoTitle,
+            author: authorName || "Анонім",
+            authorAvatar: authorAvatarUrl,
+            email: user.email,
+            authorUid: uid,
+            disabledComments: disabledComments,
+            url: downloadURL,
+            thumbnail: thumbnailURL,
+            description: videoDescription,
+            saveVideo: safeVideo,
+            views: 0,
+            private: privateVideo,
+            domainRestrict: domainRestrict,
+            nsfw: isNSFW,
+            publishDate: currentDate,
+            banduraExtra
+          });
+
+          localStorage.removeItem("activeUpload");
+          showNotificationModal();
+          message.innerHTML = "Відео завантажено!";
+          document.getElementById("progress-container").style.display = "none";
+
+        } catch (err) {
+          console.error(err);
+          showNotificationModal();
+          message.innerHTML = "Помилка при завантаженні відео або мініатюри." + err.message;
+        }
+      }
     );
 
   } catch (err) {
-
-    console.error(err);
-
+    console.error("Помилка при отриманні даних користувача:", err);
     showNotificationModal();
-    message.innerHTML = "Сталася помилка.";
-
+    message.innerHTML = "Не вдалося отримати дані профілю.";
   }
-
 }
 
 
@@ -4374,7 +4288,6 @@ document.getElementById("nsfw").onclick = function(event) {
     if (!nsfwCheckbox.dataset.listenerAdded) {
         nsfwCheckbox.addEventListener("change", function () {
             showNSFW = this.checked;
-            loadVideos();
         });
         nsfwCheckbox.dataset.listenerAdded = "true";
     }
@@ -4732,7 +4645,7 @@ function deletePhoto(photoKey, photoURL) {
             database.ref(`photos/${photoKey}`).remove().then(() => {
               showNotificationModal();
                 message.innerHTML = "Фото успішно видалено.";
-                loadPhotos(); // Оновлюємо список відео
+                loadPhotos();
             }).catch((error) => {
               showNotificationModal();
                 message.innerHTML = "Помилка при видаленні фото з бази даних: " + error.message;
@@ -4842,7 +4755,6 @@ const currentDate = `${day}.${month}.${year}`; // Наприклад, "02.03.202
                 }).then(() => {
                   showNotificationModal();
                     message.innerHTML = "Фото завантажено!";
-                    loadPhotos();
                     document.getElementById("upload-photo-form")?.reset();
                     if (progressContainer) progressContainer.style.display = "none";
                 });
@@ -4970,10 +4882,6 @@ window.onload = function() {
         loadSettings();
         loadVideos();
         loadPhotos();
-        const commentsContainer = document.getElementById('comments');
-  if (commentsContainer) {
-    loadComments();
-  }
     };
     </script>
     <!-- 🔰 РЕЖИМ ДЛЯ ЛЮДЕЙ ІЗ ЗМР -->
