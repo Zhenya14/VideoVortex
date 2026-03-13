@@ -2141,7 +2141,7 @@ text-decoration: none;
     </div>
         <footer style="text-align: center; justify-content: center; gap: 30px; padding: 10px 20px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%;">
                 <h3>Версія додатка:</h3>
-                <p>5.0.1</p>
+                <p>5.0.2</p>
         </footer>
 <script src="i18n.js"></script>
 <script>
@@ -2232,7 +2232,7 @@ setTimeout(()=>flower.remove(),7000);
 flowersEffect();
 function checkUpdateButton() {
 
-    const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.1";
+    const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.2";
     const updateBtn = document.getElementById("update-app-btn");
 
     if (!updateBtn) return;
@@ -3856,7 +3856,6 @@ async function uploadVideo() {
     const videoFile = document.getElementById("video-file").files[0];
 
     const isNSFW = document.getElementById("nsfw").checked;
-    const saveVideo = document.getElementById("save-video-checkbox").checked;
     const disabledComments = document.getElementById("disabled-comments-checkbox").checked;
     const privateVideo = document.getElementById("private-checkbox").checked;
 
@@ -3999,7 +3998,6 @@ async function uploadVideo() {
             views: 0,
 
             nsfw: isNSFW,
-            saveVideo: saveVideo,
 
             disabledComments: disabledComments,
             private: privateVideo,
