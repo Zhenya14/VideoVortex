@@ -2149,6 +2149,19 @@ document.addEventListener("DOMContentLoaded", () => {
     initLanguageSwitcher("language-select");
 });
 </script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "2eb435cf-cbb6-423c-8253-57d8b32c5aa0",
+      safari_web_id: "web.onesignal.auto.5130fec1-dc87-4e71-b719-29a6a70279c4",
+      notifyButton: {
+        enable: true,
+      },
+    });
+  });
+</script>
 <script>
   let APP_VERSION = "5.1.0"; // Поточна версія VideoVortex
  function clearLocalStorageExceptAuth() {
