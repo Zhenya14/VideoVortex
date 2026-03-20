@@ -1964,7 +1964,8 @@ text-decoration: none;
      <br>
      <p style="text-align: center;">Налаштування приватності:</p>
    <span>Приватне відео</span><label class="switch" for="private-checkbox"><input type="checkbox" id="private-checkbox"><span class="slider round"></span></label>
-<span>Заборонити збереження відео</span><label class="switch" for="save-video-checkbox"><input type="checkbox" id="save-video-checkbox"><span class="slider round"></span></label>
+<br>
+<span>Заборонити збереження відео<sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch" for="save-video-checkbox"><input type="checkbox" id="save-video-checkbox"><span class="slider round"></span></label>
 <div id="domain-restrict-container" style="margin-top: 10px;">
     <br>
         <span>Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
@@ -2171,13 +2172,6 @@ text-decoration: none;
        <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup></span><label class="switch">
           <input type="checkbox" id="show-nsfw-videos"><span id="slidernsfw" class="slider round"></span></label>
         <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
-        
-        <button id="generate-thumbnails-btn">Генерувати превю для старих відео</button>
-        <div id="thumbnail-progress-container" style="display:none; margin-top:10px;">
-  <progress id="thumbnail-progress" value="0" max="100" style="width:300px;"></progress>
-  <span id="thumbnail-progress-text">0%</span>
-</div>
-<div id="thumbnail-status" style="margin-top:10px; color:green;"></div>
 <h1>Налаштування обмеження екранного часу</h1>
     <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
     <input type="number" id="maxTimeInput" value="45" min="1" />
