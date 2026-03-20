@@ -360,8 +360,7 @@ let blockedUserUid = urlParams.get("uid"); // UID користувач
 const avatar = urlParams.get("avatar") || "?";
 const author = urlParams.get("author") || "Невідомий автор";
 
-document.getElementById("userName").textContent = author;
-document.getElementById("avatar").textContent = avatar;
+
 
 function showNotFound() {
   document.getElementById("video-gallery").innerHTML = `<h3>🎬 Публікації відсутні</h3>`;
@@ -478,13 +477,14 @@ async function loadVideos() {
   const blockedMe = await didUserBlockMe(videoData.authorUid);
 
   if (blockedMe) {
-    document.getElementById("avatar").textContent = "❌";
-    document.getElementById("userName").textContent = "Акаунт не знайдено";
+ const avatar = document.getElementById("avatar").textContent = "❌";
+ const author = document.getElementById("userName").textContent = "Акаунт не знайдено";
     showNotFound();
     return;
   }
 }
-
+document.getElementById("userName").textContent = author;
+document.getElementById("avatar").textContent = avatar;
     hasVideos = true;
 
     const container = document.createElement("div");
