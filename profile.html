@@ -413,17 +413,73 @@ async function didUserBlockMe(targetUid) {
 
 }
 
+
+async function loadVideos() {
+  const videoGallery = document.getElementById("video-gallery");
+  videoGallery.innerHTML = "";
+
+  const snapshot = await firebase.database().ref("videos").once("value");
+  if (!snapshot.exists()) return showNotFound();
+
+  let hasVideos = false;
+  const videosArray = [];
+
+  snapshot.forEach(child => {
+    videosArray.push({ key: child.key, val: child.val() });
+  });
+
+  for (const child of videosArray) {
+    const videoData = child.val;
+
+    if (videoData.author !== author) continue;
+
+    if (videoData.authorUid) {
+
+  const blockedMe = await didUserBlockMe(videoData.authorUid);
+
+  if (blockedMe) {
+ document.getElementById("avatar").textContent = "❌";
+ document.getElementById("userName").textContent = "Акаунт не знайдено";
+    showNotFound();
+    return;
+  }
+}
+document.getElementById("userName").textContent = author;
+document.getElementById("avatar").textContent = avatar;
+    hasVideos = true;
+
+    const container = document.createElement("div");
+    container.className = "video";
+
+    const img = document.createElement("img");
+    img.src = videoData.thumbnail || "default.jpg";
+    if (videoData.nsfw) img.style.filter = "blur(30px)";
+    img.onclick = () => location.href = `video.html?key=${child.key}`;
+
+    container.appendChild(img);
+    videoGallery.appendChild(container);
+  }
+
+  if (!hasVideos) showNotFound();
+}
 document.getElementById("blockUserBtn").addEventListener("click", () => {
     showModalBlocked();
 });
-let blockedUserName = author;
+const realUserName = author; // справжнє ім'я
+let blockedUserName = realUserName;
+let isHiddenAccount = false;
 function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
-    info.textContent = `Ви впевнені, що хочете заблокувати користувача "${blockedUserName}"?`;
+
+    const displayName = isHiddenAccount
+        ? "Акаунт не знайдено"
+        : `"${realUserName}"`;
+
+    info.textContent = `Ви впевнені, що хочете заблокувати користувача ${displayName}?`;
+
     modal.style.display = "flex";
 }
-
 function closeBlockModal() {
     document.getElementById("block-user-modal").style.display = "none";
 }
@@ -453,55 +509,6 @@ async function confirmBlockUser() {
     closeBlockModal();
     alert("Користувача заблоковано");
 }
-async function loadVideos() {
-  const videoGallery = document.getElementById("video-gallery");
-  videoGallery.innerHTML = "";
-
-  const snapshot = await firebase.database().ref("videos").once("value");
-  if (!snapshot.exists()) return showNotFound();
-
-  let hasVideos = false;
-  const videosArray = [];
-
-  snapshot.forEach(child => {
-    videosArray.push({ key: child.key, val: child.val() });
-  });
-
-  for (const child of videosArray) {
-    const videoData = child.val;
-
-    if (videoData.author !== author) continue;
-
-    if (videoData.authorUid) {
-
-  const blockedMe = await didUserBlockMe(videoData.authorUid);
-
-  if (blockedMe) {
- const avatar = document.getElementById("avatar").textContent = "❌";
- const author = document.getElementById("userName").textContent = "Акаунт не знайдено";
-    showNotFound();
-    return;
-  }
-}
-document.getElementById("userName").textContent = author;
-document.getElementById("avatar").textContent = avatar;
-    hasVideos = true;
-
-    const container = document.createElement("div");
-    container.className = "video";
-
-    const img = document.createElement("img");
-    img.src = videoData.thumbnail || "default.jpg";
-    if (videoData.nsfw) img.style.filter = "blur(30px)";
-    img.onclick = () => location.href = `video.html?key=${child.key}`;
-
-    container.appendChild(img);
-    videoGallery.appendChild(container);
-  }
-
-  if (!hasVideos) showNotFound();
-}
-
  async function loadPosts() {
   const photoGallery = document.getElementById("photo-gallery");
   photoGallery.innerHTML = "";
