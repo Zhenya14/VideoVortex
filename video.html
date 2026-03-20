@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title></title>
+    <svg style="display: none">
+    <filter id="displacementFilter">
+        <feImage
+                href="data:image/png;base64,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"
+                preserveAspectRatio="none"/>
+
+        <feDisplacementMap
+                in="SourceGraphic"
+                in2="turbulence"
+                scale="300"
+                xChannelSelector="R"
+                yChannelSelector="G"
+        />
+    </filter>
+</svg>
     <style>
     ios-modal {
   display: none;
@@ -208,6 +223,42 @@ text-align: center;
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         } 
+        .controls {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 65px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  filter: url(#displacementFilter);
+  z-index: 1000;
+  isolation: isolate;
+  transition: all 0.3s ease;
+}
+
+.controls button {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.controls button:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.1);
+}
         .snowflake {
     position: fixed;
     top: -30px;
@@ -242,6 +293,20 @@ height: 10px;
         transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
         opacity: 0;
     }
+}
+.privacy-mode{
+  filter: blur(20px);
+  background:black;
+}
+
+.privacy-mode::after{
+  content:"🔒 Режим конфіденційності";
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  color:white;
+  font-size:20px;
 }
         .form, .upload-form, .auth-form, .register-form, .account-form, .upload-photo-form { 
             display: none; 
@@ -321,7 +386,11 @@ button:active {
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
-
+img.video-item {
+  border-radius: 14px;
+  width: 100%;
+  height: auto;
+}
         .video-info { 
             text-align: left; 
             color: #b0bec5; 
@@ -814,10 +883,20 @@ width: 80%;  /* Ширина поля вводу */
     <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
   </div>
 </div>
+      <div class="player-container">
     <div id="video-container">
         <video id="video-player" controls preload="auto"></video>
+        <div class="controls">
+    <button id="playPause"><i class="material-icons">play_arrow</i></button>
+    <input type="range" id="seekBar" value="0" min="0" step="1">
+    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+    <button id="mute"><i class="material-icons">volume_up</i></button>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    <button id="fullscreen"><i class="material-icons">fullscreen</i></button>
+  </div>
+</div>
+</div>
         <div class="video-info" id="video-info">
-<div class="avatar" id="avatar"></div>
 <div class="details" id="details"></div>
 <hr>
 <div class="reactions">
@@ -959,7 +1038,57 @@ function sanitize(text) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
+function randomGradient() {
 
+const gradients = [
+
+/* Сині */
+"linear-gradient(135deg,#4facfe,#00f2fe)",
+"linear-gradient(135deg,#2193b0,#6dd5ed)",
+"linear-gradient(135deg,#00c6ff,#0072ff)",
+
+/* Червоні */
+"linear-gradient(135deg,#ff416c,#ff4b2b)",
+"linear-gradient(135deg,#ff0000,#ff7b7b)",
+"linear-gradient(135deg,#d31027,#ea384d)",
+
+/* Жовті */
+"linear-gradient(135deg,#f7971e,#ffd200)",
+"linear-gradient(135deg,#ffdd00,#ffbb00)",
+
+/* Помаранчеві */
+"linear-gradient(135deg,#ff7e5f,#feb47b)",
+"linear-gradient(135deg,#ff9966,#ff5e62)",
+
+/* Зелені */
+"linear-gradient(135deg,#11998e,#38ef7d)",
+"linear-gradient(135deg,#56ab2f,#a8e063)",
+
+/* Фіолетові */
+"linear-gradient(135deg,#8e2de2,#4a00e0)",
+"linear-gradient(135deg,#c471f5,#fa71cd)",
+
+/* Рожеві */
+"linear-gradient(135deg,#ff9a9e,#fad0c4)",
+"linear-gradient(135deg,#f953c6,#b91d73)",
+
+/* Бірюзові */
+"linear-gradient(135deg,#43cea2,#185a9d)",
+"linear-gradient(135deg,#00d2ff,#3a7bd5)",
+
+/* Темні (виглядають дуже круто) */
+"linear-gradient(135deg,#232526,#414345)",
+"linear-gradient(135deg,#0f2027,#203a43,#2c5364)",
+
+/* Світлі */
+"linear-gradient(135deg,#ffffff,#e0eafc)",
+"linear-gradient(135deg,#f5f7fa,#c3cfe2)"
+
+];
+
+return gradients[Math.floor(Math.random()*gradients.length)];
+
+}
 function showNotFound() {
   document.body.innerHTML = `
     <div style="
@@ -1045,7 +1174,7 @@ async function uploadComment(videoKey, videoOwnerEmail) {
     let commentData = commentText;
     if (isPrivate) {
         const videoKeyLocal = getVideoKey(videoKey);
-        commentData = await encryptText(commentText, videoKeyLocal);
+        commentData = await encryptText(commentText);
     }
 
     const uid = firebase.auth().currentUser.uid;
@@ -1055,11 +1184,19 @@ async function uploadComment(videoKey, videoOwnerEmail) {
     const userData = snapshot.val();
     const commentAuthor = `${userData.name} ${userData.supername}`;
 
+const now = new Date();
+const day = now.getDate().toString().padStart(2, '0');
+const month = (now.getMonth() + 1).toString().padStart(2, '0');
+const year = now.getFullYear();
+
+const publishDate = `${day}.${month}.${year}`; // Наприклад, "02.03.2026"
+
     // Додаємо коментар у базу
     await database.ref("comments").push({
         comment: commentData,
         email: currentUserEmail,
         commentAuthor: commentAuthor,
+        authorUid: uid,   // ⭐ ГОЛОВНЕ
         videoOwner: videoOwnerEmail,
         isPrivate: isPrivate,
         publishDate: new Date().toLocaleDateString(),
@@ -1136,14 +1273,25 @@ async function didUserBlockMe(targetUid) {
 /* ================= LOAD VIDEO ================= */
 const videoPlayer = document.getElementById("video-player");
 const detailsEl = document.getElementById("details");
-const avatar = document.getElementById("avatar");
 
 database.ref("videos/" + videoKey).once("value").then(async snapshot => {
   if (!snapshot.exists()) { showNotFound(); return; }
 
   const video = snapshot.val();
   currentVideo = video;
+if (video.authorUid) {
 
+      const blockedMe =
+      await didUserBlockMe(video.authorUid);
+
+      if (blockedMe) {
+
+          showNotFound();
+          return;
+
+      }
+
+  }
   // -------------------------------
   // Підготовка URL faststart з fallback
   // -------------------------------
@@ -1175,15 +1323,38 @@ videoPlayer.load();
   // -------------------------------
   document.title = sanitize(video.title);
 
-  avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
-
+const gradient = randomGradient();
   detailsEl.innerHTML = `
+  <div style="
+    padding: 18px;
+    border-radius: 16px;
+    background: ${gradient};
+    color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  ">
+    <div id="avatar-placeholder" style="
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+    "></div>
     <h2>${sanitize(video.title)}</h2>
     <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
     <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
     <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
     <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
-  `;
+  </div>
+`;
+
+// Now safely set avatar text
+const avatar = detailsEl.querySelector("#avatar-placeholder");
+avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
 
   // -------------------------------
   // Лічильник переглядів
@@ -1193,12 +1364,32 @@ videoPlayer.load();
     database.ref("videos/" + videoKey + "/views").transaction(v => (v || 0) + 1);
     localStorage.setItem(viewedKey, "1");
   }
+// ... після videoPlayer.load();
+
+// Перевірка дозволу на збереження з бази даних
+if (video.saveVideo === true) {
+
+    // ❌ Забороняємо скачування
+    videoPlayer.setAttribute("controlsList", "nodownload");
+    videoPlayer.disablePictureInPicture = true;
+
+    videoPlayer.oncontextmenu = (e) => {
+        e.preventDefault();
+    };
+
+} else {
+
+    // ✅ Дозволяємо скачування
+    videoPlayer.removeAttribute("controlsList");
+    videoPlayer.disablePictureInPicture = false;
+    videoPlayer.oncontextmenu = null;
+
+}
 
   // -------------------------------
   // Коментарі та схожі відео
   // -------------------------------
   renderCommentSection(currentVideo, videoKey);
-  loadComments(videoKey, video.email);
   loadSimilarVideos(video);
 }).catch(err => {
   console.error("Помилка завантаження відео:", err);
@@ -1214,13 +1405,15 @@ function getVideoKey(videoKey) {
 }
 
 // Просте шифрування/дешифрування (можна замінити на AES)
-async function loadComments(videoKey, videoOwnerEmail) { 
+// =================== COMMENTS & BLOCKING ===================
 
+async function loadComments(videoKey, videoOwnerEmail) { 
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     if (!commentsContainer) return;
 
     commentsContainer.innerHTML = "";
 
+    // Отримуємо всі коментарі для цього відео
     const snapshot = await database.ref("comments")
         .orderByChild("videoKey")
         .equalTo(videoKey)
@@ -1233,78 +1426,113 @@ async function loadComments(videoKey, videoOwnerEmail) {
     }
 
     const videoKeyLocal = getVideoKey(videoKey);
+    const children = Object.values(snapshot.val() || {});
 
-    const comments = [];
-
-    snapshot.forEach(child => {
-        comments.push(child.val());
-    });
-
-    for (const data of comments) {
-
+    for (const data of children) {
+        // 🔹 Приватні коментарі
         if (data.isPrivate &&
-            !(data.email === currentUserEmail ||
-              videoOwnerEmail === currentUserEmail)) {
+            !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
             continue;
         }
 
+        // 🔹 Перевірка блокування
+        const blockedMeComments = await didUserBlockMe(data.authorUid);
+
+        // 🔹 Контейнер коментаря
         const commentDiv = document.createElement("div");
         commentDiv.className = "comment";
 
+        // 🔹 Аватар
         const avatarComment = document.createElement("div");
         avatarComment.className = "avatar";
+        avatarComment.textContent = blockedMeComments
+            ? "❌"
+            : (data.commentAuthor === "Видалений акаунт" ? "👻" : getInitials(data.commentAuthor));
 
-        avatarComment.textContent =
-            data.commentAuthor == "Видалений акаунт"
-            ? "👻"
-            : getInitials(data.commentAuthor);
-
+        // 🔹 Ім'я користувача
         const userEl = document.createElement("strong");
+        userEl.textContent = blockedMeComments
+            ? "Акаунт не знайдено"
+            : (data.commentAuthor === "Видалений акаунт" ? "Видалений акаунт" : data.commentAuthor);
 
-        if (data.commentAuthor == "Видалений акаунт") {
-
-            userEl.setAttribute('data-i18n','account-deleted');
-            userEl.textContent = "Видалений акаунт";
-
-        } else {
-
-            userEl.textContent = data.commentAuthor;
-
-        }
-
+        // 🔹 Текст коментаря
         const textEl = document.createElement("span");
-
-        if (data.isPrivate) {
-
-            textEl.textContent =
-              ": " + await decryptText(data.comment, videoKeyLocal);
-
+        if (blockedMeComments) {
+            textEl.textContent = ": Коментар недоступний";
+        } else if (data.isPrivate) {
+            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
         } else {
-
             textEl.textContent = ": " + data.comment;
-
         }
 
-        const br = document.createElement("br");
+        // 🔹 Контейнер тексту + кнопка "три крапки"
+        const textContainer = document.createElement("div");
+        textContainer.style.display = "inline-flex";
+        textContainer.style.alignItems = "center";
+        textContainer.style.gap = "5px";
+        textContainer.appendChild(textEl);
 
-        const dateEl = document.createElement("small");
-        dateEl.textContent = data.publishDate || "";
+        const more = document.createElement("a");
+        more.classList.add("moreBtn");
+        more.innerHTML = `<i class="material-icons">more_vert</i>`;
+        textContainer.appendChild(more);
 
+        // 🔹 Action menu
+        const actionMenu = document.createElement("div");
+        actionMenu.classList.add("action-menu");
+        actionMenu.style.display = "none";
+
+        const blockUser = document.createElement("button");
+        blockUser.classList.add("block-button");
+        blockUser.innerHTML = `
+            <span style="display:flex;align-items:center;gap:6px;">
+                <i class="material-icons">block</i>
+                Заблокувати
+            </span>`;
+        blockUser.addEventListener("click", () => {
+            blockedUserName = blockedMeComments
+        ? "Акаунт не знайдено" : (data.commentAuthor || "Видалений акаунт");
+            blockedUserUid = data.authorUid;
+            showModalBlocked();
+        });
+        actionMenu.appendChild(blockUser);
+        textContainer.appendChild(actionMenu);
+
+        // 🔹 Відкриття/закриття меню по кліку
+        more.addEventListener("click", (e) => {
+            e.stopPropagation();
+            actionMenu.style.display =
+                actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";
+        });
+
+        // Закриваємо всі меню при кліку поза ними
+        document.addEventListener("click", () => {
+            document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
+        });
+
+        // 🔹 Додаємо елементи в DOM
         commentDiv.appendChild(avatarComment);
         commentDiv.appendChild(userEl);
-        commentDiv.appendChild(textEl);
-        commentDiv.appendChild(br);
-        commentDiv.appendChild(dateEl);
+        commentDiv.appendChild(textContainer);
 
         commentsContainer.appendChild(commentDiv);
     }
 
     applyTranslations();
 }
+
+// =================== BLOCK MODAL ===================
+
 function showModalBlocked() {
-  document.getElementById("block-user-modal").style.display = "flex";
-  document.getElementById("blocked-information").textContent =
-    `Ви впевнені, що хочете заблокувати користувача ${blockedUserName}?`;
+    const modal = document.getElementById("block-user-modal");
+    const info = document.getElementById("blocked-information");
+    info.textContent = `Ви впевнені, що хочете заблокувати користувача "${blockedUserName}"?`;
+    modal.style.display = "flex";
+}
+
+function closeBlockModal() {
+    const modal = document.getElementById("block-user-modal");
+    modal.style.display = "none";
 }
 
 function closeBlockModal() {
@@ -1327,7 +1555,11 @@ async function confirmBlockUser() {
 
   await firebase.database()
     .ref(`users/${currentUser.uid}/blockedUsers/${blockedUserUid}`)
-    .set(true);
+    .set({
+        blocked: true,
+        uid: blockedUserUid,
+        userName: blockedUserName
+});
 
   closeBlockModal();
 
@@ -1341,43 +1573,97 @@ async function confirmBlockUser() {
 function loadSimilarVideos(currentVideo) {
   const container = document.getElementById("target-videos");
   const message = document.getElementById("similar-message");
-  container.innerHTML = "";
 
+  container.innerHTML = "";
   let found = false;
-  const currentTitleWords = currentVideo.title.toLowerCase().split(" ");
+
+  const currentTitleWords = (currentVideo.title || "")
+      .toLowerCase()
+      .split(" ");
 
   database.ref("videos").once("value").then(snapshot => {
+
     snapshot.forEach(child => {
+
       const v = child.val();
-      if (!v || v.nsfw) return;
-      if (v.title === currentVideo.title) return;
-      if (v.private && v.email !== currentUserEmail) return;
+      if (!v) return;
+if (v.authorUid) {
 
-      const similar = currentTitleWords.some(word => v.title.toLowerCase().includes(word));
+      const blockedMeSimilar =
+      didUserBlockMe(video.authorUid);
+
+      if (blockedMeSimilar) {
+          return;
+
+      }
+
+  }
+      // 🔞 НЕ показуємо 18+
+      if (v.nsfw === true || v.nsfw === "true" || v.nsfw === 1)
+        return;
+
+      // Не показуємо те саме відео
+      if (child.key === videoKey)
+        return;
+
+      // Приватні відео
+      if (v.private && v.email !== currentUserEmail)
+        return;
+
+      // Domain restrict
+      if (v.domainRestrict &&
+          (!currentUserEmail ||
+          !currentUserEmail.endsWith("@kfccte-nau.ukr.education")))
+        return;
+
+      // Пошук схожості
+      const similar = currentTitleWords.some(word =>
+        (v.title || "").toLowerCase().includes(word)
+      );
+
       if (!similar) return;
-
-      if (v.domainRestrict && (!currentUserEmail || !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))) return;
 
       found = true;
 
       const wrap = document.createElement("div");
-      wrap.style.marginBottom = "20px";
 
-      const title = document.createElement("h3");
-      title.innerText = v.title;
-      title.style.color = "white";
+wrap.style.marginBottom = "25px";
 
-     const vid = document.createElement("img");
-      vid.src = v.thumbnail || "default.jpg";
-      vid.style.width = "100%";
-      vid.onclick = () => location.href = `video.html?key=${child.key}`;
+/* Картинка */
+const img = document.createElement("img");
+img.classList.add("video-item");
+img.src = v.thumbnail || "default.jpg";
 
-      wrap.appendChild(title);
-      wrap.appendChild(vid);
-      container.appendChild(wrap);
+img.onclick = () =>
+  location.href = `video.html?key=${child.key}`;
+
+/* Контейнер тексту */
+const info = document.createElement("div");
+info.style.padding = "5px";
+
+/* Назва */
+const title = document.createElement("div");
+title.style.fontWeight = "bold";
+title.innerText = v.title || "Без назви";
+
+/* Автор */
+const author = document.createElement("div");
+author.style.color = "#aaa";
+author.style.fontSize = "14px";
+author.innerText = v.author || "Анонім";
+
+/* Збірка */
+info.appendChild(title);
+info.appendChild(author);
+
+wrap.appendChild(img);
+wrap.appendChild(info);
+
+container.appendChild(wrap);
     });
 
-    if (!found && message) message.style.display = "block";
+    if (!found)
+      message.style.display = "block";
   });
 }
 /* ================= REACTIONS (LIKE / DISLIKE) ================= */
@@ -1388,44 +1674,42 @@ const dislikeCountEl = dislikeBtn.querySelector("p");
 
 let currentReaction = null;
 let currentUid = null;
+async function backfillAuthorUidForUser() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
-/* ---------- AUTH ---------- */
-auth.onAuthStateChanged(user => {
-  if (user) {
-    currentUid = user.uid;
-    currentUserEmail = user.email;
-    listenUserReaction();
-    
-    database.ref("users/" + currentUid).once("value").then(async snapshot => {
-      const userData = snapshot.val();
-      const birthStr = userData?.birthdate;
-      
-      // 🔹 Обчислення віку
-      if (birthStr) {
-        let birthDate;
-        const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-        if (match) {
-          const [, d, m, y] = match;
-          birthDate = new Date(`${y}-${m}-${d}`);
-        } else {
-          birthDate = new Date(birthStr);
-        }
+  const uid = user.uid;
+  const email = user.email;
 
-        if (!isNaN(birthDate)) {
-          const today = new Date();
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const mm = today.getMonth() - birthDate.getMonth();
-          if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
-          userAge = age;
+  const paths = ["videos", "photos", "comments"];
 
-          updatePrivateCheckbox(videoKey);
-          if (currentVideo) loadComments(videoKey, currentVideo.email);
+  for (const path of paths) {
+    const snap = await database.ref(path).once("value");
+
+    const updates = [];
+
+    snap.forEach(child => {
+      const data = child.val();
+
+      // Знаходимо ТІЛЬКИ контент цього користувача
+      if (data.email === email) {
+        // Якщо ще нема authorUid — додаємо
+        if (!data.authorUid) {
+          updates.push(
+            database.ref(`${path}/${child.key}`).update({
+              authorUid: uid
+            })
+          );
         }
       }
     });
+
+    if (updates.length > 0) {
+      await Promise.all(updates);
+      console.log(`Оновлено ${updates.length} записів у ${path}`);
+    }
   }
-});
-/* ---------- USER REACTION ---------- */
+}
 function listenUserReaction() {
   const ref = database.ref(`reactions/${videoKey}/${currentUid}`);
   ref.on("value", snap => {
@@ -1469,6 +1753,66 @@ function updateReactionUI() {
   
   if (currentReaction === "dislike") dislikeBtn.classList.add("disliked");
 }
+/* ---------- AUTH ---------- */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUid = user.uid;
+    currentUserEmail = user.email;
+    listenUserReaction();
+    backfillAuthorUidForUser();
+    database.ref("users/" + currentUid).once("value").then(async snapshot => {
+      const userData = snapshot.val();
+      const birthStr = userData?.birthdate;
+      
+      // 🔹 Обчислення віку
+      if (birthStr) {
+        let birthDate;
+        const match = birthStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+        if (match) {
+          const [, d, m, y] = match;
+          birthDate = new Date(`${y}-${m}-${d}`);
+        } else {
+          birthDate = new Date(birthStr);
+        }
+
+        if (!isNaN(birthDate)) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const mm = today.getMonth() - birthDate.getMonth();
+          if (mm < 0 || (mm === 0 && today.getDate() < birthDate.getDate())) age--;
+          userAge = age;
+
+          updatePrivateCheckbox(videoKey);
+          if (currentVideo) loadComments(videoKey, currentVideo.email);
+        }
+      }
+    });
+  }
+});
+/* ---------- USER REACTION ---------- */
+videoPlayer.addEventListener("play", () => {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    const uid = user.uid;
+
+    // Припустимо, що currentVideo і videoKey визначені
+    const videoRef = database.ref("users/" + uid + "/history/" + videoKey);
+
+    // Перевіряємо, чи є запис
+    videoRef.once("value")
+        .then(snapshot => {
+                // Записуємо дані лише один раз
+                videoRef.update({
+                    author: currentVideo.author,
+                    title: currentVideo.title,
+                    thumbnail: currentVideo.thumbnail,
+                    lastPlayed: Date.now()
+                })
+                .catch(error => console.error("Помилка оновлення переглядів:", error));
+        })
+        .catch(error => console.error("Помилка отримання даних:", error));
+});
 document.getElementById('shareBtn').addEventListener('click', async () => {
   if (!currentVideo) {
     alert('Відео ще не завантажене');
@@ -1491,6 +1835,104 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
   }
 });
 </script>
+<script>
+  let privacyActive = false;
+let video = document.querySelector("video");
 
+// Функція для увімкнення/вимкнення режиму конфіденційності
+function setPrivacyMode(active) {
+    if(active){
+        if(video) video.pause();
+        document.body.classList.add("privacy-mode");
+    } else {
+        document.body.classList.remove("privacy-mode");
+        if(video) video.play();
+    }
+    privacyActive = active;
+}
+
+// Debounce, щоб не спрацьовувало занадто часто
+let lastCheck = 0;
+
+// Основна логіка орієнтації
+function handleOrientation(event){
+    const now = Date.now();
+    if(now - lastCheck < 200) return; // не частіше ніж раз на 200ms
+    lastCheck = now;
+
+    const beta = event.beta;
+
+    if(beta > 150 || beta < -150){ // екраном вниз
+        if(!privacyActive) setPrivacyMode(true);
+    } else {
+        if(privacyActive) setPrivacyMode(false);
+    }
+}
+
+// Перевірка iOS: потрібен дозвіл
+function initDeviceOrientation(){
+    if(typeof DeviceOrientationEvent !== "undefined" &&
+       typeof DeviceOrientationEvent.requestPermission === "function") {
+        // iOS 13+ потребує запит дозволу
+        DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+            if(permissionState === "granted"){
+                window.addEventListener("deviceorientation", handleOrientation);
+            }
+        })
+        .catch(console.error);
+    } else {
+        // Android та інші браузери
+        window.addEventListener("deviceorientation", handleOrientation);
+    }
+}
+
+// Ініціалізація після завантаження контенту
+document.addEventListener("DOMContentLoaded", () => {
+    video = document.querySelector("video"); // на всяк випадок
+    initDeviceOrientation();
+});
+</script>
+<!---<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("video-player");
+  const playPause = document.getElementById("playPause");
+  const seek = document.getElementById("seek");
+  const time = document.getElementById("time");
+  const fullscreen = document.getElementById("fullscreen");
+
+  // Відео з Firebase
+  const videoKey = new URLSearchParams(window.location.search).get("key");
+  firebase.database().ref("videos/" + videoKey).once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (data && data.url) {
+        video.src = data.url;  // підставляємо реальний URL з Firebase
+      }
+    });
+
+  // Кнопки
+  playPause.onclick = () => video.paused ? video.play() : video.pause();
+  video.onplay = () => playPause.textContent = "❚❚";
+  video.onpause = () => playPause.textContent = "►";
+
+  video.ontimeupdate = () => {
+    const progress = (video.currentTime / video.duration) * 100;
+    seek.value = progress;
+    time.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+  };
+  seek.oninput = () => video.currentTime = (seek.value/100) * video.duration;
+
+  fullscreen.onclick = () => {
+    if(!document.fullscreenElement) video.parentElement.requestFullscreen();
+    else document.exitFullscreen();
+  };
+
+  function formatTime(s) {
+    const m = Math.floor(s/60), sec = Math.floor(s%60);
+    return `${m}:${sec.toString().padStart(2,"0")}`;
+  }
+});
+</script>---->
 </body>
     </html>
