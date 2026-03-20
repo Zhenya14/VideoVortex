@@ -1008,8 +1008,9 @@ let currentUserEmail = null;
 let currentVideo = null;
 let userAge = null;
 // Глобальні змінні для блокування
-let blockedUserUid = null;
-let blockedUserName = null;
+let blockedUserUid = "";
+let realBlockedUserName = "";
+let blockedUserName = ""; // для UI
 const firebaseConfig = {
   apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
   authDomain: "videovortex-235cd.firebaseapp.com",
@@ -1408,13 +1409,12 @@ function getVideoKey(videoKey) {
 // Просте шифрування/дешифрування (можна замінити на AES)
 // =================== COMMENTS & BLOCKING ===================
 
-async function loadComments(videoKey, videoOwnerEmail) { 
+async function loadComments(videoKey, videoOwnerEmail) {
     const commentsContainer = document.getElementById(`comments-${videoKey}`);
     if (!commentsContainer) return;
 
     commentsContainer.innerHTML = "";
 
-    // Отримуємо всі коментарі для цього відео
     const snapshot = await database.ref("comments")
         .orderByChild("videoKey")
         .equalTo(videoKey)
@@ -1430,33 +1430,24 @@ async function loadComments(videoKey, videoOwnerEmail) {
     const children = Object.values(snapshot.val() || {});
 
     for (const data of children) {
-        // 🔹 Приватні коментарі
-        if (data.isPrivate &&
-            !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) {
-            continue;
-        }
+        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) continue;
 
-        // 🔹 Перевірка блокування
         const blockedMeComments = await didUserBlockMe(data.authorUid);
 
-        // 🔹 Контейнер коментаря
         const commentDiv = document.createElement("div");
         commentDiv.className = "comment";
 
-        // 🔹 Аватар
         const avatarComment = document.createElement("div");
         avatarComment.className = "avatar";
         avatarComment.textContent = blockedMeComments
             ? "❌"
-            : (data.commentAuthor === "Видалений акаунт" ? "👻" : getInitials(data.commentAuthor));
+            : (data.commentAuthor ? getInitials(data.commentAuthor) : "👻");
 
-        // 🔹 Ім'я користувача
         const userEl = document.createElement("strong");
         userEl.textContent = blockedMeComments
             ? "Акаунт не знайдено"
-            : (data.commentAuthor === "Видалений акаунт" ? "Видалений акаунт" : data.commentAuthor);
+            : (data.commentAuthor || "Видалений акаунт");
 
-        // 🔹 Текст коментаря
         const textEl = document.createElement("span");
         if (blockedMeComments) {
             textEl.textContent = ": Коментар недоступний";
@@ -1466,7 +1457,6 @@ async function loadComments(videoKey, videoOwnerEmail) {
             textEl.textContent = ": " + data.comment;
         }
 
-        // 🔹 Контейнер тексту + кнопка "три крапки"
         const textContainer = document.createElement("div");
         textContainer.style.display = "inline-flex";
         textContainer.style.alignItems = "center";
@@ -1476,42 +1466,31 @@ async function loadComments(videoKey, videoOwnerEmail) {
         const more = document.createElement("a");
         more.classList.add("moreBtn");
         more.innerHTML = `<i class="material-icons">more_vert</i>`;
+        more.addEventListener("click", (e) => {
+            e.stopPropagation();
+            actionMenu.style.display = actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";
+        });
         textContainer.appendChild(more);
 
-        // 🔹 Action menu
         const actionMenu = document.createElement("div");
         actionMenu.classList.add("action-menu");
         actionMenu.style.display = "none";
 
         const blockUser = document.createElement("button");
         blockUser.classList.add("block-button");
-        blockUser.innerHTML = `
-            <span style="display:flex;align-items:center;gap:6px;">
-                <i class="material-icons">block</i>
-                Заблокувати
-            </span>`;
+        blockUser.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i class="material-icons">block</i> Заблокувати</span>`;
         blockUser.addEventListener("click", () => {
-            blockedUserName = blockedMeComments
-        ? "Акаунт не знайдено" : (data.commentAuthor || "Видалений акаунт");
+            realBlockedUserName = data.commentAuthor || "Видалений акаунт";
+            blockedUserName = blockedMeComments ? "Акаунт не знайдено" : realBlockedUserName;
             blockedUserUid = data.authorUid;
             showModalBlocked();
         });
+document.addEventListener("click", () => {
+    document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
+});
         actionMenu.appendChild(blockUser);
         textContainer.appendChild(actionMenu);
 
-        // 🔹 Відкриття/закриття меню по кліку
-        more.addEventListener("click", (e) => {
-            e.stopPropagation();
-            actionMenu.style.display =
-                actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";
-        });
-
-        // Закриваємо всі меню при кліку поза ними
-        document.addEventListener("click", () => {
-            document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
-        });
-
-        // 🔹 Додаємо елементи в DOM
         commentDiv.appendChild(avatarComment);
         commentDiv.appendChild(userEl);
         commentDiv.appendChild(textContainer);
@@ -1527,7 +1506,10 @@ async function loadComments(videoKey, videoOwnerEmail) {
 function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
+
+    // Відображаємо те, що потрібно бачити користувачу
     info.textContent = `Ви впевнені, що хочете заблокувати користувача "${blockedUserName}"?`;
+
     modal.style.display = "flex";
 }
 
@@ -1559,7 +1541,7 @@ async function confirmBlockUser() {
     .set({
         blocked: true,
         uid: blockedUserUid,
-        userName: blockedUserName
+        userName: realBlockedUserName
 });
 
   closeBlockModal();
