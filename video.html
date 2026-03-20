@@ -1409,98 +1409,122 @@ function getVideoKey(videoKey) {
 // Просте шифрування/дешифрування (можна замінити на AES)
 // =================== COMMENTS & BLOCKING ===================
 
-async function loadComments(videoKey, videoOwnerEmail) {
-    const commentsContainer = document.getElementById(`comments-${videoKey}`);
-    if (!commentsContainer) return;
+async function loadComments(videoKey, videoOwnerEmail) {  
+    const commentsContainer = document.getElementById(`comments-${videoKey}`);  
+    if (!commentsContainer) return;  
 
-    commentsContainer.innerHTML = "";
+    commentsContainer.innerHTML = "";  
 
+    // Отримуємо коментарі для цього відео
     const snapshot = await database.ref("comments")
         .orderByChild("videoKey")
         .equalTo(videoKey)
-        .once("value");
+        .once("value");  
 
-    if (!snapshot.exists()) {
-        commentsContainer.textContent = "Ще немає коментарів...";
-        applyTranslations();
-        return;
-    }
+    if (!snapshot.exists()) {  
+        commentsContainer.textContent = "Ще немає коментарів...";  
+        applyTranslations();  
+        return;  
+    }  
 
-    const videoKeyLocal = getVideoKey(videoKey);
-    const children = Object.values(snapshot.val() || {});
+    const videoKeyLocal = getVideoKey(videoKey);  
+    const children = Object.values(snapshot.val() || {});  
 
-    for (const data of children) {
-        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) continue;
+    for (const data of children) {  
+        // 🔹 Приватні коментарі
+        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) continue;  
 
-        const blockedMeComments = await didUserBlockMe(data.authorUid);
+        // 🔹 Перевірка блокування
+        const blockedMeComments = await didUserBlockMe(data.authorUid);  
 
-        const commentDiv = document.createElement("div");
-        commentDiv.className = "comment";
+        // 🔹 Контейнер коментаря
+        const commentDiv = document.createElement("div");  
+        commentDiv.className = "comment";  
 
-        const avatarComment = document.createElement("div");
-        avatarComment.className = "avatar";
-        avatarComment.textContent = blockedMeComments
-            ? "❌"
-            : (data.commentAuthor ? getInitials(data.commentAuthor) : "👻");
+        // 🔹 Аватар
+        const avatarComment = document.createElement("div");  
+        avatarComment.className = "avatar";  
 
-        const userEl = document.createElement("strong");
-        userEl.textContent = blockedMeComments
-            ? "Акаунт не знайдено"
-            : (data.commentAuthor || "Видалений акаунт");
-
-        const textEl = document.createElement("span");
         if (blockedMeComments) {
-            textEl.textContent = ": Коментар недоступний";
-        } else if (data.isPrivate) {
-            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);
+            avatarComment.textContent = "❌";  
+        } else if (!data.commentAuthor || data.commentAuthor === "Видалений акаунт") {
+            avatarComment.textContent = "👻";  
         } else {
-            textEl.textContent = ": " + data.comment;
+            avatarComment.textContent = getInitials(data.commentAuthor);  
         }
 
-        const textContainer = document.createElement("div");
-        textContainer.style.display = "inline-flex";
-        textContainer.style.alignItems = "center";
-        textContainer.style.gap = "5px";
-        textContainer.appendChild(textEl);
+        // 🔹 Ім'я користувача
+        const userEl = document.createElement("strong");  
+        if (blockedMeComments) {
+            userEl.textContent = "Акаунт не знайдено";  
+        } else if (!data.commentAuthor) {
+            userEl.textContent = "Видалений акаунт";  
+        } else {
+            userEl.textContent = data.commentAuthor;  
+        }
 
-        const more = document.createElement("a");
-        more.classList.add("moreBtn");
-        more.innerHTML = `<i class="material-icons">more_vert</i>`;
-        more.addEventListener("click", (e) => {
-            e.stopPropagation();
-            actionMenu.style.display = actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";
-        });
-        textContainer.appendChild(more);
+        // 🔹 Текст коментаря
+        const textEl = document.createElement("span");  
+        if (blockedMeComments) {
+            textEl.textContent = ": Коментар недоступний";  
+        } else if (data.isPrivate) {
+            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);  
+        } else {
+            textEl.textContent = ": " + data.comment;  
+        }
 
-        const actionMenu = document.createElement("div");
-        actionMenu.classList.add("action-menu");
-        actionMenu.style.display = "none";
+        // 🔹 Контейнер тексту + кнопка "три крапки"
+        const textContainer = document.createElement("div");  
+        textContainer.style.display = "inline-flex";  
+        textContainer.style.alignItems = "center";  
+        textContainer.style.gap = "5px";  
+        textContainer.appendChild(textEl);  
 
-        const blockUser = document.createElement("button");
-        blockUser.classList.add("block-button");
-        blockUser.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i class="material-icons">block</i> Заблокувати</span>`;
-        blockUser.addEventListener("click", () => {
-            realBlockedUserName = data.commentAuthor || "Видалений акаунт";
-            blockedUserName = blockedMeComments ? "Акаунт не знайдено" : realBlockedUserName;
-            blockedUserUid = data.authorUid;
-            showModalBlocked();
-        });
-document.addEventListener("click", () => {
-    document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
-});
-        actionMenu.appendChild(blockUser);
-        textContainer.appendChild(actionMenu);
+        const actionMenu = document.createElement("div");  
+        actionMenu.classList.add("action-menu");  
+        actionMenu.style.display = "none";  
 
-        commentDiv.appendChild(avatarComment);
-        commentDiv.appendChild(userEl);
-        commentDiv.appendChild(textContainer);
+        const more = document.createElement("a");  
+        more.classList.add("moreBtn");  
+        more.innerHTML = `<i class="material-icons">more_vert</i>`;  
+        more.addEventListener("click", (e) => {  
+            e.stopPropagation();  
+            actionMenu.style.display = actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";  
+        });  
+        textContainer.appendChild(more);  
 
-        commentsContainer.appendChild(commentDiv);
-    }
+        // 🔹 Кнопка блокування
+        const blockUser = document.createElement("button");  
+        blockUser.classList.add("block-button");  
+        blockUser.innerHTML = `
+            <span style="display:flex;align-items:center;gap:6px;">
+                <i class="material-icons">block</i>
+                Заблокувати
+            </span>`;  
+        blockUser.addEventListener("click", () => {  
+            const realBlockedUserName = data.commentAuthor || "Видалений акаунт";  
+            blockedUserName = blockedMeComments ? "Акаунт не знайдено" : realBlockedUserName;  
+            blockedUserUid = data.authorUid;  
+            showModalBlocked();  
+        });  
+        actionMenu.appendChild(blockUser);  
+        textContainer.appendChild(actionMenu);  
 
-    applyTranslations();
+        // 🔹 Закриваємо всі меню при кліку поза ними
+        document.addEventListener("click", () => {  
+            document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");  
+        });  
+
+        // 🔹 Додаємо елементи в DOM
+        commentDiv.appendChild(avatarComment);  
+        commentDiv.appendChild(userEl);  
+        commentDiv.appendChild(textContainer);  
+
+        commentsContainer.appendChild(commentDiv);  
+    }  
+
+    applyTranslations();  
 }
-
 // =================== BLOCK MODAL ===================
 
 function showModalBlocked() {
