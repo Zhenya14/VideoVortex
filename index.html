@@ -3605,7 +3605,7 @@ function loadLibrary(user) {
             historyInfo.classList.add("history-info");
             const historyTitle = document.createElement("p");
             historyTitle.setAttribute("data-i18n", "history");
-            historyTitle.textContent = "Історія переглядів";
+            historyTitle.innerHTML = `Історія переглядів<sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>`;
             historyInfo.appendChild(historyTitle);
 
             authorInfo.appendChild(historyInfo);
