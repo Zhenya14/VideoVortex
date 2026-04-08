@@ -4,5 +4,18 @@
   "label-video": "Upload video",
   "tab-button active": "Video",
   "tab-button": "Photo",
-  "birthdate": "Enter your date of birth"
+  "birthdate": "Enter your date of birth",
+  "second-channel": "Second channel",
+  "save": "Save",
+  "main-channel": "Main channel",
+  "account-deleted": "Deleted Account",
+  "history": "Viewing history:",
+  "new": "NEW",
+  "information-blocked": "Videos, posts, and comments are hidden from blocked users.",
+  "video": "Video",
+  "post": "Posts",
+  "settings": "Settings",
+  "you": "You",
+  "edit-profile": "Edit",
+  "blocked-users": "Blocked Users"
 }
