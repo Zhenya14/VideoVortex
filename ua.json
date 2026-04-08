@@ -3,5 +3,19 @@
   "label-photo": "Завантажити фото",
   "label-video": "Завантажити відео",
   "tab-button active": "Відео",
-  "tab-button": "Фото"
+  "tab-button": "Фото",
+  "birthdate": "Введіть дату народження",
+  "second-channel": "Другий канал",
+  "save": "Зберегти",
+  "main-channel": "Основний канал",
+  "account-deleted": "Видалений акаунт",
+  "history": "Історія переглядів:",
+  "new": "NEW",
+  "information-blocked": "Від заблокованих користувачів приховано відео, дописи та коментарі.",
+  "video": "Відео",
+  "post": "Дописи",
+  "settings": "Налаштування",
+  "you": "Ви",
+  "edit-profile": "Змінити",
+  "blocked-users": "Заблоковані користувачі"
 }
