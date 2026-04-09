@@ -124,63 +124,53 @@ max-width: 420px;
   outline: none;
 }
 
-.ios-modal-footer {
-  display: flex;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
 
 .ios-modal-footer button {
   background: transparent;
-  border: none;
+ border: 1px solid transparent; /* ВАЖЛИВО */
 padding: 14px;
-  border-radius: 0 0 20px 20px;
+  border-radius: 20px;
 margin: 0;
   font-size: 17px;
   font-weight: 600;
-  width: 100%;
+  width: 95%;
   height: 100%;
   cursor: pointer;
   transition: background 0.3s;
 }
-
-.ios-modal-footer button.danger {
-  color: #ff453a;
-  border-radius: 0 0 20px 0;
+button.danger {
+  color: #e9735a;
+  background: #5c3531;
+  border-radius: 60px;
   font-weight: bold;
 }
-.ios-modal-footer button.cancel {
-  border-radius: 0 0 0 20px;
+button.cancel {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
 }
-.ios-modal-footer button.cancel:hover {
-            border-color: #f472b6; /* підсвічування рамки блакитним */
-border-radius: 0 0 0 20px;
-box-shadow: 0 0 15px #f472b6; /* світіння */
-
-transform: translateY(-2px); /* легке підняття */
-        }
-        .ios-modal-footer button.cancel:active {
-border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
-border-radius: 0 0 0 20px;
-box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
-
-transform: scale(0.95); /* легке стиснення */
+button.danger:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 15px #ff453a;
+  transform: translateY(-2px);
 }
-.ios-modal-footer button.danger:hover {
-            border-color: #ff453a; /* підсвічування рамки блакитним */
-border-radius: 0 0 20px 0;
-box-shadow: 0 0 15px #ff453a; /* світіння */
 
-transform: translateY(-2px); /* легке підняття */
-        }
-        .ios-modal-footer button.danger:active {
-border-color: #ff453a; /* рамка рожевого кольору при натисканні */
-border-radius: 0 0 20px 0;
-box-shadow: 0 0 10px #ff453a; /* світіння при натисканні */
-
-transform: scale(0.95); /* легке стиснення */
+button.danger:active {
+  border-color: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+  transform: scale(0.95);
 }
-.ios-modal-footer button:not(:last-child) {
-  border-right: 1px solid rgba(255,255,255,0.1);
+button.cancel:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.cancel:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -286,8 +276,8 @@ transform: scale(0.95); /* легке стиснення */
     </div>
 
     <div class="ios-modal-footer">
-      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
       <button class="danger" onclick="confirmBlockUser()">Заблокувати</button>
+      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
     </div>
   </div>
 </ios-modal>
@@ -357,9 +347,9 @@ const auth = firebase.auth();
 const database = firebase.database();
 const urlParams = new URLSearchParams(window.location.search);
 let blockedUserUid = urlParams.get("uid"); // UID користувач
-const avatar = urlParams.get("avatar") || "?";
 const author = urlParams.get("author") || "Невідомий автор";
-
+const authorAvatar = urlParams.get("authorAvatar");
+const authorInitial = urlParams.get("authorInitial") || "?";
 
 
 function showNotFound() {
@@ -413,7 +403,11 @@ async function didUserBlockMe(targetUid) {
 
 }
 
-
+function getInitials(name) {
+  if (!name) return "?";
+  return name.trim().charAt(0).toUpperCase();
+}
+let isHiddenAccount = false;
 async function loadVideos() {
   const videoGallery = document.getElementById("video-gallery");
   videoGallery.innerHTML = "";
@@ -421,12 +415,14 @@ async function loadVideos() {
   const snapshot = await firebase.database().ref("videos").once("value");
   if (!snapshot.exists()) return showNotFound();
 
-  let hasVideos = false;
+  hasVideos = true;
   const videosArray = [];
 
   snapshot.forEach(child => {
     videosArray.push({ key: child.key, val: child.val() });
   });
+
+
 
   for (const child of videosArray) {
     const videoData = child.val;
@@ -441,13 +437,24 @@ async function loadVideos() {
  document.getElementById("avatar").textContent = "❌";
  document.getElementById("userName").textContent = "Акаунт не знайдено";
     showNotFound();
+    isHiddenAccount = true;
     return;
   }
 }
-document.getElementById("userName").textContent = author;
-document.getElementById("avatar").textContent = avatar;
-    hasVideos = true;
+const avatarEl = document.getElementById("avatar");
+const userNameEl = document.getElementById("userName");
 
+if (authorAvatar && authorAvatar !== "" && authorAvatar !== "?") {
+  avatarEl.style.backgroundImage = `url(${authorAvatar})`;
+  avatarEl.style.backgroundSize = "cover";
+  avatarEl.style.backgroundPosition = "center";
+  avatarEl.textContent = "";
+} else {
+  avatarEl.style.backgroundImage = "";
+  avatarEl.textContent = authorInitial || (author ? author.charAt(0).toUpperCase() : "?");
+}
+
+userNameEl.textContent = author;
     const container = document.createElement("div");
     container.className = "video";
 
@@ -467,13 +474,13 @@ document.getElementById("blockUserBtn").addEventListener("click", () => {
 });
 const realUserName = author; // справжнє ім'я
 let blockedUserName = realUserName;
-let isHiddenAccount = false;
+
 function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
 
     const displayName = isHiddenAccount
-        ? "Акаунт не знайдено"
+        ? `"Акаунт не знайдено"`
         : `"${realUserName}"`;
 
     info.textContent = `Ви впевнені, що хочете заблокувати користувача ${displayName}?`;
@@ -553,6 +560,4 @@ loadPosts();
 </script>
 
 </body>
-</html>
-</html>
 </html>
