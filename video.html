@@ -95,63 +95,52 @@ max-width: 420px;
   outline: none;
 }
 
-.ios-modal-footer {
-  display: flex;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-
 .ios-modal-footer button {
   background: transparent;
-  border: none;
+ border: 1px solid transparent; /* ВАЖЛИВО */
 padding: 14px;
-  border-radius: 0 0 20px 20px;
+  border-radius: 20px;
 margin: 0;
   font-size: 17px;
   font-weight: 600;
-  width: 100%;
+  width: 95%;
   height: 100%;
   cursor: pointer;
   transition: background 0.3s;
 }
-
-.ios-modal-footer button.danger {
-  color: #ff453a;
-  border-radius: 0 0 20px 0;
+button.danger {
+  color: #e9735a;
+  background: #5c3531;
+  border-radius: 60px;
   font-weight: bold;
 }
-.ios-modal-footer button.cancel {
-  border-radius: 0 0 0 20px;
+button.cancel {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
 }
-.ios-modal-footer button.cancel:hover {
-            border-color: #f472b6; /* підсвічування рамки блакитним */
-border-radius: 0 0 0 20px;
-box-shadow: 0 0 15px #f472b6; /* світіння */
-
-transform: translateY(-2px); /* легке підняття */
-        }
-        .ios-modal-footer button.cancel:active {
-border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
-border-radius: 0 0 0 20px;
-box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
-
-transform: scale(0.95); /* легке стиснення */
+button.danger:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 15px #ff453a;
+  transform: translateY(-2px);
 }
-.ios-modal-footer button.danger:hover {
-            border-color: #ff453a; /* підсвічування рамки блакитним */
-border-radius: 0 0 20px 0;
-box-shadow: 0 0 15px #ff453a; /* світіння */
 
-transform: translateY(-2px); /* легке підняття */
-        }
-        .ios-modal-footer button.danger:active {
-border-color: #ff453a; /* рамка рожевого кольору при натисканні */
-border-radius: 0 0 20px 0;
-box-shadow: 0 0 10px #ff453a; /* світіння при натисканні */
-
-transform: scale(0.95); /* легке стиснення */
+button.danger:active {
+  border-color: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+  transform: scale(0.95);
 }
-.ios-modal-footer button:not(:last-child) {
-  border-right: 1px solid rgba(255,255,255,0.1);
+button.cancel:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.cancel:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -497,7 +486,22 @@ img.photo-item {
 .content.active {
   margin-left: 240px;
 }
-
+#avatar-placeholder {
+  width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+      /* 🔥 для картинки */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 nav {
     display: flex;
     justify-content: left;
@@ -618,6 +622,30 @@ box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
 
 transform: scale(0.95); /* легке стиснення */
 }
+.speakBtn  {
+  
+  padding: 0;
+  border-radius: 50px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
 .moreBtn {
   
   padding: 0;
@@ -641,6 +669,20 @@ transform: scale(0.95); /* легке стиснення */
     box-shadow 0.3s ease,
     transform 0.15s ease,
     border-color 0.3s ease;
+}
+ .speakBtn:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.speakBtn:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
 }
         .moreBtn:hover {
             border-color: #f472b6; /* підсвічування рамки блакитним */
@@ -848,7 +890,7 @@ width: 80%;  /* Ширина поля вводу */
 <body>
     <nav>
             <a href="index.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
-            <h1 style="padding-left: 5px;">VideoVortex</h1><sup style="margin-left: 3px; font-size: 0.6em;">beta</sup></a>
+            <h1 style="padding-left: 5px;">VideoVortex</h1></a>
 
     </nav>
     <ios-modal id="block-user-modal">
@@ -871,8 +913,8 @@ width: 80%;  /* Ширина поля вводу */
     </div>
 
     <div class="ios-modal-footer">
-      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
       <button class="danger" onclick="confirmBlockUser()">Заблокувати</button>
+      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
     </div>
   </div>
 </ios-modal>
@@ -1163,17 +1205,20 @@ async function decryptText(cipher, key) {
     return text.replace(key, ''); // віднімаємо ключ
 }
 
+
 async function uploadComment(videoKey, videoOwnerEmail) {
     const commentInput = document.getElementById(`comment-input-${videoKey}`);
     const commentText = commentInput.value.trim();
     const isPrivate = document.getElementById(`private-comment-${videoKey}`).checked;
 
     if (!commentText) {
-    applyTranslations();
-    message.innerHTML = "Коментар не може бути порожнім.";
-    return
-}
+        applyTranslations();
+        message.innerHTML = "Коментар не може бути порожнім.";
+        return;
+    }
+
     let commentData = commentText;
+
     if (isPrivate) {
         const videoKeyLocal = getVideoKey(videoKey);
         commentData = await encryptText(commentText);
@@ -1181,31 +1226,66 @@ async function uploadComment(videoKey, videoOwnerEmail) {
 
     const uid = firebase.auth().currentUser.uid;
 
-    // Беремо дані користувача з Firebase
+    // Дані користувача
     const snapshot = await database.ref("users/" + uid).once("value");
     const userData = snapshot.val();
     const commentAuthor = `${userData.name} ${userData.supername}`;
 
-const now = new Date();
-const day = now.getDate().toString().padStart(2, '0');
-const month = (now.getMonth() + 1).toString().padStart(2, '0');
-const year = now.getFullYear();
+    // Дата
+    const now = new Date();
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const year = now.getFullYear();
+    const publishDate = `${day}.${month}.${year}`;
 
-const publishDate = `${day}.${month}.${year}`; // Наприклад, "02.03.2026"
-
-    // Додаємо коментар у базу
+    // 🔥 1. ЗБЕРІГАЄМО КОМЕНТ
     await database.ref("comments").push({
         comment: commentData,
         email: currentUserEmail,
         commentAuthor: commentAuthor,
-        authorUid: uid,   // ⭐ ГОЛОВНЕ
+        authorUid: uid,
         videoOwner: videoOwnerEmail,
         isPrivate: isPrivate,
-        publishDate: new Date().toLocaleDateString(),
+        publishDate: publishDate,
         videoKey: videoKey
     });
 
-    // Очищуємо поле та оновлюємо коментарі
+    // 🔥 2. ВІДПРАВКА PUSH
+    try {
+        const usersSnap = await database
+            .ref("users")
+            .orderByChild("email")
+            .equalTo(videoOwnerEmail)
+            .once("value");
+
+        usersSnap.forEach(user => {
+            const token = user.val().fcmToken;
+
+            // не відправляємо собі
+            if (token && user.val().email !== currentUserEmail) {
+
+                fetch("https://fcm.googleapis.com/fcm/send", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "key=SERVER_KEY"
+                    },
+                    body: JSON.stringify({
+                        to: token,
+                        notification: {
+                            title: "Новий коментар 💬",
+                            body: `${commentAuthor}: ${commentText}`
+                        }
+                    })
+                });
+
+            }
+        });
+    } catch (e) {
+        console.error("Push error:", e);
+    }
+
+    // 🔥 3. ОНОВЛЕННЯ UI
     commentInput.value = "";
     await loadComments(videoKey, videoOwnerEmail);
 }
@@ -1334,18 +1414,7 @@ const gradient = randomGradient();
     color: white;
     box-shadow: 0 6px 20px rgba(0,0,0,0.4);
   ">
-    <div id="avatar-placeholder" style="
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 8px;
-    "></div>
+    <div id="avatar-placeholder"></div>
     <h2>${sanitize(video.title)}</h2>
     <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
     <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
@@ -1356,7 +1425,14 @@ const gradient = randomGradient();
 
 // Now safely set avatar text
 const avatar = detailsEl.querySelector("#avatar-placeholder");
-avatar.innerText = video.author ? video.author.charAt(0).toUpperCase() : "?";
+if (video.authorAvatar) {
+
+    avatar.style.backgroundImage = `url(${video.authorAvatar})`;
+} else {
+
+    avatar.innerText = getInitials(video.author);
+
+}
 
   // -------------------------------
   // Лічильник переглядів
@@ -1405,7 +1481,23 @@ function getVideoKey(videoKey) {
     }
     return key;
 }
+function speakText(text) {
+    if (!window.speechSynthesis) {
+        alert("Ваш браузер не підтримує озвучку.");
+        return;
+    }
 
+    // Створюємо об'єкт голосу
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Можна налаштувати голос, мову, швидкість
+    utterance.lang = 'uk-UA';  // українська
+    utterance.pitch = 1;       // тон
+    utterance.rate = 1;        // швидкість
+
+    // Відтворення
+    window.speechSynthesis.speak(utterance);
+}
 // Просте шифрування/дешифрування (можна замінити на AES)
 // =================== COMMENTS & BLOCKING ===================
 
@@ -1479,7 +1571,17 @@ async function loadComments(videoKey, videoOwnerEmail) {
         textContainer.style.alignItems = "center";  
         textContainer.style.gap = "5px";  
         textContainer.appendChild(textEl);  
-
+const speakBtn = document.createElement("a");
+speakBtn.classList.add("speakBtn");  
+speakBtn.innerHTML = `<i class="material-icons">micro</i><sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>`;
+speakBtn.title = "Озвучити коментар";
+speakBtn.onclick = () => {
+    const profileToSpeak = blockedMeComments ? "Акаунт не знайдено" : data.commentAuthor;
+    const textToSpeak = blockedMeComments ? "Коментар недоступний" : data.comment;
+    speakText(profileToSpeak);
+    speakText(textToSpeak);
+};
+textContainer.appendChild(speakBtn);  
         const actionMenu = document.createElement("div");  
         actionMenu.classList.add("action-menu");  
         actionMenu.style.display = "none";  
@@ -1759,12 +1861,13 @@ function updateReactionUI() {
   if (currentReaction === "dislike") dislikeBtn.classList.add("disliked");
 }
 /* ---------- AUTH ---------- */
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
   if (user) {
     currentUid = user.uid;
     currentUserEmail = user.email;
     listenUserReaction();
     backfillAuthorUidForUser();
+    
     database.ref("users/" + currentUid).once("value").then(async snapshot => {
       const userData = snapshot.val();
       const birthStr = userData?.birthdate;
