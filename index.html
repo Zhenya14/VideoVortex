@@ -5058,7 +5058,7 @@ const autoDelete24h = document.getElementById("auto-delete-24h")?.checked || fal
 showPopup();
           document.getElementById("message-notification").innerHTML = "Відео завантажено!";
           document.getElementById("progress-container").style.display = "none";
-          document.getElementById("modal-window").style.display = "none";
+          document.getElementById("upload-modal").style.display = "none";
 
         } catch (err) {
           console.error(err);
@@ -6142,7 +6142,7 @@ async function uploadPhoto() {
                         showPopup();
                         document.getElementById("message-notification").innerHTML = "Фото завантажено!";
                         document.getElementById("upload-photo-form").reset();
-                        document.getElementById("modal-window").style.display = "none";
+                        document.getElementById("upload-modal").style.display = "none";
                         if (progressContainer) progressContainer.style.display = "none";
                         
                     });
