@@ -2215,7 +2215,22 @@ text-decoration: none;
   </div>
 </div>
 
-<div id="upload-modal" class="modal-overlay">
+<div id="upload-modal" class="modal-overlay"><div id="photoModal" class="ios-modal">
+  <div class="modal-window">
+    <h3>Вибір фото</h3>
+
+    <button id="pickPhotos">Обрати фото</button>
+    <input type="file" id="photoInput" accept="image/*" multiple hidden>
+
+    <div id="photoPreviewGrid" class="media-grid"></div>
+
+    <div class="modal-actions">
+      <button onclick="closePhotoModal()">Скасувати</button>
+      <button id="uploadPhotosBtn">Завантажити</button>
+    </div>
+  </div>
+</div>
+
   <div class="modal-window" id="modal-window">
     <div class="modal-header">
       <span data-i18n="tab-button active" class="tab-button active" data-tab="video-tab">Відео</span>
@@ -2805,7 +2820,7 @@ function easterBanner() {
   const d = new Date();
 
   if (!(d.getDate() === 12 && d.getMonth() === 3)) return;
-  if (localStorage.getItem("easterBanneranner")) return;
+  if (localStorage.getItem("easterBanner")) return;
 
   const banner = document.getElementById("easter-banner");
   if (!banner) return;
@@ -2814,7 +2829,7 @@ function easterBanner() {
     banner.classList.add("show");
   }, 1500);
 
-  localStorage.setItem("easterbnner", "shown");
+  localStorage.setItem("easterBanner", "shown");
 
   const closeBtn = document.getElementById("easter-close");
   if (closeBtn) {
@@ -2837,7 +2852,7 @@ easterBanner();
 function eastersEffect() {
   const d = new Date();
 
-  if (!(d.getDate() === 8 && d.getMonth() === 2)) return;
+  if (!(d.getDate() === 12 && d.getMonth() === 3)) return;
 
   const container = document.getElementById("easter-container");
   if (!container) return;
@@ -3872,12 +3887,10 @@ function resendVerification() {
     if (user) {
         user.sendEmailVerification()
             .then(() => {
-                showNotificationModal();
-                message.innerHTML = "Лист підтвердження надіслано повторно!";
+                alert("Лист підтвердження надіслано повторно!");
             })
             .catch((error) => {
-              showNotificationModal();
-                message.innerHTML = "Помилка надсилання листа: " + error.message;
+              alert("Помилка надсилання листа:" + error.message);
             });
     }
 }
@@ -5040,10 +5053,12 @@ const autoDelete24h = document.getElementById("auto-delete-24h")?.checked || fal
           });
 
           localStorage.removeItem("activeUpload");
-          closeUploadModal();
           showPopup();
           document.getElementById("message-notification").innerHTML = "Відео завантажено!";
           document.getElementById("progress-container").style.display = "none";
+          document.getElementById("upload-modal").style.display = "none";
+document.getElementById("modal-window").style.display = "none";
+document.getElementById("videoModal").style.display = "none";
 
         } catch (err) {
           console.error(err);
@@ -6124,11 +6139,12 @@ async function uploadPhoto() {
                         authorUid: user.uid,
                         publishDate: currentDate
                     }).then(() => {
-                      closeUploadModal();
                       showPopup();
                         document.getElementById("message-notification").innerHTML = "Фото завантажено!";
                         document.getElementById("upload-photo-form").reset();
-                        
+                        document.getElementById("upload-modal").style.display = "none";
+document.getElementById("modal-window").style.display = "none";
+document.getElementById("photoModal").style.display = "none";
                         if (progressContainer) progressContainer.style.display = "none";
                     });
                 });
@@ -6140,10 +6156,6 @@ async function uploadPhoto() {
         showNotificationModal();
         message.innerHTML = "Помилка отримання профілю";
     }
-}
-function closeUploadModal() {
-  const uploadModal = document.getElementById("upload-modal");
-  uploadModal.style.display = "none";
 }
 function showPopup() {
 var popup = document.getElementById('notification-popup');
