@@ -1,7 +1,7 @@
 {
   "name": "VideoVortex",
   "short_name": "Vortex",
-  "description": "VideoVortex — незалежна платформа для відео без цензури",
+  "description": "VideoVortex — відеоплатформа з контролем приватності, каналами та архівами",
   "start_url": "/VideoVortex/",
   "scope": "/VideoVortex/",
   "display": "standalone",
