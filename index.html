@@ -84,6 +84,39 @@
         -webkit-backdrop-filter: blur(4px);
         @apply bg-muted/25;
     }
+    .search-box-liquid-glass {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 0; /* приховано */
+  height: 60px;
+  max-width: 600px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 10px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+isolation: isolate;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        @apply bg-muted/25;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+
+  opacity: 0;
+  z-index: 9999;
+
+  transition: width 0.3s ease, opacity 0.3s ease;
+}
     .bg-liquid-glass {
   position: fixed;
   bottom: 10px;
@@ -99,6 +132,23 @@
   background: rgba(255, 255, 255, 0.1);
   /* Тінь і обведення для глибини */
   z-index: 1000;
+  isolation: isolate;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        @apply bg-muted/25;
+    }
+    .tab-liquid-glass {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 1px;
+  width: 80%;
+  height: 6%;
+  border-radius: 65px;
+  background: rgba(255, 255, 255, 0.1);
+  /* Тінь і обведення для глибини */
+  z-index: 1001;
   isolation: isolate;
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
@@ -177,6 +227,26 @@ width: 80%;  /* Ширина поля вводу */
         -webkit-backdrop-filter: blur(4px);
         @apply bg-muted/25;
     }
+    .tab-button-liquid-glass {
+    display: inline;
+    transition: 0.3s;
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    border-radius: 56px;
+    text-decoration: none;
+      background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url(#glass-distortion);
+
+  /* Тінь і обведення для глибини */
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  z-index: 100;
+    }
     .button-liquid-glass {
       display: grid;
     transition: 0.3s;
@@ -197,9 +267,23 @@ width: 80%;  /* Ширина поля вводу */
 
   z-index: 100;
     }
-
+#search-input {
+transform: translateX(1%);
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+isolation: isolate;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        @apply bg-muted/25;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+z-index: 9999;
+border: none;
+outline: none;
+font-size: 18px;
+}
     @supports not (hanging-punctuation:first) {
-        .bg-liquid-glass, .btn-liquid-glass, .comment-liquid-glass, .tg-popup-card {
+        .bg-liquid-glass, .btn-liquid-glass, .comment-liquid-glass, .tg-popup-card, .search-box-liquid-glass,#search-input, .tab-liquid-glass {
             backdrop-filter: url(#displacementFilter) blur(2px);
         }
     }
@@ -697,18 +781,18 @@ text-align: center;
     z-index: 1000;
 }
 ::-webkit-scrollbar {
-width: 10px;
-background-color: #f1f1f1;
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-background-color: #888;
-border-radius: 5px;
+  background-color: rgba(14, 165, 233, 0.35); /* блакитний */
+  border-radius: 12px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-background-color: #555;
-}
-::-webkit-scrollbar {
-height: 10px;
+  background-color: rgba(2, 6, 23, 0.6); /* майже чорний */
 }
 @keyframes fall {
     0% {
@@ -849,17 +933,26 @@ box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
 
 transform: scale(0.95); /* легке стиснення */
 }
-       .video-container {
-  background: rgba(8, 12, 20, 0.9);
-  border-radius: 18px;
-  padding: 12px;
-  border: 1px solid rgba(0, 255, 255, .12);
-  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
-  transition: transform .2s ease, box-shadow .25s ease;
+.video-container {
+  background: rgba(15, 18, 28, 0.92);
+  border-radius: 16px;
+  padding: 16px;
+
+  border: 1px solid rgba(0, 255, 255, 0.2);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(0, 255, 255, 0.08);
+
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+
   display: flex;
   flex-direction: column-reverse;
+
+  width: 90%;
+  margin: 50px auto 0;
+
   position: relative;
-  z-index: 1;
 }
 
 .video-container:hover {
@@ -1031,6 +1124,7 @@ video.video-item {
     background-color: #2a2727;
 }
 #video-container {
+  display: grid;
 margin-top: 50px;
 width: 90%;
         }
@@ -1347,6 +1441,15 @@ display: none;
     display: grid;
     transition: 0.3s;
 }
+.tab a {
+  width: 100%;
+    height: 100%;
+    text-decoration: none;
+    text-align: center;
+    align-items: center;
+    color: white;
+    transition: 0.3s;
+}
 .menu a {
     border-radius: 35px;
     padding: 10px 15px;
@@ -1484,7 +1587,22 @@ transform: scale(0.95); /* легке стиснення */
   pointer-events: none;
   width: 100%;
 }
-
+#all, #popular {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tab {
+  position: fixed;
+  z-index: 1000;
+  margin: 3px;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 1px;
+  width: 80%;
+  height: 20%;
+}
 .lightrope li {
   position: relative;
   -webkit-animation-fill-mode: both;
@@ -1726,44 +1844,19 @@ body.halloween {
 display: none;
 }
 /* 🔍 Пошуковий блок */
-.search-box {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0;                      /* початково схований */
-  height: 60px;
-  background: aqua;
-  color: black;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  transition: width 0.3s ease,   /* плавне розгортання */
-              opacity 0.3s ease; /* плавна поява */
-  opacity: 0;
-  z-index: 9999;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
+
+
 #upload {
   display: none;
 }
 /* Коли відкритий */
-.search-box.open {
+.search-box-liquid-glass.open {
   width: 100%; 
   opacity: 1;
 }
 
 /* Поле вводу */
-#search-input {
-  flex: 1;
-  color: : black;
-  border: none;
-  outline: none;
-  font-size: 18px;
 
-}
 
 /* Кнопка закриття */
 .search-close {
@@ -2068,6 +2161,61 @@ text-decoration: none;
   align-items: center;
   padding: 0px 5px;
 }
+.may1-banner {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 900px;
+  background: linear-gradient(90deg, #b31237, #e52d27);
+  color: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 9999;
+  animation: slideDown 0.4s ease;
+}
+
+.may1-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.may1-content span {
+  font-size: 28px;
+}
+
+.may1-sub {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.may1-banner button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.may1-banner button:hover {
+  opacity: 1;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
 #timer {
             font-size: 20px;
             color: red;
@@ -2147,12 +2295,13 @@ text-decoration: none;
 
 
 </div>
-    <div id="search-box" class="search-box">
+    <div id="search-box" class="search-box-liquid-glass">
   <input type="text" id="search-input" placeholder="Пошук..." oninput="searchVideos()">
+
   <button id="close-search" class="search-close">
     <i class="material-icons">close</i>
   </button>
-  </div>
+     </div>
 <div id="rules-update-modal" class="ios-modal">
   <div class="ios-modal-content">
     <h2>🔔 Оновлені правила</h2>
@@ -2164,6 +2313,16 @@ text-decoration: none;
     </ul>
     <div class="modal-divider"></div>
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
+  </div>
+</div>
+<div id="may1-banner" class="may1-banner">
+  <div class="may1-content">
+    <span class="material-icons">handshake</span>
+    <div>
+      <b>1 травня — День солідарності трудящих</b>
+      <div class="may1-sub">Підтримка, рівність і спільнота</div>
+    </div>
+    <button onclick="closeMayBanner()">✕</button>
   </div>
 </div>
 <div id="notification-ai-modal" class="ios-notification-modal">
@@ -2432,7 +2591,7 @@ text-decoration: none;
     </div>
     <div class="modal-blocked-body">
       <p style="color: gray; text-align: left;" data-i18n="information-blocked">
-        Від заблокованих користувачів приховано відео, дописи та коментарі.
+        Від заблокованих користувачів приховано аватар профілю, відео, дописи та коментарі.
       </p>
       <div id="blockedUsersList" class="modal-blocked">
         <!-- Тут динамічно будуть вставлятися заблоковані користувачі -->
@@ -2523,7 +2682,17 @@ text-decoration: none;
  <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
             <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
         </div>
+        <div class="tab">
+          <div class="tab-liquid-glass">
+ <a class="tab-button-liquid-glass" href="#" id="all" onclick="All()">
+        <span data-i18n="all">Усі</span>
+    </a>
+       <a href="#" id="popular" onclick="popular()">
+<span data-i18n="popular">Популярні</span>
+        </a>
 
+</div>
+</div>
         <div  class="smart-menu">
           <div class="bg-liquid-glass">
  <a class="button-liquid-glass" href="#" id="smart-video" onclick="video()">
@@ -2665,7 +2834,7 @@ text-decoration: none;
   </div>
         <footer style=" position: relative;z-index: 1; text-align: center; justify-content: center; padding: 1px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%; height: 20%;">
                 <h3>Версія додатка:</h3>
-                <p>5.2.1</p>
+                <p>5.3.0</p>
         </footer>
         </div>
 <script src="i18n.js"></script>
@@ -2880,6 +3049,27 @@ function eastersEffect() {
 }
 
 eastersEffect();
+
+function May1Effect() {
+  const banner = document.getElementById("may1-banner");
+  if (!banner) return;
+
+  const now = new Date();
+  const closed = localStorage.getItem("may1BannerClosed");
+
+  if (closed === "true" || now.getDate() !== 1 || now.getMonth() !== 4) {
+    banner.style.display = "none";
+  }
+}
+function closeMayBanner() {
+  const mayBanner = document.getElementById("may1-banner");
+  if (!mayBanner) return;
+
+  mayBanner.style.display = "none";
+
+  // зберігаємо СТАН, а не елемент
+  localStorage.setItem("may1BannerClosed", "true");
+}
 function checkUpdateButton() {
 
     const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.1";
@@ -3090,28 +3280,39 @@ const searchInput = document.getElementById("search-input");
 
 function openSearch() {
     searchBox.classList.add("open");
+document.querySelector("nav").style.display = "none";
     setTimeout(() => searchInput.focus(), 150);
 }
 
 closeSearch.addEventListener("click", () => {
     searchBox.classList.remove("open");
+    document.querySelector("nav").style.display = "flex";
     searchInput.value = "";
     searchVideos();
 });
 function searchVideos() {
-    const query = document.getElementById("search-input").value.toLowerCase();
+    const query = document
+        .getElementById("search-input")
+        .value
+        .toLowerCase()
+        .trim();
 
     const videos = document.querySelectorAll(".video-item");
 
     videos.forEach(video => {
-        const title = video.dataset.title.toLowerCase();
-        const description = video.dataset.description.toLowerCase();
-        const author = video.dataset.author.toLowerCase();
+        const title = (video.dataset.title || "").toLowerCase();
+        const description = (video.dataset.description || "").toLowerCase();
+        const author = (video.dataset.author || "").toLowerCase();
 
-        if (title.includes(query) || description.includes(query) || author.includes(query)) {
-            video.parentElement.style.display = "flex"; // показуємо картку
-        } else {
-            video.parentElement.style.display = "none"; // ховаємо всю картку
+        const matches =
+            title.includes(query) ||
+            description.includes(query) ||
+            author.includes(query);
+
+        const container = video.closest(".video-container");
+
+        if (container) {
+            container.style.display = matches ? "flex" : "none";
         }
     });
 }
@@ -3912,7 +4113,7 @@ function deleteAccount() {
         return;
     }
 
-    if (!confirm("Ви впевнені, що хочете видалити акаунт? Ваші публікації буде видалено! Цю дію не можна скасувати.")) {
+    if (!confirm("Ви впевнені, що хочете видалити акаунт? Усі ваші публікації будуть видалені назавжди. Цю дію неможливо скасувати.")) {
         return;
     }
 
@@ -4484,8 +4685,9 @@ async function loadVideos() {
         if (videoDataRaw.nsfw && !showNSFWGlobal) return;
 
         if (videoDataRaw.authorUid) {
+          const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
             const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
-            if (blockedMe) return;
+            if (blockedMe || blockedYou) return;
         }
 
         if (videoDataRaw.private && videoDataRaw.email !== currentUserEmail) return;
@@ -4495,7 +4697,6 @@ async function loadVideos() {
             (!currentUserEmail ||
                 !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
         ) return;
-
         // 🔹 2. Запобігання дублюванню
         if (document.querySelector(`[data-id="${videoKey}"]`)) return;
 
@@ -4504,11 +4705,11 @@ async function loadVideos() {
 
         const videoElement = document.createElement("img");
         videoElement.classList.add("video-item");
-        videoElement.src = videoDataRaw.thumbnail || "default.jpg";
-        videoElement.dataset.title = videoDataRaw.title || "";
-        videoElement.dataset.description = videoDataRaw.description || "";
-        videoElement.dataset.author = videoDataRaw.author || "";
-        videoElement.style.filter = videoDataRaw.nsfw ? "blur(20px)" : "none";
+        videoElement.src = videoData.thumbnail || "default.jpg";
+        videoElement.dataset.title = videoData.title || "";
+        videoElement.dataset.description = videoData.description || "";
+        videoElement.dataset.author = videoData.author || "";
+        videoElement.style.filter = videoData.nsfw ? "blur(20px)" : "none";
 
         cacheImage(videoElement.src);
 
@@ -4587,12 +4788,7 @@ async function loadVideos() {
 
         avatar.onclick = () => {
             const infoParams = new URLSearchParams({
-                author: videoDataRaw.author,
                 uid: videoDataRaw.authorUid || "",
-                authorAvatar: videoDataRaw.authorAvatar || "",
-                authorInitial: videoDataRaw.author
-                    ? videoDataRaw.author.charAt(0).toUpperCase()
-                    : "?"
             });
 
             window.location.href = `profile.html?${infoParams.toString()}`;
@@ -5130,6 +5326,7 @@ function saveEditName() {
       document.getElementById("name").textContent = "Ім'я: " + newName;
       updateVideosAuthor();
       updatePhotosAuthor();
+      updateCommentsAuthor();
     })
     .catch(err => {
       showNotificationModal();
@@ -5159,6 +5356,7 @@ function saveEditSuperName() {
       document.getElementById("supername").textContent = "Прізвище: " + newSuperName;
       updateVideosAuthor();
       updatePhotosAuthor();
+      updateCommentsAuthor();
     })
     .catch(err => {
       showNotificationModal();
@@ -5531,6 +5729,7 @@ auth.onAuthStateChanged(async (user) => {
     cleanupExpiredVideos();
     updateVideosAuthor();
     updatePhotosAuthor();
+    updateCommentsAuthor();
     backfillAuthorUidForUser();
     enablePushNotifications(user.uid);
     currentUserEmail = user.email;
@@ -5646,13 +5845,17 @@ if (userData?.avatarId) {
         imgNav.src = url;
         imgNav.alt = "Аватар користувача";
         navAvatar.prepend(imgNav);
+
+        // 🔹 settingsAvatar
         settingsAvatar.innerHTML = "";
         const imgSettings = document.createElement("img");
         imgSettings.src = url;
         imgSettings.alt = "Аватар користувача";
         settingsAvatar.prepend(imgSettings);
+
         // 🔹 avatarLibrary
         let avatarLibraryEl = document.getElementById("avatar-library");
+
         // якщо елемент ще не створений динамічно
         if (!avatarLibraryEl) {
             avatarLibraryEl = document.createElement("div");
@@ -5661,6 +5864,7 @@ if (userData?.avatarId) {
             const library = document.getElementById("library");
             library.appendChild(avatarLibraryEl);
         }
+
         avatarLibraryEl.innerHTML = "";
         const imgLibrary = document.createElement("img");
         imgLibrary.src = url;
@@ -5669,13 +5873,25 @@ if (userData?.avatarId) {
 
     } catch (err) {
         console.error("Помилка завантаження аватара:", err);
+        
+        settingsAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+
         avatarEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
-        avatarLibraryEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+
+        const el = document.getElementById("avatar-library");
+        if (el) el.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+
         navAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
     }
+
 } else {
+  settingsAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+  
     avatarEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
-    avatarLibraryEl.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+
+    const el = document.getElementById("avatar-library");
+    if (el) el.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
+
     navAvatar.innerText = userData?.name ? userData.name.charAt(0).toUpperCase() : "?";
 }
 
@@ -5903,6 +6119,56 @@ async function updateVideosAuthor() {
     console.error("Помилка оновлення:", err);
   }
 }
+async function updateCommentsAuthor() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  const uid = user.uid;
+
+  try {
+    const snapshot = await database.ref("users/" + uid).once("value");
+    const userData = snapshot.val() || {};
+
+    const fullName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+
+    let authorAvatarUrl = null;
+
+    if (userData.avatarId) {
+      try {
+        authorAvatarUrl = await firebase
+          .storage()
+          .ref(`avatars/${userData.avatarId}.webp`)
+          .getDownloadURL();
+      } catch (e) {
+        console.warn("Аватар не знайдено");
+      }
+    }
+
+    const commentSnap = await database.ref("comments").once("value");
+
+    const updates = [];
+
+    commentSnap.forEach(child => {
+      const comment = child.val();
+
+      if (comment.authorUid === uid) {
+        updates.push(
+          database.ref("comments/" + child.key).update({
+            commentAuthor: fullName || "Анонім",
+            authorAvatar: authorAvatarUrl
+          })
+        );
+      }
+    });
+
+    await Promise.all(updates);
+
+    console.log("Відео оновлено");
+
+  } catch (err) {
+    console.error("Помилка оновлення:", err);
+  }
+}
 document.getElementById("logout-danger-link").onclick = function() {
             auth.signOut().then(() => {
               showNotificationModal();
@@ -5927,8 +6193,9 @@ async function loadPhotos() {
         const photoData = snapshot.val();
         const photoKey = snapshot.key;
 if (photoData.authorUid) {
+            const blockedYou = await isUserBlockedByMe(photoData.authorUid);
             const blockedMe = await didUserBlockMe(photoData.authorUid);
-            if (blockedMe) return;
+            if (blockedMe || blockedYou) return;
         }
         // 🔹 Фото елемент
         const photoElement = document.createElement("img");
@@ -6516,5 +6783,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-</body>                                                          
+</body>                                                   
         </html>
