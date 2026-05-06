@@ -438,20 +438,24 @@ async function didUserBlockMe(targetUid) {
 
 function getInitials(name) {
   if (!name) return "?";
+
   const parts = name.trim().split(" ");
+
   if (parts.length === 1) return parts[0][0].toUpperCase();
+
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
+
 let isHiddenAccount = false;
 let nameAccount = "";
-async function loadProfile() {
 
+async function loadProfile() {
 
   try {
     const snap = await database.ref(`users/${blockedUserUid}`).once("value");
     const data = snap.val();
 
-    // якщо користувача не існує
+    // ❌ НЕ ІСНУЄ
     if (!snap.exists()) {
       avatar.style.backgroundImage = "";
       avatar.textContent = "?";
@@ -460,7 +464,7 @@ async function loadProfile() {
       return;
     }
 
-    // ===== СТАРА ЛОГІКА БЛОКУВАННЯ (НЕ ЧІПАВ) =====
+    // ❌ BLOCK
     if (blockedUserUid) {
       const blockedMeProfile = await didUserBlockMe(blockedUserUid);
 
@@ -473,12 +477,13 @@ async function loadProfile() {
       }
     }
 
-    // ===== НОРМАЛЬНИЙ ПРОФІЛЬ =====
-    const name = `${data.name  || "Користувач"} ${data.supername  || "Користувач"}`;
+    // ✅ ІМ'Я
+    const name = `${data.name || "Користувач"} ${data.supername || ""}`.trim();
+
     userName.textContent = name;
-   nameAccount = name;
-   return;
-    // ===== АВАТАР З STORAGE =====
+    nameAccount = name;
+
+    // ✅ АВАТАР
     if (data.avatarId) {
       try {
         const url = await firebase
@@ -492,7 +497,7 @@ async function loadProfile() {
         avatar.textContent = "";
 
       } catch (e) {
-        // якщо аватар не знайдений
+        // fallback
         avatar.style.backgroundImage = "";
         avatar.textContent = getInitials(name);
       }
@@ -501,18 +506,17 @@ async function loadProfile() {
       avatar.textContent = getInitials(name);
     }
 
-} catch (e) {
+  } catch (e) {
 
-  console.error("loadProfile error:", e);
+    console.error("loadProfile error:", e);
 
-  // показуємо помилку тільки якщо ще НЕ було приховано акаунт
-  if (!isHiddenAccount) {
-    avatar.style.backgroundImage = "";
-    avatar.textContent = "⚠️";
-    userName.textContent = "Помилка завантаження" + e;
+    if (!isHiddenAccount) {
+      avatar.style.backgroundImage = "";
+      avatar.textContent = "⚠️";
+      userName.textContent = "Помилка завантаження";
+    }
+
   }
-
-}
 }
 async function loadVideos() {
   const videoGallery = document.getElementById("video-gallery");
