@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <title></title>
     <svg style="display: none">
     <filter id="displacementFilter">
@@ -324,6 +325,34 @@ border: 2px solid #333333;
             outline: none;
             font-size: 1em;
 }
+#confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999999;
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  opacity: 0.9;
+  animation: fall 2.5s linear forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
         button { 
   display: inline-block;
   padding: 12px 28px;
@@ -622,6 +651,45 @@ box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
 
 transform: scale(0.95); /* легке стиснення */
 }
+.popularBtn {
+  height: 5%;
+  width: 100%;
+  padding: 5px 0px;
+  border-radius: 50px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .popularBtn:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.popularBtn:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
 .speakBtn  {
   
   padding: 0;
@@ -864,7 +932,26 @@ width: 80%;  /* Ширина поля вводу */
   background: #3b82f6;
   box-shadow: 0 0 16px rgba(59,130,246,.6);
 }
-
+#notification-popup {
+  display: none;
+  width: 87%;
+  opacity: 0;
+  text-align: left;
+  z-index: 10000;
+position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: black;
+      padding: 20px;
+      border-radius: 69px;
+      border: 1px solid rgba(0, 255, 255, .12);
+  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
+      animation: opacity 0.5s ease;
+    }
+#notification-popup.show {
+  opacity: 1;
+}
 .dislike.disliked {
   background: #ef4444;
   box-shadow: 0 0 16px rgba(239,68,68,.6);
@@ -893,6 +980,7 @@ width: 80%;  /* Ширина поля вводу */
             <h1 style="padding-left: 5px;">VideoVortex</h1></a>
 
     </nav>
+    <div id="confetti-container"></div>
     <ios-modal id="block-user-modal">
   <div class="ios-modal-window">
     <div class="ios-modal-header">
@@ -913,11 +1001,14 @@ width: 80%;  /* Ширина поля вводу */
     </div>
 
     <div class="ios-modal-footer">
-      <button class="danger" onclick="confirmBlockUser()">Заблокувати</button>
-      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
+      <button class="danger" data-i18n="block" onclick="confirmBlockUser()">Заблокувати</button>
+      <button class="cancel" data-i18n="cancel" onclick="closeBlockModal()">Скасувати</button>
     </div>
   </div>
 </ios-modal>
+<div class="notification-popup" id="notification-popup">
+<p id="message-notification"></p>
+<p id="boostText" data-i18n="boost_1"></p></div>
 <div id="notification-modal" class="ios-notification-modal">
   <div class="ios-modal-content">
     <h2>VideoVortex</h2>
@@ -927,9 +1018,9 @@ width: 80%;  /* Ширина поля вводу */
   </div>
 </div>
       <div class="player-container">
-    <div id="video-container">
+    <div id="video-container" >
         <video id="video-player" controls preload="auto"></video>
-        <div class="controls">
+        <div class="controls" style="display: none;">
     <button id="playPause"><i class="material-icons">play_arrow</i></button>
     <input type="range" id="seekBar" value="0" min="0" step="1">
     <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
@@ -952,8 +1043,11 @@ width: 80%;  /* Ширина поля вводу */
   <i class="material-icons">thumb_down</i>
   <p id="dislikeCount" style="padding: 5px;">0</p>
 </a>
+<a class="popularBtn" id="popularBtn">
+  <i class="material-icons">star</i><p data-i18n="popularBtn" style="padding: 5px 0px;">Просунути відео</p> 
+    </a>
 <a class="shareBtn" id="shareBtn">
-  <i class="material-icons">share</i><p style="padding: 5px;">Поділитися</p>  
+  <i class="material-icons">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
     </a>
 </div>
 
@@ -965,7 +1059,7 @@ width: 80%;  /* Ширина поля вводу */
                 <div id="comments-root"></div>
 <h3>Схожі відео:</h3>
 <div id="target-videos">
-<p id="similar-message">Схожих відео немає 😔</p>
+<p id="similar-message" data-i18n="similar-message">Схожих відео немає 😔</p>
 </div>
 <script src="i18n.js"></script>
 <script>
@@ -1022,6 +1116,30 @@ document.addEventListener("DOMContentLoaded", () => {
         logo.dataset.originalSrc = logo.src;
         logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
     }
+
+  if (isVyshyvanka) {
+    activateVyshyvankaMode();
+    applyIcons(vyshyvankaIcons);
+  } else {
+    deactivateVyshyvankaMode();
+    restoreIcons();
+  }
+  function activateVyshyvankaMode() {
+
+  const logo = document.getElementById("logo");
+  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
+  if (logo) logo.src = "VideoVortex_logo_embriodery.jpg";
+
+  styleButtons("#8B0000", "#1C1C1C");
+}
+
+function deactivateVyshyvankaMode() {
+  
+  const logo = document.getElementById("logo");
+  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  resetButtonColors();
+}
 
     // ---------- СНІГ 1 СІЧНЯ ----------
     if(month === 1 && day === 1) {
@@ -1539,13 +1657,22 @@ async function loadComments(videoKey, videoOwnerEmail) {
         const avatarComment = document.createElement("div");  
         avatarComment.className = "avatar";  
 
-        if (blockedMeComments) {
-            avatarComment.textContent = "❌";  
-        } else if (!data.commentAuthor || data.commentAuthor === "Видалений акаунт") {
-            avatarComment.textContent = "👻";  
-        } else {
-            avatarComment.textContent = getInitials(data.commentAuthor);  
-        }
+if (data.authorAvatar) {
+  avatarComment.style.backgroundImage = `url(${data.authorAvatar})`;
+  avatarComment.style.backgroundSize = "cover";
+  avatarComment.style.backgroundPosition = "center";
+} else {
+  avatarComment.style.backgroundImage = "";
+  avatarComment.textContent = getInitials(data.commentAuthor || "");
+}
+// ===== ICON LOGIC =====
+if (blockedMeComments) {
+  avatarComment.style.backgroundImage = "";
+  avatarComment.textContent = "❌";
+} else if (!data.email || data.email === "Видалений акаунт") {
+  avatarComment.style.backgroundImage = "";
+  avatarComment.textContent = "👻";
+} 
 
         // 🔹 Ім'я користувача
         const userEl = document.createElement("strong");  
@@ -1603,7 +1730,7 @@ textContainer.appendChild(speakBtn);
         blockUser.innerHTML = `
             <span style="display:flex;align-items:center;gap:6px;">
                 <i class="material-icons">block</i>
-                Заблокувати
+                <p data-i18n="block">Заблокувати</p>
             </span>`;  
         blockUser.addEventListener("click", () => {  
             realBlockedUserName = data.commentAuthor || "Видалений акаунт";  
@@ -1923,6 +2050,107 @@ videoPlayer.addEventListener("play", () => {
         })
         .catch(error => console.error("Помилка отримання даних:", error));
 });
+function setBoost(lang, count) {
+  const el = document.getElementById("boostText");
+
+  let key =
+    count === 1 ? "boost_1" :
+    count === 2 ? "boost_2" :
+    count === 3 ? "boost_3" :
+    "boost_0";
+
+  el.setAttribute("data-i18n", key);
+
+  el.innerText = translations[lang][key];
+}
+
+function showPopup() {
+var popup = document.getElementById('notification-popup');
+
+
+popup.classList.add("show");
+popup.style.display = "flex";
+setTimeout(function() {
+
+popup.classList.remove("show");
+popup.style.display = "none";
+}, 3000);
+}
+function celebrate() {
+  const container = document.getElementById("confetti-container");
+
+  if (!container) {
+    console.error("❌ confetti-container не знайдено");
+    return;
+  }
+
+  const colors = ["#ff4d4d", "#4dd2ff", "#ffd24d", "#7dff4d", "#b84dff"];
+
+  for (let i = 0; i < 120; i++) {
+    const confetti = document.createElement("div");
+    confetti.classList.add("confetti");
+
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.backgroundColor =
+      colors[Math.floor(Math.random() * colors.length)];
+
+    confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+
+    container.appendChild(confetti);
+
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+  document.getElementById('popularBtn').addEventListener('click', async () => {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    const uid = user.uid;
+
+    const userBoostRef = firebase.database().ref(`boosts/${videoKey}/${uid}`);
+    const videoRef = firebase.database().ref(`videos/${videoKey}`);
+
+    try {
+      const snap = await userBoostRef.once('value');
+      const data = snap.val() || { count: 0 };
+
+      if (data.count >= 3) {
+        alert("Ліміт досягнуто (3 бусти)");
+        return;
+      }
+
+      const newCount = data.count + 1;
+
+      await userBoostRef.set({
+        count: newCount,
+        updatedAt: Date.now()
+      });
+
+      await videoRef.transaction(v => {
+        if (!v) return v;
+
+        v.boostCount = (v.boostCount || 0) + 1;
+
+        v.score =
+          (v.boostCount || 0) * 5 +
+          (v.likeCount || 0) * 2 +
+          (v.views || 0) * 0.1;
+
+        return v;
+      });
+      celebrate();
+      showPopup();
+      setBoost("uk", newCount);
+      
+
+      console.log("Boost OK");
+
+    } catch (e) {
+      console.error("Помилка:", e);
+    }
+  });
+
+
 document.getElementById('shareBtn').addEventListener('click', async () => {
   if (!currentVideo) {
     alert('Відео ще не завантажене');
@@ -1965,7 +2193,7 @@ function setPrivacyMode(active) {
 let lastCheck = 0;
 
 // Основна логіка орієнтації
-function handleOrientation(event){
+function handlerientation(event){
     const now = Date.now();
     if(now - lastCheck < 200) return; // не частіше ніж раз на 200ms
     lastCheck = now;
