@@ -461,7 +461,7 @@ input:checked + .slider:before {
     opacity: 0.7;
   }
 }
-.easter-banner{
+.-banner{
   position: fixed;
   top: 0;
   left: 0;
@@ -475,47 +475,52 @@ input:checked + .slider:before {
   will-change: transform;
 }
 
-.easter-banner.show{
+.-banner.show{
   transform: translateY(0);
 }
-
-.easter-box {
+.may1-banner.show{
+  transform: translateY(0);
+}
+.-box {
   background: linear-gradient(90deg, #a0c4ff, #ffc6ff, #caffbf);
   background-size: 300% 300%;
-  animation: easterMove 6s ease infinite;
-
+  animation: Move 6s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   color: white;
   padding: 15px 20px;
   border-radius: 0 0 12px 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.2);
 }
 
-@keyframes easterMove {
+@keyframes Move {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-.easter-box button{
+.-box button{
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
 }
 
-#easter-upload{
+#-upload{
   background: white;
  color: #c77dff;
   font-weight: bold;
 }
 
-#easter-close{
+#-close{
   background: transparent;
   color: white;
   font-size: 18px;
 }
 
-#easter-container{
+#-container{
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -523,7 +528,7 @@ input:checked + .slider:before {
   z-index: 999;
 }
 
-.easter{
+.{
   position: absolute;
   font-size: 22px;
   top: 40px;
@@ -762,6 +767,7 @@ text-align: center;
         .container {
     margin-top: 130px;
     width: 70%;
+    z-index: 0;
     background: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
@@ -804,7 +810,7 @@ text-align: center;
         opacity: 0;
     }
 }
-        .form, .auth-form, .register-form, .edit-form, .version-form { 
+        .form, .version-form { 
             display: none; 
             background: rgba(255, 255, 255, 0.1); 
             padding: 20px; 
@@ -982,7 +988,7 @@ transform: scale(0.95); /* легке стиснення */
   box-shadow: 0 0 22px rgba(0, 255, 255, .07);
   transition: transform .2s ease, box-shadow .25s ease;
   position: relative;
-  z-index: 1;
+  z-index: 0;
 }
 .settings-page:hover {
   transform: translateY(-4px);
@@ -1594,7 +1600,7 @@ transform: scale(0.95); /* легке стиснення */
 }
 .tab {
   position: fixed;
-  z-index: 1000;
+  z-index: 1;
   margin: 3px;
     display: flex;
   align-items: center;
@@ -1887,7 +1893,7 @@ display: none;
   align-items: center;
   z-index: 99999;
 }
-.modal-overlay, .modal-account-overlay, .modal-archive-overlay {
+.modal-overlay, .modal-account-overlay, .modal-edit-overlay, .modal-archive-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
@@ -1928,7 +1934,7 @@ display: none;
     max-height: 100%;        /* повна висота */
     padding-right: 10px;
 }
-.modal-account-body, .modal-body, .modal-archive-body {
+.modal-account-body, .modal-body, .modal-edit-body, .modal-archive-body {
     overflow-y: auto;        /* вертикальний скрол */
     max-height: 100%;        /* повна висота */
     padding-right: 10px;     /* щоб скрол не перекривав контент */
@@ -1948,7 +1954,7 @@ display: none;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255,255,255,0.2);
 }
-.modal-account-header {
+.modal-account-header, .modal-edit-header {
   display: flex;
   justify-content: right;
   padding: 12px 15px;
@@ -2164,6 +2170,7 @@ text-decoration: none;
 .may1-banner {
   position: fixed;
   top: 70px;
+  display: none;
   left: 50%;
   transform: translateX(-50%);
   width: 92%;
@@ -2315,16 +2322,7 @@ text-decoration: none;
     <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
   </div>
 </div>
-<div id="may1-banner" class="may1-banner">
-  <div class="may1-content">
-    <span class="material-icons">handshake</span>
-    <div>
-      <b data-i18n="1-may">1 травня — День солідарності трудящих</b>
-      <div data-i18n="may1-sub" class="may1-sub">Підтримка, рівність і спільнота</div>
-    </div>
-    <button onclick="closeMayBanner()">✕</button>
-  </div>
-</div>
+
 <div id="notification-ai-modal" class="ios-notification-modal">
   <div class="ios-modal-content">
     <h2>VideoVortex</h2>
@@ -2350,12 +2348,12 @@ text-decoration: none;
     <button id="march8-close">✖</button>
   </div>
 </div>
-<div id="easter-banner" class="easter-banner">
-  <div class="easter-box">
-    <p data-i18n="easter-box">🌸 Христос Воскрес! З Великоднем 🐣💐 Поділіться святковим відео</p>
+<div id="-banner" class="-banner">
+  <div class="-box">
+    <p data-i18n="-box">🌸 Христос Воскрес! З Великоднем 🐣💐 Поділіться святковим відео</p>
 
-    <button id="easter-upload" data-i18n="easter-upload">📹 Опублікувати відео</button>
-    <button id="easter-close">✖</button>
+    <button id="-upload" data-i18n="-upload">📹 Опублікувати відео</button>
+    <button id="-close">✖</button>
   </div>
 </div>
 <div id="videoModal" class="ios-modal">
@@ -2572,7 +2570,7 @@ text-decoration: none;
 <div class="notification-popup" id="notification-popup">
 <p id="message-notification"></p></div>
 <div id="flowers-container"></div>
-<div id="easter-container"></div>
+<div id="-container"></div>
       <ul id="girland">
   <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
 </ul>
@@ -2669,18 +2667,27 @@ text-decoration: none;
       <div id="upload">
         <input type="file" id="zip-file" accept=".zip">
 
-<button onclick="uploadArchive()">Зашифрувати і завантажити</button>
+<button onclick="uploadArchive()">Завантажити</button>
       </div>
       <div id="secure-files"></div>
       </div>
     </div>
   </div>
-<div class="edit-form" id="edit-form" style="display: none;">
+  <div id="edit-modal" class="modal-edit-overlay">
+  <div class="modal-window">
+    <div class="modal-edit-header">
+      <span class="close-edit-modal">✖</span>
+    </div>
+    <div class="modal-edit-body">
+<div class="edit-form" id="edit-form">
             <h2>Редагувати відео</h2>
             <input type="text" id="edit-video-title" placeholder="Назва відео">
             <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
  <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
             <button id="edit-button" onclick="saveVideoChanges()">Зберегти</button>
+        </div>
+        </div>
+        </div>
         </div>
         <div class="tab">
           <div class="tab-liquid-glass">
@@ -2690,7 +2697,16 @@ text-decoration: none;
        <a href="#" id="popular" onclick="popular()">
 <span data-i18n="popular">Популярні</span>
         </a>
-
+<div id="may1-banner" class="may1-banner">
+  <div class="may1-content">
+    <span class="material-icons">handshake</span>
+    <div>
+      <b data-i18n="1-may">1 травня — День солідарності трудящих</b>
+      <div data-i18n="may1-sub" class="may1-sub">Підтримка, рівність і спільнота</div>
+    </div>
+    <button id="closeMayBanner">✕</button>
+  </div>
+</div>
 </div>
 </div>
         <div  class="smart-menu">
@@ -2744,7 +2760,7 @@ text-decoration: none;
   <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
   <button data-i18n="save" onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
 </div>
-<div id="newyear-easter-egg" class="ny-popup">
+<div id="newyear--egg" class="ny-popup">
   <div class="ny-content">
     <h2>🎆 З Новим 2026 роком! 🎆</h2>
     <p>
@@ -2913,7 +2929,7 @@ async function generateDescription() {
 }
 </script>
 <script defer>
-  let APP_VERSION = "5.2.0"; // Поточна версія VideoVortex
+  let APP_VERSION = "5.3.0"; // Поточна версія VideoVortex
  function clearLocalStorageExceptAuth() {
     const keepPrefixes = [
         "firebase:authUser:",
@@ -2990,29 +3006,29 @@ function flowersEffect() {
 flowersEffect();
 
 
-function easterBanner() {
+function Banner() {
   const d = new Date();
 
   if (!(d.getDate() === 8 && d.getMonth() === 2)) return;
-  if (localStorage.getItem("easterBanner")) return;
+  if (localStorage.getItem("Banner")) return;
 
-  const banner = document.getElementById("easter-banner");
+  const banner = document.getElementById("-banner");
   if (!banner) return;
 
   setTimeout(() => {
     banner.classList.add("show");
   }, 1500);
 
-  localStorage.setItem("easterBanner", "shown");
+  localStorage.setItem("Banner", "shown");
 
-  const closeBtn = document.getElementById("easter-close");
+  const closeBtn = document.getElementById("-close");
   if (closeBtn) {
     closeBtn.onclick = () => {
       banner.classList.remove("show");
     };
   }
 
-  const uploadBtn = document.getElementById("easter-upload");
+  const uploadBtn = document.getElementById("-upload");
   if (uploadBtn) {
     uploadBtn.onclick = () => {
       const modal = document.getElementById("upload-modal");
@@ -3021,55 +3037,70 @@ function easterBanner() {
   }
 }
 
-easterBanner();
+Banner();
 
 
-function eastersEffect() {
+function sEffect() {
   const d = new Date();
 
   if (!(d.getDate() === 12 && d.getMonth() === 3)) return;
 
-  const container = document.getElementById("easter-container");
+  const container = document.getElementById("-container");
   if (!container) return;
 
   const interval = setInterval(() => {
-    const easter = document.createElement("div");
-    easter.className = "easter";
-    easter.textContent = "🌸🐣";
+    const  = document.createElement("div");
+    .className = "";
+    .textContent = "🌸🐣";
 
-    easter.style.left = Math.random() * 100 + "vw";
-    easter.style.animationDuration = (3 + Math.random() * 4) + "s";
+    .style.left = Math.random() * 100 + "vw";
+    .style.animationDuration = (3 + Math.random() * 4) + "s";
 
-    container.appendChild(easter);
+    container.appendChild();
 
-    setTimeout(() => easter.remove(), 8000);
+    setTimeout(() => .remove(), 8000);
   }, 300);
 
   setTimeout(() => clearInterval(interval), 20000);
 }
 
-eastersEffect();
+sEffect();
 
 function May1Effect() {
-  const banner = document.getElementById("may1-banner");
-  if (!banner) return;
+  document.addEventListener("DOMContentLoaded", () => {
 
-  const now = new Date();
-  const closed = localStorage.getItem("may1BannerClosed");
+    const banner = document.getElementById("may1-banner");
+    if (!banner) return;
 
-  if (closed === "true" || now.getDate() !== 1 || now.getMonth() !== 4) {
-    banner.style.display = "none";
-  }
+    const now = new Date();
+
+    // тільки 1 травня
+    if (!(now.getDate() === 1 && now.getMonth() === 4)) return;
+
+    // якщо вже закритий — не показуємо
+    const closed = localStorage.getItem("may1-banner-closed");
+    if (closed === "true") return;
+
+    // показ з затримкою
+    setTimeout(() => {
+      banner.classList.add("show");
+    }, 1500);
+
+    // кнопка закриття
+    const closeBtn = document.getElementById("closeMayBanner");
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        banner.classList.remove("show");
+        localStorage.setItem("may1-banner-closed", "true");
+      });
+    }
+
+  });
 }
-function closeMayBanner() {
-  const mayBanner = document.getElementById("may1-banner");
-  if (!mayBanner) return;
 
-  mayBanner.style.display = "none";
-
-  // зберігаємо СТАН, а не елемент
-  localStorage.setItem("may1BannerClosed", "true");
-}
+May1Effect();
+May1Effect();
 function checkUpdateButton() {
 
     const lastVersion = localStorage.getItem("lastUpdateVersion") || "5.0.1";
@@ -3359,7 +3390,7 @@ window.addEventListener("load", () => {
 <script defer>
 let logoClickCount = 0;
 let logoClickTimer = null;
-let easterEggTimeout = null;
+let EggTimeout = null;
 let snowInterval = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -3390,8 +3421,8 @@ document.addEventListener("DOMContentLoaded", () => {
     activateNewYearMode();
     applyIcons(newyearIcons);
 
-    if (logo && !logo.dataset.easterBound) {
-      logo.dataset.easterBound = "true";
+    if (logo && !logo.dataset.Bound) {
+      logo.dataset.Bound = "true";
 
       let logoClickCount = 0;
       let logoClickTimer = null;
@@ -3407,7 +3438,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (logoClickCount === 3) {
           logoClickCount = 0;
-          launchNewYearEasterEgg();
+          launchNewYearEgg();
         }
       });
     }
@@ -3420,16 +3451,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ================= VALENTINE (OVERRIDE LAYER) ================= */
   const isValentine = month === 2 && (day === 13 || day === 14);
-
+const isVyshyvanka = month === 5 && (day === 15 || day === 16);
   if (isValentine) {
     applyIcons(valentineIcons);
   }
-  const isEaster = (month === 4 && day >= 10  && day <= 25);
-  // 🔔 Easter egg по потрійному кліку на логотип
-  if (isEaster) {
-    applyIcons(easterIcons);
+  if (isVyshyvanka) {
+    activateVyshyvankaMode();
+    applyIcons(vyshyvankaIcons);
+  } else {
+    deactivateVyshyvankaMode();
+    restoreIcons();
+  }
+  const is = (month === 4 && day >= 10  && day <= 25);
+  // 🔔  egg по потрійному кліку на логотип
+  if (is) {
+    applyIcons(Icons);
   }
 });
+
 
 /* ================================
    🎃 HALLOWEEN
@@ -3512,9 +3551,24 @@ closeNewYearPopup();
 
   resetButtonColors();
 }
+function activateVyshyvankaMode() {
 
+  const logo = document.getElementById("logo");
+  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
+  if (logo) logo.src = "VideoVortex_logo_embriodery.jpg";
+
+  styleButtons("#8B0000", "#1C1C1C");
+}
+
+function deactivateVyshyvankaMode() {
+  
+  const logo = document.getElementById("logo");
+  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  resetButtonColors();
+}
 /* ================================
-   ❄️ SNOWFALL & Easter Egg
+   ❄️ SNOWFALL &  Egg
    ================================ */
 function startSnow() {
   if (snowInterval) return;
@@ -3542,24 +3596,24 @@ function stopSnow() {
   document.querySelectorAll(".snowflake").forEach(f => f.remove());
 }
 
-function launchNewYearEasterEgg() {
+function launchNewYearEgg() {
   startSnow();
 
-  const popup = document.getElementById("newyear-easter-egg");
+  const popup = document.getElementById("newyear--egg");
   if (!popup) return;
 
   popup.style.display = "flex";
 
-  if (easterEggTimeout) {
-    clearTimeout(easterEggTimeout);
+  if (EggTimeout) {
+    clearTimeout(EggTimeout);
   }
 
-  easterEggTimeout = setTimeout(() => {
+  EggTimeout = setTimeout(() => {
     popup.style.display = "none";
   }, 120000);
 }
 function closeNewYearPopup() {
-const popupClose = document.getElementById("newyear-easter-egg");
+const popupClose = document.getElementById("newyear--egg");
 popupClose.style.display = "none";
 }
 /* ================================
@@ -3609,7 +3663,7 @@ const valentineIcons = {
   "plus-button": `<i class="icon">💝</i>`,
   "plus-desktop-button": "💝"
 };
-const easterIcons = {
+const Icons = {
   "account-desktop-link": (user) =>
     `🐣<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🥚",
@@ -3740,11 +3794,13 @@ window.addEventListener("load", showRulesModal);
     <script defer>
 const modal = document.getElementById("upload-modal");
 const accountModal = document.getElementById("account-modal");
+const editModal = document.getElementById("edit-modal");
 const archiveModal = document.getElementById("archive-modal");
 const closeArchiveModal = document.querySelector(".close-archive-modal");
 const message = document.getElementById("message");
 const notification = document.getElementById("notification-modal");
 const closeAccountModal = document.querySelector(".close-account-modal");
+const closeEditModal = document.querySelector(".close-edit-modal");
 const plus = document.getElementById("plus-button");
 const plusDesktop = document.getElementById("plus-desktop-button");
 const closeBtn = document.querySelector(".close-modal");
@@ -3781,9 +3837,10 @@ plusDesktop?.addEventListener("click", () => {
 closeAccountModal?.addEventListener("click", () => accountModal.style.display = "none");
 closeBtn?.addEventListener("click", () => modal.style.display = "none");
 closeArchiveModal?.addEventListener("click", () => archiveModal.style.display = "none");
+closeEditModal?.addEventListener("click", () => editModal.style.display = "none");
 closeBtn?.addEventListener("click", () => modal.style.display = "none");
 // Закриття при кліку поза модалкою
-[modal, accountModal, archiveModal].forEach(m => {
+[modal, accountModal, archiveModal, editModal].forEach(m => {
     m?.addEventListener("click", e => {
         if (e.target === m) m.style.display = "none";
     });
@@ -3933,16 +3990,19 @@ addButton.onclick = function() {
     }
 };
         document.getElementById("post").onclick = function() {
+                     document.querySelector(".tab").style.display = 'none';
            document.getElementById("video-container").style.display = 'none';
         document.getElementById("photo-container").style.display = 'flex';
         document.getElementById("library").style.display = 'none';
         }
             document.getElementById("video").onclick = function() {
+                         document.querySelector(".tab").style.display = 'flex';
            document.getElementById("video-container").style.display = 'flex';
         document.getElementById("photo-container").style.display = 'none';
         document.getElementById("library").style.display = 'none';
         }
         document.getElementById("smart-post").onclick = function() {
+                     document.querySelector(".tab").style.display = 'none';
            document.getElementById("video-container").style.display = 'none';
            document.getElementById("library").style.display = 'none';
            document.getElementById("smart-video").classList.remove("button-liquid-glass");
@@ -3954,6 +4014,7 @@ addButton.onclick = function() {
         }
 document.getElementById("smart-settings").onclick = function() {
            document.getElementById("video-container").style.display = 'none';
+           document.querySelector(".tab").style.display = 'none';
            document.getElementById("library").style.display = 'none';
            document.getElementById("photo-container").style.display = 'none';
            document.getElementById("smart-video").classList.remove("button-liquid-glass");
@@ -3964,17 +4025,35 @@ document.getElementById("smart-settings").onclick = function() {
         }
         document.getElementById("settings").onclick = function() {
            document.getElementById("video-container").style.display = 'none';
+           document.querySelector(".tab").style.display = 'none';
            document.getElementById("library").style.display = 'none';
            document.getElementById("photo-container").style.display = 'none';
         document.querySelector(".settings-page").style.display = 'block';
         }
+        document.getElementById("popular").addEventListener("click", function() {
+  document.getElementById("video-container").style.display = 'flex';
+  document.getElementById("photo-container").style.display = 'none';
+  document.querySelector(".settings-page").style.display = 'none';
+  document.getElementById("popular").classList.add("tab-button-liquid-glass");
+  document.getElementById("all").classList.remove("tab-button-liquid-glass");
+});
+document.getElementById("all").addEventListener("click", function() {
+  document.getElementById("video-container").style.display = 'flex';
+  document.getElementById("photo-container").style.display = 'none';
+  document.querySelector(".settings-page").style.display = 'none';
+  document.getElementById("popular").classList.remove("tab-button-liquid-glass");
+  document.getElementById("all").classList.add("tab-button-liquid-glass");
+});
+document.getElementById("all").addEventListener("click", loadVideos);
         document.getElementById("account-desktop-link").onclick = function() {
+                     document.querySelector(".tab").style.display = 'none';
           document.getElementById("video-container").style.display = 'none';
            document.getElementById("photo-container").style.display = 'none';
            document.querySelector(".settings-page").style.display = 'none';
            document.getElementById("library").style.display = 'flex';
         }
         document.getElementById("account-link").onclick = function() {
+                     document.querySelector(".tab").style.display = 'none';
            document.getElementById("video-container").style.display = 'none';
            document.getElementById("photo-container").style.display = 'none';
            document.getElementById("smart-settings").classList.remove("button-liquid-glass");
@@ -3985,6 +4064,7 @@ document.getElementById("smart-settings").onclick = function() {
         document.getElementById("library").style.display = 'flex';
         }
             document.getElementById("smart-video").onclick = function() {
+                         document.querySelector(".tab").style.display = 'flex';
               document.getElementById("smart-video").classList.add("button-liquid-glass");
               document.getElementById("smart-post").classList.remove("button-liquid-glass");
               document.getElementById("account-link").classList.remove("button-liquid-glass");
@@ -4638,7 +4718,254 @@ function cacheImage(url) {
   const img = new Image();
   img.src = url;
 }
+async function loadPopularVideos() {
+    const videoGallery = document.getElementById("video-gallery");
+    if (!videoGallery) return;
 
+    videoGallery.innerHTML = "";
+
+    const showNSFWGlobal = typeof showNSFW !== "undefined" ? showNSFW : false;
+
+    database.ref("videos").on("child_added", async snapshot => {
+        const videoData = snapshot.val();
+        const videoKey = snapshot.key;
+
+        if (!videoData) return;
+
+        // =====================
+        // EXPIRE
+        // =====================
+        const isExpired =
+            videoData.autoDelete24h &&
+            videoData.expiresAt &&
+            Date.now() > videoData.expiresAt;
+
+        if (isExpired) return;
+
+        // =====================
+        // CACHE
+        // =====================
+        let videoDataRaw = videoMemoryCache[videoKey];
+
+        if (!videoDataRaw) {
+            const local = getVideoCache(videoKey);
+
+            if (local) {
+                videoDataRaw = local;
+            } else {
+                videoDataRaw = videoData;
+                setVideoCache(videoKey, videoData);
+            }
+
+            videoMemoryCache[videoKey] = videoDataRaw;
+        } else {
+            videoDataRaw = videoData;
+            videoMemoryCache[videoKey] = videoData;
+            setVideoCache(videoKey, videoData);
+        }
+
+        // =====================
+        // FILTERS
+        // =====================
+
+        // NSFW
+        if (videoDataRaw.nsfw && !showNSFWGlobal) return;
+
+        // SCORE
+        if (!videoDataRaw.score || videoDataRaw.score < 15) return;
+if (videoDataRaw.score > 15) {
+            const popular = document.createElement("div");
+            popular.className = "stories-timer";
+
+            const popularSpan = document.createElement("span");
+            popularSpan.textContent = "🔥 Popular";
+            popular.appendChild(popularSpan);
+            videoWrapper.appendChild(popular);
+}
+        // BLOCK CHECK (основний)
+        if (videoDataRaw.authorUid) {
+            try {
+                const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
+                const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
+
+                if (blockedMe || blockedYou) return;
+            } catch (e) {
+                console.warn("Block check error", e);
+                return;
+            }
+        }
+
+        // PRIVATE
+        if (videoDataRaw.private && videoDataRaw.email !== currentUserEmail) return;
+
+        // DOMAIN
+        if (
+            videoDataRaw.domainRestrict &&
+            (!currentUserEmail ||
+                !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
+        ) return;
+
+        // =====================
+        // DUPLICATE FIX
+        // =====================
+        if (document.querySelector(`[data-id="${videoKey}"]`)) return;
+
+        // =====================
+        // 🔒 FINAL BLOCK GUARD (важливо)
+        // =====================
+        if (videoDataRaw.authorUid) {
+            const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
+            const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
+
+            if (blockedMe || blockedYou) return;
+        }
+
+        // =====================
+        // UI
+        // =====================
+        const videoWrapper = document.createElement("div");
+        videoWrapper.className = "video-thumb-wrapper";
+
+        const videoElement = document.createElement("img");
+        videoElement.classList.add("video-item");
+        videoElement.src = videoData.thumbnail || "default.jpg";
+        videoElement.style.filter = videoData.nsfw ? "blur(20px)" : "none";
+
+        cacheImage(videoElement.src);
+
+        // =====================
+        // TIMER
+        // =====================
+        if (videoDataRaw.autoDelete24h && videoDataRaw.expiresAt) {
+            const timer = document.createElement("div");
+            timer.className = "stories-timer";
+
+            const timeSpan = document.createElement("span");
+            timer.appendChild(timeSpan);
+
+            let interval;
+
+            const update = () => {
+                const diff = videoDataRaw.expiresAt - Date.now();
+
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    videoWrapper.remove();
+                    return;
+                }
+
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+
+                timeSpan.textContent =
+                    `${String(h).padStart(2, "0")}:` +
+                    `${String(m).padStart(2, "0")}:` +
+                    `${String(s).padStart(2, "0")}`;
+            };
+
+            update();
+            interval = setInterval(update, 1000);
+
+            videoWrapper.appendChild(timer);
+        }
+
+        // =====================
+        // CLICK
+        // =====================
+        videoElement.onclick = () => {
+            const viewedKey = `viewed_${videoKey}`;
+
+            if (!localStorage.getItem(viewedKey)) {
+                const newViewCount = (videoDataRaw.views || 0) + 1;
+
+                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                    .then(() => localStorage.setItem(viewedKey, true))
+                    .catch(console.error);
+            }
+
+            window.location.href = `video.html?key=${videoKey}`;
+        };
+
+        // =====================
+        // INFO
+        // =====================
+        const infoElement = document.createElement("div");
+        infoElement.classList.add("video-info");
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.title = videoDataRaw.author || "Анонім";
+
+        if (videoDataRaw.authorAvatar) {
+            avatar.style.backgroundImage = `url(${videoDataRaw.authorAvatar})`;
+            avatar.classList.add("avatar-image");
+        } else {
+            avatar.innerText = getInitials(videoDataRaw.author);
+            avatar.style.backgroundColor = stringToColor(videoDataRaw.author || "?");
+        }
+
+        avatar.onclick = () => {
+            window.location.href = `profile.html?uid=${videoDataRaw.authorUid || ""}`;
+        };
+
+        const detailsElement = document.createElement("div");
+        detailsElement.classList.add("video-details");
+
+        detailsElement.innerHTML = `
+            ${sanitizeHTML(videoDataRaw.title || "Без назви")}
+            ${videoDataRaw.private ? "<span style='color: orange;'>🔒 Приватне</span>" : ""}
+            ${videoDataRaw.nsfw ? "<span style='color: red;'>NSFW</span>" : ""}
+            <br>Автор: ${sanitizeHTML(videoDataRaw.author || "Анонім")}<br>
+            Переглядів: ${videoDataRaw.views || 0}<br>
+            Дата: ${videoDataRaw.publishDate || "Не вказана"}
+        `;
+
+        // =====================
+        // MENU
+        // =====================
+        const moreBtn = document.createElement("button");
+        moreBtn.classList.add("more-btn");
+        moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
+
+        const actionMenu = document.createElement("div");
+        actionMenu.classList.add("action-menu");
+        actionMenu.style.display = "none";
+
+        if (currentUserEmail === videoDataRaw.email) {
+            const deleteButton = document.createElement("button");
+            deleteButton.innerHTML = `<i class="material-icons">delete</i> Видалити`;
+
+            deleteButton.onclick = () => {
+                deleteVideo(videoKey, videoDataRaw.url);
+                actionMenu.style.display = "none";
+            };
+
+            actionMenu.appendChild(deleteButton);
+        }
+
+        moreBtn.onclick = e => {
+            e.stopPropagation();
+            actionMenu.style.display =
+                actionMenu.style.display === "block" ? "none" : "block";
+        };
+
+        infoElement.appendChild(avatar);
+        infoElement.appendChild(detailsElement);
+        infoElement.appendChild(moreBtn);
+        infoElement.appendChild(actionMenu);
+
+        const container = document.createElement("div");
+        container.classList.add("video-container");
+        container.dataset.id = videoKey;
+
+        videoWrapper.appendChild(videoElement);
+        container.appendChild(infoElement);
+        container.appendChild(videoWrapper);
+
+        videoGallery.appendChild(container);
+    });
+}
 async function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
@@ -4716,7 +5043,15 @@ async function loadVideos() {
         // =====================
         // FIXED TIMER (NO LEAK)
         // =====================
+if (videoDataRaw.score > 15) {
+            const popular = document.createElement("div");
+            popular.className = "stories-timer";
 
+            const popularSpan = document.createElement("span");
+            popularSpan.textContent = "🔥 Popular";
+            popular.appendChild(popularSpan);
+            videoWrapper.appendChild(popular);
+}
         if (videoDataRaw.autoDelete24h && videoDataRaw.expiresAt) {
             const timer = document.createElement("div");
             timer.className = "stories-timer";
@@ -4963,7 +5298,7 @@ showNotificationModal();
 }
 function editVideo(videoKey, videoData) {
   currentEditKey = videoKey;
-  document.getElementById("edit-form").style.display = 'block';
+  document.getElementById("edit-modal").style.display = 'flex';
 
   // Заповнюємо поля редагування
   document.getElementById("edit-video-title").value = videoData.title || '';
@@ -4992,7 +5327,7 @@ const newPrivate = document.getElementById("edit-private-checkbox").checked;
   }).then(() => {
     showNotificationModal();
     message.innerHTML = "? Відео оновлено!";
-    document.getElementById("edit-form").style.display = 'none';
+    document.getElementById("edit-modal").style.display = 'none';
     currentEditKey = null;
     loadVideos();
   }).catch(error => {
@@ -5785,7 +6120,8 @@ if (age !== null) {
 
         const isHalloween = m === 10 && (d === 30 || d === 31);
         const isValentineDay = m === 2 && (d === 13 || d === 14);
-        const isEasterWeek = (m === 4 && d >= 10  && d <= 25);
+        const isVyshyvankaDay = m === 5 && (d === 15 || d === 16);
+        const isWeek = (m === 4 && d >= 10  && d <= 25);
         const isNewYear = (m === 12 && d >= 15) || (m === 1 && d <= 25);
 
         if (isHalloween) {
@@ -5801,14 +6137,22 @@ if (age !== null) {
             deactivateGirland();
             deactivateNewYearMode();
             if (!isValentineDay) restoreIcons();
-            if (!isEasterWeek) restoreIcons();
+            if (!isWeek) restoreIcons();
+            if (!isVyshyvankaDay) restoreIcons();
         }
 
         if (isValentineDay) {
           applyIcons(valentineIcons, userData);
         }
-        if (isEasterWeek) {
-        applyIcons(easterIcons, userData);
+        if (isWeek) {
+        applyIcons(Icons, userData);
+        }
+        if (isVyshyvankaDay) {
+          activateVyshyvankaMode();
+          applyIcons(valentineIcons, userData);
+        } else {
+          deactivateVyshyvankaMode();
+          restoreIcons();
         }
         // 🔹 Аватар
 
@@ -6564,6 +6908,7 @@ window.onload = function() {
         loadSettings();
         loadVideos();
         loadPhotos();
+        loadPopularVideos();
         loadLibrary();
     };
     </script>
