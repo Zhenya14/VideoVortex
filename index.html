@@ -2929,7 +2929,7 @@ async function generateDescription() {
 }
 </script>
 <script defer>
-  let APP_VERSION = "5.3.0"; // Поточна версія VideoVortex
+  let APP_VERSION = "5.2.0"; // Поточна версія VideoVortex
  function clearLocalStorageExceptAuth() {
     const keepPrefixes = [
         "firebase:authUser:",
@@ -4037,6 +4037,7 @@ document.getElementById("smart-settings").onclick = function() {
   document.getElementById("popular").classList.add("tab-button-liquid-glass");
   document.getElementById("all").classList.remove("tab-button-liquid-glass");
 });
+document.getElementById("popular").addEventListener("click", loadPopularVideos);
 document.getElementById("all").addEventListener("click", function() {
   document.getElementById("video-container").style.display = 'flex';
   document.getElementById("photo-container").style.display = 'none';
@@ -4735,12 +4736,11 @@ async function loadPopularVideos() {
         // =====================
         // EXPIRE
         // =====================
-        const isExpired =
+        if (
             videoData.autoDelete24h &&
             videoData.expiresAt &&
-            Date.now() > videoData.expiresAt;
-
-        if (isExpired) return;
+            Date.now() > videoData.expiresAt
+        ) return;
 
         // =====================
         // CACHE
@@ -4750,14 +4750,9 @@ async function loadPopularVideos() {
         if (!videoDataRaw) {
             const local = getVideoCache(videoKey);
 
-            if (local) {
-                videoDataRaw = local;
-            } else {
-                videoDataRaw = videoData;
-                setVideoCache(videoKey, videoData);
-            }
-
+            videoDataRaw = local || videoData;
             videoMemoryCache[videoKey] = videoDataRaw;
+            setVideoCache(videoKey, videoDataRaw);
         } else {
             videoDataRaw = videoData;
             videoMemoryCache[videoKey] = videoData;
@@ -4765,7 +4760,7 @@ async function loadPopularVideos() {
         }
 
         // =====================
-        // FILTERS
+        // FILTERS (до UI)
         // =====================
 
         // NSFW
@@ -4773,16 +4768,8 @@ async function loadPopularVideos() {
 
         // SCORE
         if (!videoDataRaw.score || videoDataRaw.score < 15) return;
-if (videoDataRaw.score > 15) {
-            const popular = document.createElement("div");
-            popular.className = "stories-timer";
 
-            const popularSpan = document.createElement("span");
-            popularSpan.textContent = "🔥 Popular";
-            popular.appendChild(popularSpan);
-            videoWrapper.appendChild(popular);
-}
-        // BLOCK CHECK (основний)
+        // BLOCK (ОДИН РАЗ)
         if (videoDataRaw.authorUid) {
             try {
                 const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
@@ -4790,7 +4777,7 @@ if (videoDataRaw.score > 15) {
 
                 if (blockedMe || blockedYou) return;
             } catch (e) {
-                console.warn("Block check error", e);
+                console.warn("Block error", e);
                 return;
             }
         }
@@ -4805,24 +4792,13 @@ if (videoDataRaw.score > 15) {
                 !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
         ) return;
 
-        // =====================
-        // DUPLICATE FIX
-        // =====================
+        // DUPLICATE
         if (document.querySelector(`[data-id="${videoKey}"]`)) return;
-
-        // =====================
-        // 🔒 FINAL BLOCK GUARD (важливо)
-        // =====================
-        if (videoDataRaw.authorUid) {
-            const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
-            const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
-
-            if (blockedMe || blockedYou) return;
-        }
 
         // =====================
         // UI
         // =====================
+
         const videoWrapper = document.createElement("div");
         videoWrapper.className = "video-thumb-wrapper";
 
@@ -4833,19 +4809,27 @@ if (videoDataRaw.score > 15) {
 
         cacheImage(videoElement.src);
 
-        // =====================
+        // 🔥 POPULAR (ТЕПЕР ПРАВИЛЬНО)
+        if (videoDataRaw.score > 15) {
+            const popular = document.createElement("div");
+            popular.className = "stories-timer";
+
+            const span = document.createElement("span");
+            span.textContent = "🔥 Popular";
+
+            popular.appendChild(span);
+            videoWrapper.appendChild(popular);
+        }
+
         // TIMER
-        // =====================
         if (videoDataRaw.autoDelete24h && videoDataRaw.expiresAt) {
             const timer = document.createElement("div");
             timer.className = "stories-timer";
 
-            const timeSpan = document.createElement("span");
-            timer.appendChild(timeSpan);
+            const span = document.createElement("span");
+            timer.appendChild(span);
 
-            let interval;
-
-            const update = () => {
+            const interval = setInterval(() => {
                 const diff = videoDataRaw.expiresAt - Date.now();
 
                 if (diff <= 0) {
@@ -4858,105 +4842,60 @@ if (videoDataRaw.score > 15) {
                 const m = Math.floor((diff % 3600000) / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
 
-                timeSpan.textContent =
+                span.textContent =
                     `${String(h).padStart(2, "0")}:` +
                     `${String(m).padStart(2, "0")}:` +
                     `${String(s).padStart(2, "0")}`;
-            };
-
-            update();
-            interval = setInterval(update, 1000);
+            }, 1000);
 
             videoWrapper.appendChild(timer);
         }
 
-        // =====================
         // CLICK
-        // =====================
         videoElement.onclick = () => {
             const viewedKey = `viewed_${videoKey}`;
 
             if (!localStorage.getItem(viewedKey)) {
-                const newViewCount = (videoDataRaw.views || 0) + 1;
-
-                database.ref("videos/" + videoKey).update({ views: newViewCount })
-                    .then(() => localStorage.setItem(viewedKey, true))
-                    .catch(console.error);
+                database.ref("videos/" + videoKey).update({
+                    views: (videoDataRaw.views || 0) + 1
+                });
+                localStorage.setItem(viewedKey, true);
             }
 
             window.location.href = `video.html?key=${videoKey}`;
         };
 
-        // =====================
         // INFO
-        // =====================
         const infoElement = document.createElement("div");
-        infoElement.classList.add("video-info");
+        infoElement.className = "video-info";
 
         const avatar = document.createElement("div");
         avatar.className = "avatar";
-        avatar.title = videoDataRaw.author || "Анонім";
 
         if (videoDataRaw.authorAvatar) {
             avatar.style.backgroundImage = `url(${videoDataRaw.authorAvatar})`;
-            avatar.classList.add("avatar-image");
         } else {
-            avatar.innerText = getInitials(videoDataRaw.author);
-            avatar.style.backgroundColor = stringToColor(videoDataRaw.author || "?");
+            avatar.textContent = getInitials(videoDataRaw.author);
         }
 
         avatar.onclick = () => {
-            window.location.href = `profile.html?uid=${videoDataRaw.authorUid || ""}`;
+            window.location.href = `profile.html?uid=${videoDataRaw.authorUid}`;
         };
 
-        const detailsElement = document.createElement("div");
-        detailsElement.classList.add("video-details");
+        const details = document.createElement("div");
+        details.className = "video-details";
 
-        detailsElement.innerHTML = `
+        details.innerHTML = `
             ${sanitizeHTML(videoDataRaw.title || "Без назви")}
-            ${videoDataRaw.private ? "<span style='color: orange;'>🔒 Приватне</span>" : ""}
-            ${videoDataRaw.nsfw ? "<span style='color: red;'>NSFW</span>" : ""}
-            <br>Автор: ${sanitizeHTML(videoDataRaw.author || "Анонім")}<br>
-            Переглядів: ${videoDataRaw.views || 0}<br>
-            Дата: ${videoDataRaw.publishDate || "Не вказана"}
+            ${videoDataRaw.private ? "🔒" : ""}
+            ${videoDataRaw.nsfw ? "NSFW" : ""}
         `;
 
-        // =====================
-        // MENU
-        // =====================
-        const moreBtn = document.createElement("button");
-        moreBtn.classList.add("more-btn");
-        moreBtn.innerHTML = `<i class="material-icons">more_vert</i>`;
-
-        const actionMenu = document.createElement("div");
-        actionMenu.classList.add("action-menu");
-        actionMenu.style.display = "none";
-
-        if (currentUserEmail === videoDataRaw.email) {
-            const deleteButton = document.createElement("button");
-            deleteButton.innerHTML = `<i class="material-icons">delete</i> Видалити`;
-
-            deleteButton.onclick = () => {
-                deleteVideo(videoKey, videoDataRaw.url);
-                actionMenu.style.display = "none";
-            };
-
-            actionMenu.appendChild(deleteButton);
-        }
-
-        moreBtn.onclick = e => {
-            e.stopPropagation();
-            actionMenu.style.display =
-                actionMenu.style.display === "block" ? "none" : "block";
-        };
-
         infoElement.appendChild(avatar);
-        infoElement.appendChild(detailsElement);
-        infoElement.appendChild(moreBtn);
-        infoElement.appendChild(actionMenu);
+        infoElement.appendChild(details);
 
         const container = document.createElement("div");
-        container.classList.add("video-container");
+        container.className = "video-container";
         container.dataset.id = videoKey;
 
         videoWrapper.appendChild(videoElement);
