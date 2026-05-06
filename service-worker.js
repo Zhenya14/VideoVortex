@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
 
 // --- Firebase config ---
 firebase.initializeApp({
-    apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
   authDomain: "videovortex-235cd.firebaseapp.com",
   databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "videovortex-235cd",
@@ -14,32 +14,32 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// --- Пуш-сповіщення ---
-messaging.setBackgroundMessageHandler(function(payload) {
-  console.log('[FCM] Background message received: ', payload);
-  const notificationTitle = payload.notification?.title || 'VideoVortex';
-  const notificationOptions = {
-    body: payload.notification?.body || '',
-    icon: 'VideoVortex_logo_192x192.png'
-  };
-  return self.registration.showNotification(notificationTitle, notificationOptions);
-});
-const CACHE_NAME = "videovortex-cache-v3";
+// 1. ЗМІНЮЙТЕ ЦЮ ВЕРСІЮ ТА НАЗВИ ФАЙЛІВ ПРИ ОНОВЛЕННІ ЛОГОТИПА
+const CACHE_NAME = "videovortex-cache-v4"; // Збільшили версію
+const LOGO_NAME = "VideoVortex_logo_192x192_v2.png"; // Додали версію до назви файлу!
 
 const ASSETS_TO_CACHE = [
   "./",
   "index.html",
   "manifest.json",
-  "VideoVortex_logo_192x192.png",
+  LOGO_NAME, // Використовуємо нове ім'я
   "VideoVortex_logo_512x512.png"
 ];
+
+// Решта коду Firebase...
+messaging.setBackgroundMessageHandler(function(payload) {
+  const notificationOptions = {
+    body: payload.notification?.body || '',
+    icon: LOGO_NAME // Тут також нове ім'я
+  };
+  return self.registration.showNotification(payload.notification?.title || 'VideoVortex', notificationOptions);
+});
 
 self.addEventListener("install", event => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      // Додаємо файли по одному, щоб один битий файл не зупинив увесь процес
-      return cache.addAll(ASSETS_TO_CACHE).catch(err => console.error("Помилка кешування:", err));
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
@@ -57,12 +57,19 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+// Стратегія: спочатку мережа, потім кеш (Network First) 
+// Це краще для manifest.json, щоб браузер швидше бачив зміни іконок
 self.addEventListener("fetch", event => {
   if (event.request.destination === "video") return;
 
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(() => caches.match("index.html"))
+    fetch(event.request)
+      .then(response => {
+        // Якщо все добре, оновлюємо кеш і віддаємо відповідь
+        const resClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // Якщо немає мережі — беремо з кешу
   );
 });
