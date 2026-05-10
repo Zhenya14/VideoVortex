@@ -567,18 +567,17 @@ async function loadVideos() {
 document.getElementById("blockUserBtn").addEventListener("click", () => {
     showModalBlocked();
 });
-const realUserName = nameAccount; // справжнє ім'я
-let blockedUserName = realUserName;
+
 
 function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
 
     const displayName = isHiddenAccount
-        ? `"Акаунт не знайдено"`
-        : `"${realUserName}"`;
+        ? `Акаунт не знайдено`
+        : nameAccount;
 
-    info.textContent = `Ви впевнені, що хочете заблокувати користувача ${displayName}?`;
+    info.textContent = `Ви впевнені, що хочете заблокувати користувача "${displayName}"?`;
 
     modal.style.display = "flex";
 }
@@ -605,7 +604,7 @@ async function confirmBlockUser() {
       .set({
           blocked: true,
           uid: blockedUserUid,
-          userName: blockedUserName
+          userName: nameAccount
       });
 
     closeBlockModal();
