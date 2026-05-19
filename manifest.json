@@ -4,7 +4,7 @@
   "version": "5.3.0",
   "description": "VideoVortex — відеоплатформа з контролем приватності, каналами та архівами",
   "start_url": "/VideoVortex/",
-  "scope": "/VideoVortex/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#1c1e22",
