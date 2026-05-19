@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
     <title>VideoVortex</title>
 <meta name="description" content="VideoVortex — відео-платформа з контролем доступу, двома каналами та архівами контенту.">
 <meta name="keywords" content="відеоплатформа, відео онлайн, приватне відео, завантаження відео, відеосервіс, VideoVortex, відео з приватністю, відео архів">
@@ -368,6 +371,9 @@ input:checked + .slider:before {
     overflow: hidden;
     height: 100%;
     width: 100%;
+}
+html, body {
+    touch-action: manipulation;
 }
 .secure-item {
   border: 1px solid #ccc;
