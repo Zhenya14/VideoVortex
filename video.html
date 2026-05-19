@@ -2,7 +2,10 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
      <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <title></title>
@@ -335,7 +338,9 @@ border: 2px solid #333333;
   overflow: hidden;
   z-index: 9999999;
 }
-
+html, body {
+    touch-action: manipulation;
+}
 .confetti {
   position: absolute;
   width: 8px;
