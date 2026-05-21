@@ -16,14 +16,14 @@ const messaging = firebase.messaging();
 
 // 1. ЗМІНЮЙТЕ ЦЮ ВЕРСІЮ ТА НАЗВИ ФАЙЛІВ ПРИ ОНОВЛЕННІ ЛОГОТИПА
 const CACHE_NAME = "videovortex-cache-v4"; // Збільшили версію
-const LOGO_NAME = "VideoVortex_logo_192x192_v2.png"; // Додали версію до назви файлу!
+const LOGO_NAME = "VideoVortex_logo_192×192_v2.png"; // Додали версію до назви файлу!
 
 const ASSETS_TO_CACHE = [
   "./",
   "index.html",
   "manifest.json",
   LOGO_NAME, // Використовуємо нове ім'я
-  "VideoVortex_logo_512x512.png"
+  "VideoVortex_logo_512×512.png"
 ];
 
 // Решта коду Firebase...
