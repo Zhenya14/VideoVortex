@@ -27,6 +27,11 @@ function applyTranslations() {
             el.innerText = translations[key];
         }
     });
+
+document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (key in translations) el.placeholder = translations[key];
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
