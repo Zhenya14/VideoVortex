@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta 
+<meta 
   name="viewport" 
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 />
@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
 html, body{
-touch-action: manipulation;
+  touch-action: manipulation;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -189,7 +189,7 @@ transform: scale(0.95); /* легке стиснення */
 <nav>
 <img id="logo" src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
             <a href="index.html">
-            <h1 style="padding-left: 5px;">VideoVortex</h1><sup><div id="timer"></div></sup></a>
+            <h1 style="padding-left: 5px;">VideoVortex</h1></a>
 </nav>
 
 <!-- Модальне вікно апеляції -->
@@ -365,11 +365,11 @@ function deactivateVyshyvankaMode() {
 });
 </script>
 <script>
-    // 🔹 Виправлено помилку: dicument → document
+document.addEventListener("DOMContentLoaded", () => {
+
     const authNotification = document.getElementById("auth-notification");
     const registerNotification = document.getElementById("register-notification");
 
-    // Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
         authDomain: "videovortex-235cd.firebaseapp.com",
@@ -379,59 +379,125 @@ function deactivateVyshyvankaMode() {
         messagingSenderId: "681594250269",
         appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
     };
+
     firebase.initializeApp(firebaseConfig);
 
     const auth = firebase.auth();
     const database = firebase.database();
-function openAppeal() {
-    document.getElementById("appeal-modal").style.display = "flex";
-}
 
-// Закриття модального вікна
-document.getElementById("appeal-close").addEventListener("click", () => {
-    document.getElementById("appeal-modal").style.display = "none";
-});
-    // Авторизація
-    document.getElementById("auth-form").addEventListener("submit", (e) => {
+    function openAppeal() {
+        document.getElementById("appeal-modal").style.display = "flex";
+    }
+
+    const closeBtn = document.getElementById("appeal-close");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            document.getElementById("appeal-modal").style.display = "none";
+        });
+    }
+
+document.getElementById("auth-form").addEventListener("submit", (e) => {
     e.preventDefault();
 
     const email = document.getElementById("auth-email").value.trim();
     const password = document.getElementById("auth-password").value.trim();
 
     auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
+        .then(async (userCredential) => {
+
+            const user = userCredential.user;
+
+            const snap = await database
+                .ref("moderation/users/" + user.uid)
+                .once("value");
+
+            const data = snap.val();
+
+            const userSnap = await database
+                .ref("users/" + user.uid)
+                .once("value");
+
+            const userData = userSnap.val();
+
+            if (!userData) {
+                await auth.signOut();
+                authNotification.innerHTML = "❌ Дані користувача відсутні.";
+                authNotification.style.color = "red";
+                return;
+            }
+
+            const status = data?.status || null;
+
+            if (status === "frozen_soft") {
+                await auth.signOut();
+                authNotification.innerHTML = "❄️ Ваш акаунт тимчасово обмежено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "orange";
+                return;
+            }
+
+            if (status === "frozen_hard") {
+                await auth.signOut();
+                authNotification.innerHTML = "⛔ Доступ до акаунта обмежено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "red";
+                return;
+            }
+
+            if (status === "disabled") {
+                await auth.signOut();
+                authNotification.innerHTML = "🚫 Акаунт вимкнено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "red";
+                return;
+            }
+
             authNotification.innerHTML = "✅ Вхід успішний!";
             authNotification.style.color = "green";
-            window.location.href = "index.html";
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 300);
+
         })
         .catch((error) => {
+
             if (error.code === "auth/user-disabled") {
+
                 authNotification.innerHTML = "🚫 Ваш акаунт заблокований. Ви можете подати апеляцію.";
 
                 const appealBtn = document.createElement("button");
                 appealBtn.textContent = "Подати апеляцію";
-                appealBtn.style.marginLeft = "10px";
-                appealBtn.style.padding = "5px 10px";
-                appealBtn.style.border = "none";
-                appealBtn.style.borderRadius = "5px";
-                appealBtn.style.background = "#4facfe";
-                appealBtn.style.color = "#fff";
-                appealBtn.style.cursor = "pointer";
                 appealBtn.onclick = openAppeal;
 
+                authNotification.appendChild(document.createElement("br"));
                 authNotification.appendChild(appealBtn);
-            } else if (error.code === "auth/wrong-password" || error.code === "auth/invalid-email") {
-                authNotification.innerHTML = "❌ Невірний логін або пароль.";
-            } else if (error.code === "auth/user-not-found") {
-                authNotification.innerHTML = "⚠️ Користувача з такою поштою не існує.";
-            } else {
-                authNotification.innerHTML = "❌ Невірний логін або пароль.";
+                return;
             }
+
+            authNotification.innerHTML = "❌ Невірний логін або пароль. " + error.message;
             authNotification.style.color = "red";
         });
 });
 
-    // Реєстрація
     document.getElementById("register-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -445,13 +511,13 @@ document.getElementById("appeal-close").addEventListener("click", () => {
         if (!name || !supername || !email || !password || !confirmation || !birthInput) {
             registerNotification.innerHTML = "Будь ласка, заповніть всі поля!";
             registerNotification.style.color = "red";
-            return; // зупинити виконання
+            return;
         }
 
         if (password !== confirmation) {
             registerNotification.innerHTML = "Паролі не збігаються!";
             registerNotification.style.color = "red";
-            return; // зупинити виконання
+            return;
         }
 
         const [year, month, day] = birthInput.split("-");
@@ -463,28 +529,28 @@ document.getElementById("appeal-close").addEventListener("click", () => {
             const uid = userCredential.user.uid;
 
             await database.ref("users/" + uid).set({
-                name: name,
-                supername: supername,
-                email: email,
-                birthdate: birthdate,
-                birthYear: birthYear,
+                name,
+                supername,
+                email,
+                birthdate,
+                birthYear,
                 createdAt: new Date().toISOString()
             });
 
             registerNotification.innerHTML = "✅ Реєстрація успішна!";
             registerNotification.style.color = "green";
-            setTimeout(() => window.location.href = "index.html", 1000);
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 800);
+
         } catch (error) {
-            if (error.code === "auth/email-already-in-use") {
-                registerNotification.innerHTML = "❗ Така електронна пошта вже використовується!";
-            } else if (error.code === "auth/weak-password") {
-                registerNotification.innerHTML = "⚠️ Пароль має бути щонайменше 6 символів!";
-            } else {
-                registerNotification.innerHTML = "Помилка: " + error.message;
-            }
+            registerNotification.innerHTML = "Помилка: " + error.message;
             registerNotification.style.color = "red";
         }
     });
+
+});
 </script>
 </body>
 </html>
