@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
 <meta 
   name="viewport" 
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 />
 <title>Профіль користувача</title>
 <link rel="icon" href="VideoVortex_logo.ico">
-     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
 <!-- Firebase v8 SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -16,8 +15,8 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <style>
-body { 
-touch-action: manipulation;
+body {
+  touch-action: manipulation;
   color: #e9ecf1;
   font-family: Inter, Segoe UI, Roboto, Arial;
   margin: 0;
@@ -286,6 +285,12 @@ button.cancel:active {
     </div>
   </div>
 </ios-modal>
+<div id="notification-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
 <div class="profile-header">
   <div class="avatar" id="avatar">?</div>
   <div>
@@ -293,7 +298,7 @@ button.cancel:active {
      <button id="blockUserBtn" style="
     margin-left: 12px;
     padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 38px;
     border: 1px solid #333;
     background: #111;
     color: #fff;
@@ -303,9 +308,24 @@ button.cancel:active {
     align-items: center;
     gap: 4px;
   ">
-    <i class="material-icons">block</i>
+    <i class="material-symbols">block</i>
     Заблокувати
   </button>
+  <button class="shareBtn" id="shareBtn" style="
+    margin-left: 12px;
+    padding: 6px 12px;
+    border-radius: 38px;
+    border: 1px solid #333;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  ">
+  <i class="material-symbols">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
+    </button>
   </div>
 </div>
 
@@ -321,6 +341,7 @@ button.cancel:active {
 <div id="post" class="tabcontent">
   <div id="photo-gallery"></div>
 </div>
+<script src="i18n.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
@@ -386,9 +407,12 @@ const database = firebase.database();
 const storage = firebase.storage();
 const urlParams = new URLSearchParams(window.location.search);
 let blockedUserUid = urlParams.get("uid"); // UID користувач
-
+let hasPosts = false;
+let hasVideos = false;
 const avatar = document.getElementById("avatar");
   const userName = document.getElementById("userName");
+  
+  
 function showNotFound() {
   document.getElementById("video-gallery").innerHTML = `<h3>🎬 Публікації відсутні</h3>`;
 }
@@ -454,12 +478,15 @@ let isHiddenAccount = false;
 let nameAccount = "";
 
 async function loadProfile() {
-
   try {
+
+    const snapModeration = await database.ref(`moderation/users/${blockedUserUid}`).once("value");
+    const dataModeration = snapModeration.val() || {};
+
     const snap = await database.ref(`users/${blockedUserUid}`).once("value");
     const data = snap.val();
 
-    // ❌ НЕ ІСНУЄ
+    // ❌ NOT EXISTS
     if (!snap.exists()) {
       avatar.style.backgroundImage = "";
       avatar.textContent = "?";
@@ -468,27 +495,43 @@ async function loadProfile() {
       return;
     }
 
-    // ❌ BLOCK
+    // ❌ BLOCK CHECK
     if (blockedUserUid) {
       const blockedMeProfile = await didUserBlockMe(blockedUserUid);
 
       if (blockedMeProfile) {
         avatar.style.backgroundImage = "";
         avatar.textContent = "❌";
-        userName.textContent = "Акаунт не знайдено";
+        userName.setAttribute("data-i18n", "account-not -found");
         isHiddenAccount = true;
         return;
       }
     }
 
-    // ✅ ІМ'Я
+    const isFrozen = dataModeration.status === "frozen_soft";
+
+    // ======================
+    // NAME
+    // ======================
     const name = `${data.name || "Користувач"} ${data.supername || ""}`.trim();
 
-    userName.textContent = name;
+    userName.textContent = isFrozen ? "❄️ Видалений акаунт" : name;
     nameAccount = name;
 
-    // ✅ АВАТАР
-    if (data.avatarId) {
+    if (isFrozen) {
+      userName.setAttribute("data-i18n", "account-frozen");
+    }
+
+    // ======================
+    // AVATAR (FREEZE HAS PRIORITY)
+    // ======================
+
+    if (isFrozen) {
+      avatar.style.backgroundImage = "";
+      avatar.style.background = `${data.color || "#ccc"}`;
+      avatar.innerText = "👻";
+    } else if (data.avatarId) {
+
       try {
         const url = await firebase
           .storage()
@@ -501,12 +544,14 @@ async function loadProfile() {
         avatar.textContent = "";
 
       } catch (e) {
-        // fallback
         avatar.style.backgroundImage = "";
+        avatar.style.background = `${data.color || "#ccc"}`;
         avatar.textContent = getInitials(name);
       }
+
     } else {
       avatar.style.backgroundImage = "";
+      avatar.style.background = `${data.color || "#ccc"}`;
       avatar.textContent = getInitials(name);
     }
 
@@ -519,7 +564,6 @@ async function loadProfile() {
       avatar.textContent = "⚠️";
       userName.textContent = "Помилка завантаження";
     }
-
   }
 }
 async function loadVideos() {
@@ -527,46 +571,52 @@ async function loadVideos() {
   videoGallery.innerHTML = "";
 
   const snapshot = await firebase.database().ref("videos").once("value");
-  if (!snapshot.exists()) return showNotFound();
 
-  hasVideos = true;
-  const videosArray = [];
-
-  snapshot.forEach(child => {
-    videosArray.push({ key: child.key, val: child.val() });
-  });
-
-
-
-  for (const child of videosArray) {
-    const videoData = child.val;
-
-    if (videoData.authorUid !== blockedUserUid) continue;
-
-    if (videoData.authorUid) {
-
-  const blockedMe = await didUserBlockMe(videoData.authorUid);
-
-  if (blockedMe) {
-    showNotFound();
+  if (!snapshot.exists()) {
+    videoGallery.innerHTML = "<h3>🎬 Публікації відсутні</h3>";
     return;
   }
-}
 
+  const videos = [];
+  snapshot.forEach(child => {
+    const v = child.val();
+    if (v) videos.push({ key: child.key, ...v });
+  });
 
+  const filtered = [];
+
+  for (const v of videos) {
+    if (!v.authorUid) continue;
+
+    if (blockedUserUid && v.authorUid !== blockedUserUid) continue;
+
+    const blockedMe = await didUserBlockMe(v.authorUid);
+    if (blockedMe) continue;
+
+    filtered.push(v);
+  }
+
+  if (filtered.length === 0) {
+    videoGallery.innerHTML = "<h3>🎬 Публікації відсутні</h3>";
+    return;
+  }
+
+  for (const v of filtered) {
     const container = document.createElement("div");
     container.className = "video";
 
     const img = document.createElement("img");
-    img.src = videoData.thumbnail || "default.jpg";
-    if (videoData.nsfw) img.style.filter = "blur(30px)";
-    img.onclick = () => location.href = `video.html?key=${child.key}`;
+    img.src = v.thumbnail || "default.jpg";
+
+    if (v.nsfw) img.style.filter = "blur(30px)";
+
+    img.onclick = () => {
+      location.href = `video.html?key=${v.key}`;
+    };
 
     container.appendChild(img);
     videoGallery.appendChild(container);
   }
-
-  if (!hasVideos) showNotFound();
 }
 document.getElementById("blockUserBtn").addEventListener("click", () => {
     showModalBlocked();
@@ -577,13 +627,23 @@ function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
 
-    const displayName = isHiddenAccount
-        ? `Акаунт не знайдено`
-        : nameAccount;
+    const i18nKey = userName.getAttribute("data-i18n");
 
-    info.textContent = `Ви впевнені, що хочете заблокувати користувача "${displayName}"?`;
+    const isI18nKey =
+        i18nKey === "account-not-found" ||
+        i18nKey === "account-deleted" ||
+        i18nKey === "account-frozen";
+
+    if (isI18nKey) {
+        info.innerHTML =
+            `Ви впевнені, що хочете заблокувати користувача "<span data-i18n="${i18nKey}"></span>"?`;
+    } else {
+        info.textContent =
+            `Ви впевнені, що хочете заблокувати користувача "${userName.textContent}"?`;
+    }
 
     modal.style.display = "flex";
+    applyTranslations();
 }
 function closeBlockModal() {
     document.getElementById("block-user-modal").style.display = "none";
@@ -614,43 +674,79 @@ async function confirmBlockUser() {
     closeBlockModal();
     alert("Користувача заблоковано");
 }
- async function loadPosts() {
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    if (blockedUserUid) {
+      const blockedMeProfile = await didUserBlockMe(blockedUserUid);
+
+      if (blockedMeProfile) {
+        alert("Сталася Помилка.");
+        return;
+      }
+    }
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'VideoVortex',
+        url: window.location.href, // або конкретний URL на твоєму хості
+      });
+      console.log('Поділено успішно');
+    } catch (err) {
+      console.error('Помилка при поділі:', err);
+    }
+  } else {
+    alert('Ваш браузер не підтримує цю функцію');
+  }
+});
+async function loadPosts() {
   const photoGallery = document.getElementById("photo-gallery");
   photoGallery.innerHTML = "";
 
   const snapshot = await firebase.database().ref("photos").once("value");
-  if (!snapshot.exists()) return;
-let hasPosts = false;
-  const postsArray = [];
+
+  if (!snapshot.exists()) {
+    photoGallery.innerHTML = "<h3>📭 Немає дописів</h3>";
+    return;
+  }
+
+  const posts = [];
   snapshot.forEach(child => {
-    postsArray.push(child.val());
+    const p = child.val();
+    if (p) posts.push({ key: child.key, ...p });
   });
 
-  for (const photoData of postsArray) {
+  const filtered = [];
 
-    if (photoData.authorUid !== blockedUserUid) continue;
+  for (const p of posts) {
+    if (!p.authorUid) continue;
 
-    if (photoData.authorUid) {
-      const blockedMePhoto = await didUserBlockMe(photoData.authorUid);
+    if (blockedUserUid && p.authorUid !== blockedUserUid) continue;
 
-      if (blockedMePhoto) {
-        showNotFound();
-        return;
-      }
-    }
-hasPosts = true;
+    const blockedMe = await didUserBlockMe(p.authorUid);
+    if (blockedMe) continue;
+
+    filtered.push(p);
+  }
+
+  if (filtered.length === 0) {
+    photoGallery.innerHTML = "<h3>📭 Немає дописів</h3>";
+    return;
+  }
+
+  for (const p of filtered) {
     const container = document.createElement("div");
     container.className = "post";
 
     const img = document.createElement("img");
-    img.src = photoData.url || "default.jpg";
+    img.src = p.url || "default.jpg";
 
-    container.textContent = photoData.title || "(Порожній допис)";
     container.appendChild(img);
+
+    const title = document.createElement("div");
+    title.textContent = p.title || "(Порожній допис)";
+    container.appendChild(title);
 
     photoGallery.appendChild(container);
   }
-  if (!hasPosts) showNotFound();
 }
 
 loadProfile();
