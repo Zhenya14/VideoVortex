@@ -2,11 +2,11 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-  <meta 
+<meta 
   name="viewport" 
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 />
-     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
      <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <title></title>
     <svg style="display: none">
@@ -188,6 +188,7 @@ button.cancel:active {
     border-radius: 80px;
         }
                 body { 
+             touch-action: manipulation;     
             margin: 0;
     font-family: 'Poppins', sans-serif;
     background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
@@ -338,9 +339,7 @@ border: 2px solid #333333;
   overflow: hidden;
   z-index: 9999999;
 }
-html, body {
-    touch-action: manipulation;
-}
+
 .confetti {
   position: absolute;
   width: 8px;
@@ -1024,14 +1023,14 @@ position: fixed;
 </div>
       <div class="player-container">
     <div id="video-container" >
-        <video id="video-player" controls preload="auto"></video>
+        <video id="video-player" controls playsinline autoplay preload="auto"></video>
         <div class="controls" style="display: none;">
-    <button id="playPause"><i class="material-icons">play_arrow</i></button>
+    <button id="playPause"><i class="material-symbols">play_arrow</i></button>
     <input type="range" id="seekBar" value="0" min="0" step="1">
     <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-    <button id="mute"><i class="material-icons">volume_up</i></button>
+    <button id="mute"><i class="material-symbols">volume_up</i></button>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-    <button id="fullscreen"><i class="material-icons">fullscreen</i></button>
+    <button id="fullscreen"><i class="material-symbols">fullscreen</i></button>
   </div>
 </div>
 </div>
@@ -1040,19 +1039,19 @@ position: fixed;
 <hr>
 <div class="reactions">
 <a class="like" id="like">
-  <i class="material-icons">thumb_up</i>
+  <i class="material-symbols">thumb_up</i>
   <p id="likeCount" style="padding: 5px;">0</p>
 </a>
 
 <a class="dislike" id="dislike">
-  <i class="material-icons">thumb_down</i>
+  <i class="material-symbols">thumb_down</i>
   <p id="dislikeCount" style="padding: 5px;">0</p>
 </a>
 <a class="popularBtn" id="popularBtn">
-  <i class="material-icons">star</i><p data-i18n="popularBtn" style="padding: 5px 0px;">Просунути відео</p> 
+  <i class="material-symbols">star</i><p data-i18n="popularBtn" style="padding: 5px 0px;">Просунути відео</p> 
     </a>
 <a class="shareBtn" id="shareBtn">
-  <i class="material-icons">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
+  <i class="material-symbols">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
     </a>
 </div>
 
@@ -1209,47 +1208,50 @@ function randomGradient() {
 
 const gradients = [
 
-/* Сині */
-"linear-gradient(135deg,#4facfe,#00f2fe)",
-"linear-gradient(135deg,#2193b0,#6dd5ed)",
-"linear-gradient(135deg,#00c6ff,#0072ff)",
+/* Сині — темні, контрастні */
+"linear-gradient(135deg,#0f2027,#2c5364,#00c9ff)",
+"linear-gradient(135deg,#141e30,#243b55)",
+"linear-gradient(135deg,#1e3c72,#2a5298)",
 
-/* Червоні */
-"linear-gradient(135deg,#ff416c,#ff4b2b)",
-"linear-gradient(135deg,#ff0000,#ff7b7b)",
-"linear-gradient(135deg,#d31027,#ea384d)",
+/* Червоні — глибокі (краще читається білий текст) */
+"linear-gradient(135deg,#200122,#6f0000)",
+"linear-gradient(135deg,#8e0e00,#1f1c18)",
+"linear-gradient(135deg,#cb2d3e,#0f0f0f)",
 
-/* Жовті */
-"linear-gradient(135deg,#f7971e,#ffd200)",
-"linear-gradient(135deg,#ffdd00,#ffbb00)",
+/* Помаранчеві — затемнені */
+"linear-gradient(135deg,#e65c00,#1a1a1a)",
+"linear-gradient(135deg,#ff512f,#dd2476,#1a1a1a)",
+"linear-gradient(135deg,#2c3e50,#fd746c)",
 
-/* Помаранчеві */
-"linear-gradient(135deg,#ff7e5f,#feb47b)",
-"linear-gradient(135deg,#ff9966,#ff5e62)",
+/* Жовто-золоті — з темною базою */
+"linear-gradient(135deg,#1a1a1a,#f7971e,#ffd200)",
+"linear-gradient(135deg,#2b2b2b,#f9d423)",
+"linear-gradient(135deg,#000000,#b79891,#94716b)",
 
-/* Зелені */
-"linear-gradient(135deg,#11998e,#38ef7d)",
-"linear-gradient(135deg,#56ab2f,#a8e063)",
+/* Зелені — темні tech-style */
+"linear-gradient(135deg,#0f9b0f,#000000)",
+"linear-gradient(135deg,#134e5e,#71b280)",
+"linear-gradient(135deg,#1c1c1c,#00c853)",
 
-/* Фіолетові */
-"linear-gradient(135deg,#8e2de2,#4a00e0)",
-"linear-gradient(135deg,#c471f5,#fa71cd)",
+/* Фіолетові — premium/dark */
+"linear-gradient(135deg,#0f0c29,#302b63,#24243e)",
+"linear-gradient(135deg,#1b1b2f,#53354a,#903749)",
+"linear-gradient(135deg,#4a00e0,#8e2de2,#0f0f0f)",
 
-/* Рожеві */
-"linear-gradient(135deg,#ff9a9e,#fad0c4)",
-"linear-gradient(135deg,#f953c6,#b91d73)",
+/* Рожеві — але затемнені (не “цукеркові”) */
+"linear-gradient(135deg,#20002c,#cbb4d4)",
+"linear-gradient(135deg,#0f0f0f,#ff0844,#ffb199)",
+"linear-gradient(135deg,#4b134f,#c94b4b)",
 
-/* Бірюзові */
-"linear-gradient(135deg,#43cea2,#185a9d)",
-"linear-gradient(135deg,#00d2ff,#3a7bd5)",
-
-/* Темні (виглядають дуже круто) */
-"linear-gradient(135deg,#232526,#414345)",
+/* Бірюзові / tech */
+"linear-gradient(135deg,#000000,#0f9b0f,#00c9ff)",
+"linear-gradient(135deg,#1d4350,#243b55,#a43931)",
 "linear-gradient(135deg,#0f2027,#203a43,#2c5364)",
 
-/* Світлі */
-"linear-gradient(135deg,#ffffff,#e0eafc)",
-"linear-gradient(135deg,#f5f7fa,#c3cfe2)"
+/* Темні (найкраща читабельність білого тексту) */
+"linear-gradient(135deg,#000000,#434343)",
+"linear-gradient(135deg,#141414,#1f1f1f,#3a3a3a)",
+"linear-gradient(135deg,#0a0a0a,#2c2c2c)",
 
 ];
 
@@ -1434,7 +1436,7 @@ if (!videoKey) {
       <div id="comments-${videoKey}" class="comments">Ще немає коментарів...</div>
       <input class="comment-liquid-glass" type="text" id="comment-input-${videoKey}" placeholder="Ваш коментар">
       <button class="comment-button" onclick="uploadComment('${videoKey}', '${videoData.email}')">
-        <i class="material-icons">send</i>
+        <i class="material-symbols">send</i>
       </button>
       <div class="comment-section" id="comment-section-${videoKey}">
         <button id="random-comments-${videoKey}" onclick="insertRandomComment('${videoKey}')">🔁 Вставити випадковий текст</button>
@@ -1475,28 +1477,94 @@ async function didUserBlockMe(targetUid) {
   const snap = await database.ref(`users/${targetUid}/blockedUsers/${me.uid}`).once("value");
   return snap.exists();
 }
-/* ================= LOAD VIDEO ================= */
 const videoPlayer = document.getElementById("video-player");
 const detailsEl = document.getElementById("details");
+
+// Гібридний обробник для надійного авто-PiP
+function setupAutoPipHandlers() {
+  // 1. Для сучасних браузерів через медіа-сесію
+  if ('mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler('enterpictureinpicture', async () => {
+        // ВИПРАВЛЕНО: замінено video на videoPlayer
+        const isPipDisabled = videoPlayer.hasAttribute('disablePictureInPicture');
+        if (!document.pictureInPictureElement && !isPipDisabled) {
+          if (videoPlayer.videoWidth === 0) {
+            videoPlayer.style.width = "640px";
+            videoPlayer.style.height = "360px";
+          }
+          await videoPlayer.requestPictureInPicture();
+        }
+      });
+    } catch (error) {
+      console.warn("MediaSession PiP не підтримується", error);
+    }
+  }
+
+  // 2. Резервний варіант для згортання вкладки/застосунку
+  document.addEventListener('visibilitychange', async () => {
+    // ВИПРАВЛЕНО: замінено video на videoPlayer
+    const isPipDisabled = videoPlayer.hasAttribute('disablePictureInPicture');
+    
+    if (document.visibilityState === 'hidden' && !isPipDisabled) {
+      try {
+        if (!document.pictureInPictureElement) {
+          
+          // ТРЮК ДЛЯ ВИПРАВЛЕННЯ НЕВИДИМОГО ВІКНА:
+          // Якщо відео ще не має кадру (розміри 0), примусово даємо плеєру фізичний розмір
+          if (videoPlayer.videoWidth === 0) {
+            videoPlayer.style.width = "640px"; 
+            videoPlayer.style.height = "360px";
+            // Додатково додаємо в DOM, щоб браузер точно побачив зміни
+            videoPlayer.style.display = "block"; 
+          }
+
+          // Даємо браузеру 60 мілісекунд зафіксувати стилі, і лише тоді відкриваємо PiP
+          setTimeout(async () => {
+            try {
+              if (!document.pictureInPictureElement) {
+                await videoPlayer.requestPictureInPicture();
+              }
+            } catch (innerError) {
+              console.log("Помилка PiP всередині таймауту:", innerError.message);
+            }
+          }, 60);
+
+        }
+      } catch (error) {
+        console.log("Авто-PiP відхилено політикою взаємодії:", error.message);
+      }
+    }
+  });
+
+  // Повертаємо стилі назад, коли відео реально завантажиться (щоб не псувати дизайн)
+  // ВИПРАВЛЕНО: замінено video на videoPlayer
+  videoPlayer.addEventListener('loadedmetadata', () => {
+    videoPlayer.style.width = ""; 
+    videoPlayer.style.height = "";
+  });
+}
+
+// Запускаємо ініціалізацію обробників
+setupAutoPipHandlers();
+
+
+/* ================= LOAD VIDEO ================= */
 
 database.ref("videos/" + videoKey).once("value").then(async snapshot => {
   if (!snapshot.exists()) { showNotFound(); return; }
 
   const video = snapshot.val();
   currentVideo = video;
-if (video.authorUid) {
-
-      const blockedMe =
-      await didUserBlockMe(video.authorUid);
-
-      if (blockedMe) {
-
-          showNotFound();
-          return;
-
-      }
-
+  
+  if (video.authorUid) {
+    const blockedMe = await didUserBlockMe(video.authorUid);
+    if (blockedMe) {
+      showNotFound();
+      return;
+    }
   }
+  
   // -------------------------------
   // Підготовка URL faststart з fallback
   // -------------------------------
@@ -1520,44 +1588,41 @@ if (video.authorUid) {
   }
 
   videoPlayer.src = await getVideoUrl(video.url);
-videoPlayer.preload = "auto";
-videoPlayer.load();
-
+  videoPlayer.preload = "auto";
+  videoPlayer.load();
+  
   // -------------------------------
   // Деталі відео
   // -------------------------------
   document.title = sanitize(video.title);
 
-const gradient = randomGradient();
+  const gradient = video.videoColor || randomGradient();
   detailsEl.innerHTML = `
-  <div style="
-    padding: 18px;
-    border-radius: 16px;
-    background: ${gradient};
-    color: white;
-    white-space: normal;
-    word-break: break-word;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-  ">
-    <div id="avatar-placeholder"></div>
-    <h2>${sanitize(video.title)}</h2>
-    <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
-    <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
-    <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
-    <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
-  </div>
-`;
+    <div style="
+      padding: 18px;
+      border-radius: 16px;
+      background: ${gradient};
+      color: white;
+      white-space: normal;
+      word-break: break-word;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    ">
+      <div id="avatar-placeholder"></div>
+      <h2>${sanitize(video.title)}</h2>
+      <p><strong>Автор:</strong> ${sanitize(video.author || "Анонім")}</p>
+      <p><strong>Дата:</strong> ${sanitize(video.publishDate || "—")}</p>
+      <p><strong>Перегляди:</strong> <span id="view-count">${video.views || 0}</span></p>
+      <p><strong>Опис:</strong> ${sanitize(video.description || "Без опису")}</p>
+    </div>
+  `;
 
-// Now safely set avatar text
-const avatar = detailsEl.querySelector("#avatar-placeholder");
-if (video.authorAvatar) {
-
+  // Безпечно встановлюємо аватар
+  const avatar = detailsEl.querySelector("#avatar-placeholder");
+  if (video.authorAvatar) {
     avatar.style.backgroundImage = `url(${video.authorAvatar})`;
-} else {
-
+  } else {
     avatar.innerText = getInitials(video.author);
-
-}
+  }
 
   // -------------------------------
   // Лічильник переглядів
@@ -1567,27 +1632,27 @@ if (video.authorAvatar) {
     database.ref("videos/" + videoKey + "/views").transaction(v => (v || 0) + 1);
     localStorage.setItem(viewedKey, "1");
   }
-// ... після videoPlayer.load();
 
-// Перевірка дозволу на збереження з бази даних
-if (video.saveVideo === true) {
-
-    // ❌ Забороняємо скачування
+  // -------------------------------
+  // Керування дозволами безпеки та PiP
+  // -------------------------------
+  if (video.saveVideo === true) {
+    // ❌ Забороняємо скачування та PiP повністю
     videoPlayer.setAttribute("controlsList", "nodownload");
-    videoPlayer.disablePictureInPicture = true;
+    videoPlayer.setAttribute("disablePictureInPicture", "true"); 
+    videoPlayer.removeAttribute("autoPictureInPicture"); 
 
     videoPlayer.oncontextmenu = (e) => {
-        e.preventDefault();
+      e.preventDefault();
     };
-
-} else {
-
-    // ✅ Дозволяємо скачування
+  } else {
+    // ✅ Дозволяємо контент для PiP та скачування
     videoPlayer.removeAttribute("controlsList");
-    videoPlayer.disablePictureInPicture = false;
-    videoPlayer.oncontextmenu = null;
+    videoPlayer.removeAttribute("disablePictureInPicture"); 
+    videoPlayer.setAttribute("autoPictureInPicture", "true"); 
 
-}
+    videoPlayer.oncontextmenu = null;
+  }
 
   // -------------------------------
   // Коментарі та схожі відео
@@ -1598,6 +1663,8 @@ if (video.saveVideo === true) {
   console.error("Помилка завантаження відео:", err);
   showNotFound();
 });
+
+
 function getVideoKey(videoKey) {
     let key = localStorage.getItem(`videoKey-${videoKey}`);
     if (!key) {
@@ -1625,153 +1692,265 @@ function speakText(text) {
 }
 // Просте шифрування/дешифрування (можна замінити на AES)
 // =================== COMMENTS & BLOCKING ===================
+function getAccentColor(value) {
+    if (!value) return "#ffffff";
 
-async function loadComments(videoKey, videoOwnerEmail) {  
-    const commentsContainer = document.getElementById(`comments-${videoKey}`);  
-    if (!commentsContainer) return;  
+    const match = value.match(/#([0-9a-fA-F]{6})/);
+    return match ? match[0] : "#ffffff";
+}
 
-    commentsContainer.innerHTML = "";  
+function applyAccentUsername(el, gradient) {
+    const color = getAccentColor(gradient);
 
-    // Отримуємо коментарі для цього відео
+    el.style.color = color;
+    el.style.fontWeight = "600";
+    el.style.textShadow = "0 1px 1px rgba(0,0,0,0.25)";
+}
+
+function applyAvatar(el, gradient, fallbackText) {
+    el.style.background = gradient;
+    el.style.backgroundSize = "cover";
+    el.style.backgroundPosition = "center";
+
+    if (fallbackText) {
+        el.textContent = fallbackText;
+    }
+}
+// =================== GLOBAL CLICK (ОДИН РАЗ) ===================
+
+// =================== GLOBAL CLICK (ОДИН РАЗ) ===================
+
+document.addEventListener("click", () => {
+    document.querySelectorAll(".action-menu")
+        .forEach(m => m.style.display = "none");
+});
+
+
+// =================== LOAD COMMENTS ===================
+
+async function loadComments(videoKey, videoOwnerEmail) {
+    const commentsContainer = document.getElementById(`comments-${videoKey}`);
+    if (!commentsContainer) return;
+
+    commentsContainer.innerHTML = "";
+
     const snapshot = await database.ref("comments")
         .orderByChild("videoKey")
         .equalTo(videoKey)
-        .once("value");  
+        .once("value");
 
-    if (!snapshot.exists()) {  
-        commentsContainer.textContent = "Ще немає коментарів...";  
-        applyTranslations();  
-        return;  
-    }  
+    if (!snapshot.exists()) {
+        commentsContainer.textContent = "Ще немає коментарів...";
+        applyTranslations();
+        return;
+    }
 
-    const videoKeyLocal = getVideoKey(videoKey);  
-    const children = Object.values(snapshot.val() || {});  
+    const videoKeyLocal = getVideoKey(videoKey);
+    const children = Object.values(snapshot.val() || {});
 
-    for (const data of children) {  
-        // 🔹 Приватні коментарі
-        if (data.isPrivate && !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)) continue;  
+    const fragment = document.createDocumentFragment();
 
-        // 🔹 Перевірка блокування
-        const blockedMeComments = await didUserBlockMe(data.authorUid);  
+    for (const data of children) {
 
-        // 🔹 Контейнер коментаря
-        const commentDiv = document.createElement("div");  
-        commentDiv.className = "comment";  
+        if (
+            data.isPrivate &&
+            !(data.email === currentUserEmail || videoOwnerEmail === currentUserEmail)
+        ) continue;
 
-        // 🔹 Аватар
-        const avatarComment = document.createElement("div");  
-        avatarComment.className = "avatar";  
+        const blockedMeComments = await didUserBlockMe(data.authorUid);
 
-if (data.authorAvatar) {
-  avatarComment.style.backgroundImage = `url(${data.authorAvatar})`;
-  avatarComment.style.backgroundSize = "cover";
-  avatarComment.style.backgroundPosition = "center";
-} else {
-  avatarComment.style.backgroundImage = "";
-  avatarComment.textContent = getInitials(data.commentAuthor || "");
-}
-// ===== ICON LOGIC =====
-if (blockedMeComments) {
-  avatarComment.style.backgroundImage = "";
-  avatarComment.textContent = "❌";
-} else if (!data.email || data.email === "Видалений акаунт") {
-  avatarComment.style.backgroundImage = "";
-  avatarComment.textContent = "👻";
-} 
+        const gradientAvatar = data.authorColor || randomGradient();
+        const gradientSource = data.authorColor || data.authorGradient || "#ffffff";
 
-        // 🔹 Ім'я користувача
-        const userEl = document.createElement("strong");  
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comment";
+
+        // =================== AVATAR ===================
+
+        const avatarComment = document.createElement("div");
+        avatarComment.className = "avatar";
+
+        if (data.authorAvatar) {
+            avatarComment.style.backgroundImage = `url(${data.authorAvatar})`;
+            avatarComment.style.backgroundSize = "cover";
+            avatarComment.style.backgroundPosition = "center";
+        } else {
+            applyAvatar(
+                avatarComment,
+                gradientAvatar,
+                getInitials(data.commentAuthor || "")
+            );
+        }
+
         if (blockedMeComments) {
-            userEl.textContent = "Акаунт не знайдено";  
+            avatarComment.textContent = "❌";
+            applyAvatar(avatarComment, gradientAvatar);
+
+        } else if (!data.email || data.email === "Видалений акаунт") {
+            avatarComment.textContent = "👻";
+            applyAvatar(avatarComment, gradientAvatar);
+        }
+
+        // =================== USERNAME ===================
+
+        const userEl = document.createElement("strong");
+
+        if (blockedMeComments) {
+            userEl.setAttribute("data-i18n", "account-not-found");
+
         } else if (!data.commentAuthor) {
-            userEl.textContent = "Видалений акаунт";  
+            userEl.setAttribute("data-i18n", "account-deleted");
+
         } else {
-            userEl.textContent = data.commentAuthor;  
+            userEl.textContent = data.commentAuthor;
         }
 
-        // 🔹 Текст коментаря
-        const textEl = document.createElement("span");  
+        applyAccentUsername(userEl, gradientSource);
+
+        // =================== COMMENT TEXT ===================
+
+        const textEl = document.createElement("span");
+
+        let commentText = "";
+
         if (blockedMeComments) {
-            textEl.textContent = ": Коментар недоступний";  
+            commentText = "Коментар недоступний";
+            textEl.textContent = `: ${commentText}`;
+
         } else if (data.isPrivate) {
-            textEl.textContent = ": " + await decryptText(data.comment, videoKeyLocal);  
+            commentText = await decryptText(data.comment, videoKeyLocal);
+            textEl.textContent = `: ${commentText}`;
+
         } else {
-            textEl.textContent = ": " + data.comment;  
+            commentText = data.comment;
+            textEl.textContent = `: ${commentText}`;
         }
 
-        // 🔹 Контейнер тексту + кнопка "три крапки"
-        const textContainer = document.createElement("div");  
-        textContainer.style.display = "inline-flex";  
-        textContainer.style.alignItems = "center";  
-        textContainer.style.gap = "5px";  
-        textContainer.appendChild(textEl);  
-const speakBtn = document.createElement("a");
-speakBtn.classList.add("speakBtn");  
-speakBtn.innerHTML = `<i class="material-icons">micro</i><sup style="background-color: blue; color: white; border-radius: 8px;">NEW</sup>`;
-speakBtn.title = "Озвучити коментар";
-speakBtn.onclick = () => {
-    const profileToSpeak = blockedMeComments ? "Акаунт не знайдено" : data.commentAuthor;
-    const textToSpeak = blockedMeComments ? "Коментар недоступний" : data.comment;
-    speakText(profileToSpeak);
-    speakText(textToSpeak);
+        // =================== CONTAINER ===================
+
+        const textContainer = document.createElement("div");
+        textContainer.style.display = "inline-flex";
+        textContainer.style.alignItems = "center";
+        textContainer.style.gap = "5px";
+
+        textContainer.appendChild(textEl);
+
+        // =================== SPEAK ===================
+
+        const speakBtn = document.createElement("a");
+        speakBtn.classList.add("speakBtn");
+
+        const icon = document.createElement("i");
+        icon.className = "material-symbols";
+        icon.textContent = "mic";
+
+        speakBtn.appendChild(icon);
+
+        speakBtn.onclick = () => {
+    speakText(
+        blockedMeComments
+            ? "Акаунт не знайдено"
+            : data.commentAuthor
+    );
+
+    speakText(
+        blockedMeComments
+            ? "Коментар недоступний"
+            : data.comment
+    );
 };
-textContainer.appendChild(speakBtn);  
-        const actionMenu = document.createElement("div");  
-        actionMenu.classList.add("action-menu");  
-        actionMenu.style.display = "none";  
 
-        const more = document.createElement("a");  
-        more.classList.add("moreBtn");  
-        more.innerHTML = `<i class="material-icons">more_vert</i>`;  
-        more.addEventListener("click", (e) => {  
-            e.stopPropagation();  
-            actionMenu.style.display = actionMenu.style.display === "inline-flex" ? "none" : "inline-flex";  
-        });  
-        textContainer.appendChild(more);  
+        textContainer.appendChild(speakBtn);
 
-        // 🔹 Кнопка блокування
-        const blockUser = document.createElement("button");  
-        blockUser.classList.add("block-button");  
+        // =================== MENU ===================
+
+        const actionMenu = document.createElement("div");
+        actionMenu.className = "action-menu";
+        actionMenu.style.display = "none";
+
+        const more = document.createElement("a");
+        more.className = "moreBtn";
+
+        const moreIcon = document.createElement("i");
+        moreIcon.className = "material-symbols";
+        moreIcon.textContent = "more_vert";
+
+        more.appendChild(moreIcon);
+
+        more.addEventListener("click", (e) => {
+            e.stopPropagation();
+            actionMenu.style.display =
+                actionMenu.style.display === "inline-flex"
+                    ? "none"
+                    : "inline-flex";
+        });
+
+        textContainer.appendChild(more);
+
+        // =================== BLOCK ===================
+
+        const blockUser = document.createElement("button");
+        blockUser.className = "block-button";
+
         blockUser.innerHTML = `
             <span style="display:flex;align-items:center;gap:6px;">
-                <i class="material-icons">block</i>
-                <p data-i18n="block">Заблокувати</p>
-            </span>`;  
-        blockUser.addEventListener("click", () => {  
-            realBlockedUserName = data.commentAuthor || "Видалений акаунт";  
-            blockedUserName = blockedMeComments ? "Акаунт не знайдено" : realBlockedUserName;  
-            blockedUserUid = data.authorUid;  
-            showModalBlocked();  
-        });  
-        actionMenu.appendChild(blockUser);  
-        textContainer.appendChild(actionMenu);  
+                <i class="material-symbols">block</i>
+                <p>Заблокувати</p>
+            </span>
+        `;
 
-        // 🔹 Закриваємо всі меню при кліку поза ними
-        document.addEventListener("click", () => {  
-            document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");  
-        });  
+        blockUser.addEventListener("click", () => {
 
-        // 🔹 Додаємо елементи в DOM
-        commentDiv.appendChild(avatarComment);  
-        commentDiv.appendChild(userEl);  
-        commentDiv.appendChild(textContainer);  
+            realBlockedUserName =
+                data.commentAuthor || "deleted-account";
 
-        commentsContainer.appendChild(commentDiv);  
-    }  
+            blockedUserName =
+                blockedMeComments
+                    ? "account-not-found"
+                    : realBlockedUserName;
 
-    applyTranslations();  
+            blockedUserUid = data.authorUid;
+
+            showModalBlocked();
+        });
+
+        actionMenu.appendChild(blockUser);
+        textContainer.appendChild(actionMenu);
+
+        // =================== ASSEMBLE ===================
+
+        commentDiv.appendChild(avatarComment);
+        commentDiv.appendChild(userEl);
+        commentDiv.appendChild(textContainer);
+
+        fragment.appendChild(commentDiv);
+    }
+
+    commentsContainer.appendChild(fragment);
+    applyTranslations();
 }
 
-// =================== BLOCK MODAL ===================
+
+// =================== MODAL ===================
 
 function showModalBlocked() {
     const modal = document.getElementById("block-user-modal");
     const info = document.getElementById("blocked-information");
 
-    // Відображаємо те, що потрібно бачити користувачу
-    info.textContent = `Ви впевнені, що хочете заблокувати користувача "${blockedUserName}"?`;
+    const isI18nKey =
+        blockedUserName === "account-not-found" ||
+        blockedUserName === "account-deleted";
+
+    if (isI18nKey) {
+        info.innerHTML =
+            `Ви впевнені, що хочете заблокувати користувача "<span data-i18n="${blockedUserName}"></span>"?`;
+    } else {
+        info.textContent =
+            `Ви впевнені, що хочете заблокувати користувача "${blockedUserName}"?`;
+    }
 
     modal.style.display = "flex";
+    applyTranslations();
 }
 
 function closeBlockModal() {
