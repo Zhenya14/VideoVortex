@@ -285,12 +285,14 @@ button.cancel:active {
     </div>
   </div>
 </ios-modal>
-<div id="notification-modal" class="ios-notification-modal">
+<div id="notification-modal" style="display: none;" class="ios-notification-modal">
   <div class="ios-modal-content">
     <h2>VideoVortex</h2>
     <p id="message"></p>
     <div class="modal-divider"></div>
     <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+    </div>
+    </div>
 <div class="profile-header">
   <div class="avatar" id="avatar">?</div>
   <div>
@@ -587,7 +589,8 @@ async function loadVideos() {
 
   for (const v of videos) {
     if (!v.authorUid) continue;
-
+    if(v.private == true) continue;
+    
     if (blockedUserUid && v.authorUid !== blockedUserUid) continue;
 
     const blockedMe = await didUserBlockMe(v.authorUid);
