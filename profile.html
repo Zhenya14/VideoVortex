@@ -441,7 +441,11 @@ async function isUserBlockedByMe(targetUid) {
 
 }
 
-
+function clearFeedCache() {
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("video_cache_"))
+    .forEach(k => localStorage.removeItem(k));
+}
 
 async function didUserBlockMe(targetUid) {
 
@@ -456,14 +460,17 @@ async function didUserBlockMe(targetUid) {
       .ref(`users/${targetUid}/blockedUsers/${me.uid}`)
       .once("value");
 
-    return snap.exists();
+    const isBlocked = snap.exists();
+
+    if (isBlocked) {
+      clearFeedCache(); // 👈 ОЦЕ ТІЛЬКИ ТУТ
+    }
+
+    return isBlocked;
 
   } catch {
-
     return false;
-
   }
-
 }
 
 function getInitials(name) {
@@ -504,7 +511,9 @@ async function loadProfile() {
       if (blockedMeProfile) {
         avatar.style.backgroundImage = "";
         avatar.textContent = "❌";
+        userName.textContent = "Акаунт не знайдено";
         userName.setAttribute("data-i18n", "account-not-found");
+        applyTranslations();
         isHiddenAccount = true;
         return;
       }
@@ -522,6 +531,7 @@ async function loadProfile() {
 
     if (isFrozen) {
       userName.setAttribute("data-i18n", "account-frozen");
+      applyTranslations();
     }
 
     // ======================
@@ -594,7 +604,6 @@ async function loadVideos() {
 
     const blockedMe = await didUserBlockMe(v.authorUid);
     if (blockedMe) continue;
-
     filtered.push(v);
   }
 
