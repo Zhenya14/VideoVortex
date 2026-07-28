@@ -31,5 +31,11 @@
   "popularBtn": "Advance video",
 "boost_1": "You've boosted 1 time",
     "boost_2": "You've boosted 2 times",
-    "boost_3": "You've boosted 3 times"
+    "boost_3": "You've boosted 3 times",
+    "account": "Account",
+    "log-out-of-account": "Logout of account",
+    "edit-settings-profile": "Edit profile",
+    "privacy": "Privacy",
+    "danger-zone": "Danger zone",
+    "delete-account": "Delete Account"
 }
