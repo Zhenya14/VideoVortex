@@ -32,5 +32,11 @@
   "popularBtn": "Video hervorheben",
   "boost_1": "Du hast 1 Mal hervorgehoben",
   "boost_2": "Du hast 2 Mal hervorgehoben",
-  "boost_3": "Du hast 3 Mal hervorgehoben"
+  "boost_3": "Du hast 3 Mal hervorgehoben",
+  "account": "Konto",
+  "log-out-of-account": "Vom Konto abmelden",
+  "edit-settings-profile": "Profil bearbeiten",
+  "privacy": "Datenschutz",
+  "danger-zone": "Gefahrenzone",
+  "delete-account": "Konto löschen"
 }
