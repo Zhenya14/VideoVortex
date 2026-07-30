@@ -2842,8 +2842,7 @@ filter: url(#glass-distortion);
 </a>
 <img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
             <a href="index.html">
-            <h1 style="padding-left: 5px;">VideoVortex</h1>
-            <sup><div id="timer"></div></sup></a>
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup><div id="timer"></div></sup></a>
 
         <button class="search" onclick="openSearch()">
   <i class="material-symbols">search</i>
@@ -5672,7 +5671,7 @@ database.ref("stories")
             const storiesAuthor = document.createElement("span");
              storiesAuthor.classList.add("stories-author");
             if (storyData.uid === currentUserUid){
-              storiesAuthor.innerHTML = `<p data-i18n='my-story'>Моя історія</p>`;
+              storiesAuthor.innerHTML = `<p data-i18n="my-story">Моя історія</p>`;
             } else {
               storiesAuthor.innerHTML = sanitizeHTML(storyData.name);
             }
