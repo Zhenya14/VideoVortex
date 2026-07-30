@@ -3314,7 +3314,7 @@ filter: url(#glass-distortion);
         </div>
 
   <div class="stories-bar" id="stories-bar">
-  <div class="story-item" id="story-item" onclick="openStories()">
+  <div class="story-item" id="story-item" onclick="openYourStories(currentUserUid)">
     <div class="avatar-ring seen">
       <div id="avatar-stories-you" class="avatar-stories"></div>
     </div>
@@ -5498,7 +5498,352 @@ storyAvatarRing.classList.add("avatar-ring");
     );
 });
 }
+function openYourStories(currentUserUid) {
 
+const storiesView =
+    document.getElementById("storyView");
+
+if (!storiesView) return;
+
+storiesView.innerHTML = "";
+storiesView.style.display = "block";
+
+database.ref("stories")
+    .once("value")
+    .then(snapshot => {
+
+        const stories = [];
+
+        // =========================
+        // ЗБИРАЄМО ВЛАСНІ STORIES
+        // =========================
+
+        snapshot.forEach(storySnapshot => {
+
+            // ID конкретної Story
+            const storyId =
+                storySnapshot.key;
+
+            // Дані конкретної Story
+            const storyData =
+                storySnapshot.val();
+
+            if (!storyData) return;
+
+            // Тільки Stories поточного користувача
+            if (
+                storyData.uid !==
+                currentUserUid
+            ) {
+                return;
+            }
+
+            // Перевіряємо термін дії
+            if (
+                storyData.expiresAt &&
+                Date.now() >
+                storyData.expiresAt
+            ) {
+                return;
+            }
+
+            stories.push({
+
+                storyId:
+                    storyId,
+
+                ...storyData
+
+            });
+
+        });
+
+        // =========================
+        // ЯКЩО STORIES НЕМАЄ
+        // =========================
+
+        if (
+            stories.length === 0
+        ) {
+
+            console.log(
+                "Власні Stories не знайдені"
+            );
+
+            storiesView.style.display =
+                "none";
+
+            return;
+
+        }
+
+        // =========================
+        // СОРТУВАННЯ
+        // =========================
+
+        stories.sort(
+            (a, b) =>
+                (a.createdAt || 0) -
+                (b.createdAt || 0)
+        );
+
+        console.log(
+            "Власні Stories:",
+            stories
+        );
+
+        // =========================
+        // ПОКАЗ STORY
+        // =========================
+
+        function showStory(index) {
+
+            // Stories закінчилися
+            if (
+                index >=
+                stories.length
+            ) {
+
+                storiesView.innerHTML =
+                    "";
+
+                storiesView.style.display =
+                    "none";
+
+                return;
+
+            }
+
+            const storyData =
+                stories[index];
+
+            // Очищаємо попередню Story
+            storiesView.innerHTML =
+                "";
+
+            // =========================
+            // АВАТАР
+            // =========================
+
+            const storiesAvatar =
+                document.createElement(
+                    "div"
+                );
+
+            storiesAvatar.classList.add(
+                "stories-avatar"
+            );
+
+            storiesAvatar.style.borderRadius =
+                "64px";
+
+            if (
+                storyData.avatar
+            ) {
+
+                const avatarImg =
+                    document.createElement(
+                        "img"
+                    );
+
+                avatarImg.src =
+                    storyData.avatar;
+
+                avatarImg.classList.add(
+                    "avatar-stories-view"
+                );
+
+                storiesAvatar.appendChild(
+                    avatarImg
+                );
+
+            } else {
+
+                // Якщо аватара немає
+                storiesAvatar.innerText =
+                    getInitials(
+                        storyData.name || ""
+                    );
+
+                storiesAvatar.style.background =
+                    storyData.authorColor ||
+                    "#007aff";
+
+            }
+
+            // =========================
+            // ІМ'Я АВТОРА
+            // =========================
+
+            const storiesAuthor =
+                document.createElement(
+                    "span"
+                );
+
+            storiesAuthor.classList.add(
+                "stories-author"
+            );
+
+            storiesAuthor.innerHTML =
+                `<p data-i18n="my-story">
+                    Моя історія
+                </p>`;
+
+            storiesView.appendChild(
+                storiesAuthor
+            );
+
+            storiesView.appendChild(
+                storiesAvatar
+            );
+
+            // =========================
+            // ФОТО
+            // =========================
+
+            if (
+                storyData.type ===
+                "image"
+            ) {
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+                img.classList.add(
+                    "story-img"
+                );
+
+                img.src =
+                    storyData.url;
+
+                img.style.width =
+                    "100%";
+
+                img.style.height =
+                    "100%";
+
+                img.style.objectFit =
+                    "cover";
+
+                storiesView.appendChild(
+                    img
+                );
+
+                // Через 5 секунд
+                // наступна Story
+                setTimeout(
+                    () => {
+
+                        showStory(
+                            index + 1
+                        );
+
+                    },
+                    5000
+                );
+
+            }
+
+            // =========================
+            // ВІДЕО
+            // =========================
+
+            else if (
+                storyData.type ===
+                "video"
+            ) {
+
+                const video =
+                    document.createElement(
+                        "video"
+                    );
+
+                video.classList.add(
+                    "story-video"
+                );
+
+                video.src =
+                    storyData.url;
+
+                video.autoplay =
+                    true;
+
+                video.loop =
+                    false;
+
+                video.muted =
+                    true;
+
+                video.playsInline =
+                    true;
+
+                video.controls =
+                    false;
+
+                video.style.width =
+                    "100%";
+
+                video.style.height =
+                    "100%";
+
+                video.style.objectFit =
+                    "cover";
+
+                storiesView.appendChild(
+                    video
+                );
+
+                video.play()
+                    .catch(
+                        error => {
+
+                            console.error(
+                                "Не вдалося відтворити відео:",
+                                error
+                            );
+
+                        }
+                    );
+
+                // Після завершення відео
+                // показуємо наступну Story
+                video.onended =
+                    () => {
+
+                        showStory(
+                            index + 1
+                        );
+
+                    };
+
+            }
+
+        }
+
+        // =========================
+        // ПОЧИНАЄМО З ПЕРШОЇ STORY
+        // =========================
+
+        showStory(0);
+
+    })
+    .catch(
+        error => {
+
+            console.error(
+                "Помилка завантаження власних Stories:",
+                error
+            );
+
+            storiesView.style.display =
+                "none";
+
+        }
+    );
+
+}
 function openStories(uid, startStoryId) {
 
 const storiesView =
@@ -5670,11 +6015,8 @@ database.ref("stories")
             }
             const storiesAuthor = document.createElement("span");
              storiesAuthor.classList.add("stories-author");
-            if (storyData.uid === currentUserUid){
-              storiesAuthor.innerHTML = `<p data-i18n='my-story'>Моя історія</p>`;
-            } else {
+            
               storiesAuthor.innerHTML = sanitizeHTML(storyData.name);
-            }
             storiesView.appendChild(
                 storiesAuthor
             );
@@ -5997,7 +6339,7 @@ moreMenu.appendChild(editWallpaperProfile);
         copyLinkProfile.classList.add("copy-link-profile");
         copyLinkProfile.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;"><i class="material-symbols">link_2</i><span data-i18n="copy-link-profile">Копіювати посилання</span><sup class="badge-new-copy-link-profile" data-i18n="new">NEW</sup></a>`;
         copyLinkProfile.onclick = async () => {
-        const profileUrl = `https://zhenya14.github.io/VideoVortex/profile.html?uid={uid}`;
+        const profileUrl = `https://zhenya14.github.io/VideoVortex/profile.html?uid=${uid}`;
 
     try {
         // Копіюємо посилання у буфер обміну
