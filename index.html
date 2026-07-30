@@ -3840,7 +3840,7 @@ function updateMenuPosition() {
         !updateBtn ||
         !btnGlass ||
         !smartMenu ||
-        !bgGlass ||
+        !bgGlass
     ) return;
 
     if (updateBtn.style.display !== "none") {
@@ -5671,7 +5671,7 @@ database.ref("stories")
             const storiesAuthor = document.createElement("span");
              storiesAuthor.classList.add("stories-author");
             if (storyData.uid === currentUserUid){
-              storiesAuthor.innerHTML = `<p data-i18n="my-story">Моя історія</p>`;
+              storiesAuthor.innerHTML = `<p data-i18n='my-story'>Моя історія</p>`;
             } else {
               storiesAuthor.innerHTML = sanitizeHTML(storyData.name);
             }
