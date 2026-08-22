@@ -62,7 +62,7 @@ nav {
 nav a {
 height: 50px;
 align-items: center;
-    justify-content: center;
+justify-content: center;
 display: flex;
 margin: 0 10px;
 padding: 0px 1px;
@@ -70,19 +70,21 @@ border-radius: 50px;
 text-align: center;
 text-decoration: none;
 color: white;
+white-space: nowrap;
+
 background: rgba(255,255,255,0.05);
 backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
 -webkit-backdrop-filter: blur(3px);
 filter: url(#glass-distortion);
 -webkit-filter: url(#glass-distortion);
 
-  /* Тінь і обведення для глибини */
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1px solid rgba(255,255,255,0.08);
+/* Тінь і обведення для глибини */
+box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+border: 1px solid rgba(255,255,255,0.08);
 
-    transition: all 0.3s ease;
-    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
-  }
+transition: all 0.3s ease;
+box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+}
         .profile-header {
     position: relative;
     overflow: hidden;
@@ -119,9 +121,9 @@ filter: url(#glass-distortion);
 .profile-header {
   margin-top: 60px;
   padding: 50px 0px;
-  display: flex;
+  display: block;
   width: 100%;
-  height: 50%;
+  height: 300px;
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -413,37 +415,66 @@ button.cancel:active {
 <script src="i18n.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date();
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
+    const logo = document.getElementById("logo");
+    const logoText = document.getElementById("logo-text");
+    if (!logo || !logoText) return;
 
-  const logo = document.getElementById("logo");
-  const isVyshyvanka = month === 5 && (day === 15 || day === 16);
-  if (isVyshyvanka) {
-    activateVyshyvankaMode();
-    applyIcons(vyshyvankaIcons);
-  } else {
-    deactivateVyshyvankaMode();
-    restoreIcons();
-  }
-  });
-  function activateVyshyvankaMode() {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
 
-  const logo = document.getElementById("logo");
-  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-  if (logo) logo.src = "VideoVortex_logo_embriodery.jpg";
+    const originalLogoSrc = logo.src;
 
-  styleButtons("#8B0000", "#1C1C1C");
-}
+    const isNewYearPeriod =
+        (month === 12 && day >= 15) ||
+        (month === 1 && day <= 25);
 
-function deactivateVyshyvankaMode() {
-  
-  const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+    const isVyshyvanka =
+        month === 5 && day === 16;
 
-  resetButtonColors();
-}
+    const isIndependenceDay = month === 8 && (day === 23 || day === 24);
 
+    // ---------- НОВИЙ РІК ----------
+    if (isNewYearPeriod) {
+        logo.src = "VideoVortex_new_year's_logo.jpg";
+    }
+
+    // ---------- ДЕНЬ ВИШИВАНКИ ----------
+    if (isVyshyvanka) {
+        logo.src = "VideoVortex_logo_embriodery.jpg";
+        styleButtons("#8B0000", "#1C1C1C");
+        applyIcons(vyshyvankaIcons);
+    }
+
+    // ---------- ДЕНЬ НЕЗАЛЕЖНОСТІ ----------
+    if (isIndependenceDay) {
+        logo.src = "VideoVortex_logo_indepedence.jpg";
+        logoText.textContent = "VideoVortex 💙💛";
+        styleButtons("#0057B7", "#FFDD00");
+    }
+
+    // ---------- СНІГ ----------
+    if (month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- ПОТРІЙНИЙ КЛІК ----------
+    logo.addEventListener("click", () => {
+        logoClickCount++;
+
+        if (logoClickCount === 1) {
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 1200);
+        }
+
+        if (logoClickCount === 3) {
+            clearTimeout(logoClickTimer);
+            logoClickCount = 0;
+            launchNewYearEasterEgg();
+        }
+    });
+});
 </script>
 <script>
 function openTab(evt, tabName) {
