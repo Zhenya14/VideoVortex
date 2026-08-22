@@ -972,9 +972,9 @@ position: absolute;
 }
 .more-profile {
   position: absolute;
-  top: 190px;
+  top: 20px;
   right: 30px;
-  z-index: 1;
+  z-index: 1000;
 }
 .random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
 width: 100%; 
@@ -1185,6 +1185,100 @@ transform: scale(0.95); /* легке стиснення */
   padding: 4px 8px;
   border-radius: 10px;
 }
+ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-window {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(30,30,30,0.85);
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.ios-modal-body {
+  padding: 16px;
+  font-size: 14px;
+}
+.ios-modal-footer button {
+  background: transparent;
+ border: 1px solid transparent; /* ВАЖЛИВО */
+padding: 14px;
+  border-radius: 20px;
+margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  width: 95%;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button.delete {
+  color: #e9735a;
+  background: #5c3531;
+  border-radius: 60px;
+  font-weight: bold;
+}
+button.cancel {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
+}
+button.delete:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 15px #ff453a;
+  transform: translateY(-2px);
+}
+
+button.delete:active {
+  border-color: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+  transform: scale(0.95);
+}
+button.cancel:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.cancel:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 .settings-item:hover {
 border-color: #f472b6;
   box-shadow: 0 0 18px rgba(244, 114, 182, .65);
@@ -1265,7 +1359,7 @@ video.video-item {
 #video-container {
 margin-top: 50px;
 width: 90%;
-        }
+  }
         #photo-container {
     margin-top: 50px;
     width: 90%;
@@ -1447,7 +1541,11 @@ body {
 #account-form .avatar:hover {
     transform: scale(1.05); /* легке збільшення при наведенні */
 }
-
+.info-element {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
 #account-form .avatar img {
     width: 100%;
     height: 100%;
@@ -2018,6 +2116,10 @@ position: fixed;
   box-shadow: 0 0 22px rgba(0, 255, 255, .07);
       animation: opacity 0.5s ease;
     }
+  .info-divider {
+    display: flex;
+   align-items: center;
+  }
 /* Контейнер для картинки, затемнення та кнопки */
 .image-container {
   position: relative;
@@ -2833,7 +2935,7 @@ filter: url(#glass-distortion);
     </div>
   </div>
 </div>
-<button class="donate" onclick="window.open('https://www.privat24.ua/send/iwcz8', '_blank')"><i class="material-symbols">favorite</i>Підтримати проект</button>
+
  <nav>
  
         <div style="display: flex; align-items: center;">
@@ -2842,7 +2944,7 @@ filter: url(#glass-distortion);
 </a>
 <img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
             <a href="index.html">
-            <h1 style="padding-left: 5px;">VideoVortex</h1><sup><div id="timer"></div></sup></a>
+            <h1 style="padding-left: 5px;" id="logo-text">VideoVortex</h1><sup><div id="timer"></div></sup></a>
 
         <button class="search" onclick="openSearch()">
   <i class="material-symbols">search</i>
@@ -2890,7 +2992,7 @@ filter: url(#glass-distortion);
                 <a href="#" class="notification" style="display: none;"><i class="material-symbols">notifications</i></a>
            <a href="#" id="plus-desktop-button"><i class="material-symbols">add</i></a>
             <a href="auth.html" id="auth-link">
-                <i class="material-symbols">account_circle</i><span>Увійти</span>
+                <i class="material-symbols">account_circle</i><span data-i18n="signIn">Увійти</span>
             </a>
             <a href="#" id="logout-link" style="display: none;">
                 <i class="material-symbols">logout</i><span class="icon-text">Вийти</span>
@@ -3189,7 +3291,7 @@ filter: url(#glass-distortion);
     </div>
     <div class="modal-blocked-body">
       <p style="color: gray; text-align: left;" data-i18n="information-blocked">
-        Від заблокованих користувачів приховано аватар профілю, відео, дописи та коментарі.
+        Від заблокованих користувачів приховано аватар профілю, історії, відео, дописи та коментарі.
       </p>
       <div id="blockedUsersList" class="modal-blocked">
         <!-- Тут динамічно будуть вставлятися заблоковані користувачі -->
@@ -3245,7 +3347,7 @@ filter: url(#glass-distortion);
     <label for="sleepEnd">Час закінчення сну:</label>
     <input type="time" id="sleepEnd" value="07:00">
                 </div>
-                <button class="donate" onclick="window.open('https://www.privat24.ua/send/iwcz8', '_blank')"><i class="material-symbols">favorite</i>Підтримати проект</button>
+
       </div>
        
     </div>
@@ -3336,6 +3438,37 @@ filter: url(#glass-distortion);
 </div>
 </div>
 </div>
+   <ios-modal id="delete-account-modal">
+  <div class="ios-modal-window">
+
+    <div class="ios-modal-body">
+      <p id="deleted-information" data-i18n="deleted-information">Ви впевнені, що хочете видалити акаунт? Усі ваші публікації будуть видалені назавжди. Цю дію неможливо скасувати.</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="delete" data-i18n="deleted" onclick="deleteAccount()">Видалити акаунт</button>
+      <button class="cancel" data-i18n="cancel" onclick="closeDeleteAccountModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
+  <ios-modal id="support-author-modal">
+  <div class="ios-modal-window">
+<div class="modal-header">
+  <span data-i18n="support-question">💙 Вам зараз потрібна підтримка?</span>
+</div>
+    <div class="ios-modal-body">
+      <p id="support-information" data-i18n="support-information">Схоже, вам може бути непросто. Пам'ятайте: вам не обов'язково проходити через це наодинці.
+
+Якщо ви переживаєте складний момент, спробуйте поговорити з людиною, якій довіряєте, або звернутися по професійну допомогу.
+</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button data-i18n="needSupport" onclick="needSupport()">Мені потрібна допомога</button>
+      <button data-i18n="IAmFine" onclick="closeSupportModal()">Я в порядку</button>
+    </div>
+  </div>
+</ios-modal>
         <div  class="smart-menu">
           <div class="bg-liquid-glass">
  <a class="button-liquid-glass" href="#" id="smart-video" onclick="video()">
@@ -3469,13 +3602,17 @@ filter: url(#glass-distortion);
   <div class="settings-card danger-zone">
     <h3 data-i18n="danger-zone">Небезпечна зона</h3>
 
-    <button class="settings-item danger" onclick="deleteAccount()"><i class="material-symbols">person_remove</i>
+    <button class="settings-item danger" onclick="deleteAccountModal()"><i class="material-symbols">person_remove</i>
       <p data-i18n="delete-account">Видалити акаунт</p>
     </button>
   </div>
+    <div class="settings-card">
+    <h3 data-i18n="help-zone">Допомога</h3>
+   <button class="settings-item" onclick="window.open('https://www.privat24.ua/send/iwcz8', '_blank')"><i class="material-symbols">volunteer_activism</i>Підтримати проект</button>
+  </div>
         <footer style=" position: relative;z-index: 1; text-align: center; justify-content: center; padding: 1px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%; height: 20%;">
                 <h3 data-i18n="application-version">Версія додатка:</h3>
-                <p>7.0.0</p>
+                <p>7.1.0</p>
         </footer>
         </div>
 <script src="i18n.js"></script>
@@ -3561,7 +3698,7 @@ async function generateDescription() {
 </script>
 <script defer>
 
-const APP_VERSION = "7.0.0";
+const APP_VERSION = "7.1.0";
 
 function clearLocalStorageExceptAuth() {
     const keepPrefixes = [
@@ -4023,7 +4160,7 @@ async function openCamera() {
 function captureStop() {
   document.getElementById("story-camera").style.display = "none";
   document.querySelector(".bg-liquid-glass").style.display = "flex";
-  document.querySelector(".btn-liquid-glass").style.display = "flex";
+  document.getElementById("plus-button").style.display = "flex";
 }
 
 
@@ -4424,6 +4561,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ================= VALENTINE (OVERRIDE LAYER) ================= */
   const isValentine = month === 2 && (day === 13 || day === 14);
+  const isIndependenceUkraine = month === 8 && (day === 23 || day === 24);
 const isVyshyvanka = month === 5 && (day === 20 || day === 21);
   if (isValentine) {
     applyIcons(valentineIcons);
@@ -4433,6 +4571,13 @@ const isVyshyvanka = month === 5 && (day === 20 || day === 21);
     applyIcons(vyshyvankaIcons);
   } else {
     deactivateVyshyvankaMode();
+    restoreIcons();
+  }
+  if (isIndependenceUkraine) {
+    activateIndepedenceMode();
+    applyIcons(independenceIcons);
+  } else {
+    deactivateIndepedenceMode();
     restoreIcons();
   }
   const is = (month === 4 && day >= 10  && day <= 25);
@@ -4532,8 +4677,23 @@ function activateVyshyvankaMode() {
 
   styleButtons("#8B0000", "#1C1C1C");
 }
-
 function deactivateVyshyvankaMode() {
+  
+  const logo = document.getElementById("logo");
+  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  resetButtonColors();
+}
+  function activateIndepedenceMode() {
+
+  const logo = document.getElementById("logo");
+  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
+  if (logo) logo.src = "VideoVortex_logo_indepedence.jpg";
+
+  styleButtons("#0057B7", "#FFDD00");
+}
+
+function deactivateIndepedenceMode() {
   
   const logo = document.getElementById("logo");
   if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
@@ -4596,7 +4756,7 @@ const halloweenIcons = {
   "account-desktop-link": (user) => `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🕸",
   "logout-link": "🚪",
-  "auth-link": "🚪",
+  "auth-link": `🚪<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `👻<span data-i18n="post">Дописи</span>`,
   "smart-video": `🦇<span data-i18n="video">Відео</span>`,
   "smart-settings": `🧪<span data-i18n="settings">Налаштування</span>`,
@@ -4611,7 +4771,7 @@ const newyearIcons = {
   "account-desktop-link": (user) => `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "⛄",
   "logout-link": "🚪",
-  "auth-link": "🚪",
+  "auth-link": `🚪<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `❄️<span data-i18n="post">Дописи</span>`,
   "smart-video": `🎬<span data-i18n="video">Відео</span>`,
   "smart-settings": `🎁<span data-i18n="settings">Налаштування</span>`,
@@ -4626,7 +4786,7 @@ const valentineIcons = {
     `❤️<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "💖",
   "logout-link": "🚪",
-  "auth-link": "💘",
+  "auth-link": `💘<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `💌<span data-i18n="post">Дописи</span>`,
   "smart-video": `💞<span data-i18n="video">Відео</span>`,
   "smart-settings": `💌<span data-i18n="settings">Налаштування</span>`,
@@ -4641,7 +4801,7 @@ const Icons = {
     `🐣<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🥚",
   "logout-link": "🚪",
-  "auth-link": "🐰",
+  "auth-link": `🐰<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `🌸<span data-i18n="post">Дописи</span>`,
   "smart-video": `🐥<span data-i18n="video">Відео</span>`,
   "smart-settings": `🐣<span data-i18n="settings">Налаштування</span>`,
@@ -4656,7 +4816,7 @@ const vyshyvankaIcons = {
     `🧵<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🪡",
   "logout-link": "🚪",
-  "auth-link": "🧶",
+  "auth-link": `🧶<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `🪢<span data-i18n="post">Дописи</span>`,
   "smart-video": `📽️<span data-i18n="video">Відео</span>`,
   "smart-settings": `🧵🪡<span data-i18n="settings">Налаштування</span>`,
@@ -4671,7 +4831,7 @@ const independenceIcons = {
     `🇺🇦<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "💙💛",
   "logout-link": "🚪",
-  "auth-link": "🕊️",
+  "auth-link": `🕊️<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `📝<span data-i18n="post">Дописи</span>`,
   "smart-video": `📹<span data-i18n="video">Відео</span>`,
   "smart-settings": `💙💛🕊️<span data-i18n="settings">Налаштування</span>`,
@@ -4679,7 +4839,8 @@ const independenceIcons = {
   "post": `📝<span data-i18n="post">Дописи</span>`,
   "video": `📹<span data-i18n="video">Відео</span>`,
   "plus-button": `<i class="icon">🌾</i>`,
-  "plus-desktop-button": "🌾"
+  "plus-desktop-button": "🌾",
+  "logo-text": "VideoVortex 💙💛"
 };
 function applyIcons(set, user = null) {
   for (const [id, icon] of Object.entries(set)) {
@@ -4778,6 +4939,7 @@ const closeAccountModal = document.querySelector(".close-account-modal");
 const closeEditModal = document.querySelector(".close-edit-modal");
 const plus = document.getElementById("plus-button");
 const plusDesktop = document.getElementById("plus-desktop-button");
+const deleteModal = document.getElementById("delete-account-modal");
 const closeBtn = document.querySelector(".close-modal");
 const tabButtons = document.querySelectorAll(".tab-button");
 const tabContents = document.querySelectorAll(".tab-content");
@@ -4816,7 +4978,7 @@ closeArchiveModal?.addEventListener("click", () => archiveModal.style.display = 
 closeEditModal?.addEventListener("click", () => editModal.style.display = "none");
 closeBtn?.addEventListener("click", () => modal.style.display = "none");
 // Закриття при кліку поза модалкою
-[modal, accountModal, archiveModal, editModal, editWallpaperProfileModal].forEach(m => {
+[modal, accountModal, archiveModal, editModal, editWallpaperProfileModal, deleteModal].forEach(m => {
     m?.addEventListener("click", e => {
         if (e.target === m) m.style.display = "none";
     });
@@ -5165,7 +5327,12 @@ function resendVerification() {
     }
 }
 function deleteAccountModal() {
+  const deleteAccountModal = document.getElementById("delete-account-modal");
   deleteAccountModal.style.display = "flex";
+}
+function closeDeleteAccountModal() {
+  const deleteAccountModal = document.getElementById("delete-account-modal");
+  deleteAccountModal.style.display = "none";
 }
 async function saveWallpaperChanges() {
   const wallpaperInput = document.getElementById("set-wallpaper-profile").files[0];
@@ -5179,12 +5346,18 @@ async function saveWallpaperChanges() {
         
         await database.ref("users/" + user.uid).update({ wallpaperId});
                 const url = await storageRef.getDownloadURL();
-          document.getElementById("message-notification").innerHTML =
-            "Шпалери застосовано!";
+          message.innerHTML = `
+          <p data-i18n="wallpapers-save-successfully">Шпалери застосовано!
+          </p>`;
+          applyTranslations();
+          showNotificationModal();
     } catch (error) {
         console.error(error);
-        document.getElementById("message-notification").innerHTML =
-            "Помилка при завантаженні шпалер.";
+        message.innerHTML = `
+        <p data-i18n="wallpapers-save-error">Помилка при завантаженні шпалер.
+        </p>`;
+        applyTranslations();
+        showNotificationModal();
     }
 }
 function deleteAccount() {
@@ -5507,7 +5680,8 @@ if (!storiesView) return;
 
 storiesView.innerHTML = "";
 storiesView.style.display = "block";
-
+document.querySelector(".bg-liquid-glass").style.display = "none";
+  document.getElementById("plus-button").style.display = "none";
 database.ref("stories")
     .once("value")
     .then(snapshot => {
@@ -5683,11 +5857,10 @@ database.ref("stories")
             storiesAuthor.classList.add(
                 "stories-author"
             );
-
-            storiesAuthor.innerHTML =
-                `<p data-i18n="my-story">
-                    Моя історія
-                </p>`;
+            storiesAuthor.innerHTML = `
+            <p data-i18n='my-story'>
+            Моя історія
+            </p>`;
 
             storiesView.appendChild(
                 storiesAuthor
@@ -5827,7 +6000,7 @@ database.ref("stories")
         // =========================
 
         showStory(0);
-
+applyTranslations();
     })
     .catch(
         error => {
@@ -5853,7 +6026,8 @@ if (!storiesView) return;
 
 storiesView.innerHTML = "";
 storiesView.style.display = "block";
-
+document.querySelector(".bg-liquid-glass").style.display = "none";
+  document.getElementById("plus-button").style.display = "none";
 database.ref("stories")
     .once("value")
     .then(snapshot => {
@@ -6916,6 +7090,65 @@ async function freezeUser(uid, status = "frozen_soft") {
         return false;
     }
 }
+      function needSupport() {
+    const modal = document.getElementById("support-author-modal");
+    const content = modal?.querySelector(".support-modal-content");
+
+    if (!modal || !content) return;
+
+    content.innerHTML = `
+        <button
+            class="support-modal-close"
+            onclick="closeSupportModal()"
+            aria-label="Закрити"
+        >
+            ×
+        </button>
+
+        <div class="support-icon">💙</div>
+
+        <h2>Ви не самі</h2>
+
+        <p>
+            Добре, що ви сказали про це.
+            Спробуйте зараз звернутися до людини,
+            якій довіряєте.
+        </p>
+
+        <p>
+            Якщо вам безпосередньо загрожує небезпека,
+            зверніться до місцевих екстрених служб
+            або попросіть дорослого, якому довіряєте,
+            залишитися поруч.
+        </p>
+
+        <div class="support-actions">
+
+            <button
+                class="support-help"
+                onclick="openSupportResources()"
+            >
+                Ресурси підтримки
+            </button>
+
+            <button
+                class="support-ok"
+                onclick="closeSupportModal()"
+            >
+                Закрити
+            </button>
+
+        </div>
+    `;
+
+    modal.classList.add("active");
+}
+
+
+function openSupportResources() {
+    // Тут можна відкрити окрему сторінку VideoVortex
+    window.location.href = "support.html";
+}
 function clearFeedCache() {
   Object.keys(localStorage)
     .filter(k => k.startsWith("video_cache_"))
@@ -7129,12 +7362,6 @@ detailsElement.innerHTML = `
             : sanitizeHTML(videoDataRaw.author || "Анонім")
     }
 
-    ${
-        isFrozen
-            ? " <span style='color:#4aa3ff;' data-i18n='account-deleted'></span>"
-            : ""
-    }
-
     ${videoDataRaw.owner === true && videoDataRaw.verifiedBadge
         ? `<img class='adaptive-stroke' src='${videoDataRaw.verifiedBadge}'>`
         : ""
@@ -7143,12 +7370,11 @@ detailsElement.innerHTML = `
     <br>
 
     ${getSafeBanduraHTML(videoDataRaw.banduraExtra)}
-<li><span data-i18n='views'>Переглядів</span>: ${videoDataRaw.views || 0}
-    <br></li>
+    <div class='info-element'>
+<p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>play_arrow</i>${videoDataRaw.views || 0}</p><span class='info-divider'>•</span>
+ <p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>event</i>${videoDataRaw.publishDate || "—"}
+</p></div>`;
     
-
-    <span data-i18n='publish-date'>Дата публікації</span>: ${videoDataRaw.publishDate || "—"}
-`;
 
         // 🔹 MENU
         const moreBtn = document.createElement("a");
@@ -7246,6 +7472,7 @@ if (currentUserRole === "moderator") {
         container.appendChild(videoWrapper);
 
         videoGallery.appendChild(container);
+      applyTranslations();
     });
 }
 function cleanupExpiredVideos() {
@@ -8544,6 +8771,7 @@ auth.onAuthStateChanged(async (user) => {
         const isHalloween = m === 10 && (d === 30 || d === 31);
         const isValentineDay = m === 2 && (d === 13 || d === 14);
         const isVyshyvankaDay = m === 5 && (d === 20 || d === 21);
+      const isIndependenceUkraineDay = m === 8 && (d === 23 || d === 24);
         const isWeek = (m === 4 && d >= 10 && d <= 25);
         const isNewYear = (m === 12 && d >= 15) || (m === 1 && d <= 25);
 
@@ -8563,8 +8791,18 @@ auth.onAuthStateChanged(async (user) => {
             if (!isValentineDay) restoreIcons();
             if (!isWeek) restoreIcons();
             if (!isVyshyvankaDay) restoreIcons();
+            if (!isIndependenceUkraineDay) restoreIcons();
         }
-
+if (isIndependenceUkraineDay) {
+            activateIndepedenceMode();
+            applyIcons(independenceIcons, userProfile);
+        } else {
+            deactivateIndepedenceMode();
+  if (!isValentineDay) restoreIcons();
+            if (!isWeek) restoreIcons();
+            if (!isVyshyvankaDay) restoreIcons();
+            if (!isNewYear) restoreIcons();
+}
         if (isValentineDay) applyIcons(valentineIcons, userProfile);
         if (isWeek) applyIcons(Icons, userProfile);
 
@@ -8574,6 +8812,7 @@ auth.onAuthStateChanged(async (user) => {
         } else {
             deactivateVyshyvankaMode();
         }
+
 
         // =========================
         // 🔹 UI
@@ -9303,10 +9542,15 @@ if (photoData.authorUid) {
         }
         // 🔹 Фото елемент
         const photoElement = document.createElement("img");
-        photoElement.src = photoData.url;
+        if(!photoData.images) {
+      photoElement.src = photoData.url;
         photoElement.alt = photoData.title || "Фото";
         photoElement.classList.add("photo-item");
-
+        } else {
+          photoElement.src = photoData.images;
+        photoElement.alt = photoData.title || "Фото";
+        photoElement.classList.add("photo-item");
+        }
         // 🔹 Збільшення переглядів при кліку
         photoElement.addEventListener("click", () => {
             const newViewCount = (photoData.views || 0) + 1;
@@ -9381,7 +9625,7 @@ avatar.onclick = () => {
             deletePhotoButton.style.backgroundColor = "red";
             deletePhotoButton.style.color = "white";
             deletePhotoButton.style.marginTop = "10px";
-            deletePhotoButton.onclick = () => deletePhoto(photoKey, photoData.url);
+            deletePhotoButton.onclick = () => deletePhoto(photoKey, photoData.url, photoData.images);
             infophotoElement.appendChild(deletePhotoButton);
         }
 
@@ -9395,30 +9639,58 @@ avatar.onclick = () => {
         Photocontainer.appendChild(photoElement);
         
         photoGallery.appendChild(Photocontainer);
+      applyTranslations();
     });
 }
 
-function deletePhoto(photoKey, photoURL) {
-    if (confirm("Ви впевнені, що хочете видалити це фото?")) {
-        // Видалення файлу зі сховища
-        const storageRef = storage.refFromURL(photoURL);
-        storageRef.delete().then(() => {
-            // Видалення запису з бази даних
-            database.ref(`photos/${photoKey}`).remove().then(() => {
-              showNotificationModal();
-                message.innerHTML = "Фото успішно видалено.";
-                loadPhotos();
-            }).catch((error) => {
-              showNotificationModal();
-                message.innerHTML = "Помилка при видаленні фото з бази даних: " + error.message;
-            });
-        }).catch((error) => {
-          showNotificationModal();
-            message.innerHTML = "Помилка при видаленні фото зі сховища: " + error.message;
-        });
+async function deletePhoto(photoKey, photoURL, photoImages) {
+    if (!confirm("Ви впевнені, що хочете видалити це фото?")) {
+        return;
     }
-}
 
+    try {
+        // 1. Видаляємо основне фото зі Storage
+        if (photoURL) {
+            const storageRef = storage.refFromURL(photoURL);
+            await storageRef.delete();
+        }
+
+        // 2. Якщо є додаткові фото — видаляємо їх
+        if (Array.isArray(photoImages)) {
+            for (const imageURL of photoImages) {
+                if (!imageURL) continue;
+
+                try {
+                    const imageRef = storage.refFromURL(imageURL);
+                    await imageRef.delete();
+                } catch (error) {
+                    console.warn(
+                        "Не вдалося видалити додаткове фото:",
+                        imageURL,
+                        error
+                    );
+                }
+            }
+        }
+
+        // 3. Видаляємо запис із Realtime Database
+        await database.ref(`photos/${photoKey}`).remove();
+
+        // 4. Повідомлення
+        showNotificationModal();
+        message.innerHTML = "Фото успішно видалено.";
+
+        // 5. Оновлюємо галерею
+        loadPhotos();
+
+    } catch (error) {
+        console.error("Помилка видалення фото:", error);
+
+        showNotificationModal();
+        message.innerHTML =
+            "Помилка при видаленні фото: " + error.message;
+    }
+              }
 function loadPhotoChannelSelect() {
     const select = document.getElementById("photo-channel-select");
     if (!select) return;
@@ -9568,7 +9840,6 @@ async function uploadPhoto() {
 
         showPopup();
         message.innerHTML = "Фото завантажено!";
-        document.getElementById("upload-photo-form").reset();
         document.getElementById("upload-modal").style.display = "none";
 
         if (progressContainer) progressContainer.style.display = "none";
