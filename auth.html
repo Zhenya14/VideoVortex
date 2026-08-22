@@ -159,9 +159,10 @@ height: 50px;
 align-items: center;
     justify-content: center;
 display: flex;
-    padding: 0px 5px;
+    padding: 0px px;
     border-radius: 50px;
     text-align: center;
+          white-space: nowrap;
     text-decoration: none;
     color: white;
     background: #111111;
@@ -189,7 +190,7 @@ transform: scale(0.95); /* легке стиснення */
 <nav>
 <img id="logo" src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
             <a href="index.html">
-            <h1 style="padding-left: 5px;">VideoVortex</h1></a>
+            <h1 style="padding-left: 5px;">VideoVortex</h1><sup><div id="timer"></div></sup></a>
 </nav>
 
 <!-- Модальне вікно апеляції -->
@@ -308,60 +309,64 @@ function launchNewYearEasterEgg() {
 // ===================== Ініціалізація =====================
 document.addEventListener("DOMContentLoaded", () => {
     const logo = document.getElementById("logo");
+    const logoText = document.getElementById("logo-text");
+    if (!logo || !logoText) return;
+
     const today = new Date();
-    const month = today.getMonth()+1;
+    const month = today.getMonth() + 1;
     const day = today.getDate();
 
-    // Новорічний період (1 січня)
-    const isNewYearPeriod = (month === 12 && day >= 15) || (month === 1 && day <= 25);
-    if(isNewYearPeriod && logo && !logo.dataset.originalSrc) {
-        logo.dataset.originalSrc = logo.src;
-        logo.src = "VideoVortex_new_year's_logo.jpg"; // новорічний логотип
+    const originalLogoSrc = logo.src;
+
+    const isNewYearPeriod =
+        (month === 12 && day >= 15) ||
+        (month === 1 && day <= 25);
+
+    const isVyshyvanka =
+        month === 5 && day === 16;
+
+    const isIndependenceDay = month === 8 && (day === 23 || day === 24);
+
+    // ---------- НОВИЙ РІК ----------
+    if (isNewYearPeriod) {
+        logo.src = "VideoVortex_new_year's_logo.jpg";
     }
 
-  if (isVyshyvanka) {
-    activateVyshyvankaMode();
-    applyIcons(vyshyvankaIcons);
-  } else {
-    deactivateVyshyvankaMode();
-    restoreIcons();
-  }
-  function activateVyshyvankaMode() {
+    // ---------- ДЕНЬ ВИШИВАНКИ ----------
+    if (isVyshyvanka) {
+        logo.src = "VideoVortex_logo_embriodery.jpg";
+        styleButtons("#8B0000", "#1C1C1C");
+        applyIcons(vyshyvankaIcons);
+    }
 
-  const logo = document.getElementById("logo");
-  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-  if (logo) logo.src = "VideoVortex_logo_embriodery.jpg";
+    // ---------- ДЕНЬ НЕЗАЛЕЖНОСТІ ----------
+    if (isIndependenceDay) {
+        logo.src = "VideoVortex_logo_indepedence.jpg";
+        logoText.textContent = "VideoVortex 💙💛";
+        styleButtons("#0057B7", "#FFDD00");
+    }
 
-  styleButtons("#8B0000", "#1C1C1C");
-}
-
-function deactivateVyshyvankaMode() {
-  
-  const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
-
-  resetButtonColors();
-}
-
-    // ---------- СНІГ 1 СІЧНЯ ----------
-    if(month === 1 && day === 1) {
+    // ---------- СНІГ ----------
+    if (month === 1 && day === 1) {
         startSnow();
     }
 
-    // ---------- Потрійний клік для пасхалки ----------
-    if(logo) {
-        logo.addEventListener("click", () => {
-            logoClickCount++;
-            if(logoClickCount === 1) {
-                logoClickTimer = setTimeout(()=>{logoClickCount=0;},1200);
-            }
-            if(logoClickCount===3){
-                clearTimeout(logoClickTimer);
-                logoClickCount=0;
-                launchNewYearEasterEgg();
-            }
-        });
-    }
+    // ---------- ПОТРІЙНИЙ КЛІК ----------
+    logo.addEventListener("click", () => {
+        logoClickCount++;
+
+        if (logoClickCount === 1) {
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 1200);
+        }
+
+        if (logoClickCount === 3) {
+            clearTimeout(logoClickTimer);
+            logoClickCount = 0;
+            launchNewYearEasterEgg();
+        }
+    });
 });
 </script>
 <script>
