@@ -181,6 +181,23 @@ button.cancel:active {
   box-shadow: 0 0 10px #06b6d4;
   transform: scale(0.95);
 }
+button.agree-btn {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
+}   
+      button.agree-btn:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.agree-btn:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
+}
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -670,6 +687,45 @@ box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
 
 transform: scale(0.95); /* легке стиснення */
 }
+      .sendSupportBtn {
+  height: 5%;
+  width: 100%;
+  padding: 0;
+  border-radius: 50px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: #111;
+  border: 2px solid #333;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: 
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease,
+    border-color 0.3s ease;
+}
+        .sendSupportBtn:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.sendSupportBtn:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
 .shareBtn {
   height: 5%;
   width: 100%;
@@ -817,6 +873,13 @@ box-shadow: 0 0 15px #f472b6; /* світіння */
 
 transform: translateY(-2px); /* легке підняття */
         }
+      .player-container {
+    /* Плавна зміна кольору фону за 0.8 секунди */
+    transition: background-color 0.8s ease; 
+    background-color: #121212; /* Початковий темний фон */
+    border-radius: 12px;
+}
+
 .moreBtn:active {
 border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
 
@@ -1056,6 +1119,23 @@ position: fixed;
 
     </nav>
     <div id="confetti-container"></div>
+  <ios-modal id="support-author-modal">
+  <div class="ios-modal-window">
+    <div class="ios-modal-header" data-i18n="support-author-title">
+      💙 Ви хочете підтримати автора?
+
+    </div>
+
+    <div class="ios-modal-body">
+      <p data-i18n="support-author-information">Ваша підтримка може показати людині, що вона не залишилася непоміченою. Вам не потрібно нічого писати.</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="agree-btn" data-i18n="send-support" onclick="sendSupportAuthor()" style="display: flex; justify-content: center; align-items: center; margin: 0 10px;"><i class="material-symbols">favorite</i>Надіслати підтримку</button>
+      <button class="agree-btn" data-i18n="cancel" onclick="closeSupportModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
     <ios-modal id="block-user-modal">
   <div class="ios-modal-window">
     <div class="ios-modal-header">
@@ -1102,6 +1182,7 @@ position: fixed;
   </div>
 <div id="player-container" class="player-container">
     <div id="video-container">
+        <canvas id="video-canvas" style="display: none;"></canvas>
         <video id="video-player" controls playsinline autoplay preload="auto"></video>
         <div class="controls" style="display: none;">
     <button id="playPause"><i class="material-symbols">play_arrow</i></button>
@@ -1116,7 +1197,7 @@ position: fixed;
         <div class="video-info" id="video-info">
 <div class="details" id="details"></div>
 <hr>
-<div class="reactions">
+<div class="reactions" id="reactions">
 <a class="like" id="like">
   <i class="material-symbols">thumb_up</i>
   <p id="likeCount" style="padding: 5px;">0</p>
@@ -1132,6 +1213,9 @@ position: fixed;
 <a class="shareBtn" id="shareBtn">
   <i class="material-symbols">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
     </a>
+  <a class="sendSupportBtn" id="sendSupportBtn">
+  <i class="material-symbols">favorite</i><p data-i18n="supportBtn" style="padding: 5px 0px;">Підтримати автора</p> 
+  </a>
 </div>
 
 <hr>
@@ -1452,16 +1536,7 @@ async function uploadComment(videoKey, videoOwnerEmail) {
     const publishDate = `${day}.${month}.${year}`;
 
     // 🔥 1. ЗБЕРІГАЄМО КОМЕНТ
-    await database.ref("comments").push({
-        comment: commentData,
-        email: currentUserEmail,
-        commentAuthor: commentAuthor,
-        authorUid: uid,
-        videoOwner: videoOwnerEmail,
-        isPrivate: isPrivate,
-        publishDate: publishDate,
-        videoKey: videoKey
-    });
+    
 
     // 🔥 2. ВІДПРАВКА PUSH
     try {
@@ -1505,7 +1580,7 @@ async function uploadComment(videoKey, videoOwnerEmail) {
 /* ================= GET VIDEO KEY ================= */
 const params = new URLSearchParams(location.search);
 const videoKey = params.get("key");
-
+let videoAuthorUid = "";
 if (!videoKey) {
   showNotFound();
   throw new Error("No video key");
@@ -1645,7 +1720,8 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
 
   const video = snapshot.val();
   currentVideo = video;
-  
+  const authorUid = video.authorUid;
+  videoAuthorUid = authorUid;
   if (video.authorUid) {
     const blockedMe = await didUserBlockMe(video.authorUid);
     if (blockedMe) {
@@ -1753,7 +1829,38 @@ database.ref("videos/" + videoKey).once("value").then(async snapshot => {
   showNotFound();
 });
 
+async function sendSupportAuthor() {
+  const uid = firebase.auth().currentUser.uid;
+    if (!uid) {
+        console.error("Користувач не авторизований");
+        return;
+    }
 
+    if (!videoAuthorUid) {
+        console.error("UID автора відео не знайдено");
+        return;
+    }
+
+    try {
+        await database
+            .ref(`supportRequests/${videoAuthorUid}`)
+            .push({
+                status: "pending",
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+
+        console.log("💙 Підтримку надіслано");
+
+        const modal = document.getElementById("support-author-modal");
+
+        if (modal) {
+            modal.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Помилка надсилання підтримки:", error);
+    }
+}
 function getVideoKey(videoKey) {
     let key = localStorage.getItem(`videoKey-${videoKey}`);
     if (!key) {
@@ -2045,7 +2152,10 @@ function showModalBlocked() {
     modal.style.display = "flex";
     applyTranslations();
 }
-
+function closeSupportModal() {
+  const modalSupport = document.getElementById("support-author-modal");
+  modalSupport.style.display = "none";
+}
 function closeBlockModal() {
     const modal = document.getElementById("block-user-modal");
     modal.style.display = "none";
@@ -2506,7 +2616,9 @@ document.getElementById('popularBtn').addEventListener('click', async () => {
   }
 });
 
-
+document.getElementById('sendSupportBtn').addEventListener('click', async () => {
+  document.getElementById("support-author-modal").style.display = "flex";
+});
 document.getElementById('shareBtn').addEventListener('click', async () => {
   if (!currentVideo) {
     alert('Відео ще не завантажене');
@@ -2529,6 +2641,70 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
   }
 });
 </script>
+  <script>
+const video = document.getElementById('video-player');
+const canvas = document.getElementById('video-canvas');
+const container = document.getElementById('player-container');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+// Налаштування розміру canvas для оптимізації
+const SAMPLE_SIZE = 10;
+canvas.width = SAMPLE_SIZE;
+canvas.height = SAMPLE_SIZE;
+
+let animationFrameId = null;
+
+// Функція для розрахунку кольору та оновлення фону
+function updateAmbientBackground() {
+    if (video.paused || video.ended) return;
+
+    // Малюємо поточний кадр у маленький розмір (відбувається авто-змішування кольорів)
+    ctx.drawImage(video, 0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
+    
+    // Беремо масив пікселів
+    const imageData = ctx.getImageData(0, 0, SAMPLE_SIZE, SAMPLE_SIZE).data;
+    
+    let r = 0, g = 0, b = 0;
+    const pixelCount = SAMPLE_SIZE * SAMPLE_SIZE;
+
+    // Рахуємо середнє значення
+    for (let i = 0; i < imageData.length; i += 4) {
+        r += imageData[i];
+        g += imageData[i + 1];
+        b += imageData[i + 2];
+    }
+
+    r = Math.floor(r / pixelCount);
+    g = Math.floor(g / pixelCount);
+    b = Math.floor(b / pixelCount);
+
+    // Робимо колір трохи темнішим і приглушеним, щоб він не засліплював (множимо на 0.4)
+    // Якщо хочете яскравіший фон — приберіть "* 0.4"
+    const finalR = Math.floor(r * 0.4);
+    const finalG = Math.floor(g * 0.4);
+    const finalB = Math.floor(b * 0.4);
+
+    // Змінюємо фон головного контейнера
+    container.style.backgroundColor = `rgb(${finalR}, ${finalG}, ${finalB})`;
+
+    // Повторюємо на наступному кадрі
+    animationFrameId = requestAnimationFrame(updateAmbientBackground);
+}
+
+// Запускаємо аналіз, коли відео починає грати
+video.addEventListener('play', () => {
+    updateAmbientBackground();
+});
+
+// Зупиняємо аналіз, коли відео на паузі, щоб не витрачати ресурси
+video.addEventListener('pause', () => {
+    cancelAnimationFrame(animationFrameId);
+});
+
+video.addEventListener('ended', () => {
+    cancelAnimationFrame(animationFrameId);
+});
+  </script>
 <!---<script>
   let privacyActive = false;
 let video = document.querySelector("video");
@@ -2587,97 +2763,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initDeviceOrientation();
 });
 </script>---->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const video = document.getElementById("video-player");
-    const container = document.getElementById("video-container");
 
-    if (!video || !container) {
-        console.error("Не знайдено video-player або player-container");
-        return;
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 32;
-    canvas.height = 32;
-
-    const ctx = canvas.getContext("2d", {
-        willReadFrequently: true
-    });
-
-    let animationFrame;
-    let lastUpdate = 0;
-
-    function updateGradient(time) {
-        if (video.paused || video.ended) {
-            animationFrame = requestAnimationFrame(updateGradient);
-            return;
-        }
-
-        // Оновлюємо приблизно 5 разів на секунду
-        if (time - lastUpdate < 200) {
-            animationFrame = requestAnimationFrame(updateGradient);
-            return;
-        }
-
-        lastUpdate = time;
-
-        if (video.readyState >= 2 && video.videoWidth > 0) {
-            try {
-                ctx.drawImage(video, 0, 0, 32, 32);
-
-                const data = ctx.getImageData(
-                    0, 0, 32, 32
-                ).data;
-
-                let r = 0;
-                let g = 0;
-                let b = 0;
-
-                for (let i = 0; i < data.length; i += 4) {
-                    r += data[i];
-                    g += data[i + 1];
-                    b += data[i + 2];
-                }
-
-                const pixels = data.length / 4;
-
-                r = Math.round(r / pixels);
-                g = Math.round(g / pixels);
-                b = Math.round(b / pixels);
-
-                container.style.background = `
-                    linear-gradient(
-                        to bottom,
-                        rgba(${r}, ${g}, ${b}, 0) 0%,
-                        rgba(${r}, ${g}, ${b}, 0.85) 100%
-                    )
-                `;
-
-                console.log(`RGB: ${r}, ${g}, ${b}`);
-
-            } catch (error) {
-                console.error("Помилка canvas:", error);
-            }
-        }
-
-        animationFrame = requestAnimationFrame(updateGradient);
-    }
-
-    video.addEventListener("play", () => {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(updateGradient);
-    });
-
-    video.addEventListener("pause", () => {
-        cancelAnimationFrame(animationFrame);
-    });
-
-    video.addEventListener("loadeddata", () => {
-        updateGradient(0);
-    });
-});
-</script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const video = document.getElementById("video-player");
