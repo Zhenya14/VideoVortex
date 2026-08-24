@@ -8761,59 +8761,6 @@ auth.onAuthStateChanged(async (user) => {
                 ?.style.setProperty("display", "flex");
         }
 
-        // =========================
-        // 🔹 HOLIDAYS
-        // =========================
-
-        const today = new Date();
-        const m = today.getMonth() + 1;
-        const d = today.getDate();
-
-        const isHalloween = m === 10 && (d === 30 || d === 31);
-        const isValentineDay = m === 2 && (d === 13 || d === 14);
-        const isVyshyvankaDay = m === 5 && (d === 20 || d === 21);
-      const isIndependenceUkraineDay = m === 8 && (d === 23 || d === 24);
-        const isWeek = (m === 4 && d >= 10 && d <= 25);
-        const isNewYear = (m === 12 && d >= 15) || (m === 1 && d <= 25);
-
-        if (isHalloween) {
-            activateHalloweenMode();
-            applyIcons(halloweenIcons, userProfile);
-        } else deactivateHalloweenMode();
-
-        if (isNewYear) {
-            activateGirland();
-            activateNewYearMode();
-            applyIcons(newyearIcons, userProfile);
-        } else {
-            deactivateGirland();
-            deactivateNewYearMode();
-
-            if (!isValentineDay) restoreIcons();
-            if (!isWeek) restoreIcons();
-            if (!isVyshyvankaDay) restoreIcons();
-            if (!isIndependenceUkraineDay) restoreIcons();
-        }
-if (isIndependenceUkraineDay) {
-            activateIndepedenceMode();
-            applyIcons(independenceIcons, userProfile);
-        } else {
-            deactivateIndepedenceMode();
-  if (!isValentineDay) restoreIcons();
-            if (!isWeek) restoreIcons();
-            if (!isVyshyvankaDay) restoreIcons();
-            if (!isNewYear) restoreIcons();
-}
-        if (isValentineDay) applyIcons(valentineIcons, userProfile);
-        if (isWeek) applyIcons(Icons, userProfile);
-
-        if (isVyshyvankaDay) {
-            activateVyshyvankaMode();
-            applyIcons(vyshyvankaIcons, userProfile);
-        } else {
-            deactivateVyshyvankaMode();
-        }
-
 
         // =========================
         // 🔹 UI
@@ -10205,4 +10152,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>                                                   
-        </html>
+</html>
