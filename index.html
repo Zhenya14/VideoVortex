@@ -1237,36 +1237,36 @@ margin: 0;
   cursor: pointer;
   transition: background 0.3s;
 }
-button.delete {
+button.need-support {
   color: #e9735a;
   background: #5c3531;
   border-radius: 60px;
   font-weight: bold;
 }
-button.cancel {
+button.i-am-fine {
   border-radius: 60px;
   margin-top: 10px;
   color: white;
   background-color: #4a4a4a;
 }
-button.delete:hover {
+button.need-support:hover {
   border-color: #ff453a;
   box-shadow: 0 0 15px #ff453a;
   transform: translateY(-2px);
 }
 
-button.delete:active {
+button.need-support:active {
   border-color: #ff0000;
   box-shadow: 0 0 10px #ff0000;
   transform: scale(0.95);
 }
-button.cancel:hover {
+button.i-am-fine:hover {
   border-color: #f472b6;
   box-shadow: 0 0 15px #f472b6;
   transform: translateY(-2px);
 }
 
-button.cancel:active {
+button.i-am-fine:active {
   border-color: #06b6d4;
   box-shadow: 0 0 10px #06b6d4;
   transform: scale(0.95);
@@ -2832,6 +2832,29 @@ filter: url(#glass-distortion);
   100% { transform: rotate(360deg); }
 }
 
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.ios-modal-header {
+  padding: 16px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ios-modal-body {
+  padding: 16px;
+  font-size: 14px;
+}
 
 .comments * {
     white-space: normal;
@@ -3454,7 +3477,7 @@ filter: url(#glass-distortion);
 </ios-modal>
   <ios-modal id="support-author-modal">
   <div class="ios-modal-window">
-<div class="modal-header">
+<div class="ios-modal-header">
   <span data-i18n="support-question">💙 Вам зараз потрібна підтримка?</span>
 </div>
     <div class="ios-modal-body">
@@ -3465,8 +3488,8 @@ filter: url(#glass-distortion);
     </div>
 
     <div class="ios-modal-footer">
-      <button data-i18n="needSupport" onclick="needSupport()">Мені потрібна допомога</button>
-      <button data-i18n="IAmFine" onclick="closeSupportModal()">Я в порядку</button>
+      <button class="need-support" data-i18n="needSupport" onclick="needSupport()">Мені потрібна допомога</button>
+      <button class="i-am-fine" data-i18n="IAmFine" onclick="closeSupportModal()">Я в порядку</button>
     </div>
   </div>
 </ios-modal>
@@ -7093,12 +7116,12 @@ async function freezeUser(uid, status = "frozen_soft") {
 }
       function needSupport() {
     const modal = document.getElementById("support-author-modal");
-    const content = modal?.querySelector(".support-modal-content");
+    const content = document.getElementById("support-information");
 
     if (!modal || !content) return;
 
     content.innerHTML = `
-        <button
+        <button style="display: none;"
             class="support-modal-close"
             onclick="closeSupportModal()"
             aria-label="Закрити"
@@ -7123,7 +7146,7 @@ async function freezeUser(uid, status = "frozen_soft") {
             залишитися поруч.
         </p>
 
-        <div class="support-actions">
+        <div class="support-actions" style="display: none;">
 
             <button
                 class="support-help"
@@ -7150,6 +7173,42 @@ function openSupportResources() {
     // Тут можна відкрити окрему сторінку VideoVortex
     window.location.href = "support.html";
 }
+async function closeSupportModal() {
+    const modal = document.getElementById("support-author-modal");
+    const user = firebase.auth().currentUser;
+
+    if (!user) return;
+
+    try {
+        const ref = database.ref(`supportRequests/${user.uid}`);
+        const snapshot = await ref.once("value");
+
+        const requests = snapshot.val();
+
+        if (requests) {
+            const updates = {};
+
+            Object.entries(requests).forEach(([key, request]) => {
+                if (request?.status === "pending") {
+                    updates[`${key}/status`] = "read";
+                    updates[`${key}/timestamp`] =
+                        firebase.database.ServerValue.TIMESTAMP;
+                }
+            });
+
+            if (Object.keys(updates).length > 0) {
+                await ref.update(updates);
+            }
+        }
+
+        if (modal) {
+            modal.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("❌ Помилка закриття support:", error);
+    }
+                                   }
 function clearFeedCache() {
   Object.keys(localStorage)
     .filter(k => k.startsWith("video_cache_"))
@@ -8651,13 +8710,61 @@ function calculateAge(birthdate) {
             }
             return age;
         }
+async function checkSupportRequests(user) {
+    if (!user || !user.uid) {
+        console.log("❌ Немає авторизованого користувача");
+        return;
+    }
 
+    console.log("👤 Поточний UID:", user.uid);
+
+    try {
+        const ref = database.ref(`supportRequests/${user.uid}`);
+
+        const snapshot = await ref.once("value");
+
+        console.log("📦 Support snapshot exists:", snapshot.exists());
+        console.log("📦 Support data:", snapshot.val());
+
+        if (!snapshot.exists()) {
+            console.log("ℹ️ Запитів підтримки немає");
+            return;
+        }
+
+        const requests = snapshot.val();
+
+        const hasPendingSupport = Object.values(requests).some(
+            request =>
+                request &&
+                request.status === "pending"
+        );
+
+        console.log("💙 Є pending:", hasPendingSupport);
+
+        if (!hasPendingSupport) return;
+
+        const modal = document.getElementById("support-author-modal");
+
+        if (!modal) {
+            console.error("❌ Не знайдено #support-author-modal");
+            return;
+        }
+
+        modal.style.display = "flex";
+
+        console.log("✅ Модальне вікно показано");
+
+    } catch (error) {
+        console.error("❌ Support error:", error);
+    }
+          }
 auth.onAuthStateChanged(async (user) => {
     if (!user) return;
 
     currentUser = user;
     currentUserEmail = user.email;
     currentUserUid = user.uid;
+  await checkSupportRequests(user);
     try {
 
         // 👤 USER PROFILE (role тут)
@@ -8697,6 +8804,10 @@ auth.onAuthStateChanged(async (user) => {
             showBlockedScreen("❄️ Акаунт заморожено");
             return;
         }
+// =========================
+// 💙 SUPPORT REQUESTS
+// =========================
+
 
         // ✔️ EMAIL VERIFY GATE
         if (!user.emailVerified) {
