@@ -2871,7 +2871,67 @@ background: rgba(255,255,255,0.05);
   z-index: 1000;
     }
 
+#search-users {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 520px;
+    margin: 12px auto;
+    padding: 8px;
 
+    background: rgba(20, 22, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    overflow: hidden;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+#search-users > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 15px;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+#search-users > div:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+#search-users img {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    background: #252936;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
 .button-liquid-glass {
     display: flex;
     flex-direction: column;
