@@ -14,6 +14,7 @@
   "account-not-found": "Konto nicht gefunden",
   "history": "Verlauf:",
   "new": "NEU",
+  "video-title": "Videotitel",
   "video-description": "Videobeschreibung (optional)",
   "information-blocked": "Profilbilder, Geschichten, Videos, Beiträge und Kommentare sind für blockierte Benutzer verborgen.",
   "video": "Video",
@@ -30,6 +31,8 @@
   "block": "Blockiert",
   "shareBtn": "Teilen",
   "popularBtn": "Video hervorheben",
+  "repostBtn": "Erneut veröffentlicht",
+  "supportBtn": "Unterstützen Sie den Autor",
   "boost_1": "Du hast 1 Mal hervorgehoben",
   "boost_2": "Du hast 2 Mal hervorgehoben",
   "boost_3": "Du hast 3 Mal hervorgehoben",
@@ -44,5 +47,14 @@
   "danger-zone": "Gefahrenzone",
   "delete-account": "Konto löschen",
   "my-story": "meine Geschichte",
-  "application-version": "Anwendungsversion:"
+  "application-version": "Anwendungsversion:",
+  "wallpapers-save-successfully": "Hintergrundbild angewendet!",
+  "wallpapers-save-error": "Fehler beim Hochladen des Hintergrundbilds.",
+  "help-zone": "Hilfe",
+  "need-support": "Ich brauche Hilfe",
+  "i-am-fine": "Mir geht es gut",
+  "private-video-checkbox": "Privates Video",
+  "private-photo-checkbox": "Privates Foto",
+  "similar-message": "Keine ähnlichen Videos 😔",
+  "similar-title": "Ähnliche Videos:"
 }

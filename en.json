@@ -13,6 +13,7 @@
 "account-not-found": "Account not found",
   "history": "Viewing history:",
   "new": "NEW",
+  "video-title": "Video title",
   "video-description": "Video description (optional)",
   "information-blocked": "Profile avatars, stories, videos, posts, and comments are hidden from blocked users.",
   "video": "Video",
@@ -29,6 +30,8 @@
   "block": "Blocked",
   "shareBtn": "Share",
   "popularBtn": "Advance video",
+  "repostBtn": "Repost",
+  "supportBtn": "Support the author",
 "boost_1": "You've boosted 1 time",
     "boost_2": "You've boosted 2 times",
     "boost_3": "You've boosted 3 times",
@@ -43,5 +46,14 @@
     "danger-zone": "Danger zone",
     "delete-account": "Delete Account",
     "my-story": "My story",
-    "application-version": "Application version:"
+    "application-version": "Application version:",
+    "wallpapers-save-successfully": "Wallpaper applied!",
+    "wallpapers-save-error": "Error uploading wallpaper.",
+    "help-zone": "Help",
+    "need-support": "I need help",
+    "i-am-fine": "I am fine",
+    "private-video-checkbox": "Private Video",
+    "private-photo-checkbox": "Private Photo",
+    "similar-message": "No similar videos 😔",
+    "similar-title": "Similar videos:"
 }

@@ -13,6 +13,7 @@
   "account-not-found": "Акаунт не знайдено",
   "history": "Історія переглядів:",
   "new": "NEW",
+  "video-title": "Назва відео",
   "video-description": "Опис відео (необов'язково)",
   "information-blocked": "Від заблокованих користувачів приховано аватар профілю, історії, відео, дописи та коментарі.",
   "video": "Відео",
@@ -29,6 +30,8 @@
   "block": "Заблокувати",
   "shareBtn": "Поділитися",
   "popularBtn": "Просунути відео",
+  "repostBtn": "Зробити репост",
+  "supportBtn": "Підтрисати автора",
 "boost_1": "Ви забустили 1 раз",
     "boost_2": "Ви забустили 2 рази",
     "boost_3": "Ви забустили 3 рази",
@@ -43,5 +46,14 @@
     "danger-zone": "Небезпечна зона",
     "delete-account": "Видалити акаунт",
     "my-story": "Моя історія",
-    "application-version": "Версія додатка:"
+    "application-version": "Версія додатка:",
+    "wallpapers-save-successfully": "Шпалери застосовано!",
+    "wallpapers-save-error": "Помилка при завантаженні шпалер.",
+    "help-zone": "Допомога",
+    "need-support": "Мені потрібна допомога",
+    "i-am-fine": "Я в порядку",
+    "private-video-checkbox": "Приватне відео",
+    "private-photo-checkbox": "Приватне фото",
+    "similar-message": "Схожих відео немає 😔",
+    "similar-title": "Схожі відео:"
 }
