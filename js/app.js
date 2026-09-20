@@ -3016,22 +3016,12 @@ function showBlockedUsersModal() {
 }
  function showAccountNotificationsModal() {
    const modal = document.getElementById("account-notifications-modal");
-   const list = document.getElementById("accountNotificationsList");
+
    const user = firebase.auth().currentUser;
 
-   if (!modal || !list) return console.error("Модальне вікно не знайдено");
+   if (!modal) return console.error("Модальне вікно не знайдено");
    if (!user) return alert("Спочатку увійдіть у акаунт");
-
-   const uid = user.uid;
-   list.innerHTML = "";
-
-   database.ref(`notifications/${uid}`).once("value")
-     .then(snapshot => {
-       const notificationsData = snapshot.val() || {};
-       modal.style.display = "flex";
-       document.body.style.overflow = "hidden";
-     })
-       .catch(console.error);
+modal.style.display = "flex";
 
    // Закриття модалки по X
    document.querySelector(".close-account-notifications-modal")?.addEventListener("click", () => {
@@ -6487,7 +6477,7 @@ window.onload = function() {
         loadSettings();
         loadVideos();
         loadStories();
-        
+        loadNotifications();
         loadPhotos();
         loadPopularVideos();
     };
