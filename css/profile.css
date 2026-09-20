@@ -1,0 +1,610 @@
+html, body{
+  touch-action: manipulation;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+body {
+  touch-action: manipulation;
+  color: #e9ecf1;
+  font-family: Inter, Segoe UI, Roboto, Arial;
+  margin: 0;
+  background: radial-gradient(ellipse at top, #0b0f17, #05060a);
+  line-height: 1.6;
+  text-align: center;
+  padding: 0 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+nav {
+    display: flex;
+    justify-content: left;
+    padding: 0px 20px;
+
+    border-radius: 16px;
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+nav a {
+height: 50px;
+align-items: center;
+justify-content: center;
+display: flex;
+margin: 0 10px;
+padding: 0px 1px;
+border-radius: 50px;
+text-align: center;
+text-decoration: none;
+color: white;
+white-space: nowrap;
+
+background: rgba(255,255,255,0.05);
+backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+-webkit-backdrop-filter: blur(3px);
+filter: url(#glass-distortion);
+-webkit-filter: url(#glass-distortion);
+
+/* Тінь і обведення для глибини */
+box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+border: 1px solid rgba(255,255,255,0.08);
+
+transition: all 0.3s ease;
+box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+}
+        .profile-header {
+    position: relative;
+    overflow: hidden;
+
+    background-size: cover;
+    background-position: center;
+}
+.back {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 94px;
+}
+.profile-header #userName,
+.profile-header .avatar,
+.profile-header #blockUserBtn,
+.profile-header .shareBtn {
+    position: relative;
+    z-index: 2;
+}
+.profile-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.10),
+        rgba(0,0,0,0.45)
+    );
+    z-index: 1;
+}
+.profile-header {
+  margin-top: 60px;
+  padding: 50px 0px;
+  display: block;
+  width: 100%;
+  height: 300px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-radius: 26px;
+  margin-bottom: 1px;
+}
+ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-window {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(30,30,30,0.85);
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+.adaptive-stroke {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.ios-modal-header {
+  padding: 16px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ios-modal-body {
+  padding: 16px;
+  font-size: 14px;
+}
+
+.ios-modal-body select,
+.ios-modal-body textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  outline: none;
+}
+
+
+.ios-modal-footer button {
+  background: transparent;
+ border: 1px solid transparent; /* ВАЖЛИВО */
+padding: 14px;
+  border-radius: 20px;
+margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  width: 95%;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button.danger {
+  color: #e9735a;
+  background: #5c3531;
+  border-radius: 60px;
+  font-weight: bold;
+}
+button.cancel {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
+}
+button.danger:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 15px #ff453a;
+  transform: translateY(-2px);
+}
+
+button.danger:active {
+  border-color: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+  transform: scale(0.95);
+}
+button.cancel:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.cancel:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(42,123,155,1) 0%, rgba(87,199,133,1) 50%, rgba(237,221,83,1) 100%);
+}
+.tab {
+  position: sticky;
+    z-index: 1;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    width: 80%;
+    backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+    -webkit-backdrop-filter: blur(3px);
+    filter: url(#glass-distortion);
+    -webkit-filter: url(#glass-distortion);
+}
+.tab a {
+  width: 100%;
+    height: 100%;
+    text-decoration: none;
+    text-align: center;
+    justify-content: center;
+    color: white;
+    transition: 0.3s;
+}
+   .tab-liquid-glass {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    
+    width: 80%;
+    height: 150%;
+    border-radius: 65px;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 11;
+    isolation: isolate;
+    backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+    -webkit-backdrop-filter: blur(3px);
+    filter: url(#glass-distortion);
+    -webkit-filter: url(#glass-distortion);
+}
+.tab-button-liquid-glass {
+    display: inline;
+    transition: 0.3s;
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    border-radius: 56px;
+    text-decoration: none;
+background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url(#glass-distortion);
+
+  /* Тінь і обведення для глибини */
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  z-index: 100;
+}
+
+.tabcontent {
+  display: none;
+  padding: 90px;
+  width: 100%;
+  height: 30%;
+  max-width: 500px;
+  margin: 20px auto;
+  text-align: left;
+}
+.video, .post {
+  background: rgba(0,0,0,0.7);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.video img {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.post img {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.reposts img {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* =========================
+   PROFILE HEADER
+========================= */
+
+.profile-header {
+  position: relative;
+  overflow: hidden;
+
+  width: 100%;
+  height: 300px;
+
+  margin-top: 60px;
+  margin-bottom: 1px;
+
+  padding: 35px 20px 25px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 12px;
+
+  text-align: center;
+
+  border-radius: 26px;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* =========================
+   ЗАТЕМНЕННЯ ШПАЛЕР
+========================= */
+
+.profile-header::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.10),
+    rgba(0,0,0,0.45)
+  );
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   КОНТЕНТ ПОВЕРХ ШПАЛЕР
+========================= */
+
+.profile-header > * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* =========================
+   AVATAR
+========================= */
+
+.profile-header .avatar {
+  width: 80px;
+  height: 80px;
+
+  min-width: 80px;
+  min-height: 80px;
+
+  margin: 0;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  font-size: 28px;
+
+  color: #fff;
+
+  background: linear-gradient(
+    90deg,
+    rgba(42,123,155,1) 0%,
+    rgba(87,199,133,1) 50%,
+    rgba(237,221,83,1) 100%
+  );
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   БЛОК ІМ'Я + КНОПКИ
+========================= */
+
+.profile-header > div:nth-child(2) {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 10px;
+}
+
+
+/* =========================
+   ІМ'Я
+========================= */
+
+.profile-header #userName {
+  margin: 0;
+
+  color: #fff;
+
+  font-size: 22px;
+  font-weight: 600;
+
+  line-height: 1.3;
+
+  text-align: center;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   КНОПКИ
+========================= */
+
+#blockUserBtn,
+.profile-header .shareBtn {
+
+  margin: 0;
+
+  padding: 7px 14px;
+
+  min-height: 38px;
+
+  border-radius: 38px;
+
+  border: 1px solid #333;
+
+  background: #111;
+
+  color: #fff;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  box-sizing: border-box;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Кнопки в один ряд */
+
+.profile-header > div:nth-child(2) {
+  position: relative;
+}
+
+
+/* Якщо кнопки йдуть одна за одною */
+
+#blockUserBtn,
+.profile-header .shareBtn {
+  display: inline-flex;
+}
+
+
+/* Hover */
+
+#blockUserBtn:hover,
+.profile-header .shareBtn:hover {
+  background: #222;
+}
+
+
+/* Active */
+
+#blockUserBtn:active,
+.profile-header .shareBtn:active {
+  transform: scale(0.96);
+}
+
+
+/* Іконки */
+
+#blockUserBtn .material-symbols,
+.profile-header .shareBtn .material-symbols {
+  font-size: 20px;
+  line-height: 1;
+}
+
+
+/* Текст "Поділитися" */
+
+.profile-header .shareBtn p {
+  margin: 0;
+  padding: 0 !important;
+}
+
+
+/* =========================
+   SLEEP MODE
+========================= */
+
+body.sleep-mode .profile-header {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .profile-header {
+    height: 280px;
+
+    margin-top: 60px;
+
+    padding: 25px 15px 20px;
+
+    border-radius: 22px;
+
+    gap: 10px;
+  }
+
+  .profile-header .avatar {
+    width: 70px;
+    height: 70px;
+
+    min-width: 70px;
+    min-height: 70px;
+
+    font-size: 24px;
+  }
+
+  .profile-header #userName {
+    font-size: 19px;
+  }
+
+  #blockUserBtn,
+  .profile-header .shareBtn {
+    min-height: 36px;
+
+    padding: 6px 11px;
+
+    font-size: 13px;
+  }
+
+}

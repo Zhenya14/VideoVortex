@@ -1,0 +1,2961 @@
+#photo-file, #video-file, #action-btn, #set-wallpaper-profile {
+  display: none;
+}
+/* Стиль повзунка */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: red;
+  border-radius: 34px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+}
+/* Базовий стиль для ВСІХ плашок NEW */
+.badge-new {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  background-color: #ee686f; /* Рожево-червоний колір Telegram */
+  color: #ffffff;
+  padding: 2px 5px;
+  border-radius: 6px;
+  line-height: 1;
+  text-transform: uppercase;
+  vertical-align: middle; /* Вирівнює по центру рядка */
+}
+
+/* Специфічний стиль ТІЛЬКИ для бейджа всередині КНОПКИ (Архів) */
+.archive .badge-new, .your-profile .badge-new {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+}
+
+/* Специфічний стиль ТІЛЬКИ для бейджа всередині ТЕКСТУ (Історія) */
+.history-info .badge-new {
+  position: static;       /* Повертає в нормальний потік тексту */
+  display: inline-block;  /* Дозволяє правильно застосувати відступи */
+  margin-left: 6px;       /* Невеликий відступ від слова "Історія переглядів" */
+}
+.save-video-info .badge-new {
+  position: static;       /* Повертає в нормальний потік тексту */
+  display: inline-block;  /* Дозволяє правильно застосувати відступи */
+  margin-left: 6px;       /* Невеликий відступ від слова "Історія переглядів" */
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: orange;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Круглі краї */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+.btn-container {
+    display: flex;
+    flex-basis: auto;
+    justify-content: center;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+.secure-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+}
+
+.secure-item input {
+  margin-top: 5px;
+  padding: 5px;
+}
+
+.secure-item {
+  display: inline-flex;
+  margin-left: 5px;
+  padding: 5px 10px;
+}
+.march8-banner{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+
+  transition: transform 0.4s ease;
+  transform: translateY(-110%);
+  will-change: transform;
+}
+
+.march8-banner.show{
+  transform: translateY(0);
+}
+
+.march8-box{
+  background: linear-gradient(90deg,#ff4da6,#ff80bf);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 0 0 12px 12px;
+  font-size: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.march8-box button{
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#march8-upload{
+  background: white;
+  color: #ff4da6;
+  font-weight: bold;
+}
+
+#march8-close{
+  background: transparent;
+  color: white;
+  font-size: 18px;
+}
+
+#flowers-container{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 999;
+}
+
+.flower{
+  position: absolute;
+  font-size: 22px;
+  top: 40px;
+  left: 0;
+  will-change: transform;
+  animation: fall linear infinite;
+}
+
+@keyframes fall{
+  0%{
+    transform: translateY(-50px);
+    opacity: 1;
+  }
+  100%{
+    transform: translateY(100vh);
+    opacity: 0.7;
+  }
+}
+.easter-banner{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+
+  transition: transform 0.4s ease;
+  transform: translateY(-110%);
+  will-change: transform;
+}
+
+.easter-banner.show{
+  transform: translateY(0);
+}
+
+.easter-box {
+  background: linear-gradient(90deg, #a0c4ff, #ffc6ff, #caffbf);
+  background-size: 300% 300%;
+  animation: Move 6s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+@keyframes Move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.easter-box button{
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#easter-upload{
+  background: white;
+ color: #c77dff;
+  font-weight: bold;
+}
+
+#easter-close{
+  background: transparent;
+  color: white;
+  font-size: 18px;
+}
+
+#easter-container{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 999;
+}
+
+.easter-container{
+  position: absolute;
+  font-size: 22px;
+  top: 40px;
+  left: 0;
+  will-change: transform;
+  animation: fall linear infinite;
+}
+
+@keyframes fall{
+  0%{
+    transform: translateY(-50px);
+    opacity: 1;
+  }
+  100%{
+    transform: translateY(100vh);
+    opacity: 0.7;
+  }
+}
+
+html, body{
+  touch-action: manipulation;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+.downloads-list {
+    font-size: 30px;
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+    width: 100%;
+    max-width: 350px;
+    margin-top: -3px;
+}
+.ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 999999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+#notification-modal, #notification-ai-modal {
+  display: none;
+  position: fixed;
+  z-index: 999999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-window {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(30,30,30,0.85);
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+.ny-popup {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.ny-content {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 0 40px rgba(255,255,255,0.3);
+  animation: pop 0.4s ease;
+}
+
+.ny-content h2 {
+  margin-bottom: 15px;
+}
+
+.ny-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #fff;
+  color: #00344f;
+  font-weight: bold;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+}
+
+.ios-modal-content h2 {
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.ios-modal-content ul {
+  text-align: left;
+  margin: 10px 0 20px 25px;
+  font-size: 15px;
+  line-height: 1.4em;
+}
+
+
+.ios-modal-content button {
+  background: transparent;
+ border: 1px solid transparent; /* ВАЖЛИВО */
+padding: 14px;
+  border-radius: 20px;
+margin: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  width: 95%;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
+}
+/* 🎄 На Новий рік ховаємо всі Material s */
+/* Новорічні стилі */
+body.newyear {
+  background: radial-gradient(circle at top left, #071233, #031028);
+  color: #f8fafc;
+  transition: background .6s ease;
+}
+.logo-newyear {
+  filter: drop-shadow(0 6px 20px rgba(255,220,120,0.12)) hue-rotate(10deg);
+  transform-origin: center;
+  animation: jingle 5s ease-in-out infinite;
+}
+@keyframes jingle {
+  0% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+  100% { transform: rotate(-2deg); }
+}
+/* стиль для сніжинки (використовується елемент .snowflake) */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 16px;
+  animation: fall linear infinite;
+  pointer-events: none;
+  z-index: 99999;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+@keyframes fall {
+  0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
+  100% { transform: translateY(110vh) translateX(30vw); opacity: 0; }
+}
+.ios-modal-content button:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+.ios-modal-content button:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+        img {
+    padding: 0px 0px 0px 0px;
+    height: 50px;
+    width: 50px;
+    border-radius: 80px;
+        }
+        body { 
+    color: #e9ecf1;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  margin: 0;
+  background: radial-gradient(ellipse at top, #0b0f17, #05060a);
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+          overflow-x: hidden;
+    align-items: center;
+}
+html {
+    scroll-behavior: smooth;
+}
+h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #b5b5b5;
+  line-height: 1.5;
+}
+
+.meta {
+  font-size: 12px;
+  font-weight: 400;
+  color: #8a8a8a;
+  letter-spacing: 0.01em;
+}
+        .video-status {
+  margin: 6px 0;
+  font-size: 12px;
+  opacity: 0.85;
+}
+/* Базові стилі для всіх контейнерів */
+.container {
+  width: 70%;
+  max-width: 1200px;
+  margin: 0 auto 16px auto; /* Стандартний відступ між контейнерами */
+  padding: 16px;
+  background-color: #17212b; /* Темно-синій фон Telegram */
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 0;
+  box-sizing: border-box;
+}
+
+/* Великий відступ від верху екрана ТІЛЬКИ для найпершого контейнера */
+.container:first-of-type {
+  margin-top: 130px;
+}
+        .snowflake {
+    position: fixed;
+    top: -10px;
+    color: #fff;
+    font-size: 1em;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 1000;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(14, 165, 233, 0.35); /* блакитний */
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(2, 6, 23, 0.6); /* майже чорний */
+}
+@keyframes fall {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh);
+        opacity: 0;
+    }
+}
+        .form, .version-form { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 130px;
+        }
+        input[type="text"], input[type="file"], input[type="email"], input[type="password"] { 
+            width: 100%; 
+            background-color: black;
+            color: white;
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+        }
+#video-description, #photo-description, #video-ttle, #photo-title { 
+  width: 100%;
+
+    padding: 14px;
+
+    color: white;
+
+    background: rgba(255,255,255,0.055);
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+padding: 10px 0; 
+            margin: 10px 0; 
+    border-radius: 13px;
+font-size: 1em;
+    outline: none;
+}
+.more-btn {
+position: absolute;
+    right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10px;
+    height: 10px;
+}
+.more-profile {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 1000;
+}
+.random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
+width: 100%; 
+            background-color: black;
+border: 2px solid #333333;
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+}
+        button { 
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 999px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+background-color: #24303f; /* Глибокий сіро-синій колір кнопок */
+  border: 2px solid #2a2a2a;
+
+  cursor: pointer;
+
+  transition:
+    box-shadow .25s ease,
+    transform .2s ease,
+    border-color .25s ease,
+    background .25s ease,
+    color .25s ease;
+
+  box-shadow: 0 0 0 rgba(244, 114, 182, 0);
+}
+
+/* 🔮 підсвічування при наведенні */
+button:hover { 
+  border-color: #f472b6;
+  box-shadow: 0 0 18px rgba(244, 114, 182, .65);
+  transform: translateY(-2px);
+}
+
+/* ❇️ при кліку */
+button:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 12px rgba(6, 182, 212, .75);
+  transform: scale(0.96);
+}
+
+/* 🚫 заблокована кнопка */
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.photo-label { 
+            display: inline-block;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        .photo-label:hover { 
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.photo-label:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+#modal-window {
+      position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    color: #dce0e8;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.video-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 26px rgba(0, 255, 255, .18);
+}
+.photo-container, .video-container {
+  background: rgba(15, 18, 28, 0.92);
+  border-radius: 18px;
+  background-color: #17212b; /* Темно-синій фон Telegram */
+  padding: 20px;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(0, 255, 255, 0.08);
+  
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column-reverse;
+  position: relative;
+  margin: 50px auto 0;
+  z-index: 1;
+}
+.settings-page {
+  display: none;
+  background: rgba(8, 12, 20, 0.9);
+  border-radius: 18px;
+  padding: 12px;
+  margin-top: 1px;
+  padding-bottom: 120px; /* висота bottom menu + запас */
+  border: 1px solid rgba(0, 255, 255, .12);
+  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
+  transition: transform .2s ease, box-shadow .25s ease;
+  position: relative;
+  z-index: 0;
+}
+.settings-page:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 26px rgba(0, 255, 255, .18);
+}
+.settings-header {
+  margin-bottom: 16px;
+}
+
+.settings-card {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.settings-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* PROFILE */
+.profile-row {
+  display: block;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* BUTTONS */
+.settings-item {
+  width: 100%;
+  margin-top: 8px;
+  background: #222;
+  border: none;
+  color: white;
+  border-radius: 42px;
+  background: rgba(0,0,0,0.25);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .2s;
+  text-align: left;
+  cursor: pointer;
+}
+.stories-timer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+ios-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.ios-modal-window {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(30,30,30,0.85);
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: scaleIn 0.25s ease;
+}
+.ios-modal-content {
+  width: 90%;
+max-width: 420px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  animation: popIn 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.ios-modal-body {
+  padding: 16px;
+  font-size: 14px;
+}
+.ios-modal-footer button {
+  background: transparent;
+ border: 1px solid transparent; /* ВАЖЛИВО */
+padding: 14px;
+  border-radius: 20px;
+margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  width: 95%;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button.need-support {
+  color: #e9735a;
+  background: #5c3531;
+  border-radius: 60px;
+  font-weight: bold;
+}
+button.i-am-fine {
+  border-radius: 60px;
+  margin-top: 10px;
+  color: white;
+  background-color: #4a4a4a;
+}
+button.need-support:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 15px #ff453a;
+  transform: translateY(-2px);
+}
+
+button.need-support:active {
+  border-color: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+  transform: scale(0.95);
+}
+button.i-am-fine:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 15px #f472b6;
+  transform: translateY(-2px);
+}
+
+button.i-am-fine:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px #06b6d4;
+  transform: scale(0.95);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.settings-item:hover {
+border-color: #f472b6;
+  box-shadow: 0 0 18px rgba(244, 114, 182, .65);
+  transform: translateY(-2px);
+}
+
+/* ❇️ при кліку */
+.settings-item:active {
+  border-color: #06b6d4;
+  box-shadow: 0 0 12px rgba(6, 182, 212, .75);
+  transform: scale(0.96);
+}
+
+.settings-item.danger {
+  color: #ff453a;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.settings-item.danger:hover {
+  border-color: #ff453a;
+  box-shadow: 0 0 18px #ff453a;
+  transform: translateY(-2px);
+}
+.settings-item.danger:active {
+  
+border-color: #ff453a;
+  box-shadow: 0 0 12px rgba(6, 182, 212, .75);
+  transform: scale(0.96);
+}
+/* TOGGLE */
+.settings-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.settings-toggle:last-child {
+  border-bottom: none;
+}
+
+/* SWITCH */
+input[type="checkbox"] {
+  width: 40px;
+  height: 20px;
+}
+.photo-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 26px rgba(0, 255, 255, .18);
+}
+
+img.video-item {
+  border-radius: 14px;
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+}
+video.video-item {
+  border-radius: 14px;
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+}
+        .video-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+            display: flex;
+        }
+.video-comment {
+    border-radius: 20px;
+    margin-left: 0.5px;
+    overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px; 
+    background-color: #2a2727;
+}
+#video-container, #search-users {
+margin-top: 50px;
+width: 90%;
+  }
+        #photo-container {
+    margin-top: 50px;
+    width: 90%;
+        }
+        /* Стилі для зображень з класом .photo-item */
+img.photo-item {
+    width: 100%;  /* Зображення заповнює ширину контейнера */
+    height: auto; /* Пропорції зображення зберігаються */
+    object-fit: cover; /* Обрізає зображення для заповнення контейнера */
+    border-radius: 8px; /* Округлення кутів зображення */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тінь для зображення */
+    }
+    .comment-section {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: block;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 16px;
+}
+.comment-input {
+    background: transparent;
+    position: absolute;
+    bottom: 220px;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+.video-details {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+.comment-button {
+    width: 50px;
+    height: 40px;  /* Встановлюємо висоту кнопки */
+    color: white;
+    border: none;
+    border-radius: 35px;
+    cursor: pointer;
+}
+.video-title {
+  display: flex;
+  flex-direction: column;     /* Вирівнюємо елементи вертикально */
+  word-wrap: break-word;      /* Перенос слів */
+  overflow-wrap: break-word;  /* Сучасний перенос */
+  white-space: normal;    
+
+}
+
+        .photo-info { 
+            text-align: left; 
+            color: #b0bec5; 
+            padding: 5px;
+        }
+        .avatar-image {
+          background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+        }
+       .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+    transition: background 0.5s ease, transform 0.3s ease;
+    overflow: hidden; /* щоб img не виходило за межі круга */
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+}
+
+/* bar */
+.stories-bar {
+  display: none;
+  gap: 14px;
+  padding: 12px;
+
+  position: absolute;
+  top: 5%;
+  left: 0;
+  right: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  align-items: center;
+  z-index: 3;
+
+  backdrop-filter: blur(3px) saturate(140%);
+}
+
+/* ключове: замість flex-column */
+.story-item {
+  width: 72px;
+  flex-shrink: 0;
+
+  display: grid;
+  grid-template-rows: 62px auto;
+  justify-items: center;
+}
+
+/* уніфікуємо всі “круглі” елементи */
+.avatar-ring {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+/* avatar всередині */
+.avatar-stories {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #111;
+  color: white;
+  font-weight: bold;
+}
+
+/* ring */
+.avatar-ring {
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #ff004c, #ffb800, #00d4ff);
+}
+
+.avatar-ring.seen {
+  background: #444;
+}
+
+/* + button */
+
+
+/* name */
+.name {
+  margin-top: 6px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.1;
+}
+#account-form .avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+    transition: background 0.5s ease, transform 0.3s ease;
+    overflow: hidden; /* щоб зображення не виходило за межі круга */
+}
+
+#account-form .avatar:hover {
+    transform: scale(1.05); /* легке збільшення при наведенні */
+}
+.info-element {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+#account-form .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+.modal {
+  display: none; /* приховано за замовчуванням */
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  color: #fff;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+/* Анімація появи */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+#update-app-btn {
+    display: none;
+    width: 90%;
+    padding: 10px 16px;
+    border-radius: 69px;
+    position: fixed;
+    bottom: 20px;
+    border: none;
+    background: linear-gradient(135deg, white, blue, black);
+    color: #fff;
+    font-weight: 600;
+    z-index: 100000000;
+}
+        .video-details {
+  width: 100%;
+  display: block;
+}
+        #delete-account { 
+            width: 100%;
+    background-color: black;
+    padding: 10px 0;
+    margin: 10px 0;
+border: 2px solid #333333;
+    border-radius: 35px;
+    border: none;
+    outline: none;
+    font-size: 1em;
+        }
+        .media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.media-item {
+  position: relative;
+}
+
+.media-item img,
+.media-item video {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+#delete-account:hover {
+border-color: red;
+box-shadow: 0 0 15px red; /* світіння */
+
+transform: translateY(-2px);
+}
+#delete-account:active {
+border-color: red; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px red; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+
+.nsfw-label {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;  /* Â³äñòóï, ùîá òåêñò íå ïåðåêðèâàâñÿ ç ³íøèìè åëåìåíòàìè */
+    display: inline-block;
+}
+.menu.active {
+  position: absolute;
+  height: 100%;
+  width: 240px;
+}
+.comments {
+  overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px; 
+    text-align: left;
+}
+.menu {
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    border-radius: 0 25px 25px 0;
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    color: white;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+    padding-top: 10px;
+}
+#add-story {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  border-radius: 50%;
+
+  text-decoration: none;
+  color: white;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  top: 55px;
+  left: 62px;
+  border-radius: 56px;
+  background: black;
+}
+
+
+
+
+
+.tab a {
+  width: 100%;
+    height: 100%;
+    text-decoration: none;
+    text-align: center;
+    align-items: center;
+    color: white;
+    transition: 0.3s;
+}
+.menu a {
+    border-radius: 35px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+}
+
+.menu a:hover {
+    border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+.menu a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+.content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-close {
+  flex-grow: 1;
+  padding: 0px;
+  transition: margin-left 0.3s ease;
+}
+.content.active {
+  margin-left: 240px;
+}
+#open-menu {
+        display: none;
+}
+.author-info {
+  margin-left: 30%;
+  margin-top: 8px;
+  text-align: center;
+}
+.history-item, .save-video-item{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+.history-item img {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.history-info p {
+  display: inline;
+  margin: 0;
+  font-size: 12px;
+  color: #fff;
+}
+.save-video-item img {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.save-video-info p {
+  display: inline;
+  margin: 0;
+  font-size: 12px;
+  color: #fff;
+}
+.history-info, .save-video-info {
+  text-align: left;
+}
+.edit, .delete-history-views {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Контейнер для кнопок (у JS це елемент 'buttons') */
+.buttons-library {
+  display: flex;            /* Вмикає Flexbox, що ставить елементи в ряд */
+  flex-direction: row;      /* Вирівнює кнопки горизонтально */
+  justify-content: center;  /* Центрує кнопки по горизонталі (можна поміняти на flex-start, якщо треба вліво) */
+  align-items: center;      /* Вирівнює кнопки по вертикалі */
+  gap: 12px;                /* Відстань (зазор) між двома кнопками */
+  margin-top: 15px;         /* Замість видалених <br> — створює відступ зверху від імені користувача */
+}
+
+/* Обидві кнопки робимо однакового розміру під стиль Telegram */
+.archive, .edit, .your-profile {
+  display: flex;
+  flex-direction: column;   /* Іконка та текст всередині кнопки — один під одним */
+  justify-content: center;
+  align-items: center;
+  
+  /* Розміри кнопки */
+  width: 110px;
+  height: 100px;
+  border-radius: 28px;
+  border: none;
+  
+  /* Кольори */
+  background-color: #212121;
+  color: #ffffff;
+  gap: 6px;
+  position: relative;       /* Потрібно для значка NEW всередині */
+  
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* Ефект наведення для обох кнопок */
+.archive:hover, .edit:hover, .your-profile:hover {
+  background-color: #2b2b2b;
+}
+
+/* Іконки всередині обох кнопок */
+.archive .material-symbols, .edit .material-symbols, .your-profile .material-symbols {
+  font-size: 26px;
+}
+
+/* Текст всередині обох кнопок */
+.archive span, .edit span, .your-profile span {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* Плашка NEW для Архіву */
+.archive .badge-new, .your-profile .badge-new, .edit-wallpaper-profile .badge-new, .copy-link-profile .badge-new {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 9px;
+  font-weight: bold;
+  background-color: #007aff;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 6px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+
+.open-btn, .delete-btn  {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+.more-menu {
+  position: absolute;
+  right: 20px;
+  top: 2px;
+  padding: 12px 14px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+  z-index: 10000;
+
+  animation: menuFadeScale .25s ease forwards;
+
+  /* щоб контент не липнув */
+  display: flex;
+}
+.action-menu {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+
+  padding: 12px 14px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+  z-index: 10000;
+
+  animation: menuFadeScale .25s ease forwards;
+
+  /* щоб контент не липнув */
+  display: flex;
+}
+
+/* 🌫️ м’яка анімація появи */
+@keyframes menuFadeScale {
+  from {
+    opacity: 0;
+    transform: scale(.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 🖱️ hover по кнопках всередині меню */
+.action-menu button {
+  border-radius: 42px;
+  background: rgba(0,0,0,0.25);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 8px 12px;
+  transition: .2s;
+}
+
+.action-menu button:hover {
+  background: rgba(255,255,255,0.18);
+}
+.profile-header {
+    position: relative;
+    overflow: hidden;
+
+    background-size: cover;
+    background-position: center;
+}
+.profile-header #userName,
+.profile-header .avatar {
+    position: relative;
+    z-index: 2;
+}
+.profile-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.10),
+        rgba(0,0,0,0.45)
+    );
+    z-index: 1;
+}
+.profile-header {
+  margin-top: 60px;
+  padding: 50px 0px;
+  display: flex;
+  width: 100%;
+  height: 50%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-radius: 26px;
+  margin-bottom: 1px;
+}
+.lightrope {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  position: fixed;
+  z-index: 1000;
+  margin: 55px 0 0 0;
+  padding: 0;
+  pointer-events: none;
+  width: 100%;
+}
+#all, #popular {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tab {
+  position: fixed;
+  z-index: 1;
+  top: 10%;
+  margin: 3px;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 1px;
+  width: 80%;
+  height: 20%;
+}
+.lightrope li {
+  position: relative;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 12px;
+  height: 28px;
+  border-radius: 50%;
+  margin: 20px;
+  display: inline-block;
+  background: #00f7a5;
+  box-shadow: 0px 4.66667px 24px 3px #00f7a5;
+  -webkit-animation-name: flash-1;
+  animation-name: flash-1;
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+.lightrope li:nth-child(2n+1) {
+  background: cyan;
+  box-shadow: 0px 4.66667px 24px 3px rgba(0, 255, 255, 0.5);
+  -webkit-animation-name: flash-2;
+  animation-name: flash-2;
+  -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+}
+
+.lightrope li:nth-child(4n+2) {
+  background: #f70094;
+  box-shadow: 0px 4.66667px 24px 3px #f70094;
+  -webkit-animation-name: flash-3;
+  animation-name: flash-3;
+  -webkit-animation-duration: 1.1s;
+  animation-duration: 1.1s;
+}
+
+.lightrope li:nth-child(odd) {
+  -webkit-animation-duration: 1.8s;
+  animation-duration: 1.8s;
+}
+
+.lightrope li:nth-child(3n+1) {
+  -webkit-animation-duration: 1.4s;
+  animation-duration: 1.4s;
+}
+
+.lightrope li:before {
+  content: "";
+  position: absolute;
+  background: #222;
+  width: 10px;
+  height: 9.33333px;
+  border-radius: 3px;
+  top: -4.66667px;
+  left: 1px;
+}
+#notification-popup {
+  display: none;
+  width: 87%;
+  opacity: 0;
+  text-align: left;
+  z-index: 10000;
+position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: black;
+      padding: 20px;
+      border-radius: 69px;
+      border: 1px solid rgba(0, 255, 255, .12);
+  box-shadow: 0 0 22px rgba(0, 255, 255, .07);
+      animation: opacity 0.5s ease;
+    }
+  .info-divider {
+    display: flex;
+   align-items: center;
+  }
+/* Контейнер для картинки, затемнення та кнопки */
+.image-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Задайте потрібну ширину для прев'ю відео */
+  margin: 15px auto; /* Центрування в модальному вікні */
+  border-radius: 8px;
+  overflow: hidden; /* Щоб затемнення не виходило за округлені кути */
+}
+
+/* Стилі для самого зображення */
+.image-container img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  object-fit: cover;
+  min-height: 150px; /* Мінімальна висота, якщо картинка ще не завантажилась */
+  background-color: #333; /* Тимчасовий темний фон, поки немає src */
+}
+
+/* Шале затемнення */
+.image-container .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Чорний колір із прозорістю 50% */
+  z-index: 1; /* Шар вище за картинку */
+  pointer-events: none; /* Кліки будуть проходити крізь цей шар */
+}
+
+/* Стилі кнопки редагування */
+.image-container .action-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Ідеальне центрування по центру */
+  z-index: 2; /* Шар вище за затемнення (overlay) */
+  
+  /* Зовнішній вигляд круглої кнопки */
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  
+  /* Центрування іконки всередині кнопки */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+/* Ефект при наведенні на кнопку */
+.image-container .action-btn:hover {
+  background-color: #fff;
+  transform: translate(-50%, -50%) scale(1.1); /* Легке збільшення */
+}
+
+/* Стилі для іконки Material Symbols */
+.image-container .action-btn .material-symbols {
+  font-size: 24px;
+}
+
+
+    .video-thumb-wrapper {
+  position: relative;
+}
+#notification-popup.show {
+  opacity: 1;
+}
+.lightrope li:after {
+  content: "";
+  top: -14px;
+  left: 9px;
+  position: absolute;
+  width: 52px;
+  height: 18.66667px;
+  border-bottom: solid #222 2px;
+  border-radius: 50%;
+}
+
+.lightrope li:last-child:after {
+  content: none;
+}
+
+.lightrope li:first-child {
+  margin-left: -40px;
+}
+#girland {
+  display: none;
+}
+@-webkit-keyframes flash-1 {
+  0%, 100% {
+    background: #00f7a5;
+    box-shadow: 0px 4.66667px 24px 3px #00f7a5;
+  }
+  50% {
+    background: rgba(0, 247, 165, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(0, 247, 165, 0.2);
+  }
+}
+
+@keyframes flash-1 {
+  0%, 100% {
+    background: #00f7a5;
+    box-shadow: 0px 4.66667px 24px 3px #00f7a5;
+  }
+  50% {
+    background: rgba(0, 247, 165, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(0, 247, 165, 0.2);
+  }
+}
+
+@-webkit-keyframes flash-2 {
+  0%, 100% {
+    background: cyan;
+    box-shadow: 0px 4.66667px 24px 3px cyan;
+  }
+  50% {
+    background: rgba(0, 255, 255, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(0, 255, 255, 0.2);
+  }
+}
+
+@keyframes flash-2 {
+  0%, 100% {
+    background: cyan;
+    box-shadow: 0px 4.66667px 24px 3px cyan;
+  }
+  50% {
+    background: rgba(0, 255, 255, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(0, 255, 255, 0.2);
+  }
+}
+
+@-webkit-keyframes flash-3 {
+  0%, 100% {
+    background: #f70094;
+    box-shadow: 0px 4.66667px 24px 3px #f70094;
+  }
+  50% {
+    background: rgba(247, 0, 148, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(247, 0, 148, 0.2);
+  }
+}
+
+@keyframes flash-3 {
+  0%, 100% {
+    background: #f70094;
+    box-shadow: 0px 4.66667px 24px 3px #f70094;
+  }
+  50% {
+    background: rgba(247, 0, 148, 0.4);
+    box-shadow: 0px 4.66667px 24px 3px rgba(247, 0, 148, 0.2);
+  }
+}
+.action-menu .delete-button:hover {
+border-color: red; /* підсвічування рамки червоним */
+border-radius: 30%;
+  box-shadow: 0 0 10px red; /* легке світіння */
+  transform: translateY(-2px); /* легке підняття */
+}
+.action-menu .delete-button:active {
+border-color: red; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px red; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+#photo-container {
+  display: none;
+}
+body.halloween {
+  background: url('https://tickikids.ams3.cdn.digitaloceanspaces.com/z1.cache/gallery/activities/31203/image_5bd71b7f2e0287.38911859.jpg');
+  background-size: 105% 105%; /* трішки збільшений, щоб не було білих країв */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #000; /* чорна підкладка на випадок зсуву */
+  color: #ff7518;
+  transition: background 1s ease;
+  animation: subtleBackgroundMove 25s ease-in-out infinite;
+}
+
+/* М'який рух фону */
+@keyframes subtleBackgroundMove {
+  0% { background-position: center 0; }
+  25% { background-position: calc(50% + 10px) 5px; }  /* трохи вправо і вниз */
+  50% { background-position: calc(50% - 10px) -5px; } /* трохи вліво і вгору */
+  75% { background-position: calc(50% + 8px) 2px; }   /* знову вправо */
+  100% { background-position: center 0; }             /* назад */
+}
+.halloween button {
+  background-color: #ff7518;
+  color: black;
+  border-radius: 35px;
+}
+
+.bat {
+  animation: fly 12s linear infinite;
+}
+
+@keyframes fly {
+  from { transform: translateX(-10vw) rotate(0deg); }
+  to { transform: translateX(110vw) rotate(360deg); }
+}
+
+.fog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTac0gfjeAI5QkLhujDIihfuGWT9fyJ_EnOJZPJNEM-UQ&s=10');
+  background-size: cover;
+  opacity: 0.2;
+  animation: fogMove 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fogMove {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}
+.hidden {
+display: none;
+}
+/* 🔍 Пошуковий блок */
+
+
+#upload {
+  display: none;
+}
+/* Коли відкритий */
+.search-box-liquid-glass.open {
+  width: 100%; 
+  opacity: 1;
+}
+
+/* Поле вводу */
+
+
+/* Кнопка закриття */
+.search-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.search-close i {
+  font-size: 28px;
+  color: white;
+}
+
+/* Кнопка пошуку у navbar (опціонально) */
+
+.modal-blocked-overlay, .modal-account-notifications-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+.modal-overlay, .modal-account-overlay, .modal-edit-overlay, .modal-archive-overlay, .modal-edit-wallpaper-profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+.modal-blocked-window, .modal-archive-window, .modal-account-notifications-window {
+  width: 90%;
+  max-width: 450px;
+  background: rgba(255,255,255,0.1);
+  padding: 0;
+  border-radius: 18px;
+  max-height: 90vh;        /* щоб не виходила за екран */
+    overflow: hidden;        /* ховаємо зовнішній скрол */
+    display: flex;
+    flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: scaleIn .3s ease;
+}
+.modal-window, .modal-account-window, .modal-account-notifications-window {
+
+    gap: 25px;
+
+    padding: 32px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(40,124,255,0.12),
+            rgba(255,212,41,0.035)
+        );
+
+    border: 1px solid rgba(40,124,255,0.17);
+
+    border-radius: 25px;
+  width: 90%;
+  max-width: 450px;
+  padding: 0;
+  border-radius: 18px;
+  max-height: 90vh;        /* щоб не виходила за екран */
+    overflow: hidden;        /* ховаємо зовнішній скрол */
+    display: flex;
+    flex-direction: column;
+  animation: scaleIn .3s ease;
+}
+.upload-fields {
+    display: inline-block;
+  text-align: center;
+width: 70%;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+}
+.video-label-upload {
+    min-height: 150px;
+display: flex;
+    align-items: center !important;
+    justify-content: center;
+    text-align: center;
+
+    padding: 20px;
+
+    cursor: pointer;
+
+    background: rgba(255,255,255,0.035);
+
+    border: 1px dashed rgba(255,255,255,0.15);
+
+    border-radius: 16px;
+    transition: 0.25s ease;
+}
+
+.video-label:hover {
+    background: rgba(40,124,255,0.06);
+
+    border-color: rgba(40,124,255,0.35);
+}
+
+.modal-blocked-body, .modal-archive-body {
+  overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px;
+}
+.modal-account-body, .modal-body, .modal-edit-body, .modal-account-notifications-body, .modal-archive-body, .modal-edit-wallpaper-profile-body {
+    overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px;     /* щоб скрол не перекривав контент */
+}
+/* Робимо фіксовану модалку */
+
+/* Прокрутка тільки всередині контенту */
+.modal-header, .modal-blocked-header, .modal-account-notifications-header, .modal-archive-header, .modal-account-notifications-header{
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal-account-header, .modal-edit-header, .modal-edit-wallpaper-profile-header {
+  display: flex;
+  justify-content: right;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.tab-button {
+  cursor: pointer;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.tab-button.active {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.close-modal, .close-account-modal, .close-archive-modal, .close-blocked-modal, .close-account-notifications-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+}
+
+.tab-content {
+  display: none;
+  padding: 15px;
+}
+                .modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal-account-notifications {
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+}
+.modal-account-notifications p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px;    
+}
+.modal-blocked {
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+}
+.modal-blocked p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-y: auto;        /* вертикальний скрол */
+    max-height: 100%;        /* повна висота */
+    padding-right: 10px;    
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  margin: 20% auto;
+  width: 300px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+#smart-menu {
+  display: none;
+}
+.nav {
+    display: flex;
+    justify-content: center;
+    padding: 0px 20px;
+
+    border-radius: 16px;
+    position: fixed;
+    z-index: 100;
+    width: 97%;
+        }
+
+        
+        .icon-text {
+            margin-left: 5px;
+        }
+
+        @media (max-width: 1024px) {
+.icon-text {
+display: none;
+}
+#upload-link {
+display: none;
+}
+#btn-liquid-glass {
+display: none;
+}
+#plus-desktop-button {
+display: none;
+}
+#upload-link-photo {
+display: none;
+}
+#smart-upload-link {
+display: none;
+}
+#smart-menu {
+position: fixed;
+left: 50%;
+bottom: 12px;
+transform: translateX(-50%);
+
+width: max-content;  
+max-width: calc(100vw - 24px);
+
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 3px;
+z-index: 1000;  
+
+border: 1px solid rgba(255, 255, 255, 0.09);  
+border-radius: 62px;  
+
+backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);  
+-webkit-backdrop-filter: blur(3px);  
+
+filter: url(#glass-distortion);  
+-webkit-filter: url(#glass-distortion);  
+
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);  
+
+transition: width 0.25s ease;
+
+}
+
+#smart-menu:not(.authorized) #smart-settings,
+#smart-menu:not(.authorized) #account-link {
+    display: none;
+}
+
+#smart-menu.authorized #smart-settings,
+#smart-menu.authorized #account-link {
+    display: grid;
+}
+
+#smart-menu a {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+gap: 1px;
+min-width: 68px;
+min-height: 48px;
+  padding: 0 9px;
+font-size: 12px;
+color: white;
+background: transparent;
+text-decoration: none;
+transition: 0.3s;
+flex: 0 0 auto;
+
+}
+#smart-menu .avatar {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+overflow: hidden;
+margin-left: 35%;
+display: flex;
+justify-content: center;
+align-items: center;
+text-align: center;
+}
+
+#smart-menu .avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 50%;
+opacity: 0;
+animation: fadeIn 0.4s ease forwards;
+}
+.delete-button {
+display: flex;
+padding: 3px 8px;
+align-items: center;
+justify-content: center;
+text-decoration: none;
+border-radius: 10px;
+border: 2px solid transparent; /* початково без обводки */
+background-color: #111;
+border-color: #111; /* чорний фон або інший */
+color: white;
+cursor: pointer;
+font-weight: 600;
+transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+.icon {
+font-family: 'Material Symbols Outlined';
+font-weight: normal;
+font-style: normal;
+font-size: 24px;
+line-height: 1;
+letter-spacing: normal;
+text-transform: none;
+display: inline-block;
+white-space: nowrap;
+word-wrap: normal;
+direction: ltr;
+-webkit-font-smoothing: antialiased;
+}
+/* Головний контейнер (за ID) */
+#author-info {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+background-color: #17212b; /* Темно-синій фон Telegram */
+padding: 20px;
+border-radius: 36px;
+box-sizing: border-box;
+}
+
+/* Картка профілю користувача */
+.author-info {
+flex-direction: column;
+align-items: center;
+width: 100%;
+max-width: 400px;
+background-color: #182533; /* Фон блоку, як у ТГ */
+padding: 24px;
+border-radius: 24px;
+box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+box-sizing: border-box;
+}
+
+/* Кругла аватарка */
+#avatar-library.avatar {
+width: 90px;
+height: 90px;
+border-radius: 50%;
+background-color: #2b5278;
+background-size: cover;
+background-position: center;
+margin-bottom: 14px;
+}
+
+/* Ім'я користувача */
+#author-info > p {
+margin: 0 0 16px 0;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+font-size: 20px;
+font-weight: 600;
+color: #ffffff;
+text-align: center;
+}
+
+/* Ряд для двох кнопок дій */
+.buttons-library {
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+gap: 12px;
+width: 100%;
+margin-bottom: 24px;
+}
+
+/* Кнопки "Архів" та "Змінити" (стиль Telegram) */
+.archive, .edit, .your-profile {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+width: 120px;
+height: 100px;
+border-radius: 24px;
+border: none;
+background-color: #24303f; /* Глибокий сіро-синій колір кнопок */
+color: #ffffff;
+gap: 8px;
+position: relative; /* Потрібно для абсолютної позиції sup */
+cursor: pointer;
+padding: 0;
+transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Ефекти для кнопок */
+.archive:hover, .edit:hover, .your-profile:hover {
+background-color: #2b394a;
+}
+
+.archive:active, .edit:active, .your-profile:active {
+transform: scale(0.97); /* Легкий клік */
+}
+.avatar-stories-view {
+position: fixed;
+display: flex;
+justify-content: center;
+align-items: center;
+border-radius: 645px;
+}
+.stories-author {
+position: fixed;
+display: flex;
+left: 55px;
+align-items: center;
+justify-content: center;
+}
+/* Іконки всередині кнопок */
+.archive .material-symbols, .edit .material-symbols, .your-profile .material-symbols {
+font-size: 26px;
+color: #5288c1; /* Фірмовий блакитний акцент іконок */
+}
+
+/* Текст всередині кнопок (span) */
+.archive span, .edit span, .your-profile span {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+font-size: 14px;
+font-weight: 500;
+}
+
+/* Маленька плашка NEW на кнопці */
+.badge-new {
+position: absolute;
+top: 10px;
+right: 14px;
+font-size: 8px;
+font-weight: 700;
+background-color: #ee686f; /*'М'який червоний відтінок */
+color: #ffffff;
+padding: 2px 5px;
+border-radius: 6px;
+line-height: 1;
+text-transform: uppercase;
+}
+
+.badge-new-edit-wallpaper-profile, .badge-new-copy-link-profile {
+font-size: 8px;
+font-weight: 700;
+background-color: #007aff; /* М'який червоний відтінок */
+color: #ffffff;
+padding: 2px 5px;
+border-radius: 6px;
+line-height: 1;
+text-transform: uppercase;
+}
+/* Блок історії */
+.history-info, .save-video-info {
+width: 100%;
+border-top: 1px solid #24303f;
+padding-top: 16px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.history-info p {
+margin: 0;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+font-size: 14px;
+color: #7f91a4;
+}
+
+/* Кнопка очищення історії */
+.delete-history-views {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+width: 100%;
+padding: 12px;
+border-radius: 42px;
+border: 1px solid #2a2a2a;
+background-color: transparent;
+color: #ee686f;
+cursor: pointer;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+font-size: 14px;
+font-weight: 500;
+transition: background-color 0.2s ease;
+}
+
+.delete-history-views:hover {
+background-color: rgba(238, 104, 111, 0.1);
+}
+
+.delete-history-views .material-symbols {
+font-size: 20px;
+}
+.story-img, .story-video {
+border-radius: 16px;
+}
+#plus-button {
+border-radius: 89px;
+bottom: 20px;
+
+text-decoration: none;
+font-size: 32px;
+color: white;
+position: fixed;
+left: 94%;
+transform: translateX(-70%);
+width: 15%;
+height: 8%;
+display: none;
+justify-content: center;
+align-items: center;
+padding: 0px 0px;
+border-radius: 89px;
+background: rgba(255,255,255,0.05);
+/* Тінь і обведення для глибини */
+z-index: 1000;
+isolation: isolate;
+backdrop-filter: blur(3px) saturate(140%);
+-webkit-backdrop-filter: blur(3px);
+@apply bg-muted/25;
+backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+-webkit-backdrop-filter: blur(3px);
+filter: url(#glass-distortion);
+-webkit-filter: url(#glass-distortion);
+}
+#upload-progress {
+-webkit-appearance: none;
+appearance: none;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+border: none;
+
+/* Малюємо кругове заповнення на основі значення attr(value) */
+background: conic-gradient(#007bff attr(value percent, 0%), #e6e6e6 0%);
+
+/* Вирізаємо середину, щоб зробити гарне кільце */
+mask: radial-gradient(farthest-side, transparent 80%, #000 0);
+-webkit-mask: radial-gradient(farthest-side, transparent 80%, #000 0);
+
+/* Запускаємо постійне обертання по колу (1.5 секунди на одне коло) */
+animation: spin 1.5s linear infinite;
+}
+
+/* Повністю приховуємо стандартні смужки браузера, щоб вони не перекривали візуал */
+#upload-progress::-webkit-progress-bar,
+#upload-progress::-webkit-progress-value,
+#upload-progress::-moz-progress-bar {
+background: transparent;
+}
+
+/* Анімація безкінечного обертання */
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.ios-modal-content {
+width: 90%;
+max-width: 420px;
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(25px);
+border-radius: 20px;
+color: #fff;
+text-align: center;
+box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+animation: popIn 0.4s ease;
+border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.ios-modal-header {
+padding: 16px;
+text-align: center;
+font-weight: bold;
+border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ios-modal-body {
+padding: 16px;
+font-size: 14px;
+}
+
+.comments * {
+white-space: normal;
+word-break: break-word;
+}
+.donate {
+display: flex;
+margin-top: 100px;
+justify-content: center;
+align-items: center;
+}
+#storyPreview img {
+border-radius: 16px;
+}
+.cancel-publish {
+position: absolute;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 12px;
+width: 30px;
+height: 30px;
+top: 12px;
+left: 20px;
+border-radius: 26px;
+backdrop-filter: url(#displacementFilter) blur(3px);
+-webkit-backdrop-filter: blur(3px);
+}
+.publishStory {
+position: absolute;
+padding: 12px;
+bottom: 12px;
+right: 20px;
+border-radius: 20px;
+background: #07f;
+color: white;
+}
+
+.settings-item, .settings-toggle {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0px 5px;
+}
+#timer {
+font-size: 20px;
+color: red;
+}
+#alert {
+display: none;
+background-color: yellow;
+padding: 10px;
+margin-top: 10px;
+font-size: 18px;
+}
+input[type="number"] {
+padding: 5px;
+margin: 10px 0;
+}
+.save {
+padding: 10px;
+background-color: #4CAF50;
+color: white;
+border: none;
+cursor: pointer;
+}
+.save:hover {
+background-color: #45a049;
+}
+}
+ #nsfw-toggle {
+        display: none;
+}
+.avatar div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.avatar span {
+  display: inline-flex;
+  align-items: center;
+}
+.adaptive-stroke {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.btn-liquid-glass {
+  position: fixed;
+  bottom: 20px;
+  left: 94%;
+  transform: translateX(-70%);
+  width: 15%;
+  height: 8%;
+display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 0px;
+  border-radius: 89px;
+  background: rgba(255,255,255,0.05);
+  /* Тінь і обведення для глибини */
+  z-index: 1000;
+  isolation: isolate;
+        backdrop-filter: blur(3px) saturate(140%);
+        -webkit-backdrop-filter: blur(3px);
+        @apply bg-muted/25;
+    }
+    .search-box-liquid-glass {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 0; /* приховано */
+  height: 60px;
+  max-width: 600px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 10px;
+  overflow: hidden;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+isolation: isolate;
+        backdrop-filter: blur(3px) saturate(140%);
+        -webkit-backdrop-filter: blur(3px);
+        @apply bg-muted/25;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+
+  opacity: 0;
+  z-index: 9999;
+
+  transition: width 0.3s ease, opacity 0.3s ease;
+}
+    
+    .tab-liquid-glass {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 1px;
+  width: 80%;
+  height: 6%;
+  border-radius: 65px;
+background: rgba(255,255,255,0.05);
+  /* Тінь і обведення для глибини */
+  z-index: 1001;
+  isolation: isolate;
+        backdrop-filter: blur(3px) saturate(140%);
+        -webkit-backdrop-filter: blur(3px);
+        @apply bg-muted/25;
+    }
+    .tg-popup {
+  position: fixed;
+  inset: 0;
+  display: inline;
+  z-index: 9999;
+}
+
+.tg-popup.hidden {
+  display: none;
+}
+
+.tg-popup-card {
+  width: 90%;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+isolation: isolate;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  box-shadow: 0 15px 40px rgba(0,0,0,.4);
+  color: white;
+  text-align: center;
+  position: relative;
+  animation: popupIn .35s ease;
+
+  /* додано для вирівнювання в ряд */
+  display: flex;
+  flex-direction: row; /* рядок */
+  justify-content: center; /* по центру горизонтально */
+  align-items: center; /* по центру вертикально */
+  gap: 10px; /* відстань між елементами */
+}
+
+@keyframes popupIn {
+  from { transform: scale(.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.tg-close {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.tg-join-btn {
+  display: block;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg,#0088cc,#00bfff);
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+    .comment-liquid-glass {
+width: 80%;  /* Ширина поля вводу */
+    padding: 10px;
+    margin-right: 10px;  /* Відступ між полем вводу та кнопкою */
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+      isolation: isolate;
+        backdrop-filter: blur(3px) saturate(140%);
+        -webkit-backdrop-filter: blur(3px);
+        @apply bg-muted/25;
+    }
+    .tab-button-liquid-glass {
+    display: inline;
+    transition: 0.3s;
+    width: 100%;
+    height: 100%;
+    margin: 5px;
+    border-radius: 56px;
+    text-decoration: none;
+background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url(#glass-distortion);
+
+  /* Тінь і обведення для глибини */
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  z-index: 1000;
+    }
+
+
+.button-liquid-glass {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+align-items: center;
+    min-width: 56px;
+width: max-content;
+  height: 80%;
+margin: 2px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 56px;
+  
+backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url(#glass-distortion);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    transition: 0.3s;
+}
+
+
+#search-input {
+transform: translateX(1%);
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+isolation: isolate;
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        @apply bg-muted/25;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+z-index: 9999;
+border: none;
+outline: none;
+font-size: 18px;
+}
+        .nav a {
+height: 50px;
+align-items: center;
+    justify-content: space-between;
+display: flex;
+          white-space: nowrap;
+    padding: 0px 1px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+          background: rgba(255,255,255,0.05);
+  backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url(#glass-distortion);
+
+  /* Тінь і обведення для глибини */
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255,255,255,0.08);
+
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+
+.search {
+display: inline-block;
+padding: 12px 28px;
+margin: 0 10px;
+border-radius: 999px;
+text-align: center;
+text-decoration: none;
+color: white;
+backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
+-webkit-backdrop-filter: blur(3px);
+filter: url(#glass-distortion);
+-webkit-filter: url(#glass-distortion);
+
+/* Тінь і обведення для глибини */
+box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+border: 1px solid rgba(255,255,255,0.08);
+background: rgba(255,255,255,0.05);
+cursor: pointer;
+
+}
+    @supports not (hanging-punctuation:first) {
+        #plus-button, .comment-liquid-glass, .tg-popup-card, .search-box-liquid-glass,#search-input, .tab-liquid-glass, .open-liquid-glass-menu {
+            backdrop-filter: url(#displacementFilter) blur(3px);
+        }
+    }
