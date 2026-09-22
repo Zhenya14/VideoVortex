@@ -2868,7 +2868,7 @@ saveVideoInfo.appendChild(saveVideoTitle);
 
         // Клік на відео
         saveVideoContainer.onclick = () => {
-            window.location.href = `video.html?key=${videoKey}`;
+            window.location.href = `video.html?key=${video.videoKey}`;
         };
 
         // Додаємо в список
