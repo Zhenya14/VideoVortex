@@ -3482,7 +3482,276 @@ async function freezeUser(uid, status = "frozen_soft") {
     modal.classList.add("active");
 }
 
+async function rebuildWrapped2026(uid) {
+    if (!uid) {
+        console.error("WRAPPED_UID_MISSING");
+        return;
+    }
 
+    const year = 2026;
+
+    try {
+        console.log("Починаємо відновлення Wrapped 2026...");
+
+        const [
+            videosSnap,
+            commentsSnap,
+            repostsSnap,
+            savesSnap
+        ] = await Promise.all([
+            database.ref("videos").once("value"),
+            database.ref("comments").once("value"),
+            database.ref("reposts").once("value"),
+            database.ref("saveVideos").once("value")
+        ]);
+
+        let videos = 0;
+        let views = 0;
+        let likes = 0;
+        let comments = 0;
+        let reposts = 0;
+        let saves = 0;
+
+        const userVideoKeys = new Set();
+
+        /*
+         * =========================
+         * ВІДЕО
+         * =========================
+         */
+
+        videosSnap.forEach(child => {
+
+            const video = child.val();
+
+            if (!video) return;
+
+            const authorUid =
+                video.authorUid ||
+                video.uid ||
+                video.userId;
+
+            if (authorUid !== uid) return;
+
+            userVideoKeys.add(child.key);
+
+            /*
+             * Якщо відео має createdAt,
+             * перевіряємо 2026 рік.
+             */
+
+            if (video.createdAt) {
+
+                const date =
+                    new Date(Number(video.createdAt));
+
+                if (date.getFullYear() === year) {
+                    videos++;
+                }
+
+            } else {
+
+                /*
+                 * Якщо createdAt немає,
+                 * рахуємо відео як існуюче.
+                 *
+                 * Це приблизний варіант для старих записів.
+                 */
+
+                videos++;
+
+            }
+
+            /*
+             * Поточна кількість переглядів.
+             */
+
+            views += Number(video.views || 0);
+
+            /*
+             * Поточна кількість лайків.
+             */
+
+            likes += Number(video.likes || 0);
+
+        });
+
+
+        /*
+         * =========================
+         * КОМЕНТАРІ
+         * =========================
+         */
+
+        commentsSnap.forEach(child => {
+
+            const comment = child.val();
+
+            if (!comment) return;
+
+            if (!comment.videoKey) return;
+
+            if (!userVideoKeys.has(comment.videoKey)) return;
+
+            /*
+             * Якщо є createdAt —
+             * враховуємо тільки 2026.
+             */
+
+            if (comment.createdAt) {
+
+                const date =
+                    new Date(Number(comment.createdAt));
+
+                if (date.getFullYear() === year) {
+                    comments++;
+                }
+
+            } else {
+
+                /*
+                 * Старий формат має publishDate.
+                 * Наприклад:
+                 *
+                 * 23.09.2026
+                 */
+
+                if (comment.publishDate) {
+
+                    const parts =
+                        String(comment.publishDate).split(".");
+
+                    if (
+                        parts.length === 3 &&
+                        Number(parts[2]) === year
+                    ) {
+                        comments++;
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        /*
+         * =========================
+         * РЕПОСТИ
+         * =========================
+         *
+         * reposts/UID — це репости,
+         * які зробив користувач.
+         *
+         * Це не кількість отриманих
+         * репостів його відео.
+         */
+
+        repostsSnap.forEach(uidNode => {
+
+            uidNode.forEach(child => {
+
+                const repost = child.val();
+
+                if (!repost) return;
+
+                if (!repost.videoKey) return;
+
+                if (!userVideoKeys.has(repost.videoKey)) {
+                    return;
+                }
+
+                if (!repost.createdAt) return;
+
+                const date =
+                    new Date(Number(repost.createdAt));
+
+                if (date.getFullYear() === year) {
+                    reposts++;
+                }
+
+            });
+
+        });
+
+
+        /*
+         * =========================
+         * ЗБЕРЕЖЕННЯ
+         * =========================
+         *
+         * Аналогічно: saveVideos/UID
+         * містить збережені користувачем
+         * відео.
+         */
+
+        savesSnap.forEach(uidNode => {
+
+            uidNode.forEach(child => {
+
+                const save = child.val();
+
+                if (!save) return;
+
+                if (!save.videoKey) return;
+
+                if (!userVideoKeys.has(save.videoKey)) {
+                    return;
+                }
+
+                if (!save.createdAt) return;
+
+                const date =
+                    new Date(Number(save.createdAt));
+
+                if (date.getFullYear() === year) {
+                    saves++;
+                }
+
+            });
+
+        });
+
+
+        /*
+         * =========================
+         * ЗАПИС WRAPPED
+         * =========================
+         */
+
+        const wrappedData = {
+            videos: videos,
+            views: views,
+            likes: likes,
+            comments: comments,
+            reposts: reposts,
+            saves: saves,
+            rebuiltAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+
+        await database
+            .ref(`wrappedStats/${uid}/${year}`)
+            .set(wrappedData);
+
+
+        console.log(
+            "WRAPPED 2026 ГОТОВИЙ:",
+            wrappedData
+        );
+
+        return wrappedData;
+
+    } catch (error) {
+
+        console.error(
+            "REBUILD_WRAPPED_ERROR:",
+            error
+        );
+
+        throw error;
+    }
+}
 function openSupportResources() {
     // Тут можна відкрити окрему сторінку VideoVortex
     window.location.href = "support.html";
@@ -5269,6 +5538,7 @@ auth.onAuthStateChanged(async (user) => {
         loadLibrary(user);
        loadYouStories(user);
         updateColorsAuthor(user);
+      rebuildWrapped2026(user.uid);
         updateColorsCommentsAuthor(user);
         updateColorsPhotosAuthor(user);
         updateColorsVideosAuthor(user);
