@@ -741,8 +741,10 @@ transform: scale(0.95); /* легке стиснення */
     0 0 12px rgba(0, 255, 255, 0.08);
   
   transition: transform 0.2s ease, box-shadow 0.25s ease;
-  display: flex;
-  flex-direction: column-reverse;
+ display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: 16px;
+    direction:rtl;
   position: relative;
   margin: 50px auto 0;
   z-index: 1;

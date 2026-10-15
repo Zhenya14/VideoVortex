@@ -4110,8 +4110,9 @@ if (currentUserRole === "moderator") {
         container.classList.add("video-container");
         container.dataset.id = videoKey;
 
-        container.appendChild(infoElement);
+        
         videoWrapper.appendChild(videoElement);
+        container.appendChild(infoElement);
         container.appendChild(videoWrapper);
 
         videoGallery.appendChild(container);
