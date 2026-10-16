@@ -4030,7 +4030,7 @@ detailsElement.innerHTML = `
 if (currentUserRole === "moderator") {
 
             const freezeBtn = document.createElement("button");
-            freezeBtn.textContent = "❄ Заморозити";
+            freezeBtn.textContent = "Заморозити ❄";
 
             freezeBtn.onclick = async () => {
                 await freezeUser(videoDataRaw.authorUid, "frozen_soft");
@@ -4042,7 +4042,7 @@ if (currentUserRole === "moderator") {
                 await unFreezeUser(videoDataRaw.authorUid);
             };
             const banBtn = document.createElement("button");
-            banBtn.textContent = "⛔ Бан";
+            banBtn.textContent = "Бан ⛔";
 
             banBtn.onclick = async () => {
                 await freezeUser(videoDataRaw.authorUid, "frozen_hard");
@@ -4056,7 +4056,7 @@ if (currentUserRole === "moderator") {
         if (currentUserEmail === videoDataRaw.email || currentUserEmail === "zhuzhun2008@gmail.com") {
             const deleteButton = document.createElement("button");
             deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">
-                <i class="material-symbols">delete</i>Видалити</a>`;
+                Видалити<i class="material-symbols">delete</i></a>`;
 
             deleteButton.onclick = () => {
                 deleteVideo(videoKey, videoDataRaw.url);
@@ -4069,7 +4069,7 @@ if (currentUserRole === "moderator") {
         if (currentUserEmail === videoDataRaw.email) {
             const editButton = document.createElement("button");
             editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">
-                <i class="material-symbols">edit</i>Редагувати</a>`;
+                Редагувати<i class="material-symbols">edit</i></a>`;
 
             editButton.onclick = () => {
                 editVideo(videoKey, videoDataRaw);
@@ -4078,6 +4078,7 @@ if (currentUserRole === "moderator") {
 
             actionMenu.appendChild(editButton);
         }
+
 
         moreBtn.onclick = e => {
             e.stopPropagation();
