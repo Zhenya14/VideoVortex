@@ -4014,7 +4014,7 @@ detailsElement.innerHTML = `
 
     ${getSafeBanduraHTML(videoDataRaw.banduraExtra)}
     <div class='info-element'>
-<p style=' justify-content: center; align-items: center;'>${videoDataRaw.views || 0}<i class='material-symbols'>play_arrow</i></p><span class='info-divider'>•</span>
+<p style='display: flex; justify-content: center; align-items: center;'>${videoDataRaw.views || 0}<i class='material-symbols'>play_arrow</i></p><span class='info-divider'>•</span>
  <p style='display: flex; justify-content: center; align-items: center;'>${videoDataRaw.publishDate || "—"}<i class='material-symbols'>event</i>
 </p></div>`;
     
