@@ -1,4 +1,4 @@
-7  const messageNotification = document.getElementById("message-ai");
+  const messageNotification = document.getElementById("message-ai");
   const notificationAI = document.getElementById("notification-ai-modal");
 let currentEditKey = null;
 let maxTimeInMinutes = null;
