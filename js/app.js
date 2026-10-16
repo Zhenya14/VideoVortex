@@ -4014,8 +4014,8 @@ detailsElement.innerHTML = `
 
     ${getSafeBanduraHTML(videoDataRaw.banduraExtra)}
     <div class='info-element'>
-<p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>play_arrow</i>${videoDataRaw.views || 0}</p><span class='info-divider'>•</span>
- <p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>event</i>${videoDataRaw.publishDate || "—"}
+<p style=' justify-content: center; align-items: center;'>${videoDataRaw.views || 0}<i class='material-symbols'>play_arrow</i></p><span class='info-divider'>•</span>
+ <p style='display: flex; justify-content: center; align-items: center;'>${videoDataRaw.publishDate || "—"}<i class='material-symbols'>event</i>
 </p></div>`;
     
 
@@ -4100,9 +4100,8 @@ if (currentUserRole === "moderator") {
 
             videoGallery.dataset.listener = "true";
         }
-
-        infoElement.appendChild(avatar);
         infoElement.appendChild(detailsElement);
+        infoElement.appendChild(avatar);
         infoElement.appendChild(moreBtn);
         infoElement.appendChild(actionMenu);
 
@@ -4111,12 +4110,12 @@ if (currentUserRole === "moderator") {
         container.dataset.id = videoKey;
 
         
-         container.appendChild(infoElement);
-        videoWrapper.appendChild(videoElement);
-        
-        videoGallery.appendChild(container);
+         videoWrapper.appendChild(videoElement);
 
-        container.appendChild(videoWrapper);
+container.appendChild(videoWrapper);
+container.appendChild(infoElement);
+
+videoGallery.appendChild(container);
 
       applyTranslations();
     });
