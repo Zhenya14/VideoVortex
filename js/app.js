@@ -1,4 +1,4 @@
-  const messageNotification = document.getElementById("message-ai");
+7  const messageNotification = document.getElementById("message-ai");
   const notificationAI = document.getElementById("notification-ai-modal");
 let currentEditKey = null;
 let maxTimeInMinutes = null;
@@ -4111,11 +4111,13 @@ if (currentUserRole === "moderator") {
         container.dataset.id = videoKey;
 
         
+         container.appendChild(infoElement);
         videoWrapper.appendChild(videoElement);
-        container.appendChild(infoElement);
+        
+        videoGallery.appendChild(container);
+
         container.appendChild(videoWrapper);
 
-        videoGallery.appendChild(container);
       applyTranslations();
     });
 }
