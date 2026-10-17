@@ -20,7 +20,7 @@ messaging.onBackgroundMessage((payload) => {
   const title = notification.title || data.title || "VideoVortex";
   const options = {
     body: notification.body || data.body || "У вас нове сповіщення",
-    icon: notification.icon || VideoVortex_logo.ico",
+    icon: notification.icon || "/VideoVortex/VideoVortex_logo.ico",
     data: {
       url: data.url || "/"
     },
