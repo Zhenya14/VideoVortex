@@ -28,6 +28,48 @@ const database = firebase.database();
 const storage = firebase.storage();
 const messaging = firebase.messaging();
 
+
+const VAPID_KEY = "BFkinse0q7x94PIX608Y9QsATJ0Ht2S-k6TeOpSFdB0sXIRLyxf1wKHTboOUHJY5tQB8wGMyMcoEQEV5fDu4sS4";
+
+async function registerVideoVortexPush(user) {
+  if (!user || !("Notification" in window)) return;
+  if (!("serviceWorker" in navigator)) return;
+
+  // Не показуємо запит дозволу автоматично.
+  if (Notification.permission !== "granted") return;
+
+  try {
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js"
+    );
+
+    const token = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (!token) return;
+
+    const tokenKey = encodeURIComponent(token);
+
+    await database.ref(`pushTokens/${user.uid}/${tokenKey}`).set({
+      token,
+      platform: "web",
+      updatedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    console.log("VideoVortex push зареєстровано");
+  } catch (error) {
+    console.error("Помилка реєстрації push:", error);
+  }
+}
+
+auth.onAuthStateChanged((user) => {
+  if (user && Notification.permission === "granted") {
+    registerVideoVortexPush(user);
+  }
+});
+
 function showNotificationAIModal() {
   notificationAI.style.display = "flex";
 }
