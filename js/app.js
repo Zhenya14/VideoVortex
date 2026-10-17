@@ -63,12 +63,44 @@ async function registerVideoVortexPush(user) {
     console.error("Помилка реєстрації push:", error);
   }
 }
-
-auth.onAuthStateChanged((user) => {
-  if (user && Notification.permission === "granted") {
-    registerVideoVortexPush(user);
+async function registerPushToken(user) {
+  if (!user || !("Notification" in window) ||
+      !("serviceWorker" in navigator)) {
+    return;
   }
-});
+
+  if (Notification.permission !== "granted") {
+    console.log("Користувач ще не дозволив сповіщення");
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.register(
+      "/VideoVortex/firebase-messaging-sw.js",
+      { scope: "/VideoVortex/" }
+    );
+
+    const token = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (!token) return;
+
+    await database.ref(
+      `pushTokens/${user.uid}/${encodeURIComponent(token)}`
+    ).set({
+      token,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      platform: "web"
+    });
+
+    console.log("Push-токен збережено");
+  } catch (error) {
+    console.error("Помилка реєстрації push:", error);
+  }
+}
+
 
 function showNotificationAIModal() {
   notificationAI.style.display = "flex";
@@ -5576,7 +5608,10 @@ auth.onAuthStateChanged(async (user) => {
         // =========================
         // 🔹 INITIAL LOAD
         // =========================
-
+if (user && Notification.permission === "granted") {
+    registerVideoVortexPush(user);
+}
+registerPushtoken(user);
         loadPhotoChannelSelect();
         loadChannelSelect();
         loadSecureFiles();
