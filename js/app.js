@@ -40,7 +40,7 @@ async function registerVideoVortexPush(user) {
 
   try {
     const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js"
+      "VideoVortex/firebase-messaging-sw.js"
     );
 
     const token = await messaging.getToken({
