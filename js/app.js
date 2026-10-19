@@ -5611,7 +5611,6 @@ auth.onAuthStateChanged(async (user) => {
 if (user && Notification.permission === "granted") {
     registerVideoVortexPush(user);
 }
-registerPushtoken(user);
         loadPhotoChannelSelect();
         loadChannelSelect();
         loadSecureFiles();
