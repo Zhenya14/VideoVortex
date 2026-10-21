@@ -12,10 +12,10 @@ ios-modal {
 a,
 a *,
 button,
-button * {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
+button *,
+[role="button"],
+[role="button"] * {
+    -webkit-tap-highlight-color: transparent !important;
 }
 #player-container {
     position: relative;
