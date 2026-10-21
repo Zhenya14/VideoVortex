@@ -4,6 +4,14 @@ html, body{
   padding: 0;
   overflow-x: hidden;
 }
+a,
+a *,
+button,
+button * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
 body {
   touch-action: manipulation;
   color: #e9ecf1;
