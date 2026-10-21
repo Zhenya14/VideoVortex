@@ -1,6 +1,14 @@
 #photo-file, #video-file, #action-btn, #set-wallpaper-profile {
   display: none;
 }
+a,
+a *,
+button,
+button * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
 /* Стиль повзунка */
 .switch {
   position: relative;
