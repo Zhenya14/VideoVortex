@@ -9,6 +9,14 @@ ios-modal {
   align-items: center;
   animation: fadeIn 0.3s ease;
 }
+a,
+a *,
+button,
+button * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
 #player-container {
     position: relative;
     overflow: hidden;
