@@ -109,7 +109,7 @@ if ("serviceWorker" in navigator) {
 </div>
     </div>
 <!-- CAMERA SCREEN -->
-<div id="story-camera" style="display:none; position:fixed; inset:0; background:black; z-index:999;">
+<div id="story-camera" style="display:none; position:fixed; inset:0; background:black; z-index: 100000;">
 
     <!-- Тут буде прев'ю фото або відео -->
     <div id="storyPreview"
@@ -120,7 +120,7 @@ if ("serviceWorker" in navigator) {
     <video id="cameraPreview"
            autoplay
            playsinline
-           style="display:none; width:100%; height:100%; z-index: 1000; object-fit:cover;">
+           style="display:none; width:100%; height:100%;  object-fit:cover;">
     </video>
     <a class="cancel-publish" onclick="captureStop()">
         <i class="material-symbols">arrow_back_ios_new</i>
