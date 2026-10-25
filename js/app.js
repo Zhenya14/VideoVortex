@@ -404,7 +404,7 @@ function captureStop() {
 
 
 document.getElementById("galleryInput").addEventListener("change", (e) => {
-
+event.stopPropagation();
     const file = e.target.files[0];
     if (!file) return;
 
