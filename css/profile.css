@@ -50,9 +50,10 @@ color: white;
 white-space: nowrap;
 
 background: linear-gradient(
-    135deg,
-    rgba(90, 90, 100, 0.62),
-    rgba(45, 45, 52, 0.76)
+    145deg,
+    rgba(75, 75, 85, 0.38),
+    rgba(45, 45, 55, 0.48),
+    rgba(25, 25, 32, 0.55)
   );
 backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
 -webkit-backdrop-filter: blur(3px);
@@ -282,9 +283,10 @@ button.cancel:active {
     z-index: 11;
     isolation: isolate;
      background: linear-gradient(
-    135deg,
-    rgba(90, 90, 100, 0.62),
-    rgba(45, 45, 52, 0.76)
+    145deg,
+    rgba(75, 75, 85, 0.38),
+    rgba(45, 45, 55, 0.48),
+    rgba(25, 25, 32, 0.55)
   );
     backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
     -webkit-backdrop-filter: blur(3px);
