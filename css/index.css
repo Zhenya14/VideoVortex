@@ -2619,9 +2619,10 @@ align-items: center;
 padding: 0px 0px;
 border-radius: 89px;
 background: linear-gradient(
-    135deg,
-    rgba(90, 90, 100, 0.62),
-    rgba(45, 45, 52, 0.76)
+    145deg,
+    rgba(75, 75, 85, 0.38),
+    rgba(45, 45, 55, 0.48),
+    rgba(25, 25, 32, 0.55)
   );
 /* Тінь і обведення для глибини */
 z-index: 1000;
