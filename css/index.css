@@ -1635,6 +1635,7 @@ transform: scale(0.95); /* легке стиснення */
     );
     z-index: 1;
 }
+
 .profile-header {
   margin-top: 60px;
   padding: 50px 0px;
@@ -2324,7 +2325,11 @@ z-index: 1000;
 
 border: 1px solid rgba(255, 255, 255, 0.09);  
 border-radius: 62px;  
-
+background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
 backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);  
 -webkit-backdrop-filter: blur(3px);  
 
@@ -2597,7 +2602,7 @@ border-radius: 16px;
 }
 #plus-button {
 border-radius: 89px;
-bottom: 20px;
+bottom: 30px;
 
 text-decoration: none;
 font-size: 32px;
@@ -2612,7 +2617,11 @@ justify-content: center;
 align-items: center;
 padding: 0px 0px;
 border-radius: 89px;
-background: rgba(255,255,255,0.05);
+background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
 /* Тінь і обведення для глибини */
 z-index: 1000;
 isolation: isolate;
@@ -2803,7 +2812,11 @@ display: none;
   padding: 0 10px;
   overflow: hidden;
 
-  background: rgba(255,255,255,0.05);
+  background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
   backdrop-filter: blur(3px) saturate(140%);
   -webkit-backdrop-filter: blur(3px);
 isolation: isolate;
@@ -2830,7 +2843,11 @@ isolation: isolate;
   width: 80%;
   height: 6%;
   border-radius: 65px;
-background: rgba(255,255,255,0.05);
+background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
   /* Тінь і обведення для глибини */
   z-index: 1001;
   isolation: isolate;
@@ -3041,7 +3058,11 @@ display: flex;
     text-align: center;
     text-decoration: none;
     color: white;
-          background: rgba(255,255,255,0.05);
+          background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
   backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
   -webkit-backdrop-filter: blur(3px);
   filter: url(#glass-distortion);
@@ -3063,6 +3084,11 @@ border-radius: 999px;
 text-align: center;
 text-decoration: none;
 color: white;
+  background: linear-gradient(
+    135deg,
+    rgba(90, 90, 100, 0.62),
+    rgba(45, 45, 52, 0.76)
+  );
 backdrop-filter: url(#displacementFilter) blur(3px) saturate(140%);
 -webkit-backdrop-filter: blur(3px);
 filter: url(#glass-distortion);
@@ -3071,7 +3097,6 @@ filter: url(#glass-distortion);
 /* Тінь і обведення для глибини */
 box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
 border: 1px solid rgba(255,255,255,0.08);
-background: rgba(255,255,255,0.05);
 cursor: pointer;
 
 }
