@@ -808,8 +808,17 @@ window.addEventListener("load", () => {
 
 let logoClickCount = 0;
 let logoClickTimer = null;
-let EggTimeout = null;
+
+/* ==========================================
+   🎉 VideoVortex — SEASONAL THEMES & ICONS
+   ========================================== */
+
 let snowInterval = null;
+let EggTimeout = null;
+
+/* ================================
+   📅 HOLIDAY SYSTEM
+   ================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
@@ -819,79 +828,125 @@ document.addEventListener("DOMContentLoaded", () => {
   const logo = document.getElementById("logo");
 
   /* ================= HALLOWEEN ================= */
-  if (month === 10 && (day === 30 || day === 31)) {
-    activateHalloweenMode();
-    applyIcons(halloweenIcons);
-  }
-
-  if (month === 11 && day === 1) {
-    deactivateHalloweenMode();
-    restoreIcons();
-  }
+  const isHalloween =
+    month === 10 && (day === 30 || day === 31);
 
   /* ================= NEW YEAR ================= */
   const isNewYear =
     (month === 12 && day >= 15) ||
     (month === 1 && day <= 25);
 
-  if (isNewYear) {
-    activateGirland();
-    activateNewYearMode();
-    applyIcons(newyearIcons);
+  /* ================= VALENTINE ================= */
+  const isValentine =
+    month === 2 && (day === 13 || day === 14);
 
-    if (logo && !logo.dataset.Bound) {
-      logo.dataset.Bound = "true";
+  /* ================= UKRAINE INDEPENDENCE ================= */
+  const isIndependenceUkraine =
+    month === 8 && (day === 23 || day === 24);
 
-      let logoClickCount = 0;
-      let logoClickTimer = null;
+  /* ================= VYSHYVANKA DAY ================= */
+  const isVyshyvanka =
+    month === 5 && (day === 20 || day === 21);
 
-      logo.addEventListener("click", () => {
-        logoClickCount++;
+  /* ================= EASTER PERIOD ================= */
+  const isEaster =
+    month === 4 && day >= 10 && day <= 25;
 
-        clearTimeout(logoClickTimer);
+  /*
+   * Визначаємо одне активне свято.
+   * Це не дозволяє кільком наборам іконок
+   * перезаписувати один одного.
+   */
+  let activeIcons = null;
+  let activeTheme = null;
 
+  if (isHalloween) {
+    activeIcons = halloweenIcons;
+    activeTheme = "halloween";
+  } else if (isNewYear) {
+    activeIcons = newyearIcons;
+    activeTheme = "newyear";
+  } else if (isValentine) {
+    activeIcons = valentineIcons;
+    activeTheme = "valentine";
+  } else if (isVyshyvanka) {
+    activeIcons = vyshyvankaIcons;
+    activeTheme = "vyshyvanka";
+  } else if (isIndependenceUkraine) {
+    activeIcons = independenceIcons;
+    activeTheme = "independence";
+  } else if (isEaster) {
+    activeIcons = Icons;
+    activeTheme = "easter";
+  }
+
+  /*
+   * Спочатку вимикаємо попередні ефекти.
+   * Потім активуємо тільки потрібну тему.
+   */
+  deactivateHalloweenMode();
+  deactivateGirland();
+  deactivateNewYearMode();
+  deactivateVyshyvankaMode();
+  deactivateIndepedenceMode();
+
+  restoreIcons();
+
+  switch (activeTheme) {
+    case "halloween":
+      activateHalloweenMode();
+      break;
+
+    case "newyear":
+      activateGirland();
+      activateNewYearMode();
+      break;
+
+    case "vyshyvanka":
+      activateVyshyvankaMode();
+      break;
+
+    case "independence":
+      activateIndepedenceMode();
+      break;
+  }
+
+  /*
+   * Важливо: застосовуємо іконки лише ПІСЛЯ
+   * відновлення оригінального HTML.
+   */
+  if (activeIcons) {
+    applyIcons(activeIcons);
+    console.log(
+      "VideoVortex: святкові іконки застосовано:",
+      activeTheme
+    );
+  } else {
+    console.log("VideoVortex: стандартні іконки");
+  }
+
+  /* ================= NEW YEAR EASTER EGG ================= */
+
+  if (isNewYear && logo && !logo.dataset.bound) {
+    logo.dataset.bound = "true";
+
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+
+    logo.addEventListener("click", () => {
+      logoClickCount++;
+
+      clearTimeout(logoClickTimer);
+
+      if (logoClickCount === 3) {
+        logoClickCount = 0;
+        launchNewYearEgg();
+      } else {
         logoClickTimer = setTimeout(() => {
           logoClickCount = 0;
         }, 1200);
-
-        if (logoClickCount === 3) {
-          logoClickCount = 0;
-          launchNewYearEgg();
-        }
-      });
-    }
-
-  } else {
-    deactivateGirland();
-    deactivateNewYearMode();
-    restoreIcons();
-  }
-
-  /* ================= VALENTINE (OVERRIDE LAYER) ================= */
-  const isValentine = month === 2 && (day === 13 || day === 14);
-  const isIndependenceUkraine = month === 8 && (day === 23 || day === 24);
-const isVyshyvanka = month === 5 && (day === 20 || day === 21);
-  if (isValentine) {
-    applyIcons(valentineIcons);
-  }
-  if (isVyshyvanka) {
-    activateVyshyvankaMode();
-    applyIcons(vyshyvankaIcons);
-  } else {
-    deactivateVyshyvankaMode();
-    restoreIcons();
-  }
-  if (isIndependenceUkraine) {
-    activateIndepedenceMode();
-    applyIcons(independenceIcons);
-  } else {
-    deactivateIndepedenceMode();
-    restoreIcons();
-  }
-  const is = (month === 4 && day >= 10  && day <= 25);
-  // 🔔  egg по потрійному кліку на логотип
-  if (is) {
-    applyIcons(Icons);
+      }
+    });
   }
 });
 
@@ -899,49 +954,70 @@ const isVyshyvanka = month === 5 && (day === 20 || day === 21);
 /* ================================
    🎃 HALLOWEEN
    ================================ */
+
 function activateHalloweenMode() {
   document.body.classList.add("halloween");
+
   console.log("🎃 Halloween увімкнено!");
+
   styleButtons("#ff7518", "black");
 
-  for (let i = 0; i < 5; i++) {
-    const bat = document.createElement("div");
-    bat.className = "bat";
-    bat.textContent = "🦇";
-    bat.style.position = "fixed";
-    bat.style.top = Math.random() * 80 + "%";
-    bat.style.left = Math.random() * 100 + "%";
-    bat.style.fontSize = Math.random() * 30 + 20 + "px";
-    bat.style.opacity = 0.8;
-    bat.style.zIndex = 9999;
-    document.body.appendChild(bat);
+  // Не створюємо повторних кажанів.
+  if (!document.querySelector(".bat")) {
+    for (let i = 0; i < 5; i++) {
+      const bat = document.createElement("div");
+
+      bat.className = "bat";
+      bat.textContent = "🦇";
+      bat.style.position = "fixed";
+      bat.style.top = Math.random() * 80 + "%";
+      bat.style.left = Math.random() * 100 + "%";
+      bat.style.fontSize =
+        Math.random() * 30 + 20 + "px";
+      bat.style.opacity = "0.8";
+      bat.style.zIndex = "9999";
+      bat.style.pointerEvents = "none";
+
+      document.body.appendChild(bat);
+    }
   }
 
-  const fog = document.createElement("div");
-  fog.className = "fog";
-  fog.style.position = "fixed";
-  fog.style.top = "0";
-  fog.style.left = "0";
-  fog.style.width = "100%";
-  fog.style.height = "100%";
-  fog.style.background =
-    "radial-gradient(circle, rgba(255,165,0,0.1), rgba(0,0,0,0.8))";
-  fog.style.pointerEvents = "none";
-  fog.style.zIndex = 999;
-  document.body.appendChild(fog);
+  if (!document.querySelector(".fog")) {
+    const fog = document.createElement("div");
+
+    fog.className = "fog";
+    fog.style.position = "fixed";
+    fog.style.top = "0";
+    fog.style.left = "0";
+    fog.style.width = "100%";
+    fog.style.height = "100%";
+    fog.style.background =
+      "radial-gradient(circle, rgba(255,165,0,0.1), rgba(0,0,0,0.8))";
+    fog.style.pointerEvents = "none";
+    fog.style.zIndex = "999";
+
+    document.body.appendChild(fog);
+  }
 }
 
 function deactivateHalloweenMode() {
   document.body.classList.remove("halloween");
-  document.querySelectorAll(".bat, .fog").forEach(el => el.remove());
+
+  document.querySelectorAll(".bat, .fog").forEach(el => {
+    el.remove();
+  });
+
   resetButtonColors();
 }
+
 
 /* ================================
    🎄 NEW YEAR
    ================================ */
+
 function activateGirland() {
   const girland = document.getElementById("girland");
+
   if (girland) {
     girland.style.display = "block";
     girland.classList.add("lightrope");
@@ -950,6 +1026,7 @@ function activateGirland() {
 
 function deactivateGirland() {
   const girland = document.getElementById("girland");
+
   if (girland) {
     girland.classList.remove("lightrope");
     girland.style.display = "none";
@@ -958,89 +1035,145 @@ function deactivateGirland() {
 
 function activateNewYearMode() {
   document.body.classList.add("newyear");
+
   console.log("🎄 Новий Рік увімкнено!");
+
   startSnow();
 
   const logo = document.getElementById("logo");
-  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-  if (logo) logo.src = "VideoVortex_new_year's_logo.jpg";
+
+  if (logo) {
+    if (!logo.dataset.originalSrc) {
+      logo.dataset.originalSrc = logo.getAttribute("src") || "";
+    }
+
+    logo.src = "VideoVortex_new_year's_logo.jpg";
+  }
 
   styleButtons("#b0e6ff", "#00344f");
 }
 
 function deactivateNewYearMode() {
   document.body.classList.remove("newyear");
+
   stopSnow();
-closeNewYearPopup();
+  closeNewYearPopup();
+
   const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  if (logo && logo.dataset.originalSrc !== undefined) {
+    logo.setAttribute("src", logo.dataset.originalSrc);
+  }
 
   resetButtonColors();
 }
-function activateVyshyvankaMode() {
 
+
+/* ================================
+   🧵 VYSHYVANKA DAY
+   ================================ */
+
+function activateVyshyvankaMode() {
   const logo = document.getElementById("logo");
-  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-  if (logo) logo.src = "VideoVortex_logo_embriodery.jpg";
+
+  if (logo) {
+    if (!logo.dataset.originalSrc) {
+      logo.dataset.originalSrc = logo.getAttribute("src") || "";
+    }
+
+    logo.src = "VideoVortex_logo_embriodery.jpg";
+  }
 
   styleButtons("#8B0000", "#1C1C1C");
 }
+
 function deactivateVyshyvankaMode() {
-  
   const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  if (logo && logo.dataset.originalSrc !== undefined) {
+    logo.setAttribute("src", logo.dataset.originalSrc);
+  }
 
   resetButtonColors();
 }
-  function activateIndepedenceMode() {
 
+
+/* ================================
+   🇺🇦 UKRAINE INDEPENDENCE DAY
+   ================================ */
+
+function activateIndepedenceMode() {
   const logo = document.getElementById("logo");
-  if (logo && !logo.dataset.originalSrc) logo.dataset.originalSrc = logo.src;
-  if (logo) logo.src = "VideoVortex_logo_indepedence.jpg";
+
+  if (logo) {
+    if (!logo.dataset.originalSrc) {
+      logo.dataset.originalSrc = logo.getAttribute("src") || "";
+    }
+
+    logo.src = "VideoVortex_logo_indepedence.jpg";
+  }
 
   styleButtons("#0057B7", "#FFDD00");
 }
 
 function deactivateIndepedenceMode() {
-  
   const logo = document.getElementById("logo");
-  if (logo && logo.dataset.originalSrc) logo.src = logo.dataset.originalSrc;
+
+  if (logo && logo.dataset.originalSrc !== undefined) {
+    logo.setAttribute("src", logo.dataset.originalSrc);
+  }
 
   resetButtonColors();
 }
+
+
 /* ================================
-   ❄️ SNOWFALL &  Egg
+   ❄️ SNOWFALL & EASTER EGG
    ================================ */
+
 function startSnow() {
   if (snowInterval) return;
 
   snowInterval = setInterval(() => {
     const flake = document.createElement("div");
+
     flake.className = "snowflake";
-    flake.textContent = ["❄️", "❅", "❆"][Math.floor(Math.random() * 3)];
+    flake.textContent =
+      ["❄️", "❅", "❆"][Math.floor(Math.random() * 3)];
+
     flake.style.position = "fixed";
     flake.style.left = Math.random() * 100 + "vw";
     flake.style.top = "-10px";
-    flake.style.fontSize = Math.random() * 25 + 10 + "px";
-    flake.style.opacity = Math.random() * 0.8 + 0.2;
+    flake.style.fontSize =
+      Math.random() * 25 + 10 + "px";
+    flake.style.opacity =
+      Math.random() * 0.8 + 0.2;
     flake.style.animation = "fall 4s linear forwards";
     flake.style.pointerEvents = "none";
-    flake.style.zIndex = 9999;
+    flake.style.zIndex = "9999";
+
     document.body.appendChild(flake);
+
     setTimeout(() => flake.remove(), 5000);
   }, 150);
 }
 
 function stopSnow() {
-  clearInterval(snowInterval);
-  snowInterval = null;
-  document.querySelectorAll(".snowflake").forEach(f => f.remove());
+  if (snowInterval) {
+    clearInterval(snowInterval);
+    snowInterval = null;
+  }
+
+  document.querySelectorAll(".snowflake").forEach(flake => {
+    flake.remove();
+  });
 }
 
 function launchNewYearEgg() {
   startSnow();
 
   const popup = document.getElementById("newyear--egg");
+
   if (!popup) return;
 
   popup.style.display = "flex";
@@ -1051,17 +1184,31 @@ function launchNewYearEgg() {
 
   EggTimeout = setTimeout(() => {
     popup.style.display = "none";
+    EggTimeout = null;
   }, 120000);
 }
+
 function closeNewYearPopup() {
-const popupClose = document.getElementById("newyear--egg");
-popupClose.style.display = "none";
+  const popup = document.getElementById("newyear--egg");
+
+  if (popup) {
+    popup.style.display = "none";
+  }
+
+  if (EggTimeout) {
+    clearTimeout(EggTimeout);
+    EggTimeout = null;
+  }
 }
+
+
 /* ================================
    🔳 ICON SYSTEM
    ================================ */
+
 const halloweenIcons = {
-  "account-desktop-link": (user) => `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-desktop-link": (user) =>
+    `🕸<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "🕸",
   "logout-link": "🚪",
   "auth-link": `🚪<span data-i18n="signIn">Увійти</span>`,
@@ -1076,19 +1223,21 @@ const halloweenIcons = {
 };
 
 const newyearIcons = {
-  "account-desktop-link": (user) => `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
+  "account-desktop-link": (user) =>
+    `⛄<span class="icon-text">${user.name} ${user.supername}</span>`,
   "register-link": "⛄",
   "logout-link": "🚪",
   "auth-link": `🚪<span data-i18n="signIn">Увійти</span>`,
   "smart-post": `❄️<span data-i18n="post">Дописи</span>`,
   "smart-video": `🎬<span data-i18n="video">Відео</span>`,
   "smart-settings": `🎁<span data-i18n="settings">Налаштування</span>`,
-    "settings": `🎁<span data-i18n="settings">Налаштування</span>`,
+  "settings": `🎁<span data-i18n="settings">Налаштування</span>`,
   "post": `❄️<span data-i18n="post">Дописи</span>`,
   "video": `🎬<span data-i18n="video">Відео</span>`,
   "plus-button": `<i class="icon">🎄</i>`,
   "plus-desktop-button": "🎄"
 };
+
 const valentineIcons = {
   "account-desktop-link": (user) =>
     `❤️<span class="icon-text">${user.name} ${user.supername}</span>`,
@@ -1104,6 +1253,7 @@ const valentineIcons = {
   "plus-button": `<i class="icon">💝</i>`,
   "plus-desktop-button": "💝"
 };
+
 const Icons = {
   "account-desktop-link": (user) =>
     `🐣<span class="icon-text">${user.name} ${user.supername}</span>`,
@@ -1119,6 +1269,7 @@ const Icons = {
   "plus-button": `<i class="icon">🧺</i>`,
   "plus-desktop-button": "🧺"
 };
+
 const vyshyvankaIcons = {
   "account-desktop-link": (user) =>
     `🧵<span class="icon-text">${user.name} ${user.supername}</span>`,
@@ -1128,12 +1279,13 @@ const vyshyvankaIcons = {
   "smart-post": `🪢<span data-i18n="post">Дописи</span>`,
   "smart-video": `📽️<span data-i18n="video">Відео</span>`,
   "smart-settings": `🧵🪡<span data-i18n="settings">Налаштування</span>`,
-    "settings": `🧵🪡<span data-i18n="settings">Налаштування</span>`,
+  "settings": `🧵🪡<span data-i18n="settings">Налаштування</span>`,
   "post": `🪢<span data-i18n="post">Дописи</span>`,
   "video": `📽️<span data-i18n="video">Відео</span>`,
   "plus-button": `<i class="icon">🧿</i>`,
   "plus-desktop-button": "🧿"
 };
+
 const independenceIcons = {
   "account-desktop-link": (user) =>
     `🇺🇦<span class="icon-text">${user.name} ${user.supername}</span>`,
@@ -1150,20 +1302,42 @@ const independenceIcons = {
   "plus-desktop-button": "🌾",
   "logo-text": "VideoVortex 💙💛"
 };
+
+
+/* ================================
+   🧩 APPLY & RESTORE ICONS
+   ================================ */
+
 function applyIcons(set, user = null) {
   for (const [id, icon] of Object.entries(set)) {
     const el = document.getElementById(id);
+
     if (!el) continue;
 
-    if (!el.dataset.originalHtml) {
+    if (el.dataset.originalHtml === undefined) {
       el.dataset.originalHtml = el.innerHTML;
     }
 
-    el.querySelectorAll("i.material-symbols, .material-symbols").forEach(i => i.remove());
-
     if (typeof icon === "function") {
-      if (!user) continue;
-      el.innerHTML = icon(user);
+      /*
+       * Якщо дані користувача ще не передано,
+       * зберігаємо наявний текст і додаємо святковий
+       * символ, не стираючи ім'я користувача.
+       */
+      if (user) {
+        el.innerHTML = icon(user);
+      } else {
+        const template = icon({
+          name: "",
+          supername: ""
+        });
+
+        const prefix = template.split("<span")[0];
+
+        el.innerHTML =
+          prefix + el.dataset.originalHtml;
+      }
+
       continue;
     }
 
@@ -1177,13 +1351,23 @@ function restoreIcons() {
   });
 }
 
+
 /* ================================
    🎨 BUTTON COLORS
    ================================ */
+
 function styleButtons(bg, color) {
   document.querySelectorAll("button, .btn").forEach(btn => {
-    btn.dataset.originalBg = btn.style.backgroundColor;
-    btn.dataset.originalColor = btn.style.color;
+    /*
+     * Зберігаємо початкові стилі тільки один раз,
+     * щоб святкові кольори не перезаписували їх.
+     */
+    if (btn.dataset.originalColorsSaved !== "true") {
+      btn.dataset.originalBg = btn.style.backgroundColor;
+      btn.dataset.originalColor = btn.style.color;
+      btn.dataset.originalColorsSaved = "true";
+    }
+
     btn.style.backgroundColor = bg;
     btn.style.color = color;
   });
@@ -1191,10 +1375,15 @@ function styleButtons(bg, color) {
 
 function resetButtonColors() {
   document.querySelectorAll("button, .btn").forEach(btn => {
-    if (btn.dataset.originalBg) btn.style.backgroundColor = btn.dataset.originalBg;
-    if (btn.dataset.originalColor) btn.style.color = btn.dataset.originalColor;
+    if (btn.dataset.originalColorsSaved !== "true") {
+      return;
+    }
+
+    btn.style.backgroundColor = btn.dataset.originalBg;
+    btn.style.color = btn.dataset.originalColor;
   });
 }
+
 
   
           let deferredPrompt;
