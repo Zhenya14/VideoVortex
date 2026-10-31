@@ -55,5 +55,7 @@
     "private-video-checkbox": "Приватне відео",
     "private-photo-checkbox": "Приватне фото",
     "similar-message": "Схожих відео немає 😔",
-    "similar-title": "Схожі відео:"
+    "similar-title": "Схожі відео:",
+    "stories-description": "Додати опис...",
+    "account-hidden": "Прихований користувач"
 }

@@ -17,6 +17,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
     <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/liquid-toogle.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   
     <script src="https://apis.google.com/js/api.js"></script>
@@ -69,6 +70,35 @@ if ("serviceWorker" in navigator) {
     </filter>
 </svg>
   
+<svg aria-hidden="true" width="0" height="0"
+     style="position:absolute">
+  <filter id="vv-goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3"
+                    result="blur"/>
+    <feColorMatrix in="blur" mode="matrix"
+      values="1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 18 -7" result="goo"/>
+    <feComposite in="SourceGraphic" in2="goo"
+                  operator="atop"/>
+  </filter>
+
+  <filter id="vv-liquid-glass"
+          x="-30%" y="-30%" width="160%" height="160%">
+    <feTurbulence type="fractalNoise"
+                  baseFrequency="0.015 0.025"
+                  numOctaves="2"
+                  seed="8"
+                  result="noise"/>
+    <feDisplacementMap in="SourceGraphic"
+                       in2="noise"
+                       scale="50"
+                       xChannelSelector="R"
+                       yChannelSelector="G"/>
+  </filter>
+</svg>
+
         <script defer>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -101,7 +131,7 @@ if ("serviceWorker" in navigator) {
 </a>
 <img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
             <a href="index.html">
-            <h1 style="padding-left: 5px;" id="logo-text">VideoVortex</h1><sup><div id="timer"></div></sup></a>
+            <h1 style="padding-left: 5px;" id="logo-text">VideoVortex</h1><sup><div id="timer"></div></sup></a><sup><div id="timer"></div></sup></a>
 
         <button class="search" onclick="openSearch()">
   <i class="material-symbols">search</i>
@@ -120,11 +150,12 @@ if ("serviceWorker" in navigator) {
     <video id="cameraPreview"
            autoplay
            playsinline
-           style="display:none; width:100%; height:100%;  object-fit:cover;">
+           style="display:none; width:100%; height:100%; object-fit:cover;">
     </video>
     <a class="cancel-publish" onclick="captureStop()">
         <i class="material-symbols">arrow_back_ios_new</i>
     </a>
+    <textarea id="stories-description" data-i18n-placeholder="stories-description"></textarea>
     <button class="publishStory" onclick="publishStory()">
         Опублікувати
     </button>
@@ -292,28 +323,223 @@ if ("serviceWorker" in navigator) {
   <option value="second">Другий канал</option>
 </select>
 <br>
-<span data-i18n ="disabled-comments-checkbox">Вимкнути коментарі</span><sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup><label class="switch" for="disabled-comments-checkbox"><input type="checkbox" id="disabled-comments-checkbox"><span class="slider round"></span></label>        
-     <br>
-     <p style="text-align: center;" data-i18n="settings-privacy">Налаштування приватності:</p>
-      <span data-i18n="auto-delete-24h">Видалити через 24 години</span> <sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup>
-     <label class="switch" for="auto-delete-24h">
-  <input type="checkbox" id="auto-delete-24h"><span class="slider round"></span></label>
-  <br>
-   <span data-i18n="private-video-checkbox">Приватне відео</span><label class="switch" for="private-video-checkbox"><input type="checkbox" id="private-video-checkbox"><span class="slider round"></span></label>
-   <br>
-<span data-i18n="save-video-checkbox">Заборонити збереження відео</span><sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup><label class="switch" for="save-video-checkbox"><input type="checkbox" id="save-video-checkbox"><span class="slider round"></span></label>
-<div id="domain-restrict-container" style="margin-top: 10px;">
-    <br>
-        <span data-i18n="domain-restrict-checkbox">Тільки для користувачів з доменом kfccte-nau.ukr.education</span><label class="switch">
-        <input type="checkbox" id="domain-restrict-checkbox"><span class="slider round"></span></label>
+<!-- Вимкнути коментарі -->
+
+<!-- Вимкнути коментарі -->
+
+<div class="setting-row">
+  <span data-i18n="disabled-comments-checkbox">
+    Вимкнути коментарі
+  </span>
+
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+
+  <input
+    type="checkbox"
+    id="disabled-comments-checkbox"
+    class="setting-checkbox"
+  >
+
+  <button
+    type="button"
+    class="liquid-toggle"
+    data-checkbox="disabled-comments-checkbox"
+    role="switch"
+    aria-checked="false"
+    aria-label="Вимкнути коментарі"
+    data-complete="0"
+    data-active="false"
+    data-mapped="false"
+    data-bounce="true"
+  >
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
 </div>
-<br>
-<div id="nsfw-container" style="margin-top: 10px;">
-           <span>Позначити відео як NSFW</span><label class="switch">
-        <input type="checkbox" id="nsfw"><span class="slider round"></span></label>
-           <br>
-           </div>
-    <div id="bandura-options" style="display:none; margin-top:10px;">
+
+
+<p style="text-align:center" data-i18n="settings-privacy">
+  Налаштування приватності:
+</p>
+
+<!-- Видалити через 24 години -->
+
+<!-- Видалити через 24 години -->
+<div class="setting-row">
+  <span data-i18n="auto-delete-24h">Видалити через 24 години</span>
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+  <input type="checkbox" id="auto-delete-24h" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="auto-delete-24h"
+    role="switch" aria-checked="false"
+    aria-label="Видалити через 24 години"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Приватне відео -->
+<div class="setting-row">
+  <span data-i18n="private-video-checkbox">Приватне відео</span>
+  <input type="checkbox" id="private-video-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="private-video-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Приватне відео"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Заборонити збереження відео -->
+<div class="setting-row">
+  <span data-i18n="save-video-checkbox">Заборонити збереження відео</span>
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+  <input type="checkbox" id="save-video-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="save-video-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Заборонити збереження відео"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Обмеження за доменом -->
+<div id="domain-restrict-container" class="setting-row">
+  <span data-i18n="domain-restrict-checkbox">
+    Тільки для користувачів з доменом kfccte-nau.ukr.education
+  </span>
+  <input type="checkbox" id="domain-restrict-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="domain-restrict-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Обмежити доступ за доменом"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- NSFW -->
+<div id="nsfw-container" class="setting-row">
+  <span>Позначити відео як NSFW</span>
+  <input type="checkbox" id="nsfw" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="nsfw"
+    role="switch" aria-checked="false"
+    aria-label="Позначити відео як NSFW"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
       
       <h3>🎵 Налаштування бандури</h3>
 
@@ -435,13 +661,16 @@ if ("serviceWorker" in navigator) {
   <option value="main" data-i18n="main-channel">Основний канал</option>
   <option value="second" data-i18n="second-channel">Другий канал</option>
 </select>
-<span data-i18n="private-photo-checkbox">Приватне фото<label class="switch" for="private-photo-checkbox"><input type="checkbox" id="private-photo-checkbox"><span class="slider round"></span></label>
+
+<span data-i18n="private-photo-checkbox">Приватне фото</span><label class="switch" for="private-photo-checkbox"><input type="checkbox" id="private-photo-checkbox"><span class="liquid-toggle" aria-hidden="true">
+    <span class="liquid-track"></span>
+    <span class="liquid-knob"></span></label>
 <br>
             <div id="progress-photo-container" style="display: none; margin-top: 10px;">
                 <progress id="upload-photo-progress" value="0" max="100"></progress>
                 <span id="progressicon-photo-text">0%</span>
             </div>
-            <button id="upload-photo-button" onclick="uploadPhoto()">Завантажити</button>
+            <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
         </div>
       </div>
     </div>
@@ -522,9 +751,34 @@ if ("serviceWorker" in navigator) {
             <p id="user-info"></p>
 <p id="view">Дата народження: Завантаження...</p>
         <div id="requests-container"></div>
-        <label>
-       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup></span><label class="switch">
-          <input type="checkbox" id="show-nsfw-videos"><span id="slidernsfw" class="slider round"></span></label>
+        <div class="setting-row">
+       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup></span>
+          <input type="checkbox" id="show-nsfw-videos" class="setting-checkbox">
+          <button type="button" class="liquid-toggle"
+    data-checkbox="show-nsfw-videos"
+    role="switch" aria-checked="false"
+    aria-label="Показувати відео позначенні як NSFW"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
         <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
         
 <h1>Налаштування обмеження екранного часу</h1>
@@ -600,7 +854,9 @@ if ("serviceWorker" in navigator) {
     <input type="file" id="action-btn" accept="image/*">
 </div>
 
- <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="slider round"></span></label>
+ <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="liquid-toggle" aria-hidden="true">
+    <span class="liquid-track"></span>
+    <span class="liquid-knob"></span></label>
             <button id="edit-button" onclick="saveVideoChanges()" data-i18n="save">Зберегти</button>
         </div>
         </div>
@@ -608,7 +864,7 @@ if ("serviceWorker" in navigator) {
         </div>
 
   <div class="stories-bar" id="stories-bar">
-  <div class="story-item" id="story-item" >
+  <div class="story-item" id="story-item">
     <div class="avatar-ring seen">
       <div id="avatar-stories-you" onclick="openYourStories(currentUserUid)" class="avatar-stories"></div>
     </div>
@@ -727,7 +983,7 @@ if ("serviceWorker" in navigator) {
 </div>
 <div id="newyear--egg" class="ny-popup">
   <div class="ny-content">
-    <h2>🎆 З Новим 2026 роком! 🎆</h2>
+    <h2>🎆 З Новим 2027 роком! 🎆</h2>
     <p>
       ❄️ Сію, вію, засіваю —<br>
       миру, щастя і добра бажаю!<br><br>
@@ -790,6 +1046,13 @@ if ("serviceWorker" in navigator) {
 
     <button class="settings-item" style="display: none;"><i class="material-symbols">candle</i>Спадкоємець акаунта</button>
     <button class="settings-item" id="blocked-button"><i class="material-symbols">block</i><p data-i18n="blocked-users">Заблоковані користувачі</p></button>
+    <div class="settings-toggle">
+  <span style="display: flex; justify-content: center; align-items: center; font-size: 20px;">
+    <i class="material-symbols">visibility_off</i>
+    Анонімний профіль
+  </span>
+  <input type="checkbox" id="anonymousProfile">
+</div>
   </div>
 
   <!-- VIDEO -->
@@ -821,12 +1084,13 @@ if ("serviceWorker" in navigator) {
   </div>
         <footer style=" position: relative;z-index: 1; text-align: center; justify-content: center; padding: 1px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%; height: 20%;">
                 <h3 data-i18n="application-version">Версія додатка:</h3>
-                <p>7.2.5</p>
+                <p>7.3.0</p>
         </footer>
         </div>
 <script src="i18n.js"></script>
 <script defer src="js/select-language.js"></script>
 <script defer src="js/app.js"></script>
 <script defer src="js/update.js"></script>
+   <script defer src="js/support-liquid-glass.js"></script>
 </body>                                                   
 </html>

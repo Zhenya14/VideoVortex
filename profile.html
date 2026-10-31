@@ -232,6 +232,8 @@ const backgroundProfile = document.querySelector(".profile-header");
 const avatar = document.getElementById("avatar");
   const userName = document.getElementById("userName");
   let realBlockedUserName = "";
+  let isAnonymous = false;
+let nameAccount = "";
 function sanitizeHTML(str) {
     const div = document.createElement("div");
     div.innerText = str;
@@ -306,17 +308,21 @@ function getInitials(name) {
 }
 
 let isHiddenAccount = false;
-let nameAccount = "";
-
+  
 async function loadProfile() {
   try {
-    const snapModeration = await database.ref(`moderation/users/${blockedUserUid}`).once("value");
+    const snapModeration = await database
+      .ref(`moderation/users/${blockedUserUid}`)
+      .once("value");
+
     const dataModeration = snapModeration.val() || {};
 
-    const snap = await database.ref(`users/${blockedUserUid}`).once("value");
+    const snap = await database
+      .ref(`publicUsers/${blockedUserUid}`)
+      .once("value");
+
     const data = snap.val();
 
-    // ❌ NOT EXISTS
     if (!snap.exists()) {
       avatar.style.backgroundImage = "";
       avatar.textContent = "?";
@@ -325,7 +331,36 @@ async function loadProfile() {
       return;
     }
 
-    // ❌ BLOCK CHECK
+    const isFrozen = dataModeration.status === "frozen_soft";
+
+    // ANONYMOUS STATUS
+    isAnonymous = data.status === "hidden";
+
+    // NAME
+    const name = `${data.name || "Користувач"} ${data.supername || ""}`.trim();
+
+    if (isAnonymous) {
+      nameAccount = "Прихований користувач";
+    } else {
+      try {
+        const userSnapshot = await database
+          .ref(`users/${blockedUserUid}`)
+          .once("value");
+
+        const userData = userSnapshot.val() || {};
+
+        nameAccount = `${userData.name || ""} ${userData.supername || ""}`.trim();
+
+        if (!nameAccount) {
+          nameAccount = name;
+        }
+      } catch (e) {
+        console.error("Помилка отримання імені користувача:", e);
+        nameAccount = name;
+      }
+    }
+
+    // BLOCK CHECK — ПІСЛЯ ЗАВАНТАЖЕННЯ ІМЕНІ
     if (blockedUserUid) {
       const blockedMeProfile = await didUserBlockMe(blockedUserUid);
 
@@ -340,29 +375,39 @@ async function loadProfile() {
       }
     }
 
-    const isFrozen = dataModeration.status === "frozen_soft";
+    const verifiedBadge = `${
+      data.owner === true && data.verifiedBadge
+        ? `<img class='adaptive-stroke' src='${data.verifiedBadge}'>`
+        : ""
+    }`;
 
-    // ======================
-    // NAME
-    // ======================
-    const name = `${data.name || "Користувач"} ${data.supername || ""}`.trim();
-const verifiedBadge = `${data.owner === true && data.verifiedBadge ? `<img class='adaptive-stroke' src='${data.verifiedBadge}'>`
-        : ""}`;
-    userName.innerHTML = isFrozen ? "❄️ Видалений акаунт" : sanitizeHTML(name) + verifiedBadge;
-    nameAccount = name;
+    userName.innerHTML = isFrozen
+      ? "❄️ Видалений акаунт"
+      : isAnonymous
+        ? "Прихований користувач"
+        : sanitizeHTML(name) + verifiedBadge;
 
     if (isFrozen) {
       userName.setAttribute("data-i18n", "account-frozen");
       applyTranslations();
     }
 
-    // ======================
+    if (isAnonymous) {
+      userName.setAttribute("data-i18n", "account-hidden");
+      applyTranslations();
+    }
+
     // AVATAR
-    // ======================
     if (isFrozen) {
       avatar.style.backgroundImage = "";
       avatar.style.background = data.color || "#ccc";
       avatar.textContent = "👻";
+    } else if (isAnonymous) {
+      avatar.style.backgroundImage = "";
+      avatar.style.background = data.color || "#ccc";
+      avatar.innerHTML = `<span class="material-symbols">
+        domino_mask
+      </span>`;
     } else if (data.avatarId) {
       try {
         const url = await firebase
@@ -385,9 +430,7 @@ const verifiedBadge = `${data.owner === true && data.verifiedBadge ? `<img class
       avatar.textContent = getInitials(name);
     }
 
-    // ======================
     // WALLPAPER
-    // ======================
     if (!data.wallpaperId) {
       backgroundProfile.style.backgroundImage = "";
     } else {
@@ -515,16 +558,26 @@ async function confirmBlockUser() {
         return;
     }
 
-    await firebase.database()
-      .ref(`users/${currentUser.uid}/blockedUsers/${blockedUserUid}`)
-      .set({
-          blocked: true,
-          uid: blockedUserUid,
-          userName: realBlockedUserName
-      });
+    const userNameToSave = isAnonymous
+        ? "Прихований користувач"
+        : nameAccount || "Невідомий користувач";
 
-    closeBlockModal();
-    alert("Користувача заблоковано");
+    try {
+        await database
+            .ref(`users/${currentUser.uid}/blockedUsers/${blockedUserUid}`)
+            .set({
+                blocked: true,
+                uid: blockedUserUid,
+                userName: userNameToSave
+            });
+
+        closeBlockModal();
+        alert("Користувача заблоковано");
+
+    } catch (e) {
+        console.error("Помилка блокування користувача:", e);
+        alert("Не вдалося заблокувати користувача");
+    }
 }
 document.getElementById('shareBtn').addEventListener('click', async () => {
     if (blockedUserUid) {
@@ -692,6 +745,6 @@ loadVideos();
 loadPosts();
 loadReposts();
 </script>
-
+ <script defer src="js/support-liquid-glass.js"></script>
 </body>
 </html>

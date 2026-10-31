@@ -55,5 +55,7 @@
     "private-video-checkbox": "Private Video",
     "private-photo-checkbox": "Private Photo",
     "similar-message": "No similar videos 😔",
-    "similar-title": "Similar videos:"
+    "similar-title": "Similar videos:",
+    "stories-description": "Add description...",
+    "account-hidden": "Hidden user"
 }

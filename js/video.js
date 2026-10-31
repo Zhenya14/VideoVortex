@@ -774,8 +774,11 @@ async function loadComments(videoKey, videoOwnerEmail) {
         if (blockedMeComments) {
             avatarComment.textContent = "❌";
             applyAvatar(avatarComment, gradientAvatar);
-
-        } else if (!data.email || data.email === "Видалений акаунт") {
+        } else if (data.authorStatus == "hidden") {
+                   avatarComment.innerHTML = `<span class="material-symbols">domino_mask
+</span>`;
+          applyAvatar(avatarComment, gradientAvatar);
+        }  else if (!data.email || data.email === "Видалений акаунт") {
             avatarComment.textContent = "👻";
             applyAvatar(avatarComment, gradientAvatar);
         }
@@ -788,10 +791,10 @@ avatarComment.onclick = () => {
 
         if (blockedMeComments) {
             userEl.setAttribute("data-i18n", "account-not-found");
-
+} else if (data.authorStatus == "hidden") {
+            userEl.setAttribute("data-i18n", "account-hidden");
         } else if (!data.commentAuthor) {
             userEl.setAttribute("data-i18n", "account-deleted");
-
         } else {
             userEl.textContent = data.commentAuthor;
         }

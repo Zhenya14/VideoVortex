@@ -102,6 +102,80 @@ async function registerPushToken(user) {
 }
 
 
+const storiesDescription =
+    document.getElementById("stories-description");
+
+if (storiesDescription) {
+    function resizeStoriesDescription() {
+        storiesDescription.style.height = "40px";
+
+        storiesDescription.style.height =
+            Math.min(storiesDescription.scrollHeight, 200) + "px";
+    }
+
+    storiesDescription.addEventListener("input", resizeStoriesDescription);
+}
+
+document.querySelectorAll('.liquid-toggle[data-checkbox]').forEach(toggle => {
+  const checkbox = document.getElementById(toggle.dataset.checkbox);
+
+  if (!checkbox || toggle.dataset.initialized === 'true') return;
+
+  toggle.dataset.initialized = 'true';
+
+  let movementTimer;
+
+  function syncToggle() {
+    const active = checkbox.checked;
+
+    toggle.setAttribute('aria-checked', String(active));
+    toggle.dataset.active = String(active);
+    toggle.dataset.complete = active ? '100' : '0';
+
+    toggle.style.setProperty('--complete', active ? '100' : '0');
+    toggle.style.setProperty(
+      '--indicator-color',
+      active ? '#22c55e' : ''
+    );
+
+    // Синхронізуємо стан з checkbox,
+    // але не змінюємо розмір головки.
+  }
+
+  function startMovement() {
+    toggle.classList.add('is-moving');
+
+    clearTimeout(movementTimer);
+
+    movementTimer = setTimeout(() => {
+      toggle.classList.remove('is-moving');
+    }, 650);
+  }
+
+  toggle.addEventListener('click', event => {
+    // Не допускаємо повторного перемикання
+    // через стандартний click-обробник checkbox.
+    event.preventDefault();
+
+    checkbox.checked = !checkbox.checked;
+
+    syncToggle();
+    startMovement();
+
+    checkbox.dispatchEvent(
+      new Event('change', { bubbles: true })
+    );
+  });
+
+  checkbox.addEventListener('change', syncToggle);
+
+  // Початковий стан
+  syncToggle();
+});
+
+
+
+
 function showNotificationAIModal() {
   notificationAI.style.display = "flex";
 }
@@ -136,7 +210,7 @@ async function generateDescription() {
         body: JSON.stringify({ 
           text,
           language
-          
+
         }),
       }
     );
@@ -404,7 +478,7 @@ function captureStop() {
 
 
 document.getElementById("galleryInput").addEventListener("change", (e) => {
-e.stopPropagation();
+
     const file = e.target.files[0];
     if (!file) return;
 
@@ -415,9 +489,7 @@ e.stopPropagation();
 
 let currentStoryFile = null;
 let storyPreviewURL = null;
-function openGallery() {
-    document.getElementById("galleryInput").click();
-}
+
 
 function previewStory(file) {
 
@@ -514,9 +586,10 @@ async function publishStory() {
   const user = firebase.auth().currentUser;
   if (!user || !selectedStoryFile) return;
 const uid = user.uid;
+  const storiesDescription = document.getElementById("stories-description").value;
   const storyId = Date.now().toString();
   try {
-    
+
     const snapshot = await database.ref("users/" + uid).once("value");
     const userData = snapshot.val() || {};
 
@@ -548,6 +621,7 @@ const uid = user.uid;
     url: url,
     name: authorName,
     authorColor: userData.color,
+    description: storiesDescription,
     avatar: authorAvatarUrl,
     type: selectedStoryFile.type.startsWith("video") ? "video" : "image",
     createdAt: Date.now(),
@@ -634,6 +708,53 @@ document.querySelector(".stories-bar").style.display = "flex";
     searchInput.value = "";
     searchAll();
 });
+async function isUserBlockedByMe(targetUid) {
+
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${me.uid}/blockedUsers/${targetUid}`)
+      .once("value");
+
+    return snap.exists();
+
+  } catch {
+
+    return false;
+
+  }
+
+}
+
+
+
+async function didUserBlockMe(targetUid) {
+
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${targetUid}/blockedUsers/${me.uid}`)
+      .once("value");
+
+    return snap.exists();
+
+  } catch {
+
+    return false;
+
+  }
+
+}
 async function searchAll() {
     const input = document.getElementById("search-input");
     if (!input) return;
@@ -676,10 +797,28 @@ async function searchAll() {
     if (!query) return;
 
     try {
-        const snapshot = await database.ref("publicUsers").once("value");
+        const currentUser = firebase.auth().currentUser;
+
+        const snapshot = await database
+            .ref("publicUsers")
+            .once("value");
+
         const users = snapshot.val() || {};
 
-        Object.entries(users).forEach(([uid, user]) => {
+        for (const [uid, user] of Object.entries(users)) {
+
+            if (!user) continue;
+
+            // Не показуємо власний профіль
+            if (currentUser && uid === currentUser.uid) continue;
+
+            // Перевіряємо блокування в обидва боки
+            if (currentUser) {
+                const blockedYou = await isUserBlockedByMe(uid);
+                const blockedMe = await isUserBlockedByThem(uid);
+
+                if (blockedYou || blockedMe) continue;
+            }
 
             const name = (user.name || "").toLowerCase();
             const supername = (user.supername || "").toLowerCase();
@@ -690,7 +829,7 @@ async function searchAll() {
                 supername.includes(query) ||
                 username.includes(query);
 
-            if (!matches) return;
+            if (!matches) continue;
 
             const userElement = document.createElement("div");
             userElement.className = "search-user";
@@ -722,7 +861,7 @@ async function searchAll() {
             };
 
             usersContainer.appendChild(userElement);
-        });
+        }
 
     } catch (error) {
         console.error("Помилка пошуку користувачів:", error);
@@ -734,16 +873,16 @@ async function searchAll() {
      prewiewInput.addEventListener('change', () => {
     // Перевіряємо через тернарний оператор, чи файл обрано
     const file = prewiewInput.files.length ? prewiewInput.files[0] : null;
-    
+
     if (file) {
         // Створюємо тимчасовий URL для локального файлу
         const objectURL = URL.createObjectURL(file);
-        
+
         // Замінюємо старе фото на нове у вікні редагування
         imgPrewiew.src = objectURL;
     }
 });
-        
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const previewWallpapersProfileInput = document.getElementById("set-wallpaper-profile");
@@ -766,7 +905,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-        
+
 const fileInput = document.getElementById("photo-file");
 const fileName = document.getElementById("file-name");
 
@@ -775,7 +914,7 @@ fileInput.addEventListener("change", () => {
   fileName.textContent = "📸 " + name;
 });
 
-        
+
 const videoInput = document.getElementById("video-file");
 const videofileName = document.getElementById("video-file-name");
 
@@ -1385,7 +1524,7 @@ function resetButtonColors() {
 }
 
 
-  
+
           let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
@@ -1806,13 +1945,13 @@ function closeDeleteAccountModal() {
 async function saveWallpaperChanges() {
   const wallpaperInput = document.getElementById("set-wallpaper-profile").files[0];
   const user = firebase.auth().currentUser;
-          
+
 
     try {
       const wallpaperId = `${user.uid}_${Date.now()}`;
         const storageRef = storage.ref(`wallpapers/${wallpaperId}.webp`);
         await storageRef.put(wallpaperInput);
-        
+
         await database.ref("users/" + user.uid).update({ wallpaperId});
                 const url = await storageRef.getDownloadURL();
           message.innerHTML = `
@@ -1923,53 +2062,7 @@ if (auth.currentUser) {
 message.innerHTML = "Сталася помилка при увімкненні функції показувати відео позначення як NSFW.";
 }
     });
-async function isUserBlockedByMe(targetUid) {
 
-  const me = firebase.auth().currentUser;
-
-  if (!me) return false;
-  if (!targetUid) return false;
-
-  try {
-
-    const snap = await database
-      .ref(`users/${me.uid}/blockedUsers/${targetUid}`)
-      .once("value");
-
-    return snap.exists();
-
-  } catch {
-
-    return false;
-
-  }
-
-}
-
-
-
-async function didUserBlockMe(targetUid) {
-
-  const me = firebase.auth().currentUser;
-
-  if (!me) return false;
-  if (!targetUid) return false;
-
-  try {
-
-    const snap = await database
-      .ref(`users/${targetUid}/blockedUsers/${me.uid}`)
-      .once("value");
-
-    return snap.exists();
-
-  } catch {
-
-    return false;
-
-  }
-
-}
     function enableBanduraUI(role) {
     const banduraBlock = document.getElementById("bandura-options");
     if (!banduraBlock) return;
@@ -2140,6 +2233,47 @@ storyAvatarRing.classList.add("avatar-ring");
     );
 });
 }
+
+function createExpandableText(text) {
+    const container = document.createElement("div");
+    container.classList.add("expandable-container");
+
+    const content = document.createElement("div");
+    content.classList.add("text-content");
+    content.textContent = text;
+
+    const toggle = document.createElement("button");
+    toggle.classList.add("text-toggle");
+    toggle.type = "button";
+    toggle.textContent = "Показати більше";
+    toggle.style.display = "none";
+
+    container.appendChild(content);
+    container.appendChild(toggle);
+
+    requestAnimationFrame(() => {
+        const lineHeight = parseFloat(
+            getComputedStyle(content).lineHeight
+        );
+
+        const maxHeight = lineHeight * 3;
+
+        if (content.scrollHeight > maxHeight + 2) {
+            toggle.style.display = "inline-block";
+        }
+    });
+
+    toggle.addEventListener("click", () => {
+        const expanded = content.classList.toggle("expanded");
+
+        toggle.textContent = expanded
+            ? "Згорнути"
+            : "Показати більше";
+    });
+
+    return container;
+}
+
 function openYourStories(currentUserUid) {
 
 const storiesView =
@@ -2148,9 +2282,7 @@ const storiesView =
 if (!storiesView) return;
 
 storiesView.innerHTML = "";
-storiesView.style.display = "block";
-document.getElementById("smart-menu").style.display = "none";
-  document.getElementById("plus-button").style.display = "none";
+
 database.ref("stories")
     .once("value")
     .then(snapshot => {
@@ -2171,7 +2303,13 @@ database.ref("stories")
             const storyData =
                 storySnapshot.val();
 
-            if (!storyData) return;
+            if (!storyData) {
+              return;
+            } else {
+              storiesView.style.display = "block";
+document.getElementById("smart-menu").style.display = "none";
+  document.getElementById("plus-button").style.display = "none";
+            }
 
             // Тільки Stories поточного користувача
             if (
@@ -2208,7 +2346,7 @@ database.ref("stories")
         if (
             stories.length === 0
         ) {
-
+openGallery();
             console.log(
                 "Власні Stories не знайдені"
             );
@@ -2217,6 +2355,7 @@ database.ref("stories")
                 "none";
 
             return;
+              
 
         }
 
@@ -2342,7 +2481,11 @@ database.ref("stories")
             // =========================
             // ФОТО
             // =========================
-
+if (storyData.description) {
+  const description = createExpandableText(storyData.description);
+  description.classList.add("storiesDescription");
+  storiesView.appendChild(description);
+}
             if (
                 storyData.type ===
                 "image"
@@ -2486,328 +2629,259 @@ applyTranslations();
     );
 
 }
+function openGallery() {
+    document.getElementById("galleryInput").click();
+}
+
+const storyMediaCache = new Map();
+
+function preloadStoryMedia(story) {
+    if (!story || !story.url) {
+        return Promise.resolve();
+    }
+
+    if (storyMediaCache.has(story.url)) {
+        return storyMediaCache.get(story.url);
+    }
+
+    const promise = new Promise(resolve => {
+        if (story.type === "image") {
+            const img = new Image();
+
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+
+            img.src = story.url;
+
+        } else if (story.type === "video") {
+            const video = document.createElement("video");
+
+            video.preload = "auto";
+            video.muted = true;
+            video.playsInline = true;
+
+            video.onloadeddata = () => resolve(video);
+            video.onerror = () => resolve(null);
+
+            video.src = story.url;
+            video.load();
+
+        } else {
+            resolve(null);
+        }
+    });
+
+    storyMediaCache.set(story.url, promise);
+
+    return promise;
+}
+
+
 function openStories(uid, startStoryId) {
+    const storiesView = document.getElementById("storyView");
 
-const storiesView =
-    document.getElementById("storyView");
+    if (!storiesView) return;
 
-if (!storiesView) return;
+    // Скасовуємо попередню автоматичну зміну сторіс
+    if (window.storyTimer) {
+        clearTimeout(window.storyTimer);
+        window.storyTimer = null;
+    }
 
-storiesView.innerHTML = "";
-storiesView.style.display = "block";
-document.getElementById("smart-menu").style.display = "none";
-  document.getElementById("plus-button").style.display = "none";
-database.ref("stories")
-    .once("value")
-    .then(snapshot => {
+    storiesView.innerHTML = "";
+    storiesView.style.display = "block";
 
-        const stories = [];
+    const smartMenu = document.getElementById("smart-menu");
+    const plusButton = document.getElementById("plus-button");
 
-        // =========================
-        // ЗБИРАЄМО STORIES КОРИСТУВАЧА
-        // =========================
+    if (smartMenu) smartMenu.style.display = "none";
+    if (plusButton) plusButton.style.display = "none";
 
-        snapshot.forEach(storySnapshot => {
+    database.ref("stories")
+        .once("value")
+        .then(snapshot => {
+            const stories = [];
 
-            // ID конкретної Story
-            const storyId =
-                storySnapshot.key;
+            snapshot.forEach(storySnapshot => {
+                const storyData = storySnapshot.val();
 
-            // Дані конкретної Story
-            const storyData =
-                storySnapshot.val();
+                if (!storyData) return;
 
-            if (!storyData) return;
+                // Перевірка терміну дії
+                if (
+                    storyData.expiresAt &&
+                    Date.now() > storyData.expiresAt
+                ) {
+                    return;
+                }
 
-            // Перевіряємо термін дії
-            if (
-                storyData.expiresAt &&
-                Date.now() >
-                storyData.expiresAt
-            ) {
-                return;
-            }
+                // Якщо передано uid, показуємо сторіс цього користувача
+                if (uid && storyData.uid !== uid &&
+                    storyData.authorUid !== uid) {
+                    return;
+                }
 
-            // Додаємо Story
-            stories.push({
-
-                storyId:
-                    storyId,
-
-                ...storyData
-
+                stories.push({
+                    storyId: storySnapshot.key,
+                    ...storyData
+                });
             });
 
-        });
-
-        // =========================
-        // ЯКЩО STORIES НЕМАЄ
-        // =========================
-
-        if (
-            stories.length === 0
-        ) {
-
-            console.log(
-                "Stories користувача не знайдені"
-            );
-
-            storiesView.style.display =
-                "none";
-
-            return;
-        }
-
-        // =========================
-        // СОРТУВАННЯ
-        // =========================
-
-        stories.sort(
-            (a, b) =>
-                (a.createdAt || 0) -
-                (b.createdAt || 0)
-        );
-
-        // =========================
-        // ЗНАХОДИМО ПОЧАТКОВУ STORY
-        // =========================
-
-        let startIndex =
-            stories.findIndex(
-                story =>
-                    story.storyId ===
-                    startStoryId
-            );
-
-        if (
-            startIndex === -1
-        ) {
-            startIndex = 0;
-        }
-
-        console.log(
-            "Stories користувача:",
-            stories
-        );
-
-        console.log(
-            "Початкова Story:",
-            stories[startIndex]
-        );
-
-        // =========================
-        // ПОКАЗ STORY
-        // =========================
-
-        function showStory(index) {
-
-            // Якщо Stories закінчилися
-            if (
-                index >=
-                stories.length
-            ) {
-
-                storiesView.innerHTML =
-                    "";
-
-                storiesView.style.display =
-                    "none";
-
+            if (stories.length === 0) {
+                console.log("Stories користувача не знайдені");
+                storiesView.innerHTML = "";
+                storiesView.style.display = "none";
                 return;
             }
 
-            const storyData =
-                stories[index];
-
-            storiesView.innerHTML =
-                "";
-
-            // =========================
-            // АВАТАР КОРИСТУВАЧА
-            // =========================
-
-            const storiesAvatar =
-                document.createElement(
-                    "div"
-                );
-
-            storiesAvatar.classList.add(
-                "stories-avatar"
+            // Сортуємо від найстарішої до найновішої
+            stories.sort(
+                (a, b) => (a.createdAt || 0) - (b.createdAt || 0)
             );
-           storiesAvatar.style.borderRadius = "64px";
-            if (
-                storyData.avatar
-            ) {
 
-                const avatarImg =
-                    document.createElement(
-                        "img"
-                    );
-
-                avatarImg.src =
-                    storyData.avatar;
-
-                avatarImg.classList.add(
-                    "avatar-stories-view"
-                );
-
-                storiesAvatar.appendChild(
-                    avatarImg
-                );
-
-            }
-            const storiesAuthor = document.createElement("span");
-             storiesAuthor.classList.add("stories-author");
-            
-              storiesAuthor.innerHTML = sanitizeHTML(storyData.name);
-            storiesView.appendChild(
-                storiesAuthor
+            // Знаходимо початкову сторіс
+            let startIndex = stories.findIndex(
+                story => story.storyId === startStoryId
             );
-            storiesView.appendChild(
-                storiesAvatar
-            );
-           
-            // =========================
-            // ФОТО
-            // =========================
 
-            if (
-                storyData.type ===
-                "image"
-            ) {
-
-                const img =
-                    document.createElement(
-                        "img"
-                    );
-                img.classList.add("story-img");
-                img.src =
-                    storyData.url;
-
-                img.style.width =
-                    "100%";
-
-                img.style.height =
-                    "100%";
-
-                img.style.objectFit =
-                    "cover";
-
-                storiesView.appendChild(
-                    img
-                );
-
-                // Через 5 секунд
-                // наступна Story
-                setTimeout(
-                    () => {
-
-                        showStory(
-                            index + 1
-                        );
-
-                    },
-                    5000
-                );
-
+            if (startIndex === -1) {
+                startIndex = 0;
             }
 
-            // =========================
-            // ВІДЕО
-            // =========================
+            // Завантажуємо першу сторіс і наступну заздалегідь
+            preloadStoryMedia(stories[startIndex]);
 
-            else if (
-                storyData.type ===
-                "video"
-            ) {
+            if (stories[startIndex + 1]) {
+                preloadStoryMedia(stories[startIndex + 1]);
+            }
 
-                const video =
-                    document.createElement(
-                        "video"
-                    );
-                video.classList.add("story-video");
-                video.src =
-                    storyData.url;
+            let currentIndex = startIndex;
 
-                video.autoplay =
-                    true;
+            function showStory(index) {
+                if (window.storyTimer) {
+                    clearTimeout(window.storyTimer);
+                    window.storyTimer = null;
+                }
 
-                video.loop =
-                    false;
+                if (index >= stories.length || index < 0) {
+                    storiesView.innerHTML = "";
+                    storiesView.style.display = "none";
+                    return;
+                }
 
-                video.muted =
-                    false;
+                currentIndex = index;
 
-                video.playsInline =
-                    true;
+                const storyData = stories[index];
 
-                video.controls =
-                    false;
+                // Завантажуємо наступну сторіс у фоні
+                if (stories[index + 1]) {
+                    preloadStoryMedia(stories[index + 1]);
+                }
 
-                video.style.width =
-                    "100%";
+                storiesView.innerHTML = "";
 
-                video.style.height =
-                    "100%";
+                // Аватар і ім'я автора
+                const storiesAvatar = document.createElement("div");
+                storiesAvatar.classList.add("stories-avatar");
+                storiesAvatar.style.borderRadius = "64px";
 
-                video.style.objectFit =
-                    "cover";
+                if (storyData.avatar) {
+                    const avatarImg = document.createElement("img");
+                    avatarImg.src = storyData.avatar;
+                    avatarImg.classList.add("avatar-stories-view");
+                    storiesAvatar.appendChild(avatarImg);
+                }
 
-                storiesView.appendChild(
-                    video
-                );
+                const storiesAuthor = document.createElement("span");
+                storiesAuthor.classList.add("stories-author");
+                storiesAuthor.textContent = storyData.name || "";
 
-                video.play()
-                    .catch(
-                        error => {
+                storiesView.appendChild(storiesAuthor);
+                storiesView.appendChild(storiesAvatar);
+if (storyData.description) {
+  const description = createExpandableText(storyData.description);
+  description.classList.add("storiesDescription");
+  storiesView.appendChild(description);
+}
+                // ФОТО
+                if (storyData.type === "image") {
+                    const img = document.createElement("img");
 
+                    img.classList.add("story-img");
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.objectFit = "cover";
+
+                    storiesView.appendChild(img);
+
+                    preloadStoryMedia(storyData).then(loadedImage => {
+                        if (!img.isConnected) return;
+
+                        img.src = loadedImage
+                            ? loadedImage.src
+                            : storyData.url;
+                    });
+
+                    // Через 5 секунд наступна сторіс
+                    window.storyTimer = setTimeout(() => {
+                        showStory(index + 1);
+                    }, 5000);
+                }
+
+                // ВІДЕО
+                else if (storyData.type === "video") {
+                    const video = document.createElement("video");
+
+                    video.classList.add("story-video");
+                    video.autoplay = true;
+                    video.loop = false;
+                    video.muted = false;
+                    video.playsInline = true;
+                    video.controls = false;
+                    video.preload = "auto";
+
+                    video.style.width = "100%";
+                    video.style.height = "100%";
+                    video.style.objectFit = "cover";
+
+                    storiesView.appendChild(video);
+
+                    // Спочатку використовуємо попередньо завантажений ресурс
+                    preloadStoryMedia(storyData).then(loadedVideo => {
+                        if (!video.isConnected) return;
+
+                        // Призначаємо URL оригіналу.
+                        // Браузер використовує власний HTTP-кеш, якщо доступний.
+                        video.src = loadedVideo
+                            ? (loadedVideo.currentSrc || loadedVideo.src)
+                            : storyData.url;
+
+                        video.play().catch(error => {
                             console.error(
                                 "Не вдалося відтворити відео:",
                                 error
                             );
+                        });
+                    });
 
-                        }
-                    );
-
-                // Після завершення
-                // наступна Story
-                video.onended =
-                    () => {
-
-                        showStory(
-                            index + 1
-                        );
-
+                    // Після завершення відео відкриваємо наступну сторіс
+                    video.onended = () => {
+                        showStory(index + 1);
                     };
-
+                }
             }
 
-        }
-
-        // =========================
-        // ПОКАЗУЄМО ПОЧАТКОВУ STORY
-        // =========================
-
-        showStory(
-            startIndex
-        );
-
-    })
-    .catch(
-        error => {
-
-            console.error(
-                "Помилка завантаження Stories:",
-                error
-            );
-
-            storiesView.style.display =
-                "none";
-
-        }
-    );
-
+            showStory(startIndex);
+        })
+        .catch(error => {
+            console.error("Помилка завантаження Stories:", error);
+            storiesView.style.display = "none";
+        });
 }
+
+
+
+
 function getSafeBanduraHTML(banduraExtra) {
     if (!banduraExtra) return "";
     const s = str => str ? sanitizeHTML(str) : "";
@@ -2865,6 +2939,27 @@ function createThumbnail(file) {
 
  });
 }
+anonymousProfile.addEventListener("change", async () => {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    const isAnonymous = anonymousProfile.checked;
+
+    try {
+        await database.ref(`users/${user.uid}`).update({
+            anonymous: isAnonymous
+        });
+    await Promise.all([
+        updateVideosAuthor(),
+        updatePhotosAuthor(),
+        updateCommentsAuthor()
+    ]);
+
+    console.log("Анонімний режим:", isAnonymous);
+    } catch (err) {
+        console.error("Не вдалося оновити анонімний режим:", err);
+    }
+});
 const migrateUsersToPublicUsers =
     firebase.functions().httpsCallable(
         "migrateUsersToPublicUsers"
@@ -2987,7 +3082,7 @@ editWallpaperProfile.classList.add("edit-wallpaper-profile");
 editWallpaperProfile.innerHTML = `<a style="padding:3px 0px; display:flex; border-radius: 50%; align-items:center; justify-content:center;"><i class="material-symbols">palette</i><span data-i18n="edit-wallpaper-profile">Редагувати шпалери профілю</span><sup class="badge-new-edit-wallpaper-profile" data-i18n="new">NEW</sup></a>`;
 editWallpaperProfile.onclick = () => {
         showEditWallpaperProfileModal();
-          
+
         }
 moreMenu.appendChild(editWallpaperProfile);
         const copyLinkProfile = document.createElement("button");
@@ -3015,7 +3110,7 @@ moreMenu.appendChild(editWallpaperProfile);
         console.error('Помилка копіювання посилання:', err);
         alert('Не вдалося скопіювати посилання автоматично.');
     }
-          
+
         };
         moreMenu.appendChild(copyLinkProfile);
 // Контейнер для кнопок управления профилем
@@ -3063,7 +3158,7 @@ const saveVideoTitle = document.createElement("p");
 saveVideoTitle.innerHTML = `<span data-i18n="save-video">Збереженні відео</span><sup class="badge-new" data-i18n="new">NEW</sup>:`;
 
 saveVideoInfo.appendChild(saveVideoTitle);
-        
+
 // Добавляем все в главный контейнер библиотеки
 
             // ▸ Завантаження історії
@@ -4233,6 +4328,10 @@ authorEl.textContent = videoDataRaw?.author || "Анонім";
         if (videoDataRaw.authorStatus == "frozen_soft") {
           avatar.innerText = "👻";
           avatar.style.background = `${videoDataRaw.authorColor}`;
+        } else if (videoDataRaw.authorStatus == "hidden") {
+                   avatar.innerHTML = `<span class="material-symbols">domino_mask
+</span>`;
+          avatar.style.background = `${videoDataRaw.authorColor}`;
           } else if (videoDataRaw.authorAvatar) {
             avatar.style.backgroundImage = `url(${videoDataRaw.authorAvatar})`;
             avatar.style.backgroundSize = "cover";
@@ -4268,7 +4367,8 @@ detailsElement.innerHTML = `
 
     Автор: ${
         isFrozen
-            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>"
+            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>" : videoDataRaw.authorStatus === "hidden"
+            ? `<span data-i18n="account-hiden">Прихований користувач</span>`
             : sanitizeHTML(videoDataRaw.author || "Анонім")
     }
 
@@ -4284,7 +4384,7 @@ detailsElement.innerHTML = `
 <p style='display: flex; justify-content: center; align-items: center;'>${videoDataRaw.views || 0}<i class='material-symbols'>play_arrow</i></p><span class='info-divider'>•</span>
  <p style='display: flex; justify-content: center; align-items: center;'>${videoDataRaw.publishDate || "—"}<i class='material-symbols'>event</i>
 </p></div>`;
-    
+
 
         // 🔹 MENU
         const moreBtn = document.createElement("a");
@@ -4303,7 +4403,7 @@ if (currentUserRole === "moderator") {
                 await freezeUser(videoDataRaw.authorUid, "frozen_soft");
             };
            const unFreezeBtn = document.createElement("button");
-           
+
             unFreezeBtn.textContent = "Розморозити";
             unFreezeBtn.onclick = async () => {
                 await unFreezeUser(videoDataRaw.authorUid);
@@ -4377,7 +4477,7 @@ if (currentUserRole === "moderator") {
         container.classList.add("video-container");
         container.dataset.id = videoKey;
 
-        
+
          videoWrapper.appendChild(videoElement);
 
 container.appendChild(videoWrapper);
@@ -4524,7 +4624,10 @@ async function migrateUsersToSearch() {
             updates[`userSearch/${uid}`] = {
                 name: user.name || "",
                 supername: user.supername || "",
-                username: user.username || "",
+                color: user.color,
+                avatarId: user.avatarId,
+              wallpaperId: user.wallpaperId,
+              verifiedBadge: user.verifiedBadge,
                 privateProfile: user.privateProfile === true
             };
 
@@ -5141,7 +5244,7 @@ document.getElementById("upload-modal").style.display = "none";
 
           progressContainer.style.display = "none";
 
-          
+
 
         } catch (err) {
           console.error(err);
@@ -5392,10 +5495,10 @@ function updateUI(user) {
         if (userInfoEl) {
             userInfoEl.textContent = `Ви увійшли як: ${user.email}`;
         }
-        
+
         document.querySelector(".stories-bar")
             ?.style.setProperty("display", "flex");
-        
+
         document.getElementById("auth-link")
             ?.style.setProperty("display", "none");
 
@@ -5525,10 +5628,10 @@ document.getElementById("nsfw").onclick = function(event) {
     showNotificationModal();
     message.innerHTML = "Cталася помилка.";
   document.getElementById("nsfw").checked = false;
-    
+
   }
   }
-  
+
   function configureAgeUI(age) {
 
     const nsfwCheckbox = document.getElementById('show-nsfw-videos');
@@ -5648,7 +5751,7 @@ const snapshot = await firebase
   snapshot.forEach(child => {
     const data = child.val();
     const key = child.key;
-    
+
     const item = document.createElement("div");
     item.classList.add("secure-item");
 
@@ -5782,7 +5885,11 @@ auth.onAuthStateChanged(async (user) => {
 // 💙 SUPPORT REQUESTS
 // =========================
 
-
+if(userProfile.anonymous === true) {
+    anonymousProfile.checked = true;
+} else {
+    anonymousProfile.checked = false;
+}
         // ✔️ EMAIL VERIFY GATE
         if (!user.emailVerified) {
             blockScreenForVerification();
@@ -5818,6 +5925,7 @@ if (user && Notification.permission === "granted") {
         cleanupExpiredStories();
         updateVideosAuthor();
         updatePhotosAuthor();
+        updatePublicUsers();
       loadNotifications();
         await updateNameBlockedUsers();
         updateCommentsAuthor();
@@ -5964,7 +6072,7 @@ if (user && Notification.permission === "granted") {
         editWallpaperProfileAvatarEl.innerText = userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : "?";
         avatarEl.style.background = userProfile.color;
         avatarEl.innerText = userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "?";
-        
+
 
         const el = document.getElementById("avatar-library");
         if (el) el.innerText = userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "?";
@@ -6130,7 +6238,7 @@ async function updateNameBlockedUsers() {
     const uid = user.uid;
 
     try {
-        // Отримуємо список користувачів, яких заблокував поточний користувач
+        // Отримуємо список заблокованих користувачів
         const blockedSnapshot = await database
             .ref(`users/${uid}/blockedUsers`)
             .once("value");
@@ -6140,44 +6248,56 @@ async function updateNameBlockedUsers() {
             return;
         }
 
-        const updates = {};
+        const blockedUsers = [];
 
         blockedSnapshot.forEach((childSnapshot) => {
-            const blockedUid = childSnapshot.key;
-
-            // Отримуємо актуальне ім'я з users/{blockedUid}
-            const userData = childSnapshot.val() || {};
-
-            // Тут тільки створюємо список UID
-            updates[blockedUid] = userData;
+            blockedUsers.push(childSnapshot.key);
         });
 
-        // Для кожного заблокованого отримуємо актуальні дані
-        for (const blockedUid of Object.keys(updates)) {
+        // Оновлюємо дані кожного заблокованого користувача
+        for (const blockedUid of blockedUsers) {
+            try {
+                const userSnapshot = await database
+                    .ref(`users/${blockedUid}`)
+                    .once("value");
 
-            const userSnapshot = await database
-                .ref(`users/${blockedUid}`)
-                .once("value");
+                if (!userSnapshot.exists()) continue;
 
-            if (!userSnapshot.exists()) continue;
+                const userData = userSnapshot.val() || {};
 
-            const userData = userSnapshot.val() || {};
+                // Перевіряємо анонімність
+                const anonymous = userData.anonymous === true;
 
-            const fullName =
-                `${userData.name || ""} ${userData.supername || ""}`.trim() ||
-                "Анонім";
+                let fullName = null;
 
-            // Оновлюємо userName у твоєму blockedUsers
-            await database
-                .ref(`users/${uid}/blockedUsers/${blockedUid}`)
-                .update({
-                    userName: fullName
-                });
+                if (!anonymous) {
+                    fullName =
+                        `${userData.name || ""} ${userData.supername || ""}`.trim() ||
+                        "Анонім";
+                }
 
-            console.log(
-                `Ім'я ${blockedUid} оновлено:`,
-                fullName
-            );
+                // Оновлюємо інформацію у списку заблокованих
+                await database
+                    .ref(`users/${uid}/blockedUsers/${blockedUid}`)
+                    .update({
+                        userName: fullName,
+                        anonymous: anonymous
+                    });
+
+                console.log(
+                    `Дані ${blockedUid} оновлено:`,
+                    {
+                        userName: fullName,
+                        anonymous: anonymous
+                    }
+                );
+
+            } catch (error) {
+                console.error(
+                    `Помилка оновлення користувача ${blockedUid}:`,
+                    error
+                );
+            }
         }
 
     } catch (error) {
@@ -6187,106 +6307,194 @@ async function updateNameBlockedUsers() {
         );
     }
 }
+
 async function updateVideosAuthor() {
-  const user = firebase.auth().currentUser;
-  if (!user) return;
+    const user = firebase.auth().currentUser;
+    if (!user) return;
 
-  const uid = user.uid;
+    const uid = user.uid;
+    const isAnonymous = anonymousProfile.checked;
 
-  try {
-    const snapshot = await database.ref("users/" + uid).once("value");
-    const userData = snapshot.val() || {};
+    try {
+        const snapshot = await database.ref(`users/${uid}`).once("value");
+        const userData = snapshot.val() || {};
 
-    const fullName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+        const fullName =
+            `${userData.name || ""} ${userData.supername || ""}`.trim();
 
-    let authorAvatarUrl = null;
+        let authorAvatarUrl = null;
 
-    if (userData.avatarId) {
-      try {
-        authorAvatarUrl = await storage
-          .ref(`avatars/${userData.avatarId}.webp`)
-          .getDownloadURL();
-      } catch (e) {
-        console.warn("Аватар не знайдено");
-      }
+        // Не завантажуємо аватар, якщо ввімкнена анонімність
+        if (!isAnonymous && userData.avatarId) {
+            try {
+                const avatarPath = userData.avatarId.startsWith("avatars/")
+                    ? userData.avatarId
+                    : `avatars/${userData.avatarId}.webp`;
+
+                authorAvatarUrl = await storage
+                    .ref(avatarPath)
+                    .getDownloadURL();
+            } catch (e) {
+                console.warn("Аватар не знайдено:", e.code);
+            }
+        }
+
+        const videoSnap = await database.ref("videos").once("value");
+        const updates = [];
+
+        videoSnap.forEach(child => {
+            const video = child.val();
+
+            // Не змінюємо чужі відео
+            if (!video || video.authorUid !== uid) return;
+
+            const videoRef = database.ref(`videos/${child.key}`);
+
+            if (isAnonymous) {
+                updates.push(
+                    videoRef.update({
+                        author: null,
+                        authorStatus: "hidden",
+                        authorAvatar: null
+                    })
+                );
+            } else {
+                const data = {
+                    author: fullName || "Анонім",
+                    authorStatus: null
+                };
+
+                if (authorAvatarUrl) {
+                    data.authorAvatar = authorAvatarUrl;
+                } else {
+                    data.authorAvatar = null;
+                }
+
+                updates.push(videoRef.update(data));
+            }
+        });
+
+        await Promise.all(updates);
+
+        console.log(`Відео оновлено: ${updates.length}`);
+    } catch (err) {
+        console.error("Помилка оновлення відео:", err);
     }
+}
 
-    const videoSnap = await database.ref("videos").once("value");
+async function updatePublicUsers() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
 
-    const updates = [];
+    const uid = user.uid;
+    const isAnonymous = anonymousProfile.checked;
 
-    videoSnap.forEach(child => {
-      const video = child.val();
+    try {
+        const snapshot = await database.ref(`users/${uid}`).once("value");
+        const userData = snapshot.val() || {};
 
-      if (video.authorUid === user.uid) {
-        updates.push(
-          database.ref("videos/" + child.key).update({
-            author: fullName || "Анонім",
-            authorAvatar: authorAvatarUrl,
-            owner: userData.owner === true,
-          verifiedBadge: userData.verifiedBadge || null
-          })
-        );
-      }
-    });
+        const updates = {
+            name: isAnonymous ? null : (userData.name || null),
+            supername: isAnonymous ? null : (userData.supername || null),
+            username: userData.username || "",
+            avatarId: isAnonymous ? null : (userData.avatarId || null),
+            wallpaperId: userData.wallpaperId || null,
+            color: userData.color || null,
+            status: isAnonymous ? "hidden" : null,
+            privateProfile: userData.privateProfile ?? false
+        };
 
-    await Promise.all(updates);
+        // Завантажуємо аватар лише якщо анонімність вимкнена
+        if (!isAnonymous && userData.avatarId) {
+            try {
+                const avatarPath = userData.avatarId.startsWith("avatars/")
+                    ? userData.avatarId
+                    : `avatars/${userData.avatarId}.webp`;
 
-    console.log("Відео оновлено");
+                updates.avatar = await storage
+                    .ref(avatarPath)
+                    .getDownloadURL();
 
-  } catch (err) {
-    console.error("Помилка оновлення:", err);
-  }
+            } catch (error) {
+                console.warn("Аватар не знайдено:", error.code);
+            }
+        }
+
+        await database.ref(`publicUsers/${uid}`).update(updates);
+
+        console.log("publicUsers успішно оновлено");
+
+    } catch (error) {
+        console.error("Помилка оновлення publicUsers:", error);
+    }
 }
 async function updatePhotosAuthor() {
-  const user = firebase.auth().currentUser;
-  if (!user) return;
+    const user = firebase.auth().currentUser;
+    if (!user) return;
 
-  const uid = user.uid;
+    const uid = user.uid;
+    const isAnonymous = anonymousProfile.checked;
 
-  try {
-    const snapshot = await database.ref("users/" + uid).once("value");
-    const userData = snapshot.val() || {};
+    try {
+        const snapshot = await database.ref(`users/${uid}`).once("value");
+        const userData = snapshot.val() || {};
 
-    const fullName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+        const fullName =
+            `${userData.name || ""} ${userData.supername || ""}`.trim();
 
-    let authorAvatarUrl = null;
+        let authorAvatarUrl = null;
 
-    if (userData.avatarId) {
-      try {
-        authorAvatarUrl = await storage
-          .ref(`avatars/${userData.avatarId}.webp`)
-          .getDownloadURL();
-      } catch (e) {
-        console.warn("Аватар не знайдено");
-      }
+        if (!isAnonymous && userData.avatarId) {
+            try {
+                const avatarPath = userData.avatarId.startsWith("avatars/")
+                    ? userData.avatarId
+                    : `avatars/${userData.avatarId}.webp`;
+
+                authorAvatarUrl = await storage
+                    .ref(avatarPath)
+                    .getDownloadURL();
+            } catch (e) {
+                console.warn("Аватар не знайдено:", e.code);
+            }
+        }
+
+        const photoSnap = await database.ref("photos").once("value");
+        const updates = [];
+
+        photoSnap.forEach(child => {
+            const photo = child.val();
+
+            // Не змінюємо чужі фотографії
+            if (!photo || photo.authorUid !== uid) return;
+
+            const photoRef = database.ref(`photos/${child.key}`);
+
+            if (isAnonymous) {
+                updates.push(photoRef.update({
+                    author: null,
+                    authorStatus: "hidden",
+                    authorAvatar: null
+                }));
+            } else {
+                updates.push(photoRef.update({
+                    author: fullName || "Анонім",
+                    authorStatus: null,
+                    authorAvatar: authorAvatarUrl
+                }));
+            }
+        });
+
+        await Promise.all(updates);
+
+        console.log(`Фото оновлено: ${updates.length}`);
+    } catch (err) {
+        console.error("Помилка оновлення фото:", err);
     }
-
-    const photoSnap = await database.ref("photos").once("value");
-
-    const updates = [];
-
-    photoSnap.forEach(child => {
-      const photo = child.val();
-
-      if (photo.authorUid === user.uid) {
-        updates.push(
-          database.ref("photos/" + child.key).update({
-            author: fullName || "Анонім",
-            authorAvatar: authorAvatarUrl
-          })
-        );
-      }
-    });
-
-    await Promise.all(updates);
-
-    console.log("Відео оновлено");
-
-  } catch (err) {
-    console.error("Помилка оновлення:", err);
-  }
 }
+
+
+
+
 async function updateColorsAuthor(user) {
   if (!user) return;
 
@@ -6395,7 +6603,7 @@ async function updateColorsCommentsAuthor(user) {
 
     await Promise.all(updates);
 
-    console.log("Videos updated");
+    console.log("Comments updated");
 
   } catch (err) {
     console.error("Помилка оновлення:", err);
@@ -6493,61 +6701,76 @@ async function updateColorsVideosAuthor(user) {
 
     await Promise.all(updates);
 
-    console.log("Photos updated");
+    console.log("Videos updated");
 
   } catch (err) {
     console.error("Помилка оновлення:", err);
   }
 }
 async function updateCommentsAuthor() {
-  const user = firebase.auth().currentUser;
-  if (!user) return;
+    const user = firebase.auth().currentUser;
+    if (!user) return;
 
-  const uid = user.uid;
+    const uid = user.uid;
+    const isAnonymous = anonymousProfile.checked;
 
-  try {
-    const snapshot = await database.ref("users/" + uid).once("value");
-    const userData = snapshot.val() || {};
+    try {
+        const snapshot = await database.ref(`users/${uid}`).once("value");
+        const userData = snapshot.val() || {};
 
-    const fullName = `${userData.name || ""} ${userData.supername || ""}`.trim();
+        const fullName =
+            `${userData.name || ""} ${userData.supername || ""}`.trim();
 
-    let authorAvatarUrl = null;
+        let authorAvatarUrl = null;
 
-    if (userData.avatarId) {
-      try {
-        authorAvatarUrl = await firebase
-          .storage()
-          .ref(`avatars/${userData.avatarId}.webp`)
-          .getDownloadURL();
-      } catch (e) {
-        console.warn("Аватар не знайдено");
-      }
-    }
+        if (!isAnonymous && userData.avatarId) {
+            try {
+                const avatarPath = userData.avatarId.startsWith("avatars/")
+                    ? userData.avatarId
+                    : `avatars/${userData.avatarId}.webp`;
 
-    const commentSnap = await database.ref("comments").once("value");
+                authorAvatarUrl = await storage
+                    .ref(avatarPath)
+                    .getDownloadURL();
+            } catch (e) {
+                console.warn("Не вдалося отримати аватар:", e.code);
+            }
+        }
 
-    const updates = [];
+        const commentSnap = await database.ref("comments").once("value");
+        const updates = [];
 
-    commentSnap.forEach(child => {
-      const comment = child.val();
+        commentSnap.forEach(child => {
+            const comment = child.val();
 
-      if (comment.authorUid === uid) {
-        updates.push(
-          database.ref("comments/" + child.key).update({
-            commentAuthor: fullName || "Анонім",
-            authorAvatar: authorAvatarUrl
-          })
+            // Не змінюємо чужі коментарі
+            if (!comment || comment.authorUid !== uid) return;
+
+            const commentRef = database.ref(`comments/${child.key}`);
+
+            if (isAnonymous) {
+                updates.push(commentRef.update({
+                    commentAuthor: null,
+                    authorStatus: "hidden",
+                    authorAvatar: null
+                }));
+            } else {
+                updates.push(commentRef.update({
+                    commentAuthor: fullName || "Анонім",
+                    authorStatus: null,
+                    authorAvatar: authorAvatarUrl
+                }));
+            }
+        });
+
+        await Promise.all(updates);
+
+        console.log(
+            `Коментарі оновлено: ${updates.length}; анонімність: ${isAnonymous}`
         );
-      }
-    });
-
-    await Promise.all(updates);
-
-    console.log("Відео оновлено");
-
-  } catch (err) {
-    console.error("Помилка оновлення:", err);
-  }
+    } catch (err) {
+        console.error("Помилка оновлення коментарів:", err);
+    }
 }
 document.getElementById("logout-danger-link").onclick = function() {
             auth.signOut().then(() => {
@@ -6605,11 +6828,15 @@ authorEl.textContent = photoData?.author || "Анонім";
         avatar.classList.add("avatar");
         avatar.title = photoData.author || "Анонім";
 
-        
+
         if (photoData.authorStatus == "frozen_soft") {
           avatar.innerText = "👻";
           avatar.style.background = `${photoData.authorColor}`;
-          } else if (photoData.authorAvatar) {
+          } else if (photoData.authorStatus == "hidden") {
+                   avatar.innerHTML = `<span class="material-symbols">domino_mask
+</span>`;
+          avatar.style.background = `${photoData.authorColor}`;
+        } else if (photoData.authorAvatar) {
                    avatar.style.backgroundImage = `url(${photoData.authorAvatar})`;
                     avatar.style.backgroundSize = "cover";
 avatar.style.backgroundPosition = "center";
@@ -6634,14 +6861,9 @@ avatar.onclick = () => {
             <strong>${safephotoTitle}</strong><br>
             Автор: ${
         isFrozen
-            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>"
+            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>" :  photoData.authorStatus === "hidden"
+            ? `<span data-i18n="account-hiden">Прихований користувач</span>`
             : sanitizeHTML(photoData.author || "Анонім")
-    }
-
-    ${
-        isFrozen
-            ? " <span style='color:#4aa3ff;' data-i18n='account-deleted'></span>"
-            : ""
     }
 
     ${photoData.owner === true && photoData.verifiedBadge
@@ -6674,7 +6896,7 @@ avatar.onclick = () => {
         Photocontainer.classList.add("photo-container");
         Photocontainer.appendChild(infophotoElement);
         Photocontainer.appendChild(photoElement);
-        
+
         photoGallery.appendChild(Photocontainer);
       applyTranslations();
     });
