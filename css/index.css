@@ -10,30 +10,45 @@ button *,
     -webkit-tap-highlight-color: transparent !important;
 }
 /* Стиль повзунка */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
+
+
+
+.expandable-container {
+    width: 100%;
+    min-width: 0;
 }
 
-.switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
+.text-content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: red;
-  border-radius: 34px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
+.text-content.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
 }
+
+.text-toggle {
+    padding: 0;
+    margin-top: 5px;
+
+    border: none;
+    background: transparent;
+
+    color: #68bfff;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+
 /* Базовий стиль для ВСІХ плашок NEW */
 .badge-new {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -66,34 +81,7 @@ button *,
   display: inline-block;  /* Дозволяє правильно застосувати відступи */
   margin-left: 6px;       /* Невеликий відступ від слова "Історія переглядів" */
 }
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.4s;
-}
 
-input:checked + .slider {
-  background-color: orange;
-}
-
-input:checked + .slider:before {
-  transform: translateX(24px);
-}
-
-/* Круглі краї */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
 .btn-container {
     display: flex;
     flex-basis: auto;
@@ -610,11 +598,38 @@ h2 {
             outline: none;
             font-size: 1em;
         }
-#video-description, #photo-description, #video-ttle, #photo-title { 
+        #stories-description {
+    position: absolute;
+    bottom: 14px;
+    left: 35%;
+    transform: translateX(-50%);
+
+    width: 65%;
+    height: 40px;
+    min-height: 40px;
+    max-height: 200px;
+
+    box-sizing: border-box;
+    padding: 10px 14px;
+    margin: 0;
+
+    resize: none;
+    overflow-y: auto;
+    scrollbar-width: none;
+
+    color: white;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 24px;
+
+    font-size: 1em;
+    outline: none;
+        }
+#video-description, #photo-description, #video-title, #photo-title, #stories-title, #video-comment, #photo-comment { 
   width: 100%;
 
     padding: 14px;
-
+resize: none;
     color: white;
 
     background: rgba(255,255,255,0.055);
@@ -2308,6 +2323,7 @@ display: none;
 #smart-upload-link {
 display: none;
 }
+
 #smart-menu {
 position: fixed;
 left: 50%;
@@ -2727,7 +2743,29 @@ border-radius: 20px;
 background: #07f;
 color: white;
 }
+.storiesDescription {
+  position: absolute;
+    bottom: 12px;
+    padding: 5px 2px;
+    border-radius: 20px;
+    color: white;
+    z-index: 1;
+    isolation: isolate;
+}
 
+.storiesDescription::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.10),
+        rgba(0, 0, 0, 0.45)
+    );
+    z-index: -1;
+    pointer-events: none;
+}
 .settings-item, .settings-toggle {
 display: flex;
 justify-content: space-between;
@@ -2798,7 +2836,7 @@ display: none;
         -webkit-backdrop-filter: blur(3px);
         @apply bg-muted/25;
     }
-    .search-box-liquid-glass {
+     .search-box-liquid-glass {
   position: fixed;
   top: 0;
   left: 50%;
@@ -2836,7 +2874,7 @@ isolation: isolate;
   transition: width 0.3s ease, opacity 0.3s ease;
 }
     
-    .tab-liquid-glass {
+     .tab-liquid-glass {
   position: fixed;
   display: flex;
   align-items: center;
@@ -2858,7 +2896,7 @@ background: linear-gradient(
         -webkit-backdrop-filter: blur(3px);
         @apply bg-muted/25;
     }
-    .tg-popup {
+     .tg-popup {
   position: fixed;
   inset: 0;
   display: inline;
@@ -3050,7 +3088,7 @@ border: none;
 outline: none;
 font-size: 18px;
 }
-        .nav a {
+         .nav a {
 height: 50px;
 align-items: center;
     justify-content: space-between;
@@ -3080,7 +3118,7 @@ display: flex;
     box-shadow: 0 0 0 rgb(59 130 246 / 0%);
         }
 
-.search {
+ .search {
 display: inline-block;
 padding: 12px 28px;
 margin: 0 10px;
@@ -3105,6 +3143,43 @@ border: 1px solid rgba(255,255,255,0.08);
 cursor: pointer;
 
 }
+
+/* Полегшений режим VideoVortex */
+.no-liquid-glass #smart-menu,
+.no-liquid-glass .nav a,
+.no-liquid-glass .tab-liquid-glass,
+.no-liquid-glass .tg-popup,
+.no-liquid-glass .open-liquid-glass-menu,
+.no-liquid-glass .search-box-liquid-glass,
+.no-liquid-glass .search {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-filter: none !important;
+  filter: none !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 18%) !important;
+  background: rgba(35, 40, 52, 0.97) !important;
+}
+
+/* Зберігаємо плавність, але зменшуємо навантаження */
+.no-liquid-glass #smart-menu,
+.no-liquid-glass .nav a,
+.no-liquid-glass .tab-liquid-glass,
+.no-liquid-glass .tg-popup,
+.no-liquid-glass .open-liquid-glass-menu,
+.no-liquid-glass .search-box-liquid-glass,
+.no-liquid-glass .search {
+  transition: background-color 0.15s ease,
+              opacity 0.15s ease !important;
+}
+
+/* Прибираємо синє системне підсвічування на мобільних */
+#smart-menu a,
+#smart-menu button,
+.nav a,
+.search {
+  -webkit-tap-highlight-color: transparent;
+}
+
     @supports not (hanging-punctuation:first) {
         #plus-button, .comment-liquid-glass, .tg-popup-card, .search-box-liquid-glass,#search-input, .tab-liquid-glass, .open-liquid-glass-menu {
             backdrop-filter: url(#displacementFilter) blur(3px);
