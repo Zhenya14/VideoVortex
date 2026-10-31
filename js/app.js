@@ -798,27 +798,14 @@ async function searchAll() {
 
     try {
         const currentUser = firebase.auth().currentUser;
+        const currentUserUid = currentUser?.uid;
 
-        const snapshot = await database
-            .ref("publicUsers")
-            .once("value");
-
+        const snapshot = await database.ref("publicUsers").once("value");
         const users = snapshot.val() || {};
 
         for (const [uid, user] of Object.entries(users)) {
 
             if (!user) continue;
-
-            // Не показуємо власний профіль
-            if (currentUser && uid === currentUser.uid) continue;
-
-            // Перевіряємо блокування в обидва боки
-            if (currentUser) {
-                const blockedYou = await isUserBlockedByMe(uid);
-                const blockedMe = await isUserBlockedByThem(uid);
-
-                if (blockedYou || blockedMe) continue;
-            }
 
             const name = (user.name || "").toLowerCase();
             const supername = (user.supername || "").toLowerCase();
@@ -830,6 +817,14 @@ async function searchAll() {
                 username.includes(query);
 
             if (!matches) continue;
+
+            // Перевіряємо блокування в обидва боки
+            if (currentUserUid) {
+                const blockedYou = await isUserBlockedByMe(uid);
+                const blockedMe = await didUserBlockMe(uid);
+
+                if (blockedYou || blockedMe) continue;
+            }
 
             const userElement = document.createElement("div");
             userElement.className = "search-user";
