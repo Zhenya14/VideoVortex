@@ -352,7 +352,7 @@ async function loadProfile() {
 
       if (blockedMeProfile) {
         avatar.style.backgroundImage = "";
-        avatar.style.background = "";
+        avatar.style.background = data.color || "#ccc";
         avatar.textContent = "❌";
 
         userName.textContent = "Акаунт не знайдено";
