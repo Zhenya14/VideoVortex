@@ -311,27 +311,28 @@ let isHiddenAccount = false;
   
 async function loadProfile() {
   try {
+    // MODERATION
     const snapModeration = await database
       .ref(`moderation/users/${blockedUserUid}`)
       .once("value");
 
     const dataModeration = snapModeration.val() || {};
+    const isFrozen = dataModeration.status === "frozen_soft";
 
+    // PUBLIC PROFILE
     const snap = await database
       .ref(`publicUsers/${blockedUserUid}`)
       .once("value");
 
     const data = snap.val();
 
-    if (!snap.exists()) {
+    if (!snap.exists() || !data) {
       avatar.style.backgroundImage = "";
       avatar.textContent = "?";
       userName.textContent = "Невідомий користувач";
       isHiddenAccount = true;
       return;
     }
-
-    const isFrozen = dataModeration.status === "frozen_soft";
 
     // ANONYMOUS STATUS
     isAnonymous = data.status === "hidden";
@@ -342,45 +343,34 @@ async function loadProfile() {
     if (isAnonymous) {
       nameAccount = "Прихований користувач";
     } else {
-      try {
-        const userSnapshot = await database
-          .ref(`users/${blockedUserUid}`)
-          .once("value");
-
-        const userData = userSnapshot.val() || {};
-
-        nameAccount = `${userData.name || ""} ${userData.supername || ""}`.trim();
-
-        if (!nameAccount) {
-          nameAccount = name;
-        }
-      } catch (e) {
-        console.error("Помилка отримання імені користувача:", e);
-        nameAccount = name;
-      }
+      nameAccount = name;
     }
 
-    // BLOCK CHECK — ПІСЛЯ ЗАВАНТАЖЕННЯ ІМЕНІ
+    // BLOCK CHECK
     if (blockedUserUid) {
       const blockedMeProfile = await didUserBlockMe(blockedUserUid);
 
       if (blockedMeProfile) {
         avatar.style.backgroundImage = "";
+        avatar.style.background = "";
         avatar.textContent = "❌";
+
         userName.textContent = "Акаунт не знайдено";
         userName.setAttribute("data-i18n", "account-not-found");
+
         applyTranslations();
+
         isHiddenAccount = true;
         return;
       }
     }
 
-    const verifiedBadge = `${
-      data.owner === true && data.verifiedBadge
-        ? `<img class='adaptive-stroke' src='${data.verifiedBadge}'>`
-        : ""
-    }`;
+    // VERIFIED BADGE
+    const verifiedBadge = data.owner === true && data.verifiedBadge
+      ? `<img class="adaptive-stroke" src="${sanitizeHTML(data.verifiedBadge)}">`
+      : "";
 
+    // USER NAME
     userName.innerHTML = isFrozen
       ? "❄️ Видалений акаунт"
       : isAnonymous
@@ -402,12 +392,14 @@ async function loadProfile() {
       avatar.style.backgroundImage = "";
       avatar.style.background = data.color || "#ccc";
       avatar.textContent = "👻";
+
     } else if (isAnonymous) {
       avatar.style.backgroundImage = "";
       avatar.style.background = data.color || "#ccc";
-      avatar.innerHTML = `<span class="material-symbols">
-        domino_mask
-      </span>`;
+      avatar.innerHTML = `
+        <span class="material-symbols">domino_mask</span>
+      `;
+
     } else if (data.avatarId) {
       try {
         const url = await firebase
@@ -415,15 +407,17 @@ async function loadProfile() {
           .ref(`avatars/${data.avatarId}.webp`)
           .getDownloadURL();
 
-        avatar.style.backgroundImage = `url(${url})`;
+        avatar.style.backgroundImage = `url("${url}")`;
         avatar.style.backgroundSize = "cover";
         avatar.style.backgroundPosition = "center";
         avatar.textContent = "";
+
       } catch (e) {
         avatar.style.backgroundImage = "";
         avatar.style.background = data.color || "#ccc";
         avatar.textContent = getInitials(name);
       }
+
     } else {
       avatar.style.backgroundImage = "";
       avatar.style.background = data.color || "#ccc";
@@ -433,6 +427,7 @@ async function loadProfile() {
     // WALLPAPER
     if (!data.wallpaperId) {
       backgroundProfile.style.backgroundImage = "";
+
     } else {
       try {
         const urlWallpaper = await firebase
@@ -440,9 +435,10 @@ async function loadProfile() {
           .ref(`wallpapers/${data.wallpaperId}.webp`)
           .getDownloadURL();
 
-        backgroundProfile.style.backgroundImage = `url(${urlWallpaper})`;
+        backgroundProfile.style.backgroundImage = `url("${urlWallpaper}")`;
         backgroundProfile.style.backgroundSize = "cover";
         backgroundProfile.style.backgroundPosition = "center";
+
       } catch (e) {
         backgroundProfile.style.backgroundImage = "";
       }
