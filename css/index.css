@@ -1059,10 +1059,16 @@ img.photo-item {
     font-size: 14px;
     padding: 8px 12px;
 }
-.video-details {
-    white-space: normal !important;
+.video-details, .photo-details {
+width: 100%;
+display: block;
+  direction: ltr;
+  unicode-bidi: plaintext;
+  box-sizing: border-box;
+  white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+  
 }
 .comment-button {
     width: 50px;
@@ -1271,10 +1277,6 @@ body {
     color: #fff;
     font-weight: 600;
     z-index: 100000000;
-}
-        .video-details {
-  width: 100%;
-  display: block;
 }
         #delete-account { 
             width: 100%;
