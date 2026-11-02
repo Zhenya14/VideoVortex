@@ -6530,6 +6530,8 @@ async function updatePublicUsers() {
             avatarId: isAnonymous ? null : (userData.avatarId || null),
             wallpaperId: userData.wallpaperId || null,
             color: userData.color || null,
+          owner: userData.owner || null,
+          verifiedBadge: userData.verifiedBadge || null,
             status: isAnonymous ? "hidden" : null,
             privateProfile: userData.privateProfile ?? false
         };
