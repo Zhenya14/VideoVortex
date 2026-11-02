@@ -3503,13 +3503,51 @@ async function checkUserStatus(user) {
 
     return true;
 }
+function parsePublishDate(date) {
+    if (!date || typeof date !== "string") return 0;
+
+    const parts = date.split(".");
+    if (parts.length !== 3) return 0;
+
+    const [day, month, year] = parts.map(Number);
+
+    const parsed = new Date(year, month - 1, day);
+
+    if (
+        parsed.getFullYear() !== year ||
+        parsed.getMonth() !== month - 1 ||
+        parsed.getDate() !== day
+    ) return 0;
+
+    return parsed.getTime();
+}
+
+function insertVideoSorted(videoGallery, container) {
+    const currentDate = Number(container.dataset.publishDate) || 0;
+
+    const existingVideos = Array.from(
+        videoGallery.querySelectorAll(".video-container")
+    );
+
+    const nextVideo = existingVideos.find(element =>
+        (Number(element.dataset.publishDate) || 0) < currentDate
+    );
+
+    if (nextVideo) {
+        videoGallery.insertBefore(container, nextVideo);
+    } else {
+        videoGallery.appendChild(container);
+    }
+}
+
 async function loadPopularVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
 
     videoGallery.innerHTML = "";
 
-    const showNSFWGlobal = typeof showNSFW !== "undefined" ? showNSFW : false;
+    const showNSFWGlobal =
+        typeof showNSFW !== "undefined" ? showNSFW : false;
 
     database.ref("videos").on("child_added", async snapshot => {
         const videoData = snapshot.val();
@@ -3517,108 +3555,101 @@ async function loadPopularVideos() {
 
         if (!videoData) return;
 
-        // =====================
-        // EXPIRE
-        // =====================
         if (
             videoData.autoDelete24h &&
             videoData.expiresAt &&
             Date.now() > videoData.expiresAt
         ) return;
 
-        // =====================
         // CACHE
-        // =====================
         let videoDataRaw = videoMemoryCache[videoKey];
 
         if (!videoDataRaw) {
-            const local = getVideoCache(videoKey);
-
-            videoDataRaw = local || videoData;
-            videoMemoryCache[videoKey] = videoDataRaw;
-            setVideoCache(videoKey, videoDataRaw);
+            videoDataRaw = getVideoCache(videoKey) || videoData;
         } else {
             videoDataRaw = videoData;
-            videoMemoryCache[videoKey] = videoData;
-            setVideoCache(videoKey, videoData);
         }
 
-        // =====================
-        // FILTERS (до UI)
-        // =====================
+        videoMemoryCache[videoKey] = videoDataRaw;
+        setVideoCache(videoKey, videoDataRaw);
 
-        // NSFW
+        // FILTERS
         if (videoDataRaw.nsfw && !showNSFWGlobal) return;
 
-        // SCORE
         if (!videoDataRaw.score || videoDataRaw.score < 15) return;
 
-        // BLOCK (ОДИН РАЗ)
         if (videoDataRaw.authorUid) {
             try {
-                const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
-                const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
+                const blockedYou = await isUserBlockedByMe(
+                    videoDataRaw.authorUid
+                );
+
+                const blockedMe = await didUserBlockMe(
+                    videoDataRaw.authorUid
+                );
 
                 if (blockedMe || blockedYou) return;
             } catch (e) {
-                console.warn("Block error", e);
+                console.warn("Block error:", e);
                 return;
             }
         }
 
-        // PRIVATE
-        if (videoDataRaw.private && videoDataRaw.email !== currentUserEmail) return;
+        if (
+            videoDataRaw.private &&
+            videoDataRaw.email !== currentUserEmail
+        ) return;
 
-        // DOMAIN
         if (
             videoDataRaw.domainRestrict &&
             (!currentUserEmail ||
-                !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
+            !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
         ) return;
 
-        // DUPLICATE
-        if (document.querySelector(`[data-id="${videoKey}"]`)) return;
+        if (
+            videoGallery.querySelector(
+                `[data-id="${videoKey}"]`
+            )
+        ) return;
 
-        // =====================
-        // UI
-        // =====================
-
+        // VIDEO
         const videoWrapper = document.createElement("div");
         videoWrapper.className = "video-thumb-wrapper";
 
         const videoElement = document.createElement("img");
-        videoElement.classList.add("video-item");
-        videoElement.src = videoData.thumbnail || "default.jpg";
-        videoElement.style.filter = videoData.nsfw ? "blur(20px)" : "none";
+        videoElement.className = "video-item";
+        videoElement.src = videoDataRaw.thumbnail || "default.jpg";
+        videoElement.style.filter =
+            videoDataRaw.nsfw ? "blur(20px)" : "none";
 
         cacheImage(videoElement.src);
 
-        // 🔥 POPULAR (ТЕПЕР ПРАВИЛЬНО)
-        if (videoDataRaw.score > 15) {
-            const popular = document.createElement("div");
-            popular.className = "stories-timer";
+        // POPULAR
+        const popular = document.createElement("div");
+        popular.className = "stories-timer";
 
-            const span = document.createElement("span");
-            span.textContent = "🔥 Popular";
+        const popularSpan = document.createElement("span");
+        popularSpan.textContent = "🔥 Popular";
 
-            popular.appendChild(span);
-            videoWrapper.appendChild(popular);
-        }
+        popular.appendChild(popularSpan);
+        videoWrapper.appendChild(popular);
 
         // TIMER
         if (videoDataRaw.autoDelete24h && videoDataRaw.expiresAt) {
             const timer = document.createElement("div");
             timer.className = "stories-timer";
 
-            const span = document.createElement("span");
-            timer.appendChild(span);
+            const timeSpan = document.createElement("span");
+            timer.appendChild(timeSpan);
 
-            const interval = setInterval(() => {
+            let interval;
+
+            const update = () => {
                 const diff = videoDataRaw.expiresAt - Date.now();
 
                 if (diff <= 0) {
                     clearInterval(interval);
-                    videoWrapper.remove();
+                    container.remove();
                     return;
                 }
 
@@ -3626,11 +3657,14 @@ async function loadPopularVideos() {
                 const m = Math.floor((diff % 3600000) / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
 
-                span.textContent =
+                timeSpan.textContent =
                     `${String(h).padStart(2, "0")}:` +
                     `${String(m).padStart(2, "0")}:` +
                     `${String(s).padStart(2, "0")}`;
-            }, 1000);
+            };
+
+            update();
+            interval = setInterval(update, 1000);
 
             videoWrapper.appendChild(timer);
         }
@@ -3640,13 +3674,16 @@ async function loadPopularVideos() {
             const viewedKey = `viewed_${videoKey}`;
 
             if (!localStorage.getItem(viewedKey)) {
-                database.ref("videos/" + videoKey).update({
-                    views: (videoDataRaw.views || 0) + 1
-                });
-                localStorage.setItem(viewedKey, true);
+                database.ref("videos/" + videoKey)
+                    .update({
+                        views: (videoDataRaw.views || 0) + 1
+                    })
+                    .then(() => localStorage.setItem(viewedKey, true))
+                    .catch(console.error);
             }
 
-            window.location.href = `video.html?key=${videoKey}`;
+            window.location.href =
+                `video.html?key=${encodeURIComponent(videoKey)}`;
         };
 
         // INFO
@@ -3656,17 +3693,29 @@ async function loadPopularVideos() {
         const avatar = document.createElement("div");
         avatar.className = "avatar";
 
-        if (videoDataRaw.authorAvatar) {
-            avatar.style.backgroundImage = `url(${videoDataRaw.authorAvatar})`;
+        if (videoDataRaw.authorStatus === "frozen_soft") {
+            avatar.textContent = "👻";
+            avatar.style.background = videoDataRaw.authorColor || "";
+        } else if (videoDataRaw.authorStatus === "hidden") {
+            avatar.innerHTML =
+                `<span class="material-symbols">domino_mask</span>`;
+            avatar.style.background = videoDataRaw.authorColor || "";
+        } else if (videoDataRaw.authorAvatar) {
+            avatar.style.backgroundImage =
+                `url("${videoDataRaw.authorAvatar}")`;
             avatar.style.backgroundSize = "cover";
-avatar.style.backgroundPosition = "center";
-avatar.style.backgroundRepeat = "no-repeat";
+            avatar.style.backgroundPosition = "center";
+            avatar.style.backgroundRepeat = "no-repeat";
         } else {
             avatar.textContent = getInitials(videoDataRaw.author);
+            avatar.style.background = videoDataRaw.authorColor || "";
         }
 
         avatar.onclick = () => {
-            window.location.href = `profile.html?uid=${videoDataRaw.authorUid}`;
+            if (!videoDataRaw.authorUid) return;
+
+            window.location.href =
+                `profile.html?uid=${encodeURIComponent(videoDataRaw.authorUid)}`;
         };
 
         const details = document.createElement("div");
@@ -3675,23 +3724,46 @@ avatar.style.backgroundRepeat = "no-repeat";
         details.innerHTML = `
             ${sanitizeHTML(videoDataRaw.title || "Без назви")}
             ${videoDataRaw.private ? "🔒" : ""}
-            ${videoDataRaw.nsfw ? "NSFW" : ""}
+            ${videoDataRaw.nsfw ? "<span style='color:red'>NSFW</span>" : ""}
+            <br>
+            ${videoDataRaw.authorStatus === "hidden"
+                ? "Прихований користувач"
+                : sanitizeHTML(videoDataRaw.author || "Анонім")}
+            <br>
+            <div class="info-element">
+                <p>
+                    <i class="material-symbols">play_arrow</i>
+                    ${Number(videoDataRaw.views) || 0}
+                </p>
+                <span class="info-divider">•</span>
+                <p>
+                    <i class="material-symbols">event</i>
+                    ${sanitizeHTML(videoDataRaw.publishDate || "—")}
+                </p>
+            </div>
         `;
 
         infoElement.appendChild(avatar);
         infoElement.appendChild(details);
 
+        // CONTAINER
         const container = document.createElement("div");
         container.className = "video-container";
         container.dataset.id = videoKey;
+        container.dataset.publishDate =
+            parsePublishDate(videoDataRaw.publishDate);
 
-        videoWrapper.appendChild(videoElement);
+        videoWrapper.prepend(videoElement);
+
         container.appendChild(infoElement);
         container.appendChild(videoWrapper);
 
-        videoGallery.appendChild(container);
+        insertVideoSorted(videoGallery, container);
+
+        applyTranslations();
     });
 }
+
 async function unFreezeUser(uid) {
 
     try {
@@ -4161,100 +4233,119 @@ function cleanupExpiredStories() {
         });
     });
 }
+
 async function loadVideos() {
     const videoGallery = document.getElementById("video-gallery");
     if (!videoGallery) return;
 
     videoGallery.innerHTML = "";
+
     const showNSFWGlobal = showNSFW;
 
     database.ref("videos").on("child_added", async snapshot => {
         const videoData = snapshot.val();
         const videoKey = snapshot.key;
 
-        const isExpired =
+        if (!videoData) return;
+
+        // EXPIRE
+        if (
             videoData.autoDelete24h &&
             videoData.expiresAt &&
-            Date.now() > videoData.expiresAt;
+            Date.now() > videoData.expiresAt
+        ) return;
 
-        if (isExpired) return;
-
-        // =====================
-        // FIXED CACHE LOGIC
-        // =====================
-
+        // CACHE
         let videoDataRaw = videoMemoryCache[videoKey];
 
         if (!videoDataRaw) {
             const local = getVideoCache(videoKey);
 
-            if (local) {
-                videoDataRaw = local;
-            } else {
-                videoDataRaw = videoData;
-                setVideoCache(videoKey, videoData);
-            }
-
-            videoMemoryCache[videoKey] = videoDataRaw;
+            videoDataRaw = local || videoData;
         } else {
-            // sync update fix
             videoDataRaw = videoData;
-            videoMemoryCache[videoKey] = videoData;
-            setVideoCache(videoKey, videoData);
         }
 
-        // 🔹 1. Фільтри
+        videoMemoryCache[videoKey] = videoDataRaw;
+        setVideoCache(videoKey, videoDataRaw);
+
+        // FILTERS
         if (videoDataRaw.nsfw && !showNSFWGlobal) {
-          clearFeedCache();
-          return;
-}
+            clearFeedCache();
+            return;
+        }
+
         if (videoDataRaw.authorUid) {
-          const blockedYou = await isUserBlockedByMe(videoDataRaw.authorUid);
-            const blockedMe = await didUserBlockMe(videoDataRaw.authorUid);
-            if (blockedMe || blockedYou) {
-              clearFeedCache();
-              return;
+            try {
+                const blockedYou = await isUserBlockedByMe(
+                    videoDataRaw.authorUid
+                );
+
+                const blockedMe = await didUserBlockMe(
+                    videoDataRaw.authorUid
+                );
+
+                if (blockedMe || blockedYou) {
+                    clearFeedCache();
+                    return;
+                }
+            } catch (e) {
+                console.warn("Block error:", e);
+                return;
             }
         }
 
-        if (videoDataRaw.private && videoDataRaw.email !== currentUserEmail) {
-           clearFeedCache();
-          return;
+        if (
+            videoDataRaw.private &&
+            videoDataRaw.email !== currentUserEmail
+        ) {
+            clearFeedCache();
+            return;
         }
 
         if (
             videoDataRaw.domainRestrict &&
             (!currentUserEmail ||
-                !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
+            !currentUserEmail.endsWith("@kfccte-nau.ukr.education"))
         ) return;
-        // 🔹 2. Запобігання дублюванню
-        if (document.querySelector(`[data-id="${videoKey}"]`)) return;
 
+        // DUPLICATE
+        if (
+            videoGallery.querySelector(
+                `[data-id="${videoKey}"]`
+            )
+        ) return;
+
+        // VIDEO
         const videoWrapper = document.createElement("div");
         videoWrapper.className = "video-thumb-wrapper";
 
         const videoElement = document.createElement("img");
-        videoElement.classList.add("video-item");
-        videoElement.src = videoData.thumbnail || "default.jpg";
-        videoElement.dataset.title = videoData.title || "";
-        videoElement.dataset.description = videoData.description || "";
-        videoElement.dataset.author = videoData.author || "";
-        videoElement.style.filter = videoData.nsfw ? "blur(20px)" : "none";
+        videoElement.className = "video-item";
+        videoElement.src = videoDataRaw.thumbnail || "default.jpg";
+
+        videoElement.dataset.title = videoDataRaw.title || "";
+        videoElement.dataset.description = videoDataRaw.description || "";
+        videoElement.dataset.author = videoDataRaw.author || "";
+
+        videoElement.style.filter =
+            videoDataRaw.nsfw ? "blur(20px)" : "none";
 
         cacheImage(videoElement.src);
 
-        // =====================
-        // FIXED TIMER (NO LEAK)
-        // =====================
-if (videoDataRaw.score > 15) {
+        // POPULAR
+        if (videoDataRaw.score > 15) {
             const popular = document.createElement("div");
             popular.className = "stories-timer";
 
             const popularSpan = document.createElement("span");
             popularSpan.textContent = "🔥 Popular";
+
             popular.appendChild(popularSpan);
             videoWrapper.appendChild(popular);
-}
+        }
+
+        // TIMER
         if (videoDataRaw.autoDelete24h && videoDataRaw.expiresAt) {
             const timer = document.createElement("div");
             timer.className = "stories-timer";
@@ -4269,7 +4360,7 @@ if (videoDataRaw.score > 15) {
 
                 if (diff <= 0) {
                     clearInterval(interval);
-                    videoWrapper.remove();
+                    container.remove();
                     return;
                 }
 
@@ -4289,14 +4380,15 @@ if (videoDataRaw.score > 15) {
             videoWrapper.appendChild(timer);
         }
 
-        // 🔹 4. Клік по відео
+        // CLICK
         videoElement.onclick = () => {
             const viewedKey = `viewed_${videoKey}`;
 
             if (!localStorage.getItem(viewedKey)) {
-                const newViewCount = (videoDataRaw.views || 0) + 1;
-
-                database.ref("videos/" + videoKey).update({ views: newViewCount })
+                database.ref("videos/" + videoKey)
+                    .update({
+                        views: (videoDataRaw.views || 0) + 1
+                    })
                     .then(() => localStorage.setItem(viewedKey, true))
                     .catch(console.error);
             }
@@ -4305,109 +4397,132 @@ if (videoDataRaw.score > 15) {
                 key: videoKey
             });
 
-            window.location.href = `video.html?${videoParams.toString()}`;
+            window.location.href =
+                `video.html?${videoParams.toString()}`;
         };
 
-        // 🔹 6. Інформація
+        // INFO
         const infoElement = document.createElement("div");
-        infoElement.classList.add("video-info");
+        infoElement.className = "video-info";
 
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
 
-
-  const avatar = document.createElement("div");
-avatar.className = "avatar";
-
-const authorEl = document.createElement("span");
-authorEl.textContent = videoDataRaw?.author || "Анонім";
-
-        if (videoDataRaw.authorStatus == "frozen_soft") {
-          avatar.innerText = "👻";
-          avatar.style.background = `${videoDataRaw.authorColor}`;
-        } else if (videoDataRaw.authorStatus == "hidden") {
-                   avatar.innerHTML = `<span class="material-symbols">domino_mask
-</span>`;
-          avatar.style.background = `${videoDataRaw.authorColor}`;
-          } else if (videoDataRaw.authorAvatar) {
-            avatar.style.backgroundImage = `url(${videoDataRaw.authorAvatar})`;
+        if (videoDataRaw.authorStatus === "frozen_soft") {
+            avatar.textContent = "👻";
+            avatar.style.background = videoDataRaw.authorColor || "";
+        } else if (videoDataRaw.authorStatus === "hidden") {
+            avatar.innerHTML =
+                `<span class="material-symbols">domino_mask</span>`;
+            avatar.style.background = videoDataRaw.authorColor || "";
+        } else if (videoDataRaw.authorAvatar) {
+            avatar.style.backgroundImage =
+                `url("${videoDataRaw.authorAvatar}")`;
             avatar.style.backgroundSize = "cover";
-avatar.style.backgroundPosition = "center";
-avatar.style.backgroundRepeat = "no-repeat";
-          }  else {
-            avatar.innerText = getInitials(videoDataRaw.author);
-            avatar.style.background = `${videoDataRaw.authorColor}`;
+            avatar.style.backgroundPosition = "center";
+            avatar.style.backgroundRepeat = "no-repeat";
+        } else {
+            avatar.textContent = getInitials(videoDataRaw.author);
+            avatar.style.background = videoDataRaw.authorColor || "";
         }
 
         avatar.onclick = () => {
-            if(!videoDataRaw.authorUid) {
-            return;
-          } else {
+            if (!videoDataRaw.authorUid) return;
+
             const infoParams = new URLSearchParams({
-                uid: videoDataRaw.authorUid || "",
+                uid: videoDataRaw.authorUid
             });
-            window.location.href = `profile.html?${infoParams.toString()}`;
-          }
+
+            window.location.href =
+                `profile.html?${infoParams.toString()}`;
         };
 
         const detailsElement = document.createElement("div");
-        detailsElement.classList.add("video-details");
+        detailsElement.className = "video-details";
 
-        const isFrozen = videoDataRaw.authorStatus === "frozen_soft";
+        const isFrozen =
+            videoDataRaw.authorStatus === "frozen_soft";
 
-detailsElement.innerHTML = `
-    ${sanitizeHTML(videoDataRaw.title || "Без назви")}
-    ${videoDataRaw.private ? "<span style='color: orange;'>🔒 <span data-i18n='private'></span></span>" : ""}
-    ${videoDataRaw.nsfw ? "<span style='color: red;'>NSFW</span>" : ""}
+        detailsElement.innerHTML = `
+            ${sanitizeHTML(videoDataRaw.title || "Без назви")}
+            ${videoDataRaw.private
+                ? "<span style='color:orange'>🔒 <span data-i18n='private'></span></span>"
+                : ""}
+            ${videoDataRaw.nsfw
+                ? "<span style='color:red'>NSFW</span>"
+                : ""}
 
-    <br>
+            <br>
 
-    Автор: ${
-        isFrozen
-            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>" : videoDataRaw.authorStatus === "hidden"
-            ? `<span data-i18n="account-hiden">Прихований користувач</span>`
-            : sanitizeHTML(videoDataRaw.author || "Анонім")
-    }
+            Автор: ${
+                isFrozen
+                    ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>"
+                    : videoDataRaw.authorStatus === "hidden"
+                        ? "<span data-i18n='account-hiden'>Прихований користувач</span>"
+                        : sanitizeHTML(videoDataRaw.author || "Анонім")
+            }
 
-    ${videoDataRaw.owner === true && videoDataRaw.verifiedBadge
-        ? `<img class='adaptive-stroke' src='${videoDataRaw.verifiedBadge}'>`
-        : ""
-    }
+            ${
+                videoDataRaw.owner === true && videoDataRaw.verifiedBadge
+                    ? `<img class="adaptive-stroke" src="${videoDataRaw.verifiedBadge}">`
+                    : ""
+            }
 
-    <br>
+            <br>
 
-    ${getSafeBanduraHTML(videoDataRaw.banduraExtra)}
-    <div class='info-element'>
-<p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>play_arrow</i>${videoDataRaw.views || 0}</p><span class='info-divider'>•</span>
- <p style='display: flex; justify-content: center; align-items: center;'><i class='material-symbols'>event</i>${videoDataRaw.publishDate || "—"}
-</p></div>`;
+            ${getSafeBanduraHTML(videoDataRaw.banduraExtra)}
 
+            <div class="info-element">
+                <p style="display:flex;justify-content:center;align-items:center">
+                    <i class="material-symbols">play_arrow</i>
+                    ${Number(videoDataRaw.views) || 0}
+                </p>
 
-        // 🔹 MENU
+                <span class="info-divider">•</span>
+
+                <p style="display:flex;justify-content:center;align-items:center">
+                    <i class="material-symbols">event</i>
+                    ${sanitizeHTML(videoDataRaw.publishDate || "—")}
+                </p>
+            </div>
+        `;
+
+        // MENU
         const moreBtn = document.createElement("a");
-        moreBtn.classList.add("more-btn");
-        moreBtn.innerHTML = `<i class="material-symbols">more_vert</i>`;
+        moreBtn.className = "more-btn";
+        moreBtn.innerHTML =
+            `<i class="material-symbols">more_vert</i>`;
 
         const actionMenu = document.createElement("div");
-        actionMenu.classList.add("action-menu");
+        actionMenu.className = "action-menu";
         actionMenu.style.display = "none";
-if (currentUserRole === "moderator") {
 
+        if (currentUserRole === "moderator") {
             const freezeBtn = document.createElement("button");
             freezeBtn.textContent = "Заморозити ❄";
 
             freezeBtn.onclick = async () => {
-                await freezeUser(videoDataRaw.authorUid, "frozen_soft");
+                if (videoDataRaw.authorUid) {
+                    await freezeUser(videoDataRaw.authorUid, "frozen_soft");
+                }
             };
-           const unFreezeBtn = document.createElement("button");
 
+            const unFreezeBtn = document.createElement("button");
             unFreezeBtn.textContent = "Розморозити";
+
             unFreezeBtn.onclick = async () => {
-                await unFreezeUser(videoDataRaw.authorUid);
+                if (videoDataRaw.authorUid) {
+                    await unFreezeUser(videoDataRaw.authorUid);
+                }
             };
+
             const banBtn = document.createElement("button");
             banBtn.textContent = "Бан ⛔";
 
             banBtn.onclick = async () => {
-                await freezeUser(videoDataRaw.authorUid, "frozen_hard");
+                if (videoDataRaw.authorUid) {
+                    await freezeUser(videoDataRaw.authorUid, "frozen_hard");
+                }
             };
 
             actionMenu.appendChild(freezeBtn);
@@ -4415,10 +4530,17 @@ if (currentUserRole === "moderator") {
             actionMenu.appendChild(banBtn);
         }
 
-        if (currentUserEmail === videoDataRaw.email || currentUserEmail === "zhuzhun2008@gmail.com") {
+        if (
+            currentUserEmail === videoDataRaw.email ||
+            currentUserEmail === "zhuzhun2008@gmail.com"
+        ) {
             const deleteButton = document.createElement("button");
-            deleteButton.innerHTML = `<a style="padding:3px 8px; display:flex; border-radius: 50%; align-items:center; justify-content:center;">
-                Видалити<i class="material-symbols">delete</i></a>`;
+
+            deleteButton.innerHTML = `
+                <a style="padding:3px 8px;display:flex;border-radius:50%;align-items:center;justify-content:center">
+                    Видалити<i class="material-symbols">delete</i>
+                </a>
+            `;
 
             deleteButton.onclick = () => {
                 deleteVideo(videoKey, videoDataRaw.url);
@@ -4430,8 +4552,12 @@ if (currentUserRole === "moderator") {
 
         if (currentUserEmail === videoDataRaw.email) {
             const editButton = document.createElement("button");
-            editButton.innerHTML = `<a style="padding:3px 8px; display:flex; align-items:center; justify-content:center;">
-                Редагувати<i class="material-symbols">edit</i></a>`;
+
+            editButton.innerHTML = `
+                <a style="padding:3px 8px;display:flex;align-items:center;justify-content:center">
+                    Редагувати<i class="material-symbols">edit</i>
+                </a>
+            `;
 
             editButton.onclick = () => {
                 editVideo(videoKey, videoDataRaw);
@@ -4441,48 +4567,57 @@ if (currentUserRole === "moderator") {
             actionMenu.appendChild(editButton);
         }
 
-
         moreBtn.onclick = e => {
             e.stopPropagation();
 
-            document.querySelectorAll(".action-menu").forEach(m => {
-                if (m !== actionMenu) m.style.display = "none";
+            document.querySelectorAll(".action-menu").forEach(menu => {
+                if (menu !== actionMenu) {
+                    menu.style.display = "none";
+                }
             });
 
             actionMenu.style.display =
                 actionMenu.style.display === "block" ? "none" : "block";
         };
 
-        // FIX: listener only once
         if (!videoGallery.dataset.listener) {
             videoGallery.addEventListener("click", e => {
-                if (!e.target.closest(".action-menu") && !e.target.closest(".more-btn")) {
-                    document.querySelectorAll(".action-menu").forEach(m => m.style.display = "none");
+                if (
+                    !e.target.closest(".action-menu") &&
+                    !e.target.closest(".more-btn")
+                ) {
+                    document.querySelectorAll(".action-menu").forEach(menu => {
+                        menu.style.display = "none";
+                    });
                 }
             });
 
             videoGallery.dataset.listener = "true";
         }
+
         infoElement.appendChild(detailsElement);
         infoElement.appendChild(avatar);
         infoElement.appendChild(moreBtn);
         infoElement.appendChild(actionMenu);
 
+        // CONTAINER
         const container = document.createElement("div");
-        container.classList.add("video-container");
+        container.className = "video-container";
         container.dataset.id = videoKey;
+        container.dataset.publishDate =
+            parsePublishDate(videoDataRaw.publishDate);
 
+        videoWrapper.appendChild(videoElement);
 
-         videoWrapper.appendChild(videoElement);
+        container.appendChild(videoWrapper);
+        container.appendChild(infoElement);
 
-container.appendChild(videoWrapper);
-container.appendChild(infoElement);
+        insertVideoSorted(videoGallery, container);
 
-videoGallery.appendChild(container);
-
-      applyTranslations();
+        applyTranslations();
     });
 }
+
 function cleanupExpiredVideos() {
     database.ref("videos").once("value", snap => {
         snap.forEach(child => {
@@ -6781,121 +6916,199 @@ document.getElementById("logout-link").onclick = function() {
                 location.reload();
             });
         };
+
 async function loadPhotos() {
     const photoGallery = document.getElementById("photo-gallery");
     if (!photoGallery) return;
+
     photoGallery.innerHTML = "";
 
-    // 🔹 Слухаємо нові фото у реальному часі
     database.ref("photos").on("child_added", async snapshot => {
         const photoData = snapshot.val();
         const photoKey = snapshot.key;
-if (photoData.authorUid) {
-            const blockedYou = await isUserBlockedByMe(photoData.authorUid);
-            const blockedMe = await didUserBlockMe(photoData.authorUid);
-            if (blockedMe || blockedYou) return;
+
+        if (!photoData) return;
+
+        // DUPLICATE
+        if (
+            photoGallery.querySelector(
+                `[data-id="${photoKey}"]`
+            )
+        ) return;
+
+        // BLOCK FILTER
+        if (photoData.authorUid) {
+            try {
+                const blockedYou = await isUserBlockedByMe(
+                    photoData.authorUid
+                );
+
+                const blockedMe = await didUserBlockMe(
+                    photoData.authorUid
+                );
+
+                if (blockedMe || blockedYou) return;
+            } catch (error) {
+                console.warn("Photo block error:", error);
+                return;
+            }
         }
-        // 🔹 Фото елемент
+
+        // PHOTO
         const photoElement = document.createElement("img");
-        if(!photoData.images) {
-      photoElement.src = photoData.url;
+
+        photoElement.src =
+            photoData.images || photoData.url || "default.jpg";
+
         photoElement.alt = photoData.title || "Фото";
-        photoElement.classList.add("photo-item");
-        } else {
-          photoElement.src = photoData.images;
-        photoElement.alt = photoData.title || "Фото";
-        photoElement.classList.add("photo-item");
-        }
-        // 🔹 Збільшення переглядів при кліку
+        photoElement.className = "photo-item";
+
+        // VIEWS
         photoElement.addEventListener("click", () => {
             const newViewCount = (photoData.views || 0) + 1;
-            database.ref("photos/" + photoKey).update({ views: newViewCount })
-                .catch(error => console.error("Помилка оновлення переглядів:", error));
+
+            database.ref("photos/" + photoKey)
+                .update({ views: newViewCount })
+                .catch(error =>
+                    console.error(
+                        "Помилка оновлення переглядів:",
+                        error
+                    )
+                );
         });
 
-        // 🔹 Інформація про фото
+        // INFO
         const infophotoElement = document.createElement("div");
-        infophotoElement.classList.add("photo-info");
-const authorEl = document.createElement("span");
-authorEl.textContent = photoData?.author || "Анонім";
-        // Аватар автора
+        infophotoElement.className = "photo-info";
+
+        // AVATAR
         const avatar = document.createElement("div");
-        avatar.classList.add("avatar");
+        avatar.className = "avatar";
         avatar.title = photoData.author || "Анонім";
 
+        if (photoData.authorStatus === "frozen_soft") {
+            avatar.textContent = "👻";
+            avatar.style.background = photoData.authorColor || "";
 
-        if (photoData.authorStatus == "frozen_soft") {
-          avatar.innerText = "👻";
-          avatar.style.background = `${photoData.authorColor}`;
-          } else if (photoData.authorStatus == "hidden") {
-                   avatar.innerHTML = `<span class="material-symbols">domino_mask
-</span>`;
-          avatar.style.background = `${photoData.authorColor}`;
+        } else if (photoData.authorStatus === "hidden") {
+            avatar.innerHTML =
+                `<span class="material-symbols">domino_mask</span>`;
+            avatar.style.background = photoData.authorColor || "";
+
         } else if (photoData.authorAvatar) {
-                   avatar.style.backgroundImage = `url(${photoData.authorAvatar})`;
-                    avatar.style.backgroundSize = "cover";
-avatar.style.backgroundPosition = "center";
-avatar.style.backgroundRepeat = "no-repeat";
+            avatar.style.backgroundImage =
+                `url("${photoData.authorAvatar}")`;
+
+            avatar.style.backgroundSize = "cover";
+            avatar.style.backgroundPosition = "center";
+            avatar.style.backgroundRepeat = "no-repeat";
+
         } else {
-            avatar.innerText = getInitials(photoData.author);
-    avatar.style.backgroundColor = stringToColor(photoData.authorColor || "?");
+            avatar.textContent = getInitials(photoData.author);
+            avatar.style.backgroundColor =
+                stringToColor(photoData.authorColor || "?");
         }
-avatar.onclick = () => {
+
+        avatar.onclick = () => {
+            if (!photoData.authorUid) return;
+
             const infoParams = new URLSearchParams({
-                uid: photoData.authorUid || "",
+                uid: photoData.authorUid
             });
-            window.location.href = `profile.html?${infoParams.toString()}`;
+
+            window.location.href =
+                `profile.html?${infoParams.toString()}`;
         };
-        const isFrozen = photoData.authorStatus === "frozen_soft";
+
+        // DETAILS
+        const isFrozen =
+            photoData.authorStatus === "frozen_soft";
+
         const detailsphotoElement = document.createElement("div");
-        detailsphotoElement.classList.add("photo-details");
-        const safephotoTitle = sanitizeHTML(photoData.title || "Без назви");
-        const safephotoAuthor = sanitizeHTML(photoData.author || "Анонім");
-        const safephotoDescription = sanitizeHTML(photoData.description || "Без опису");
+        detailsphotoElement.className = "photo-details";
+
+        const safephotoTitle = sanitizeHTML(
+            photoData.title || "Без назви"
+        );
+
+        const safephotoDescription = sanitizeHTML(
+            photoData.description || "Без опису"
+        );
+
         detailsphotoElement.innerHTML = `
-            <strong>${safephotoTitle}</strong><br>
+            <strong>${safephotoTitle}</strong>
+            <br>
+
             Автор: ${
-        isFrozen
-            ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>" :  photoData.authorStatus === "hidden"
-            ? `<span data-i18n="account-hiden">Прихований користувач</span>`
-            : sanitizeHTML(photoData.author || "Анонім")
-    }
+                isFrozen
+                    ? "❄️ <span data-i18n='account-deleted'>Видалений акаунт</span>"
+                    : photoData.authorStatus === "hidden"
+                        ? "<span data-i18n='account-hiden'>Прихований користувач</span>"
+                        : sanitizeHTML(photoData.author || "Анонім")
+            }
 
-    ${photoData.owner === true && photoData.verifiedBadge
-        ? `<img class='adaptive-stroke' src='${photoData.verifiedBadge}'>`
-        : ""
-    }
+            ${
+                photoData.owner === true && photoData.verifiedBadge
+                    ? `<img class="adaptive-stroke" src="${photoData.verifiedBadge}">`
+                    : ""
+            }
 
-    <br>
+            <br>
 
-            Дата публікації: ${photoData.publishDate || "Не вказана"}<br>
+            Дата публікації:
+            ${sanitizeHTML(photoData.publishDate || "Не вказана")}
+
+            <br>
+
             Опис: ${safephotoDescription}
         `;
 
-        // 🔹 Кнопка видалення для власника
-        if (currentUserEmail === photoData.email || currentUserEmail === "zhuzhun2008@gmail.com") {
-            const deletePhotoButton = document.createElement("button");
+        // DELETE
+        if (
+            currentUserEmail === photoData.email ||
+            currentUserEmail === "zhuzhun2008@gmail.com"
+        ) {
+            const deletePhotoButton =
+                document.createElement("button");
+
             deletePhotoButton.innerText = "Видалити";
             deletePhotoButton.style.backgroundColor = "red";
             deletePhotoButton.style.color = "white";
             deletePhotoButton.style.marginTop = "10px";
-            deletePhotoButton.onclick = () => deletePhoto(photoKey, photoData.url, photoData.images);
+
+            deletePhotoButton.onclick = () => {
+                deletePhoto(
+                    photoKey,
+                    photoData.url,
+                    photoData.images
+                );
+            };
+
             infophotoElement.appendChild(deletePhotoButton);
         }
 
+        // APPEND INFO
         infophotoElement.appendChild(avatar);
         infophotoElement.appendChild(detailsphotoElement);
 
-        // 🔹 Контейнер фото
-        const Photocontainer = document.createElement("div");
-        Photocontainer.classList.add("photo-container");
-        Photocontainer.appendChild(infophotoElement);
-        Photocontainer.appendChild(photoElement);
+        // CONTAINER
+        const photoContainer = document.createElement("div");
+        photoContainer.className = "photo-container";
+        photoContainer.dataset.id = photoKey;
 
-        photoGallery.appendChild(Photocontainer);
-      applyTranslations();
+        photoContainer.dataset.publishDate =
+            parsePublishDate(photoData.publishDate);
+
+        photoContainer.appendChild(infophotoElement);
+        photoContainer.appendChild(photoElement);
+
+        // SORT: NEWEST FIRST
+        insertVideoSorted(photoGallery, photoContainer);
+
+        applyTranslations();
     });
 }
+
 
 async function deletePhoto(photoKey, photoURL, photoImages) {
     if (!confirm("Ви впевнені, що хочете видалити це фото?")) {
