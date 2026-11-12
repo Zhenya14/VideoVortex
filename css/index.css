@@ -663,11 +663,16 @@ position: absolute;
     -webkit-backdrop-filter: blur(3px);
     filter: url(#glass-distortion);
     -webkit-filter: url(#glass-distortion);
-    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
-    width: 0.5%;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    align-items: center;
     position: absolute;
-    top: 20px;
-    right: 30%;
+    top: 16px;
+    top: max(16px, env(safe-area-inset-top, 0px));
+    right: 16px;
+    right: max(16px, env(safe-area-inset-right, 0px));
+    z-index: 10000;
  }
 .random-comments, #button-name, #button-supername, #save-name, #save-supername, .save {
 width: 100%; 
@@ -2463,6 +2468,7 @@ direction: ltr;
 /* Головний контейнер (за ID) */
 #author-info {
 display: none;
+position: relative;
 flex-direction: column;
 align-items: center;
 justify-content: center;
