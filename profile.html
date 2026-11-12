@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
+<title>Профіль користувача</title>
+<link rel="icon" href="VideoVortex_logo.ico">
+     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
+<!-- Firebase v8 SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<link rel="stylesheet" href="css/profile.css">
+<svg style="display: none">
+    <filter id="displacementFilter">
+        <feImage
+                href="data:image/png;base64,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"
+                preserveAspectRatio="none"/>
+
+        <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="100"
+                xChannelSelector="R"
+                yChannelSelector="G"
+        />
+    </filter>
+</svg>
+
+</head>
+<body>
+
+<nav>
+  <a class="back" href="index.html">
+        <i class="material-symbols">arrow_back_ios_new</i>
+    </a>
+  <a href="index.html">
+    <img id="logo" src="VideoVortex_logo.ico" style="height:50px;width:50px;border-radius:50%;">
+    <h1 style="padding-left:5px;" id="logo-text">VideoVortex</h1>
+  </a>
+</nav>
+    <ios-modal id="block-user-modal">
+  <div class="ios-modal-window">
+    <div class="ios-modal-header">
+      Заблокувати користувача
+    </div>
+
+    <div class="ios-modal-body">
+      <p id="blocked-information">Ви впевнені, що хочете заблокувати цього користувача?</p>
+
+      <select id="block-reason">
+        <option value="spam">Спам</option>
+        <option value="abuse">Образи / токсична поведінка</option>
+        <option value="nsfw">Заборонений контент</option>
+        <option value="other">Інше</option>
+      </select>
+
+      <textarea id="block-comment" placeholder="Коментар (необовʼязково)"></textarea>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="danger" onclick="confirmBlockUser()">Заблокувати</button>
+      <button class="cancel" onclick="closeBlockModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
+<div id="notification-modal" class="ios-notification-modal" style="display: none;">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+    </div>
+    </div>
+<div class="profile-header">
+  <div class="avatar" id="avatar">?</div>
+  <div>
+    <h2 id="userName">Завантаження...</h2>
+     <button id="blockUserBtn" style="
+    margin-left: 12px;
+    padding: 6px 12px;
+    border-radius: 38px;
+    border: 1px solid #333;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  ">
+    <i class="material-symbols">block</i>
+    Заблокувати
+  </button>
+  <button class="shareBtn" id="shareBtn" style="
+    margin-left: 12px;
+    padding: 6px 12px;
+    border-radius: 38px;
+    border: 1px solid #333;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  ">
+  <i class="material-symbols">share</i><p data-i18n="shareBtn" style="padding: 5px;">Поділитися</p>  
+    </button>
+  </div>
+</div>
+
+<div class="tab">
+  <div class="tab-liquid-glass">
+  <button data-i18n="video" class="tab-button-liquid-glass" onclick="openTab(event,'video')" id="defaultOpen">Відео</button>
+  <button data-i18n="posts" class="tab-button-liquid-glass" onclick="openTab(event,'post')">Дописи</button>
+    <button id="repost" data-i18n="reposts" class="tab-button-liquid-glass" onclick="openTab(event,'reposts')">Репости</button>
+  </div>
+</div>
+
+<div id="video" class="tabcontent">
+  <div id="video-gallery"></div>
+</div>
+
+<div id="post" class="tabcontent">
+  <div id="photo-gallery"></div>
+</div>
+  <div id="reposts" class="tabcontent">
+  <div id="repost-gallery"></div>
+  </div>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logo");
+    const logoText = document.getElementById("logo-text");
+    if (!logo || !logoText) return;
+
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    const originalLogoSrc = logo.src;
+
+    const isNewYearPeriod =
+        (month === 12 && day >= 15) ||
+        (month === 1 && day <= 25);
+
+    const isVyshyvanka =
+        month === 5 && day === 16;
+
+    const isIndependenceDay = month === 8 && (day === 23 || day === 24);
+
+    // ---------- НОВИЙ РІК ----------
+    if (isNewYearPeriod) {
+        logo.src = "VideoVortex_new_year's_logo.jpg";
+    }
+
+    // ---------- ДЕНЬ ВИШИВАНКИ ----------
+    if (isVyshyvanka) {
+        logo.src = "VideoVortex_logo_embriodery.jpg";
+        styleButtons("#8B0000", "#1C1C1C");
+        applyIcons(vyshyvankaIcons);
+    }
+
+    // ---------- ДЕНЬ НЕЗАЛЕЖНОСТІ ----------
+    if (isIndependenceDay) {
+        logo.src = "VideoVortex_logo_indepedence.jpg";
+        logoText.textContent = "VideoVortex 💙💛";
+        styleButtons("#0057B7", "#FFDD00");
+    }
+
+    // ---------- СНІГ ----------
+    if (month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- ПОТРІЙНИЙ КЛІК ----------
+    logo.addEventListener("click", () => {
+        logoClickCount++;
+
+        if (logoClickCount === 1) {
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 1200);
+        }
+
+        if (logoClickCount === 3) {
+            clearTimeout(logoClickTimer);
+            logoClickCount = 0;
+            launchNewYearEasterEgg();
+        }
+    });
+});
+</script>
+<script>
+function openTab(evt, tabName) {
+  const tabcontent = document.getElementsByClassName("tabcontent");
+  for (let i=0;i<tabcontent.length;i++) tabcontent[i].style.display="none";
+  const tablinks = document.getElementsByClassName("tab-button-liquid-glass");
+  for (let i=0;i<tablinks.length;i++) tablinks[i].classList.remove("active");
+  document.getElementById(tabName).style.display="block";
+  evt.currentTarget.classList.add("active");
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("defaultOpen").click();
+});
+</script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+  authDomain: "videovortex-235cd.firebaseapp.com",
+  databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "videovortex-235cd",
+  storageBucket: "videovortex-235cd.appspot.com",
+  messagingSenderId: "681594250269",
+  appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+const storage = firebase.storage();
+const urlParams = new URLSearchParams(window.location.search);
+let blockedUserUid = urlParams.get("uid"); // UID користувач
+let hasPosts = false;
+let hasVideos = false;
+const backgroundProfile = document.querySelector(".profile-header");
+const avatar = document.getElementById("avatar");
+  const userName = document.getElementById("userName");
+  let realBlockedUserName = "";
+  let isAnonymous = false;
+let nameAccount = "";
+function sanitizeHTML(str) {
+    const div = document.createElement("div");
+    div.innerText = str;
+    return div.innerHTML;
+}  
+function showNotFound() {
+  document.getElementById("video-gallery").innerHTML = `<h3>🎬 Публікації відсутні</h3>`;
+}
+async function isUserBlockedByMe(targetUid) {
+
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${me.uid}/blockedUsers/${targetUid}`)
+      .once("value");
+
+    return snap.exists();
+
+  } catch {
+
+    return false;
+
+  }
+
+}
+
+function clearFeedCache() {
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("video_cache_"))
+    .forEach(k => localStorage.removeItem(k));
+}
+
+async function didUserBlockMe(targetUid) {
+
+  const me = firebase.auth().currentUser;
+
+  if (!me) return false;
+  if (!targetUid) return false;
+
+  try {
+
+    const snap = await database
+      .ref(`users/${targetUid}/blockedUsers/${me.uid}`)
+      .once("value");
+
+    const isBlocked = snap.exists();
+
+    if (isBlocked) {
+      clearFeedCache(); // 👈 ОЦЕ ТІЛЬКИ ТУТ
+    }
+
+    return isBlocked;
+
+  } catch {
+    return false;
+  }
+}
+
+function getInitials(name) {
+  if (!name) return "?";
+
+  const parts = name.trim().split(" ");
+
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+let isHiddenAccount = false;
+  
+async function loadProfile() {
+  try {
+    // MODERATION
+    const snapModeration = await database
+      .ref(`moderation/users/${blockedUserUid}`)
+      .once("value");
+
+    const dataModeration = snapModeration.val() || {};
+    const isFrozen = dataModeration.status === "frozen_soft";
+
+    // PUBLIC PROFILE
+    const snap = await database
+      .ref(`publicUsers/${blockedUserUid}`)
+      .once("value");
+
+    const data = snap.val();
+
+    if (!snap.exists() || !data) {
+      avatar.style.backgroundImage = "";
+      avatar.textContent = "?";
+      userName.textContent = "Невідомий користувач";
+      isHiddenAccount = true;
+      return;
+    }
+
+    // ANONYMOUS STATUS
+    isAnonymous = data.status === "hidden";
+
+    // NAME
+    const name = `${data.name || "Користувач"} ${data.supername || ""}`.trim();
+
+    if (isAnonymous) {
+      nameAccount = "Прихований користувач";
+    } else {
+      nameAccount = name;
+    }
+
+    // BLOCK CHECK
+    if (blockedUserUid) {
+      const blockedMeProfile = await didUserBlockMe(blockedUserUid);
+
+      if (blockedMeProfile) {
+        avatar.style.backgroundImage = "";
+        avatar.style.background = data.color || "#ccc";
+        avatar.textContent = "❌";
+
+        userName.textContent = "Акаунт не знайдено";
+        userName.setAttribute("data-i18n", "account-not-found");
+
+        applyTranslations();
+
+        isHiddenAccount = true;
+        return;
+      }
+    }
+
+    // VERIFIED BADGE
+    const verifiedBadge = data.owner === true && data.verifiedBadge
+      ? `<img class="adaptive-stroke" src="${sanitizeHTML(data.verifiedBadge)}">`
+      : "";
+
+    // USER NAME
+    userName.innerHTML = isFrozen
+      ? "❄️ Видалений акаунт"
+      : isAnonymous
+        ? "Прихований користувач"
+        : sanitizeHTML(name) + verifiedBadge;
+
+    if (isFrozen) {
+      userName.setAttribute("data-i18n", "account-frozen");
+      applyTranslations();
+    }
+
+    if (isAnonymous) {
+      userName.setAttribute("data-i18n", "account-hidden");
+      applyTranslations();
+    }
+
+    // AVATAR
+    if (isFrozen) {
+      avatar.style.backgroundImage = "";
+      avatar.style.background = data.color || "#ccc";
+      avatar.textContent = "👻";
+
+    } else if (isAnonymous) {
+      avatar.style.backgroundImage = "";
+      avatar.style.background = data.color || "#ccc";
+      avatar.innerHTML = `
+        <span class="material-symbols">domino_mask</span>
+      `;
+
+    } else if (data.avatarId) {
+      try {
+        const url = await firebase
+          .storage()
+          .ref(`avatars/${data.avatarId}.webp`)
+          .getDownloadURL();
+
+        avatar.style.backgroundImage = `url("${url}")`;
+        avatar.style.backgroundSize = "cover";
+        avatar.style.backgroundPosition = "center";
+        avatar.textContent = "";
+
+      } catch (e) {
+        avatar.style.backgroundImage = "";
+        avatar.style.background = data.color || "#ccc";
+        avatar.textContent = getInitials(name);
+      }
+
+    } else {
+      avatar.style.backgroundImage = "";
+      avatar.style.background = data.color || "#ccc";
+      avatar.textContent = getInitials(name);
+    }
+
+    // WALLPAPER
+    if (!data.wallpaperId) {
+      backgroundProfile.style.backgroundImage = "";
+
+    } else {
+      try {
+        const urlWallpaper = await firebase
+          .storage()
+          .ref(`wallpapers/${data.wallpaperId}.webp`)
+          .getDownloadURL();
+
+        backgroundProfile.style.backgroundImage = `url("${urlWallpaper}")`;
+        backgroundProfile.style.backgroundSize = "cover";
+        backgroundProfile.style.backgroundPosition = "center";
+
+      } catch (e) {
+        backgroundProfile.style.backgroundImage = "";
+      }
+    }
+
+  } catch (e) {
+    console.error("loadProfile error:", e);
+
+    if (!isHiddenAccount) {
+      avatar.style.backgroundImage = "";
+      avatar.textContent = "⚠️";
+      userName.textContent = "Помилка завантаження " + e.message;
+    }
+  }
+}
+async function loadVideos() {
+  const videoGallery = document.getElementById("video-gallery");
+  videoGallery.innerHTML = "";
+
+  const snapshot = await firebase.database().ref("videos").once("value");
+
+  if (!snapshot.exists() || !blockedUserUid) {
+    videoGallery.innerHTML = "<h3>🎬 Публікації відсутні</h3>";
+    return;
+  }
+
+  const videos = [];
+  snapshot.forEach(child => {
+    const v = child.val();
+    if (v) videos.push({ key: child.key, ...v });
+  });
+
+  const filtered = [];
+
+  for (const v of videos) {
+    if (!v.authorUid) continue;
+
+    if (blockedUserUid && v.authorUid !== blockedUserUid) continue;
+
+    const blockedMe = await didUserBlockMe(v.authorUid);
+    if (blockedMe) continue;
+    filtered.push(v);
+  }
+
+  if (filtered.length === 0) {
+    videoGallery.innerHTML = "<h3>🎬 Публікації відсутні</h3>";
+    return;
+  }
+
+  for (const v of filtered) {
+    const container = document.createElement("div");
+    container.className = "video";
+
+    const img = document.createElement("img");
+    img.src = v.thumbnail || "default.jpg";
+
+    if (v.nsfw) img.style.filter = "blur(30px)";
+
+    img.onclick = () => {
+      location.href = `video.html?key=${v.key}`;
+    };
+const title = document.createElement("span");
+    title.src = v.title;
+    container.appendChild(img);
+    container.appendChild(title);
+    videoGallery.appendChild(container);
+  }
+}
+document.getElementById("blockUserBtn").addEventListener("click", () => {
+    showModalBlocked();
+});
+
+
+function showModalBlocked() {
+    const modal = document.getElementById("block-user-modal");
+    const info = document.getElementById("blocked-information");
+realBlockedUserName =
+                nameAccount || "deleted-account";
+
+    const i18nKey = userName.getAttribute("data-i18n");
+
+    const isI18nKey =
+        i18nKey === "account-not-found" ||
+        i18nKey === "account-deleted" ||
+        i18nKey === "account-frozen";
+
+    if (isI18nKey) {
+        info.innerHTML =
+            `Ви впевнені, що хочете заблокувати користувача "<span data-i18n="${i18nKey}"></span>"?`;
+    } else {
+        info.textContent =
+            `Ви впевнені, що хочете заблокувати користувача "${userName.textContent}"?`;
+    }
+
+    modal.style.display = "flex";
+    applyTranslations();
+}
+function closeBlockModal() {
+    document.getElementById("block-user-modal").style.display = "none";
+}
+
+async function confirmBlockUser() {
+    const currentUser = firebase.auth().currentUser;
+    if (!currentUser) return;
+
+    if (!blockedUserUid) {
+        alert("Не вдалося визначити користувача");
+        return;
+    }
+
+    if (currentUser.uid === blockedUserUid) {
+        alert("Не можна заблокувати самого себе");
+        return;
+    }
+
+    const userNameToSave = isAnonymous
+        ? "Прихований користувач"
+        : nameAccount || "Невідомий користувач";
+
+    try {
+        await database
+            .ref(`users/${currentUser.uid}/blockedUsers/${blockedUserUid}`)
+            .set({
+                blocked: true,
+                uid: blockedUserUid,
+                userName: userNameToSave
+            });
+
+        closeBlockModal();
+        alert("Користувача заблоковано");
+
+    } catch (e) {
+        console.error("Помилка блокування користувача:", e);
+        alert("Не вдалося заблокувати користувача");
+    }
+}
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    if (blockedUserUid) {
+      const blockedMeProfile = await didUserBlockMe(blockedUserUid);
+
+      if (blockedMeProfile) {
+        alert("Сталася Помилка.");
+        return;
+      }
+    }
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'VideoVortex',
+        url: window.location.href, // або конкретний URL на твоєму хості
+      });
+      console.log('Поділено успішно');
+    } catch (err) {
+      console.error('Помилка при поділі:', err);
+    }
+  } else {
+    alert('Ваш браузер не підтримує цю функцію');
+  }
+});
+async function loadPosts() {
+  const photoGallery = document.getElementById("photo-gallery");
+  photoGallery.innerHTML = "";
+
+  const snapshot = await firebase.database().ref("photos").once("value");
+
+  if (!snapshot.exists() || !blockedUserUid) {
+    photoGallery.innerHTML = "<h3>📭 Немає дописів</h3>";
+    return;
+  }
+
+  const posts = [];
+  snapshot.forEach(child => {
+    const p = child.val();
+    if (p) posts.push({ key: child.key, ...p });
+  });
+
+  const filtered = [];
+
+  for (const p of posts) {
+    if (!p.authorUid) continue;
+
+    if (blockedUserUid && p.authorUid !== blockedUserUid) continue;
+
+    const blockedMe = await didUserBlockMe(p.authorUid);
+    if (blockedMe) continue;
+
+    filtered.push(p);
+  }
+
+  if (filtered.length === 0) {
+    photoGallery.innerHTML = "<h3>📭 Немає дописів</h3>";
+    return;
+  }
+
+  for (const p of filtered) {
+    const container = document.createElement("div");
+    container.className = "post";
+
+    const img = document.createElement("img");
+    img.src = p.url || "default.jpg";
+
+    container.appendChild(img);
+
+    const title = document.createElement("div");
+    title.textContent = p.title || "(Порожній допис)";
+    container.appendChild(title);
+
+    photoGallery.appendChild(container);
+  }
+}
+async function loadReposts() {
+  const repostsGallery = document.getElementById("repost-gallery");
+  const repostsSection = document.getElementById("reposts");
+  const repostButton = document.getElementById("repost");
+
+  if (!repostsGallery || !repostsSection || !repostButton || !blockedUserUid) {
+    return;
+  }
+
+  repostsGallery.innerHTML = "";
+
+  try {
+    const blockedMe = await didUserBlockMe(blockedUserUid);
+
+    if (blockedMe) {
+      repostButton.style.display = "none";
+      repostsSection.style.display = "none";
+      return;
+  }
+    const snapshot = await firebase
+      .database()
+      .ref("reposts/" + blockedUserUid)
+      .once("value");
+
+    // Репостів немає
+    if (!snapshot.exists()) {
+      repostButton.style.display = "none";
+      repostsSection.style.display = "none";
+      return;
+    }
+
+    let hasReposts = false;
+
+    snapshot.forEach(child => {
+      const r = child.val();
+
+      if (!r) {
+        return;
+      }
+
+      // Перевіряємо, що є videoKey
+      if (!r.videoKey) {
+        return;
+      }
+
+      hasReposts = true;
+
+      const container = document.createElement("div");
+      container.className = "video";
+
+      const img = document.createElement("img");
+
+      img.src = r.thumbnail || "default.jpg";
+      img.alt = r.title || "Репост";
+
+      img.onclick = () => {
+        location.href = `video.html?key=${r.videoKey}`;
+      };
+
+      const title = document.createElement("span");
+      title.textContent = r.title || "Без назви";
+
+      container.appendChild(img);
+      container.appendChild(title);
+
+      repostsGallery.appendChild(container);
+    });
+
+    // Якщо немає жодного нормального репоста
+    if (!hasReposts) {
+      repostButton.style.display = "none";
+      repostsSection.style.display = "none";
+      return;
+    }
+
+    // Є репости
+    repostButton.style.display = "";
+    repostsSection.style.display = "";
+
+  } catch (error) {
+    console.error("❌ Помилка завантаження репостів:", error);
+
+    repostButton.style.display = "none";
+    repostsSection.style.display = "none";
+  }
+}
+
+loadProfile();
+loadVideos();
+loadPosts();
+loadReposts();
+</script>
+ <script defer src="js/support-liquid-glass.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zhenya14.github.io/VideoVortex/sitemap.xml

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
+    <title>VideoVortex</title>
+<meta name="description" content="VideoVortex — a social network with flexible access controls, two content channels, and ZIP file archives.">
+<meta name="keywords" content="social network, social media, video sharing, video platform, private videos, video uploads, content sharing, content privacy, video archives, ZIP archives, VideoVortex">
+    <link rel="icon" href="VideoVortex_logo.ico">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
+    <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/liquid-toogle.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script type="module">
+  import { createFFmpeg, fetchFile } from "https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.mjs";
+
+  window.ffmpeg = createFFmpeg({
+    log: true,
+    corePath: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js"
+  });
+
+  window.fetchFile = fetchFile;
+</script>
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JQTQ0P69EF"></script>
+<link rel="manifest" href="/VideoVortex/manifest.json">
+<meta name="theme-color" content="#1c1e22">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<script defer>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/VideoVortex/service-worker.js")
+    .then(() => console.log("SW OK"))
+    .catch(err => console.error(err));
+}
+</script>
+        <script defer>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JQTQ0P69EF');
+</script>
+<!-- SVG Filter (для анімації рідкого скла) -->
+<!-- SVG Filter (для анімації рідкого скла) -->
+<svg style="display: none">
+    <filter id="displacementFilter">
+        <feImage
+                href="data:image/png;base64,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"
+                preserveAspectRatio="none"/>
+
+        <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="100"
+                xChannelSelector="R"
+                yChannelSelector="G"
+        />
+    </filter>
+</svg>
+  
+<svg aria-hidden="true" width="0" height="0"
+     style="position:absolute">
+  <filter id="vv-goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3"
+                    result="blur"/>
+    <feColorMatrix in="blur" mode="matrix"
+      values="1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 18 -7" result="goo"/>
+    <feComposite in="SourceGraphic" in2="goo"
+                  operator="atop"/>
+  </filter>
+
+  <filter id="vv-liquid-glass"
+          x="-30%" y="-30%" width="160%" height="160%">
+    <feTurbulence type="fractalNoise"
+                  baseFrequency="0.015 0.025"
+                  numOctaves="2"
+                  seed="8"
+                  result="noise"/>
+    <feDisplacementMap in="SourceGraphic"
+                       in2="noise"
+                       scale="50"
+                       xChannelSelector="R"
+                       yChannelSelector="G"/>
+  </filter>
+</svg>
+
+        <script defer>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JQTQ0P69EF');
+</script>
+
+</head>
+<body> 
+<div id="cookieBanner" class="cookie-banner">
+  <div class="cookie-box" style="display: none;">
+    <p>
+      Ми використовуємо cookies для роботи сайту та аналітики.
+      Детальніше в <a href="#" target="_blank">Privacy Policy</a>
+    </p>
+
+    <div class="cookie-buttons">
+      <button id="acceptCookies">Прийняти</button>
+      <button id="rejectCookies">Відхилити</button>
+    </div>
+  </div>
+</div>
+
+ <nav class="nav">
+ 
+        <div style="display: flex; align-items: center;">
+            <a href="#" id="open-menu" onclick="toggleSidebar()">
+    <i class="material-symbols">menu</i>
+</a>
+<img src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
+            <a href="index.html">
+            <h1 style="padding-left: 5px;" id="logo-text">VideoVortex</h1><sup><div id="timer"></div></sup></a><sup><div id="timer"></div></sup></a>
+
+        <button class="search" onclick="openSearch()">
+  <i class="material-symbols">search</i>
+</button>
+</div>
+    </div>
+<!-- CAMERA SCREEN -->
+<div id="story-camera" style="display:none; position:fixed; inset:0; background:black; z-index: 100000;">
+
+    <!-- Тут буде прев'ю фото або відео -->
+    <div id="storyPreview"
+         style="position:absolute; inset:0; width:100%; height:100%;">
+    </div>
+
+    <!-- Камера -->
+    <video id="cameraPreview"
+           autoplay
+           playsinline
+           style="display:none; width:100%; height:100%; object-fit:cover;">
+    </video>
+    <a class="cancel-publish" onclick="captureStop()">
+        <i class="material-symbols">arrow_back_ios_new</i>
+    </a>
+    <textarea id="stories-description" data-i18n-placeholder="stories-description"></textarea>
+    <button class="publishStory" onclick="publishStory()">
+        Опублікувати
+    </button>
+
+    <button onclick="openGallery()"
+            style="display:none; padding:12px; border-radius:50%;
+                   background:rgba(255,255,255,0.2); color:white;">
+        🖼
+    </button>
+
+    <button onclick="captureStop()"
+            style="display:none; padding:18px; border-radius:50%;
+                   background:white;">
+    </button>
+
+</div>
+<div id="storyView"
+         style="position: fixed; inset: 0; display: none; width: 100%; height: 100%; z-index: 999;">
+    </div>
+<input id="galleryInput" type="file" accept="image/*,video/*" hidden>
+        <div style="display: flex; gap: 15px; margin-left: auto;">
+                <a href="#" class="notification" id="notification" onclick="showAccountNotificationsModal() "><i class="material-symbols">notifications</i></a>
+           <a href="#" id="plus-desktop-button"><i class="material-symbols">add</i></a>
+            <a href="auth.html" id="auth-link">
+                <i class="material-symbols">account_circle</i><span data-i18n="signIn">Увійти</span>
+            </a>
+            <a href="#" id="logout-link" style="display: none;">
+                <i class="material-symbols">logout</i><span class="icon-text">Вийти</span>
+                </a>
+            <a href="#" id="account-desktop-link" onclick="openAccountModal()" style="display: none;">
+                <i class="material-symbols">person</i><span class="icon-text" id="email">Завантаження...</span>
+            </a>
+                    <button data-i18n="installBtn" id="installBtn" style="display:none; width: 128px; right: 152px; position: fixed; top: 82px;">Встановити додаток</button>
+        </div>
+    </nav>
+
+    <div id="search-box" class="search-box-liquid-glass">
+  <input type="text" id="search-input" placeholder="Пошук..." oninput="searchAll()">
+
+  <button id="close-search" class="search-close">
+    <i class="material-symbols">close</i>
+  </button>
+     </div>
+<div id="rules-update-modal" class="ios-modal">
+  <div class="ios-modal-content">
+    <h2>🔔 Оновлені правила</h2>
+    <p>Ми оновили правила спільноти VideoVortex:</p>
+    <ul>
+      <li>🚫 Заборонено фейки та образи.</li>
+      <li>🔒 Посилено правила приватності.</li>
+      <li>🧒 Обмеження для користувачів до 16 років.</li>
+    </ul>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="acceptRulesUpdate()">Зрозуміло</button>
+  </div>
+</div>
+
+<div id="notification-ai-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message-ai"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationAIModal()">ОК</button>
+  </div>
+  </div>
+<div id="notification-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+  </div>
+</div>
+<div id="march8-banner" class="march8-banner">
+  <div class="march8-box">
+    <p data-i18n="march8-box">🌸 З 8 Березня!  
+    Поділіться святковим відео 💐</p>
+
+    <button id="march8-upload" data-i18n="march8-upload">📹 Опублікувати відео</button>
+    <button id="march8-close">✖</button>
+  </div>
+</div>
+<div id="easter-banner" class="easter-banner">
+  <div class="easter-box">
+    <p data-i18n="easter-box">🌸 Христос Воскрес! З Великоднем 🐣💐 Поділіться святковим відео</p>
+
+    <button id="easter-upload" data-i18n="easter-upload">📹 Опублікувати відео</button>
+    <button id="easter-close">✖</button>
+  </div>
+</div>
+<div id="videoModal" class="ios-modal">
+  <div class="modal-window">
+    <h3>Вибір відео</h3>
+
+    <button id="pickVideos">Обрати відео</button>
+    <input type="file" id="videoInput" accept="video/*" multiple hidden>
+
+    <div id="videoPreviewGrid" class="media-grid"></div>
+
+    <div class="modal-actions">
+      <button onclick="closeVideoModal()">Скасувати</button>
+
+    </div>
+  </div>
+</div>
+
+<div id="upload-modal" class="modal-overlay"><div id="photoModal" class="ios-modal">
+  <div class="modal-window">
+    <h3>Вибір фото</h3>
+
+    <button id="pickPhotos">Обрати фото</button>
+    <input type="file" id="photoInput" accept="image/*" multiple hidden>
+
+    <div id="photoPreviewGrid" class="media-grid"></div>
+
+    <div class="modal-actions">
+      <button onclick="closePhotoModal()">Скасувати</button>
+      <button id="uploadPhotosBtn">Завантажити</button>
+    </div>
+  </div>
+</div>
+
+  <div class="modal-window" id="modal-window">
+    <div class="modal-header">
+      <span data-i18n="tab-button active" class="tab-button active" data-tab="video-tab">Відео</span>
+      <span data-i18n="tab-button" class="tab-button" data-tab="photo-tab">Фото</span>
+      <span class="close-modal">✖</span>
+    </div>
+
+    <div class="modal-body">
+      <!-- Вкладка "Відео" -->
+      <div id="video-tab" class="tab-content active">
+                <div class="upload-form" id="upload-form">
+            <h2 data-i18n="label-video">Завантажити відео</h2>
+            <input type="text" id="video-title" data-i18n-placeholder="video-title">
+            <textarea id="video-description" data-i18n-placeholder="video-description"></textarea>
+            <button style="display:flex; align-items: center; justify-content: center; margin: 0 0 0 70px; padding: 0 10px;" onclick="generateDescription()"><i class="material-symbols">smart_toy</i><p data-i18n="generate-description">Згенерувати опис</p><sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup></button>
+        <p id="video-file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
+                  <div class="upload-fields">
+
+                <label class="video-label-upload">
+
+                    <input
+                        type="file"
+                        id="video-file"
+                        accept="video/*"
+                        required
+                    >
+
+                    <span class="material-symbols">
+                        movie
+                    </span>
+
+                    <strong data-i18n="video">Відео</strong>
+
+        
+                </label>
+            </div>
+
+<button id="openVideoPicker" style="display: none;">📷 Додати фото</button>
+<input type="file" id="video-file" accept="video/*">
+<br>
+<select id="video-channel-select">
+  <option value="main">Основний канал</option>
+  <option value="second">Другий канал</option>
+</select>
+<br>
+<!-- Вимкнути коментарі -->
+
+<!-- Вимкнути коментарі -->
+
+<div class="setting-row">
+  <span data-i18n="disabled-comments-checkbox">
+    Вимкнути коментарі
+  </span>
+
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+
+  <input
+    type="checkbox"
+    id="disabled-comments-checkbox"
+    class="setting-checkbox"
+  >
+
+  <button
+    type="button"
+    class="liquid-toggle"
+    data-checkbox="disabled-comments-checkbox"
+    role="switch"
+    aria-checked="false"
+    aria-label="Вимкнути коментарі"
+    data-complete="0"
+    data-active="false"
+    data-mapped="false"
+    data-bounce="true"
+  >
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+
+<p style="text-align:center" data-i18n="settings-privacy">
+  Налаштування приватності:
+</p>
+
+<!-- Видалити через 24 години -->
+
+<!-- Видалити через 24 години -->
+<div class="setting-row">
+  <span data-i18n="auto-delete-24h">Видалити через 24 години</span>
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+  <input type="checkbox" id="auto-delete-24h" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="auto-delete-24h"
+    role="switch" aria-checked="false"
+    aria-label="Видалити через 24 години"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Приватне відео -->
+<div class="setting-row">
+  <span data-i18n="private-video-checkbox">Приватне відео</span>
+  <input type="checkbox" id="private-video-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="private-video-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Приватне відео"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Заборонити збереження відео -->
+<div class="setting-row">
+  <span data-i18n="save-video-checkbox">Заборонити збереження відео</span>
+  <sup class="new-badge" data-i18n="new">NEW</sup>
+  <input type="checkbox" id="save-video-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="save-video-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Заборонити збереження відео"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Обмеження за доменом -->
+<div id="domain-restrict-container" class="setting-row">
+  <span data-i18n="domain-restrict-checkbox">
+    Тільки для користувачів з доменом kfccte-nau.ukr.education
+  </span>
+  <input type="checkbox" id="domain-restrict-checkbox" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="domain-restrict-checkbox"
+    role="switch" aria-checked="false"
+    aria-label="Обмежити доступ за доменом"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+<!-- NSFW -->
+<div id="nsfw-container" class="setting-row">
+  <span>Позначити відео як NSFW</span>
+  <input type="checkbox" id="nsfw" class="setting-checkbox">
+
+  <button type="button" class="liquid-toggle"
+    data-checkbox="nsfw"
+    role="switch" aria-checked="false"
+    aria-label="Позначити відео як NSFW"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+
+      
+      <h3>🎵 Налаштування бандури</h3>
+
+  <label>
+    <input type="checkbox" id="bandura-video">
+    Це бандурне відео
+  </label>
+
+  <br><br>
+
+  <label>
+    Тип виконання:
+    <select id="bandura-style">
+      <option value="Соло">Соло</option>
+      <option value="Дует">Дует</option>
+      <option value="Ансамбль">Ансамбль</option>
+    </select>
+  </label>
+
+  <br><br>
+
+  <label>
+    Тональність:
+    <input type="text" id="bandura-key" placeholder="Напр. D minor">
+  </label>
+
+  <br><br>
+
+  <label>
+    Рівень складності:
+    <select id="bandura-difficulty">
+      <option value="Початковий">Початковий</option>
+      <option value="Середній">Середній</option>
+      <option value="Високий">Високий</option>
+    </select>
+  </label>
+
+  <br><br>
+  <!-- Додаткові аудіо/відео опції -->
+  <label>
+    Темп (BPM):
+    <input type="number" id="bandura-tempo" min="40" max="240" placeholder="120">
+  </label>
+
+  <br><br>
+
+  <label>
+    Режим сповільненого відтворення:
+    <input type="checkbox" id="bandura-slow">
+    Доступний для навчання
+  </label>
+
+  <br><br>
+
+  <!-- Інформація про запис -->
+  <label>
+    Місце/подія виконання:
+    <input type="text" id="bandura-event" placeholder="Концерт, студія, онлайн">
+  </label>
+
+  <br><br>
+
+  <label>
+    Рік запису:
+    <input type="number" id="bandura-year" min="1900" max="2100" placeholder="2026">
+  </label>
+
+  <br><br>
+
+  <label>
+    Виконавець / Аранжувальник:
+    <input type="text" id="bandura-performer" placeholder="Ім'я виконавця або ансамблю">
+  </label>
+
+  <br><br>
+
+  <label>
+    Ключові слова / теги:
+    <input type="text" id="bandura-tags" placeholder="бандура, етно, концерт">
+  </label>
+
+  <br><br>
+
+  <!-- Маркери для навчання -->
+  <label>
+    Маркери розділів (куплет, приспів, соло):
+    <input type="text" id="bandura-markers" placeholder="0:00 - вступ, 0:30 - куплет">
+  </label>
+
+</div>
+            <div id="progress-container" style="display: none; margin-top: 10px;">
+              <p id="progress-text"></p>
+                <progress id="upload-progress" value="0" max="100"></progress>
+                <span id="progressicon-text">0%</span>
+<span id="time-left"></span>
+            </div>
+  
+            <button id="upload-button" onclick="uploadVideo()">Завантажити</button>
+  <br>
+<label>Публікуючи відео, ви погоджуєтеся з <a href="https://app.notion.com/p/VideoVortex-283beb289348809183e8e8d185b3c469?source=copy_link" target="_blank">правилами спільноти.</a></label>
+</div>
+      </div>
+</div>
+
+      <!-- Вкладка "Фото" -->
+      <div id="photo-tab" class="tab-content">
+<div class="upload-photo-form" id="upload-photo-form">
+            <h2 data-i18n="label-photo">Завантажити фото</h2>
+            <input type="text" id="photo-title" placeholder="Назва Фото">
+            <textarea id="photo-description" placeholder="Опис Фото"></textarea>
+            <p id="file-name" style="margin-top:10px; font-size:14px; color:#ccc;">Файл не вибрано</p>
+<label for="photo-file" class="photo-label">
+  <i class="material-symbols">cloud_upload</i><p data-i18n="label-photo">Завантажити фото</p>
+</label>
+<button id="openPhotoPicker" style="display: none;">📷 Додати фото</button>
+<input type="file" id="photo-file" accept="image/*" multiple>
+            <br>
+            <select id="photo-channel-select">
+  <option value="main" data-i18n="main-channel">Основний канал</option>
+  <option value="second" data-i18n="second-channel">Другий канал</option>
+</select>
+
+<span data-i18n="private-photo-checkbox">Приватне фото</span><label class="switch" for="private-photo-checkbox"><input type="checkbox" id="private-photo-checkbox"><span class="liquid-toggle" aria-hidden="true">
+    <span class="liquid-track"></span>
+    <span class="liquid-knob"></span></label>
+<br>
+            <div id="progress-photo-container" style="display: none; margin-top: 10px;">
+                <progress id="upload-photo-progress" value="0" max="100"></progress>
+                <span id="progressicon-photo-text">0%</span>
+            </div>
+            <button id="upload-button" onclick="uploadPhoto()">Завантажити</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="notification-popup" id="notification-popup">
+<p id="message-notification"></p></div>
+<div id="flowers-container"></div>
+<div id="-container"></div>
+      <ul id="girland">
+  <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+</ul>
+<div id="tg-popup" class="tg-popup hidden">
+  <div class="tg-popup-card">
+    <button class="tg-close" onclick="closeTgPopup()">✕</button><h3>📢 Ми в Telegram</h3>
+    <p>Новини, оновлення та модерація VideoVortex</p><a href="https://t.me/fantasticelectronics" target="_blank" class="tg-join-btn">
+      Перейти в Telegram</a>
+  </div>
+</div>
+<div id="blocked-users-modal" class="modal-blocked-overlay">
+  <div class="modal-blocked-window">
+    <div class="modal-blocked-header">
+      <h2>Заблоковані користувачі</h2>
+            <span class="close-blocked-modal">✖</span>
+    </div>
+    <div class="modal-blocked-body">
+      <p style="color: gray; text-align: left;" data-i18n="information-blocked">
+        Від заблокованих користувачів приховано аватар профілю, історії, відео, дописи та коментарі.
+      </p>
+      <div id="blockedUsersList" class="modal-blocked">
+        <!-- Тут динамічно будуть вставлятися заблоковані користувачі -->
+      </div>
+    </div>
+  </div>
+</div>
+<div id="account-notifications-modal" class="modal-account-notifications-overlay">
+  <div class="modal-account-notifications-window">
+    <div class="modal-account-notifications-header">
+      <h2>Сповіщення</h2>
+            <span class="close-account-notifications-modal">✖</span>
+    </div>
+    <div class="modal-account-notifications-body">
+      
+      <div id="accountNotificationsList" class="modal-account-notifications">
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div id="account-modal" class="modal-account-overlay">
+  <div class="modal-window">
+    <div class="modal-account-header">
+      <span class="close-account-modal">✖</span>
+    </div>
+    <div class="modal-account-body">
+<div class="account-form" id="account-form">
+            <h2>Інформація про акаунт</h2>
+<div class="avatar" id="profile-avatar"></div>
+<input type="file" id="avatar-input" accept="image/*" hidden>
+<button id="change-avatar">Змінити аватар</button>
+<p id="name">Ім'я: Завантаження...</p><button id="button-name" onclick="editName()"><i class="material-symbols">edit</i>Змінити</button>
+<div id="form-edit-name" style="display:none;">
+<input type="text" id="edit-name">
+<button id="save-name" onclick="saveEditName()">Зберегти</button>
+</div>
+<p id="supername">Прізвище: Завантаження...</p><button href="#" id="button-supername" onclick="editSuperName()"><i class="material-symbols">edit</i>Змінити</button>
+<div id="form-edit-supername" style="display:none;">
+<input type="text" id="edit-supername">
+<button id="save-supername" onclick="saveEditSuperName()">Зберегти</button>
+</div>
+<input id="second-channel-name" placeholder="Назва другого каналу">
+<button onclick="createSecondChannel()">➕ Створити другий канал</button>
+<select id="language-select">
+  <option value="en">English</option>
+  <option value="ua">Українська</option>
+   <option value="de">Deutsch</option>
+</select>
+            <p id="user-info"></p>
+<p id="view">Дата народження: Завантаження...</p>
+        <div id="requests-container"></div>
+        <div class="setting-row">
+       <span>Показувати відео позначенні як NSFW <sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup></span>
+          <input type="checkbox" id="show-nsfw-videos" class="setting-checkbox">
+          <button type="button" class="liquid-toggle"
+    data-checkbox="show-nsfw-videos"
+    role="switch" aria-checked="false"
+    aria-label="Показувати відео позначенні як NSFW"
+    data-complete="0" data-active="false"
+    data-mapped="false" data-bounce="true">
+    <span class="wrapper">
+      <span class="indicator">
+        <span class="knockout">
+          <span class="liquids">
+            <span class="liquid__shadow"></span>
+            <span class="liquid__track"></span>
+          </span>
+        </span>
+      </span>
+    </span>
+    <span class="indicator--masked">
+      <span class="mask"></span>
+    </span>
+    <span class="indicator__liquid">
+      <span class="shadow"></span>
+      <span class="cover"></span>
+    </span>
+  </button>
+</div>
+        <p id="information-nsfw">Вам повинно бути щонайменше 18 років, щоб переглядати NSFW відео.</p>
+        
+<h1>Налаштування обмеження екранного часу</h1>
+    <p>Вкажіть, скільки хвилин на день ви хочете бути на сторінці:</p>
+    <input type="number" id="maxTimeInput" value="45" min="1" />
+    <button class="save" onclick="saveSettings()">Зберегти налаштування</button>
+
+    <p>Вкажіть час сну (наприклад, 21:00 - 07:00):</p>
+    <label for="sleepStart">Час початку сну:</label>
+    <input type="time" id="sleepStart" value="21:00">
+
+    <label for="sleepEnd">Час закінчення сну:</label>
+    <input type="time" id="sleepEnd" value="07:00">
+                </div>
+
+      </div>
+       
+    </div>
+  </div>
+</div>
+<div id="archive-modal" class="modal-archive-overlay">
+  <div class="modal-window">
+    <div class="modal-archive-header">
+            <h2>Архів</h2>
+      <span class="close-archive-modal">✖</span>
+    </div>
+    <div class="modal-archive-body">
+      <button id="add"><i class="material-symbols">add</i></button>
+      <div id="upload">
+        <input type="file" id="zip-file" accept=".zip">
+
+<button onclick="uploadArchive()">Завантажити</button>
+      </div>
+      <div id="secure-files"></div>
+      </div>
+    </div>
+  </div>
+    <div id="edit-wallpaper-profile-modal" class="modal-edit-wallpaper-profile-overlay">
+  <div class="modal-window">
+    <div class="modal-edit-wallpaper-profile-header">
+      <span class="close-edit-wallpaper-profile-modal">✖</span>
+    </div>
+    <div class="modal-edit-wallpaper-profile-body">
+<div class="edit-wallpaper-profile-form" id="edit-wallpaper-profile-form">
+<div class="profile-header">
+  <div class="avatar" id="avatar">?</div>
+  <div>
+    <h2 id="userName">Завантаження...</h2>
+  </div>
+  </div>
+  <input type="file" id="set-wallpaper-profile" accept="image/*">
+<label for="set-wallpaper-profile" class="set-wallpaper-profile"><i class="material-symbols">upload</i>Встановити шпалери профілю</label>
+<br>
+            <button id="edit-wallpaper-profile-button" onclick="saveWallpaperChanges()" data-i18n="save">Зберегти</button>
+        </div>
+        </div>
+        </div>
+        </div>
+  <div id="edit-modal" class="modal-edit-overlay">
+  <div class="modal-window">
+    <div class="modal-edit-header">
+      <span class="close-edit-modal">✖</span>
+    </div>
+    <div class="modal-edit-body">
+<div class="edit-form" id="edit-form">
+            <h2>Редагувати відео</h2>
+            <input type="text" id="edit-video-title" placeholder="Назва відео">
+            <textarea id="edit-video-description" placeholder="Опис відео"></textarea>
+            <div class="image-container">
+              <img>
+    <div class="overlay"></div>
+    <label for="action-btn" class="action-btn"><i class="material-symbols">edit_square</i><sup style="background-color: blue; color: white; border-radius: 8px;" data-i18n="new">NEW</sup></label>
+    <input type="file" id="action-btn" accept="image/*">
+</div>
+
+ <span>Приватне відео</span><label class="switch" for="edit-private-checkbox"><input type="checkbox" id="edit-private-checkbox"><span class="liquid-toggle" aria-hidden="true">
+    <span class="liquid-track"></span>
+    <span class="liquid-knob"></span></label>
+            <button id="edit-button" onclick="saveVideoChanges()" data-i18n="save">Зберегти</button>
+        </div>
+        </div>
+        </div>
+        </div>
+
+  <div class="stories-bar" id="stories-bar">
+  <div class="story-item" id="story-item">
+    <div class="avatar-ring seen">
+      <div id="avatar-stories-you" onclick="openYourStories(currentUserUid)" class="avatar-stories"></div>
+    </div>
+              <a id="add-story" onclick="openGallery()"><i class="material-symbols">add</i></a>
+    <div class="name" id="name" data-i18n="my-story">Моя історія</div>
+
+  </div>
+
+</div>
+        <div class="tab">
+          <div class="tab-liquid-glass">
+ <a class="tab-button-liquid-glass" href="#" id="all" onclick="All()">
+        <span data-i18n="all">Усі</span>
+    </a>
+       <a href="#" id="popular" onclick="popular()">
+<span data-i18n="popular">Популярні</span>
+        </a>
+
+</div>
+</div>
+</div>
+   <ios-modal id="delete-account-modal">
+  <div class="ios-modal-window">
+
+    <div class="ios-modal-body">
+      <p id="deleted-information" data-i18n="deleted-information">Ви впевнені, що хочете видалити акаунт? Усі ваші публікації будуть видалені назавжди. Цю дію неможливо скасувати.</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="delete" data-i18n="deleted" onclick="deleteAccount()">Видалити акаунт</button>
+      <button class="cancel" data-i18n="cancel" onclick="closeDeleteAccountModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
+  <ios-modal id="support-author-modal">
+  <div class="ios-modal-window">
+<div class="ios-modal-header">
+  <span data-i18n="support-question">💙 Вам зараз потрібна підтримка?</span>
+</div>
+    <div class="ios-modal-body">
+      <p id="support-information" data-i18n="support-information">Схоже, вам може бути непросто. Пам'ятайте: вам не обов'язково проходити через це наодинці.
+
+Якщо ви переживаєте складний момент, спробуйте поговорити з людиною, якій довіряєте, або звернутися по професійну допомогу.
+</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="need-support" data-i18n="needSupport" onclick="needSupport()">Мені потрібна допомога</button>
+      <button class="i-am-fine" data-i18n="IAmFine" onclick="closeSupportModal()">Я в порядку</button>
+    </div>
+  </div>
+</ios-modal>
+        <nav id="smart-menu">
+
+    
+
+    <a class="button-liquid-glass"
+       href="#"
+       id="smart-video"
+       onclick="video()">
+        <i class="material-symbols">movie</i>
+        <span data-i18n="video">Відео</span>
+    </a>
+
+    <a href="#"
+       id="smart-post"
+       onclick="post()">
+        <i class="material-symbols">photo</i>
+        <span data-i18n="post">Дописи</span>
+    </a>
+
+    <a href="#"
+       id="smart-settings"
+       onclick="settings()">
+        <i class="material-symbols">settings</i>
+        <span data-i18n="settings">Налаштування</span>
+    </a>
+
+    <a href="#" id="account-link">
+        <i class="avatar" id="nav-avatar"></i>
+        <span data-i18n="you">Ви</span>
+</a>
+        </nav>
+            <a href="#" id="plus-button"><i class="material-symbols">add</i></a>
+<button id="update-app-btn">Оновити VideoVortex</button>
+                <div class="menu" style="align-items: center;">
+    <a href="#" id="close-menu" onclick="closeSidebar()">
+        <i class="material-symbols">close</i>
+    </a>
+    <a href="#" id="post" onclick="post()">
+        <i class="material-symbols">photo</i><span style="margin-left: 5px">Дописи</span>
+    </a>
+          <a href="#" id="settings" onclick="settings()">
+        <i class="material-symbols">settings</i><span data-i18n="settings">Налаштування</span>
+        </a>
+    <a href="#" id="video" onclick="video()">
+        <i class="material-symbols">movie</i><span style="margin-left: 5px">Відео</span>
+    </a>
+</div>
+<div id="birthdate-modal" style="
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+">
+  <input type="text" id="name-input" placeholder="Ім'я" style="padding: 10px; font-size: 1em;">
+<input type="text" id="supername-input" placeholder="Прізвище" style="padding: 10px; font-size: 1em;">
+<h2 data-i18n="birthdate">Вкажіть дату народження</h2>
+  <input type="date" id="birthdate-input" style="padding: 10px; font-size: 1em;">
+  <button data-i18n="save" onclick="submitBirthdate()" style="margin-top: 10px; padding: 10px 20px;">Зберегти</button>
+</div>
+<div id="newyear--egg" class="ny-popup">
+  <div class="ny-content">
+    <h2>🎆 З Новим 2027 роком! 🎆</h2>
+    <p>
+      ❄️ Сію, вію, засіваю —<br>
+      миру, щастя і добра бажаю!<br><br>
+      🎄 Нехай VideoVortex росте,<br>
+      а мрії збуваються!
+    </p>
+    <button onclick="closeNewYearPopup()">✨ Дякую</button>
+  </div>
+</div>
+    <div class="container" id="video-container">
+
+        <div class="video-container" id="video-gallery"></div>
+<div id="search-users"></div>
+    </div>
+
+    <div class="container" id="photo-container">
+        <div class="photo-container" id="photo-gallery"></div>
+
+    </div>
+
+        <div id="author-info">
+    </div>
+    
+        <div class="settings-page">
+
+  <!-- HEADER -->
+  <div class="settings-header">
+    <h2 data-i18n="settings">Налаштування</h2>
+  </div>
+
+  <!-- PROFILE BLOCK -->
+  <div class="settings-card">
+    <div class="profile-row">
+      <div class="avatar" id="settingsAvatar"></div>
+      <div>
+      <br>
+        <div class="name" id="settingsName"></div>
+        <div class="email" id="settingsEmail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="settings-card">
+    <h3 data-i18n="account">Акаунт</h3>
+
+    <button class="settings-item" id="edit-profile"><i class="material-symbols">edit</i><p data-i18n="edit-settings-profile">Редагувати профіль</p></button>
+    <button class="settings-item" style="display: none;"><i class="material-symbols">password</i>Змінити пароль</button>
+    <button class="settings-item danger" id="logout-danger-link"><i class="material-symbols">logout</i><p data-i18n="log-out-of-account">Вийти з акаунта</p></button>
+  </div>
+
+  <!-- PRIVACY -->
+  <div class="settings-card">
+    <h3 data-i18n="privacy">Приватність</h3>
+
+    <div class="settings-toggle" style="display: none;">
+      <span><i class="material-symbols">lock</i>Приватний профіль</span>
+      <input type="checkbox" id="privateProfile">
+    </div>
+
+    <button class="settings-item" style="display: none;"><i class="material-symbols">candle</i>Спадкоємець акаунта</button>
+    <button class="settings-item" id="blocked-button"><i class="material-symbols">block</i><p data-i18n="blocked-users">Заблоковані користувачі</p></button>
+    <div class="settings-toggle">
+  <span style="display: flex; justify-content: center; align-items: center; font-size: 20px;">
+    <i class="material-symbols">visibility_off</i>
+    Анонімний профіль
+  </span>
+  <input type="checkbox" id="anonymousProfile">
+</div>
+  </div>
+
+  <!-- VIDEO -->
+  <div class="settings-card" style="display: none;">
+    <h3>Відео</h3>
+
+    <div class="settings-toggle">
+      <span>Заборона скачування</span>
+      <input type="checkbox" id="disableDownload">
+    </div>
+
+    <div class="settings-toggle">
+      <span>Автовідтворення</span>
+      <input type="checkbox" id="autoplay">
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="settings-card danger-zone">
+    <h3 data-i18n="danger-zone">Небезпечна зона</h3>
+
+    <button class="settings-item danger" onclick="deleteAccountModal()"><i class="material-symbols">person_remove</i>
+      <p data-i18n="delete-account">Видалити акаунт</p>
+    </button>
+  </div>
+    <div class="settings-card">
+    <h3 data-i18n="help-zone">Допомога</h3>
+   <button class="settings-item" onclick="window.open('https://www.privat24.ua/send/klpqa', '_blank')"><i class="material-symbols">volunteer_activism</i>Підтримати проект</button>
+      <button class="settings-item" onclick="window.open('https://app.notion.com/p/Privacy-Policy-VideoVortex-40cbeb28934880f5a922ef34e220f2a6?source=copy_link', '_blank')"><i class="material-symbols">security</i>Privacy Policy</button>
+  </div>
+        <footer style=" position: relative;z-index: 1; text-align: center; justify-content: center; padding: 1px; background: rgb(26 26 26 / 68%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; box-shadow: 0 8px 32px rgb(0 0 0 / 20%); width: 97%; height: 20%;">
+                <h3 data-i18n="application-version">Версія додатка:</h3>
+                <p>7.3.3</p>
+        </footer>
+        </div>
+<script src="i18n.js"></script>
+<script defer src="js/select-language.js"></script>
+<script defer src="js/app.js"></script>
+<script defer src="js/update.js"></script>
+   <script defer src="js/support-liquid-glass.js"></script>
+</body>                                                   
+</html>

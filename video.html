@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols">
+     <link rel="stylesheet" href="css/video.css">
+     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title></title>
+    <svg style="display: none">
+    <filter id="displacementFilter">
+        <feImage
+                href="data:image/png;base64,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"
+                preserveAspectRatio="none"/>
+
+        <feDisplacementMap
+                in="SourceGraphic"
+                in2="turbulence"
+                scale="300"
+                xChannelSelector="R"
+                yChannelSelector="G"
+        />
+    </filter>
+</svg>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <nav>
+      <a class="back" href="index.html">
+        <i class="material-symbols">arrow_back_ios_new</i>
+    </a>
+            <a href="index.html"><img id="logo" src="VideoVortex_logo.ico" style="height: 50px; width: 50px; border-radius: 50%;">
+            <h1 style="padding-left: 5px;" id="logo-text">VideoVortex</h1></a>
+
+    </nav>
+    <div id="confetti-container"></div>
+  <ios-modal id="support-author-modal">
+  <div class="ios-modal-window">
+    <div class="ios-modal-header" data-i18n="support-author-title">
+      💙 Ви хочете підтримати автора?
+
+    </div>
+
+    <div class="ios-modal-body">
+      <p data-i18n="support-author-information">Ваша підтримка може показати людині, що вона не залишилася непоміченою. Вам не потрібно нічого писати.</p>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="agree-btn" data-i18n="send-support" onclick="sendSupportAuthor()" style="display: flex; justify-content: center; align-items: center; margin: 0 10px;"><i class="material-symbols">favorite</i>Надіслати підтримку</button>
+      <button class="agree-btn" data-i18n="cancel" onclick="closeSupportModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
+    <ios-modal id="block-user-modal">
+  <div class="ios-modal-window">
+    <div class="ios-modal-header">
+      Заблокувати користувача
+    </div>
+
+    <div class="ios-modal-body">
+      <p id="blocked-information">Ви впевнені, що хочете заблокувати цього користувача?</p>
+
+      <select id="block-reason">
+        <option value="spam">Спам</option>
+        <option value="abuse">Образи / токсична поведінка</option>
+        <option value="nsfw">Заборонений контент</option>
+        <option value="other">Інше</option>
+      </select>
+
+      <textarea id="block-comment" placeholder="Коментар (необовʼязково)"></textarea>
+    </div>
+
+    <div class="ios-modal-footer">
+      <button class="danger" data-i18n="block" onclick="confirmBlockUser()">Заблокувати</button>
+      <button class="cancel" data-i18n="cancel" onclick="closeBlockModal()">Скасувати</button>
+    </div>
+  </div>
+</ios-modal>
+<div class="notification-popup" id="notification-popup">
+<p id="message-notification"></p>
+<p id="boostText" data-i18n="boost_1"></p></div>
+<div id="notification-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationModal()">ОК</button>
+  </div>
+</div>
+<div id="notification-ai-modal" class="ios-notification-modal">
+  <div class="ios-modal-content">
+    <h2>VideoVortex</h2>
+    <p id="message-ai"></p>
+    <div class="modal-divider"></div>
+    <button id="agree-btn" onclick="closeNotificationAIModal()">ОК</button>
+  </div>
+  </div>
+<div id="player-container" class="player-container">
+    <div id="video-container">
+        <canvas id="video-canvas" style="display: none;"></canvas>
+        <video id="video-player" controls playsinline autoplay preload="auto"></video>
+        <div class="controls" style="display: none;">
+    <button id="playPause"><i class="material-symbols">play_arrow</i></button>
+    <input type="range" id="seekBar" value="0" min="0" step="1">
+    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+    <button id="mute"><i class="material-symbols">volume_up</i></button>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    <button id="fullscreen"><i class="material-symbols">fullscreen</i></button>
+  </div>
+</div>
+
+        <div class="video-info" id="video-info">
+<div class="details" id="details"></div>
+<hr>
+<div class="reactions" id="reactions">
+<a class="like" id="like">
+  <i class="material-symbols">thumb_up</i>
+  <p id="likeCount" style="padding: 5px 0px;">0</p>
+</a>
+
+<a class="dislike" id="dislike">
+  <i class="material-symbols">thumb_down</i>
+  <p id="dislikeCount" style="padding: 5px 0px;">0</p>
+</a>
+<a class="popularBtn" id="popularBtn">
+  <i class="material-symbols">star</i><p class="icon-text" data-i18n="popularBtn" style="padding: 5px 0px;">Просунути відео</p> 
+    </a>
+<a class="shareBtn" id="shareBtn">
+  <i class="material-symbols">share</i><p class="icon-text" data-i18n="shareBtn" style="padding: 5px 0px;">Поділитися</p>  
+    </a>
+<a class="repostBtn" id="repostBtn">
+  <i class="material-symbols">repeat</i><p class="icon-text" data-i18n="repostBtn" style="padding: 5px 0px;">Зробити репост</p>  
+    </a>
+  <a class="saveVideoBtn" id="saveVideoBtn">
+  <i id="material-icon" class="material-symbols">bookmark</i><p class="icon-text" data-i18n="save" style="padding: 5px 0px;">Зберегти</p>  
+  </a>
+  <a class="sendSupportBtn" id="sendSupportBtn">
+  <i class="material-symbols">favorite</i><p data-i18n="supportBtn" style="padding: 5px 0px;">Підтримати автора</p> 
+  </a>
+</div>
+
+<hr>
+            <button id="delete-button" style="display: none; background-color: red; color: white;">Видалити</button>
+
+        </div>
+    </div>
+                <div id="comments-root"></div>
+<h3 data-i18n="similar-title">Схожі відео:</h3>
+<div id="target-videos">
+<p id="similar-message" data-i18n="similar-message">Схожих відео немає 😔</p>
+</div>
+<script src="i18n.js"></script>
+<script src="js/video.js"></script>
+   <script defer src="js/support-liquid-glass.js"></script>
+<!---<script>
+  let privacyActive = false;
+let video = document.querySelector("video");
+
+// Функція для увімкнення/вимкнення режиму конфіденційності
+function setPrivacyMode(active) {
+    if(active){
+        if(video) video.pause();
+        document.body.classList.add("privacy-mode");
+    } else {
+        document.body.classList.remove("privacy-mode");
+        if(video) video.play();
+    }
+    privacyActive = active;
+}
+
+// Debounce, щоб не спрацьовувало занадто часто
+let lastCheck = 0;
+
+// Основна логіка орієнтації
+function handlerientation(event){
+    const now = Date.now();
+    if(now - lastCheck < 200) return; // не частіше ніж раз на 200ms
+    lastCheck = now;
+
+    const beta = event.beta;
+
+    if(beta > 150 || beta < -150){ // екраном вниз
+        if(!privacyActive) setPrivacyMode(true);
+    } else {
+        if(privacyActive) setPrivacyMode(false);
+    }
+}
+
+// Перевірка iOS: потрібен дозвіл
+function initDeviceOrientation(){
+    if(typeof DeviceOrientationEvent !== "undefined" &&
+       typeof DeviceOrientationEvent.requestPermission === "function") {
+        // iOS 13+ потребує запит дозволу
+        DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+            if(permissionState === "granted"){
+                window.addEventListener("deviceorientation", handleOrientation);
+            }
+        })
+        .catch(console.error);
+    } else {
+        // Android та інші браузери
+        window.addEventListener("deviceorientation", handleOrientation);
+    }
+}
+
+// Ініціалізація після завантаження контенту
+document.addEventListener("DOMContentLoaded", () => {
+    video = document.querySelector("video"); // на всяк випадок
+    initDeviceOrientation();
+});
+</script>---->
+
+
+</body>
+    </html>

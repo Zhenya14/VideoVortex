@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
+  <title>Авторизація – VideoVortex</title>
+    <link rel="icon" href="VideoVortex_logo.ico">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+html, body{
+  touch-action: manipulation;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+.auth-input {
+            width: 100%;
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 0 15px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid rgba(255,255,255,0.09);
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .auth-input:focus-within {
+            background:
+                rgba(255,255,255,0.07);
+
+            border-color:
+                rgba(100,170,255,0.45);
+
+            box-shadow:
+                0 0 0 3px rgba(70,130,255,0.07);
+        }
+
+        .auth-input > .material-symbols {
+            flex-shrink: 0;
+
+            color: #929aaa;
+
+            font-size: 21px;
+        }
+
+        .auth-input input {
+            width: 100%;
+            min-width: 0;
+
+            padding: 0;
+
+            border: 0;
+            outline: 0;
+
+            background: transparent;
+
+            color: white;
+
+            font-size: 15px;
+        }
+
+        .auth-input input::placeholder {
+            color: #737b8c;
+        }
+::-webkit-scrollbar-thumb {
+  background-color: rgba(14, 165, 233, 0.35); /* блакитний */
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(2, 6, 23, 0.6); /* майже чорний */
+}
+    body { 
+       margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0e1a);
+    color: #e2e8f0;
+    line-height: 1.6;
+text-align: center;
+    padding: 0 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.tab {
+  border-bottom: 2px solid #ccc;
+  background: #ccc;
+  margin-top: 120px;
+  width:100%;
+}
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+body.newyear {
+  background: linear-gradient(180deg, #001a2e, #003d66);
+}
+
+.snowflake {
+    position: fixed;
+    top: -30px;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+}
+@keyframes fall {
+    0% { transform: translateX(0) translateY(0); opacity: 1; }
+    100% { transform: translateX(calc(-50vw + 100vw * var(--x))) translateY(100vh); opacity: 0; }
+}
+.tab button {
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: 0.3s;
+  font-size: 16px;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  border-bottom: 3px solid #007bff;
+  font-weight: bold;
+}
+
+.tabcontent {
+    display: none; /* обов’язково для роботи вкладок */
+    padding: 70px 20px 20px 20px;
+    width: 100%;
+    max-width: 500px;
+    margin: 150px auto 0 auto;
+    text-align: left;
+}
+    .auth-form, .register-form { 
+        background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 130px;
+    }
+    input[type="text"], input[type="file"], input[type="email"], input[type="password"], #video-description, #photo-description { 
+       width: 100%; 
+            background-color: black;
+            color: white;
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-radius: 35px; 
+            border: none; 
+            outline: none;
+            font-size: 1em;
+    }
+    
+    /* Замість button { ... } */
+.form-btn { 
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+}
+
+.form-btn:hover { 
+    border-color: #f472b6;
+    box-shadow: 0 0 15px #f472b6;
+    transform: translateY(-2px);
+}
+
+.form-btn:active {
+    border-color: #06b6d4;
+    box-shadow: 0 0 10px #06b6d4;
+    transform: scale(0.95);
+}
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 0px 20px;
+    background: rgb(26 26 26 / 68%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    position: fixed;
+    width: 97%;
+        }
+        nav a {
+height: 50px;
+align-items: center;
+    justify-content: center;
+display: flex;
+    padding: 0px px;
+    border-radius: 50px;
+    text-align: center;
+          white-space: nowrap;
+    text-decoration: none;
+    color: white;
+    background: #111111;
+    border: 2px solid #333333;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgb(59 130 246 / 0%);
+        }
+        nav a:hover {
+            border-color: #f472b6; /* підсвічування рамки блакитним */
+
+box-shadow: 0 0 15px #f472b6; /* світіння */
+
+transform: translateY(-2px); /* легке підняття */
+        }
+nav a:active {
+border-color: #06b6d4; /* рамка рожевого кольору при натисканні */
+
+box-shadow: 0 0 10px #06b6d4; /* світіння при натисканні */
+
+transform: scale(0.95); /* легке стиснення */
+}
+  </style>
+</head>
+<body>
+<nav>
+<img id="logo" src="VideoVortex_logo.ico" id="logo" style="height: 50px; width: 50px; border-radius: 50%;">
+            <a href="index.html">
+            <h1 id="logo-text" style="padding-left: 5px;">VideoVortex</h1><sup><div id="timer"></div></sup></a>
+</nav>
+
+<!-- Модальне вікно апеляції -->
+<div id="appeal-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:200;">
+  <div style="background:#fff; color:#000; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:left; position:relative;">
+    <h2>Подати апеляцію</h2>
+    <p>Ваш акаунт заблокований. Будь ласка, заповніть форму нижче, щоб оскаржити рішення.</p>
+    <form id="appeal-form" action="https://formspree.io/f/xvgvjdej" method="POST">
+  <label>
+    <input type="email" name="email" id="appeal-email" placeholder="Ваш Email" required style="width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc;">
+  </label>
+  <label>
+    <textarea name="message" id="appeal-message" placeholder="Опишіть причину апеляції" required style="width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc;"></textarea>
+  </label>
+  <button type="submit" style="padding:10px 20px; border:none; border-radius:5px; background:#4facfe; color:#fff; cursor:pointer;">Відправити</button>
+</form>
+    <button id="appeal-close" style="position:absolute; top:10px; right:10px; background:transparent; border:none; font-size:18px; cursor:pointer;">✖</button>
+  </div>
+</div>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'SignIn')" id="defaultOpen">Увійти</button>
+  <button class="tablinks" onclick="openTab(event, 'SignUp')">Реєстрація</button>
+</div>
+<div id="SignIn" class="tabcontent">
+    <h2>Увійти</h2>
+    <form id="auth-form">
+      <input type="email" id="auth-email" placeholder="Email" required>
+      <input type="password" id="auth-password" placeholder="Пароль" required>
+<a href="resetpassword.html">Забули пароль?</a>
+      <p id="auth-notification"></p> <!-- змінено id, щоб не було конфлікту -->
+      <button type="submit" class="form-btn">Увійти</button>
+    </form>
+    </div>
+<div id="SignUp" class="tabcontent">
+    <h2>Реєстрація</h2>
+    <form id="register-form">
+      <input type="text" id="register-name" placeholder="Ім’я" required>
+      <input type="text" id="register-supername" placeholder="Прізвище" required>
+      <input type="date" id="birthdate" required>
+      <input type="email" id="register-email" placeholder="Email" required>
+      <input type="password" id="register-password" placeholder="Пароль" required>
+      <input type="password" id="register-confirmation-password" placeholder="Підтвердіть пароль" required>
+      <p id="register-notification"></p> <!-- окремий блок повідомлень для реєстрації -->
+      <button type="submit" class="form-btn">Зареєструватися</button>
+    </form>
+</div>
+<script>
+// Функція для відкриття вкладки
+function openTab(evt, tabName) {
+    // Приховуємо всі вкладки
+    const tabcontent = document.getElementsByClassName("tabcontent");
+    for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Видаляємо клас active з усіх кнопок
+    const tablinks = document.getElementsByClassName("tablinks");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+
+    // Показуємо потрібну вкладку
+    document.getElementById(tabName).style.display = "block";
+
+    // Додаємо клас active до кнопки, по якій клікнули
+    evt.currentTarget.classList.add("active");
+}
+
+// Відкриваємо вкладку за замовчуванням після завантаження DOM
+document.addEventListener("DOMContentLoaded", () => {
+    const defaultTab = document.getElementById("defaultOpen");
+    if (defaultTab) defaultTab.click();
+});
+</script>
+<script>
+// ===================== Сніг =====================
+let snowInterval = null;
+
+function createSnowflake() {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.textContent = ["❄️","❅","❆"][Math.floor(Math.random()*3)];
+    snowflake.style.left = Math.random()*100 + "vw";
+    snowflake.style.fontSize = (Math.random()*15+10) + "px";
+    snowflake.style.opacity = Math.random()*0.8+0.2;
+    snowflake.style.setProperty('--x', Math.random());
+
+    const duration = Math.random()*3+4; // 4–7 сек
+    snowflake.style.animation = `fall ${duration}s linear forwards`;
+
+    document.body.appendChild(snowflake);
+    setTimeout(()=>snowflake.remove(), duration*1000);
+}
+
+function startSnow() {
+    if(snowInterval) return;
+    snowInterval = setInterval(createSnowflake, 150);
+}
+
+function stopSnow() {
+    clearInterval(snowInterval);
+    snowInterval = null;
+    document.querySelectorAll(".snowflake").forEach(f=>f.remove());
+}
+
+// ===================== Пасхалка потрійного кліку =====================
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function launchNewYearEasterEgg() {
+    // Додатковий сніг на пасхалку
+    startSnow();
+    alert("🎉 Пасхалка Нового Року! Сніг йде! 🎉");
+}
+
+// ===================== Ініціалізація =====================
+document.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logo");
+    const logoText = document.getElementById("logo-text");
+    if (!logo || !logoText) return;
+
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    const originalLogoSrc = logo.src;
+
+    const isNewYearPeriod =
+        (month === 12 && day >= 15) ||
+        (month === 1 && day <= 25);
+
+    const isVyshyvanka =
+        month === 5 && day === 16;
+
+    const isIndependenceDay = month === 8 && (day === 23 || day === 24);
+
+    // ---------- НОВИЙ РІК ----------
+    if (isNewYearPeriod) {
+        logo.src = "VideoVortex_new_year's_logo.jpg";
+    }
+
+    // ---------- ДЕНЬ ВИШИВАНКИ ----------
+    if (isVyshyvanka) {
+        logo.src = "VideoVortex_logo_embriodery.jpg";
+        styleButtons("#8B0000", "#1C1C1C");
+        applyIcons(vyshyvankaIcons);
+    }
+
+    // ---------- ДЕНЬ НЕЗАЛЕЖНОСТІ ----------
+    if (isIndependenceDay) {
+        logo.src = "VideoVortex_logo_indepedence.jpg";
+        logoText.textContent = "VideoVortex 💙💛";
+        styleButtons("#0057B7", "#FFDD00");
+    }
+
+    // ---------- СНІГ ----------
+    if (month === 1 && day === 1) {
+        startSnow();
+    }
+
+    // ---------- ПОТРІЙНИЙ КЛІК ----------
+    logo.addEventListener("click", () => {
+        logoClickCount++;
+
+        if (logoClickCount === 1) {
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 1200);
+        }
+
+        if (logoClickCount === 3) {
+            clearTimeout(logoClickTimer);
+            logoClickCount = 0;
+            launchNewYearEasterEgg();
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const authNotification = document.getElementById("auth-notification");
+    const registerNotification = document.getElementById("register-notification");
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBkPYP3bnDy61NFjRSboRZrfTVNTdIMWbY",
+        authDomain: "videovortex-235cd.firebaseapp.com",
+        databaseURL: "https://videovortex-235cd-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "videovortex-235cd",
+        storageBucket: "videovortex-235cd.appspot.com",
+        messagingSenderId: "681594250269",
+        appId: "1:681594250269:web:1176b21fcc8fe2a7d052f4"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    function openAppeal() {
+        document.getElementById("appeal-modal").style.display = "flex";
+    }
+
+    const closeBtn = document.getElementById("appeal-close");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            document.getElementById("appeal-modal").style.display = "none";
+        });
+    }
+
+document.getElementById("auth-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("auth-email").value.trim();
+    const password = document.getElementById("auth-password").value.trim();
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then(async (userCredential) => {
+
+            const user = userCredential.user;
+
+            const snap = await database
+                .ref("moderation/users/" + user.uid)
+                .once("value");
+
+            const data = snap.val();
+
+            const userSnap = await database
+                .ref("users/" + user.uid)
+                .once("value");
+
+            const userData = userSnap.val();
+
+            if (!userData) {
+                await auth.signOut();
+                authNotification.innerHTML = "❌ Дані користувача відсутні.";
+                authNotification.style.color = "red";
+                return;
+            }
+
+            const status = data?.status || null;
+
+            if (status === "frozen_soft") {
+                await auth.signOut();
+                authNotification.innerHTML = "❄️ Ваш акаунт тимчасово обмежено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "orange";
+                return;
+            }
+
+            if (status === "frozen_hard") {
+                await auth.signOut();
+                authNotification.innerHTML = "⛔ Доступ до акаунта обмежено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "red";
+                return;
+            }
+
+            if (status === "disabled") {
+                await auth.signOut();
+                authNotification.innerHTML = "🚫 Акаунт вимкнено.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                authNotification.style.color = "red";
+                return;
+            }
+
+            authNotification.innerHTML = "✅ Вхід успішний!";
+            authNotification.style.color = "green";
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 300);
+
+        })
+        .catch((error) => {
+
+            if (error.code === "auth/user-disabled") {
+
+                authNotification.innerHTML = "🚫 Ваш акаунт заблокований. Ви можете подати апеляцію.";
+
+                const appealBtn = document.createElement("button");
+                appealBtn.textContent = "Подати апеляцію";
+                appealBtn.onclick = openAppeal;
+
+                authNotification.appendChild(document.createElement("br"));
+                authNotification.appendChild(appealBtn);
+                return;
+            }
+
+            authNotification.innerHTML = "❌ Невірний логін або пароль. " + error.message;
+            authNotification.style.color = "red";
+        });
+});
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("register-name").value.trim();
+        const supername = document.getElementById("register-supername").value.trim();
+        const email = document.getElementById("register-email").value.trim();
+        const password = document.getElementById("register-password").value.trim();
+        const confirmation = document.getElementById("register-confirmation-password").value.trim();
+        const birthInput = document.getElementById("birthdate").value;
+
+        if (!name || !supername || !email || !password || !confirmation || !birthInput) {
+            registerNotification.innerHTML = "Будь ласка, заповніть всі поля!";
+            registerNotification.style.color = "red";
+            return;
+        }
+
+        if (password !== confirmation) {
+            registerNotification.innerHTML = "Паролі не збігаються!";
+            registerNotification.style.color = "red";
+            return;
+        }
+
+        const [year, month, day] = birthInput.split("-");
+        const birthdate = `${day}.${month}.${year}`;
+        const birthYear = parseInt(year);
+
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const uid = userCredential.user.uid;
+
+            await database.ref("users/" + uid).set({
+                name,
+                supername,
+                email,
+                birthdate,
+                birthYear,
+                privateProfile: false,
+                createdAt: new Date().toISOString()
+            });
+await database.ref(`userSearch/${user.uid}`).set({
+    name: name || "",
+    supername: supername || "",
+    privateProfile: false
+});
+            registerNotification.innerHTML = "✅ Реєстрація успішна!";
+            registerNotification.style.color = "green";
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 800);
+
+        } catch (error) {
+            registerNotification.innerHTML = "Помилка: " + error.message;
+            registerNotification.style.color = "red";
+        }
+    });
+
+});
+</script>
+</body>
+</html>

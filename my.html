@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Для моєї бандуристки</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f3e5f5, #e8f5e9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #6a1b9a;
+      margin-bottom: 20px;
+      font-family: 'Georgia', serif;
+    }
+
+    /* Ефект друкарської машинки для тексту */
+    .typing {
+      font-family: 'Courier New', monospace; /* Використовуємо шрифт, схожий на друкарську машинку */
+      font-size: 1.5em;
+      color: #333;
+      display: inline-block;
+      white-space: nowrap;
+      border-right: 4px solid #333;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0;
+      }
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes blink {
+      50% {
+        border-color: transparent;
+      }
+    }
+
+    .notes {
+      font-size: 2.5em;
+      color: #a1887f;
+      position: absolute;
+      top: 10%;
+      right: 5%;
+      animation: floatNotes 5s ease-in-out infinite;
+      display: none; /* За замовчуванням не видно */
+    }
+
+    @keyframes floatNotes {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+
+    .quote {
+      font-size: 1.3em;
+      font-style: italic;
+      color: #444;
+      margin-top: 30px;
+    }
+
+    .button {
+      background-color: #6a1b9a;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1.2em;
+      text-decoration: none;
+      border-radius: 10px;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #9c4d97;
+    }
+
+    .music-button {
+      display: initial;
+      background-color: #ff9800;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .music-button:hover {
+      background-color: #fb8c00;
+    }
+    .stop-button {
+      display: none;
+      background-color: red;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .stop-button:hover {
+      background-color: #c71515;
+    }
+
+    /* Фото подруги */
+    .profile-image {
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      margin-top: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      cursor: pointer; /* Додаємо курсор, щоб користувач знав, що можна натискати */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="text"></div>
+    <img src="your-friend-photo.jpg" alt="Бандуристка" class="profile-image" id="hiddenNoteImage" />
+    <div class="notes" id="hiddenNotes">♪ ♫ ♪</div>
+    <p class="quote">"Ти — музика, що живе в наших серцях."</p>
+    <!--<a href="#" class="button">Почати тренування</a> -->
+    <button id="music-button" class="music-button" onclick="playMusic()">Програти музику</button>
+    <button id="stop-button" class="stop-button" onclick="stopMusic()">Зупинити музику</button>
+  </div>
+
+  <!-- Можна додати елемент аудіо тут -->
+  <audio src="bandura-ukraina_(mufm.me).mp3" id="music">
+    <!-- Логіку відтворення додавай тут -->
+  </audio>
+
+  <script>
+     function stopMusic() {
+      const audio = document.getElementById("music"); // Вказати шлях до аудіофайлу
+      audio.pause(); // Відтворити музику
+       const stopButton = document.getElementById("stop-button");
+       stopButton.style.display = "none";
+       const playButton = document.getElementById("music-button");
+       playButton.style.display = "initial";
+    }
+    // Функція для відтворення музики
+    function playMusic() {
+      const audio = document.getElementById("music") ; // Вказати шлях до аудіофайлу
+      audio.play(); // Відтворити музику
+      const stopButton = document.getElementById("stop-button");
+       stopButton.style.display = "initial";
+       const playButton = document.getElementById("music-button");
+       playButton.style.display = "none";
+    }
+const text = `Для моєї улюбленої бандуристки
+  Твоя музика — це музика, що дарує світло і натхнення. Нехай твої струни завжди звучать з любов’ю до рідної землі!`;
+const element = document.getElementById("text");
+let index = 0;
+
+function typeLetter() {
+  if (index < text.length) {
+    element.textContent += text[index];
+    index++;
+    setTimeout(typeLetter, 100); // затримка між літерами
+  }
+}
+
+typeLetter();
+    // Пасхалка: Нота, яка з’являється при натисканні на зображення
+    document.getElementById("hiddenNoteImage").addEventListener("click", function() {
+      var notes = document.getElementById("hiddenNotes");
+      notes.style.display = "block";  // Показати ноти
+      setTimeout(function() {
+        notes.style.display = "none"; // Сховати ноти через 3 секунди
+      }, 3000);
+    });
+  </script>
+</body>
+</html
