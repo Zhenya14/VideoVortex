@@ -589,7 +589,7 @@ body.sleep-mode .profile-header {
    MOBILE
 ========================= */
 
-@media (max-width: 1439px) {
+@media (max-width: 1200px) {
 
   .profile-header {
     height: 280px;

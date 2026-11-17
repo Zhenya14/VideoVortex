@@ -1168,7 +1168,7 @@ position: fixed;
             margin-left: 5px;
         }
 
-        @media (max-width: 1439px) {
+        @media (max-width: 1200px) {
             .icon-text {
                 display: none;
             }

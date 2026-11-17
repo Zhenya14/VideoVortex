@@ -5427,7 +5427,7 @@ function getActivePhotoChannelData() {
 
 
 function toggleUploadVisibility() {
-    const isMobile = window.innerWidth <= 1439;
+    const isMobile = window.innerWidth <= 1200;
     const addStory = document.getElementById("add-story");
     const plusPost = document.getElementById("plus-button");
     const plusDesktopPost = document.getElementById("plus-desktop-button");
