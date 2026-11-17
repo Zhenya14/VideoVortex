@@ -2335,7 +2335,7 @@ display: flex;
             margin-left: 5px;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1024px) {
 .icon-text {
 display: none;
 }
